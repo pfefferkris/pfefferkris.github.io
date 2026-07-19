@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settling an Estate — Kristian R. Pfeffer</title>
+<meta name="description" content="What actually happens when someone passes away — the estate settlement timeline from death certificates to final discharge, in plain English, with the legal machinery underneath. By Kristian R. Pfeffer, Trust &amp; Wealth Management.">
+<style>
+:root{
+  --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e;
+  --ink:#1e2b36; --muted:#5a6a78; --line:#e4ddd0; --bg:#faf8f3; --card:#ffffff;
+  --brick:#8a3d3a; --gold-ink:#7c5f2e;
+  --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,
+    #f2f3f5 0%, #eceef1 12%,
+    #f0ede4 26%, #f3eeDF 38%,
+    #f1e9d2 52%, #eee3c4 66%,
+    #f2ecdc 82%, #faf8f3 100%);
+  min-height:100vh;overflow-x:hidden;
+}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif}
+a{color:var(--navy-2); text-decoration:none}
+a:hover{color:var(--gold)}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.2;pointer-events:none;z-index:0}
+.orb.o1{width:500px;height:500px;background:#c3ccd6;top:-130px;left:-120px}
+.orb.o2{width:480px;height:480px;background:#e0d4b4;top:40%;right:-160px}
+.orb.o3{width:500px;height:500px;background:#d8ccb4;bottom:-150px;left:-120px;opacity:.16}
+
+.glass{
+  background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(255,255,255,.34));
+  backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.7);border-radius:var(--r);
+  box-shadow:0 12px 40px rgba(18,41,63,.12), inset 0 1px 0 rgba(255,255,255,.75);
+}
+
+/* ---------- site nav ---------- */
+nav.site{position:sticky; top:0; z-index:60; background:rgba(250,248,243,.92);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+nav.site .navwrap{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:58px}
+.brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); letter-spacing:.3px; font-size:1.02rem}
+.navlinks a{margin-left:24px; font-size:.86rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
+.navlinks a:hover{color:var(--navy)}
+@media(max-width:640px){.navlinks{display:none}}
+
+/* ---------- header ---------- */
+header{position:relative;z-index:2;text-align:center;padding:64px 22px 26px;max-width:840px;margin:0 auto}
+header .eyebrow{color:var(--gold); text-transform:uppercase; letter-spacing:.22em; font-size:.76rem; margin-bottom:14px}
+header h1{font-size:clamp(1.9rem,4.6vw,2.9rem);font-weight:700;letter-spacing:-.01em;line-height:1.14;color:var(--navy)}
+header .sub{margin:18px auto 0;max-width:640px;font-size:1.02rem;color:var(--muted);line-height:1.65}
+
+/* ---------- controls ---------- */
+.advbox{position:fixed;top:70px;right:16px;z-index:55;padding:12px 16px;border-radius:18px;max-width:280px}
+.advrow{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.advrow .lb{font-size:.8rem;font-weight:700;letter-spacing:.05em;color:var(--navy);text-transform:uppercase}
+.sw{position:relative;width:46px;height:26px;border-radius:14px;background:rgba(18,41,63,.16);cursor:pointer;transition:background .25s;flex:none}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:left .25s}
+body.adv .sw{background:var(--navy-2)}
+body.adv .sw::after{left:23px}
+.nwrow{display:none;margin-top:10px}
+body.adv .nwrow{display:block}
+.nwrow label{display:block;font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.nwrow .field{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);border-radius:10px;padding:8px 12px}
+.nwrow .field span{font-weight:700;color:var(--muted)}
+.nwrow input{border:none;background:transparent;outline:none;font:inherit;font-weight:650;width:100%;color:var(--ink)}
+.nwrow .hint{font-size:.66rem;color:var(--muted);margin-top:6px;line-height:1.4}
+
+.persona{position:relative;z-index:3;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:22px auto 6px;padding:10px 14px;max-width:720px;border-radius:30px}
+.persona .lbl{font-size:.74rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);align-self:center}
+.chip{font-size:.83rem;font-weight:600;padding:8px 15px;border-radius:20px;cursor:pointer;user-select:none;border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:all .25s;color:var(--ink)}
+.chip:hover{transform:translateY(-1px)}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ---------- timeline ---------- */
+.journey{position:relative;z-index:1;max-width:1280px;margin:26px auto 0;padding:10px 22px 50px}
+.spine{position:absolute;left:38%;top:0;bottom:0;width:2px;background:linear-gradient(180deg,rgba(18,41,63,.18),rgba(250,248,243,0));border-radius:2px}
+.traveler{position:absolute;left:38%;width:16px;height:16px;transform:translate(-7px,-8px);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--gold));box-shadow:0 0 18px rgba(169,136,79,.75);z-index:3;transition:top .12s linear}
+
+.stage{position:relative;display:grid;grid-template-columns:34% 8% 58%;padding:56px 0;opacity:0;transform:translateY(38px);transition:opacity .8s ease,transform .8s ease}
+.stage.vis{opacity:1;transform:none}
+.lane-a{grid-column:1;display:flex;flex-direction:column;gap:12px;align-items:flex-end;padding-top:70px}
+.lane-c{grid-column:3}
+.wide{grid-column:1/-1}
+
+.era{display:block;font-size:.74rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px;color:var(--gold)}
+.panel{position:relative;max-width:620px;padding:30px 34px}
+.panel .icon{font-size:1.9rem;display:block;margin-bottom:8px;filter:saturate(.7)}
+.panel h2{font-size:1.55rem;font-weight:700;letter-spacing:-.01em;margin-bottom:8px;color:var(--navy)}
+.panel p.lead{font-size:.97rem;line-height:1.65;color:var(--muted)}
+
+/* ---------- client bubbles ---------- */
+.bubbles{display:flex;flex-wrap:wrap;gap:13px;justify-content:flex-start;max-width:660px;margin:24px 0 0}
+.bub{--d:0ms;position:relative;padding:13px 19px;border-radius:14px;cursor:pointer;text-align:left;max-width:250px;
+  background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(255,255,255,.36));
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:0 8px 26px rgba(18,41,63,.1), inset 0 1px 0 rgba(255,255,255,.75);
+  opacity:0;transform:translateY(22px) scale(.94);
+  transition:opacity .6s ease var(--d),transform .6s cubic-bezier(.2,.9,.3,1.2) var(--d),box-shadow .25s}
+.stage.vis .bub{opacity:1;transform:none}
+.bub:hover{box-shadow:0 14px 34px rgba(18,41,63,.18), inset 0 1px 0 rgba(255,255,255,.85)}
+.bub b{display:block;font-size:.93rem;font-weight:650;margin-bottom:3px;color:var(--ink)}
+.bub small{display:block;font-size:.78rem;line-height:1.45;color:var(--muted)}
+.bub .tag{position:absolute;top:-9px;right:12px;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:10px;background:var(--navy);color:#fff}
+.bub.cond{display:none}
+.bub.cond.show{display:block}
+
+/* ---------- advanced bubbles ---------- */
+.abub{display:none;position:relative;max-width:340px;padding:13px 18px;border-radius:12px;cursor:pointer;text-align:left;
+  background:linear-gradient(135deg,rgba(226,232,238,.62),rgba(226,232,238,.32));
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  border:1px solid rgba(28,61,92,.28);
+  box-shadow:0 8px 26px rgba(18,41,63,.12), inset 0 1px 0 rgba(255,255,255,.7)}
+body.adv .abub{display:block;animation:pop .5s ease both}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:none}}
+.abub b{display:block;font-size:.89rem;font-weight:650;margin-bottom:3px;color:var(--navy)}
+.abub small{display:block;font-size:.76rem;line-height:1.45;color:var(--muted)}
+.abub .atag{position:absolute;top:-9px;left:12px;font-size:.56rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 9px;border-radius:10px;background:var(--navy-2);color:#fff}
+.abub .cite{display:inline-block;margin-top:6px;font-size:.68rem;font-weight:700;color:var(--gold-ink);letter-spacing:.02em}
+.abub .num{display:block;margin-top:6px;font-size:.77rem;font-weight:700;color:var(--navy-2)}
+.alane-note{display:none;font-size:.7rem;color:var(--muted);text-align:right;max-width:340px;line-height:1.5;font-style:italic}
+body.adv .alane-note{display:block}
+
+/* ---------- fork ---------- */
+.fork{display:flex;gap:16px;flex-wrap:wrap;max-width:660px;margin:24px 0 0}
+.road{flex:1 1 300px;padding:22px 24px;text-align:left}
+.road h4{font-size:.98rem;font-weight:700;margin-bottom:8px;color:var(--navy)}
+.road ul{margin:0 0 4px 18px}
+.road li{font-size:.84rem;line-height:1.5;margin-bottom:5px;color:var(--muted)}
+.road .roadtag{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:10px;margin-bottom:10px}
+
+/* ---------- modal ---------- */
+.veil{position:fixed;inset:0;background:rgba(15,25,35,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:80;opacity:0;pointer-events:none;transition:opacity .3s}
+.veil.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;top:50%;transform:translate(-50%,-46%) scale(.96);z-index:90;width:min(520px,92vw);max-height:86vh;overflow:auto;
+  padding:34px 34px 28px;opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.2,.9,.3,1.1);
+  background:linear-gradient(150deg,rgba(255,255,255,.9),rgba(255,255,255,.72));
+  backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.88);border-radius:20px;box-shadow:0 30px 80px rgba(15,29,43,.32)}
+.sheet.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.sheet .stg{font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);margin-bottom:8px;display:block}
+.sheet.advm .stg{color:var(--navy-2)}
+.sheet h3{font-size:1.28rem;font-weight:700;margin-bottom:12px;color:var(--navy)}
+.sheet p{font-size:.95rem;line-height:1.66;color:rgba(30,43,54,.86);margin-bottom:12px;white-space:pre-line}
+.sheet .why{font-size:.84rem;line-height:1.6;padding:12px 16px;border-radius:12px;background:rgba(169,136,79,.14);border:1px solid rgba(169,136,79,.32)}
+.sheet .why b{font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;display:block;margin-bottom:4px;color:var(--gold-ink)}
+.sheet .cites{margin-top:12px;font-size:.8rem;line-height:1.6;padding:10px 16px;border-radius:10px;background:rgba(28,61,92,.08);border:1px solid rgba(28,61,92,.28);color:var(--navy)}
+.sheet .cites b{font-size:.62rem;letter-spacing:.13em;text-transform:uppercase;display:block;margin-bottom:4px;color:var(--navy-2)}
+.sheet .calcline{margin-top:12px;font-size:.89rem;font-weight:700;padding:10px 16px;border-radius:10px;background:rgba(28,61,92,.1);border:1px solid rgba(28,61,92,.32);color:var(--navy)}
+.sheet .x{position:absolute;top:16px;right:18px;width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;background:rgba(18,41,63,.08);font-size:1rem;font-weight:600;color:var(--ink)}
+.sheet .x:hover{background:rgba(18,41,63,.16)}
+
+.closing{position:relative;z-index:1;text-align:center;padding:36px 22px 26px}
+.closing .panel2{max-width:600px;margin:0 auto;padding:36px 34px}
+.closing h2{font-size:1.55rem;font-weight:700;margin-bottom:12px;color:var(--navy)}
+.closing p{font-size:.95rem;line-height:1.7;color:var(--muted);margin-bottom:10px}
+.cta{display:inline-block;margin-top:12px;padding:13px 28px;border-radius:2px;font-weight:600;font-size:.9rem;letter-spacing:.03em;text-decoration:none;background:var(--gold);color:#1a1204}
+.cta:hover{background:var(--gold-soft);color:#1a1204}
+footer{position:relative;z-index:1;text-align:center;padding:24px 20px 38px;font-size:.72rem;color:var(--muted);line-height:1.7}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--navy)}
+
+@media(max-width:900px){
+  .stage{grid-template-columns:1fr;padding:44px 0}
+  .lane-a{grid-column:1;order:2;align-items:stretch;padding-top:20px}
+  .lane-c{grid-column:1;order:1}
+  .abub{max-width:100%}
+  .spine,.traveler{left:12px}
+  .advbox{max-width:230px;top:64px}
+  .alane-note{text-align:left}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+
+<nav class="site">
+  <div class="navwrap">
+    <a class="brand" href="index.html">Kristian&nbsp;R.&nbsp;Pfeffer</a>
+    <span class="navlinks">
+      <a href="index.html#about">About</a>
+      <a href="index.html#capstone">Capstone</a>
+      <a href="journey.html">Wealth Guide</a>
+      <a href="succession.html">Estate Guide</a>
+      <a href="blog/">Blog</a>
+      <a href="index.html#contact">Contact</a>
+    </span>
+  </div>
+</nav>
+
+<div class="advbox glass">
+  <div class="advrow">
+    <span class="lb">Advanced</span>
+    <div class="sw" id="advsw" role="switch" aria-checked="false" tabindex="0"></div>
+  </div>
+  <div class="nwrow">
+    <label for="nw">Approx. estate value</label>
+    <div class="field"><span>$</span><input id="nw" inputmode="numeric" placeholder="e.g. 2,500,000"></div>
+    <div class="hint">Powers the fee meter, commissions, and federal filing checks. Nothing is stored or sent anywhere.</div>
+  </div>
+</div>
+
+<header>
+  <p class="eyebrow">A Client Guide · Part Two</p>
+  <h1>When someone dies,<br>the estate has a clock.</h1>
+  <p class="sub">Grief doesn't come with instructions — but the estate does. This is the settlement timeline in plain English: what has to happen, in what order, and when the deadlines land. Flip <b>Advanced</b> (top right) to see the legal machinery — statutes, filings, and the citations behind every step.</p>
+</header>
+
+<div class="persona glass">
+  <span class="lbl">This is my situation:</span>
+  <span class="chip" data-p="exec">I'm the executor</span>
+  <span class="chip" data-p="spouse">Surviving spouse</span>
+  <span class="chip" data-p="nowill">There's no will</span>
+  <span class="chip" data-p="land">Property in other states</span>
+</div>
+
+<div class="journey">
+  <div class="spine"></div>
+  <div class="traveler" id="traveler"></div>
+  <div id="stages"></div>
+</div>
+
+<section class="closing">
+  <div class="panel2 glass">
+    <h2>The timeline is fixed.<br>How hard it is, isn't.</h2>
+    <p>Families who walk this road with a guide spend their energy on each other instead of the paperwork. Families who walk it alone learn every deadline the hard way.</p>
+    <p><em>If you're holding a death certificate and don't know the next step — that's exactly what this conversation is for.</em></p>
+    <a class="cta" href="mailto:mail@kpfeffer.com">Start the conversation</a>
+  </div>
+</section>
+
+<footer>
+  Educational only — not legal, tax, or investment advice. Timeline, allowances, and fee figures reflect North Carolina procedure (N.C. Gen. Stat. ch. 28A and related statutes) and 2026 federal rules; your state and facts will differ. Statutes cited for reference; always verify current law.<br>
+  © <span id="yr"></span> Kristian R. Pfeffer · <a href="index.html">kpfeffer.com</a> · <a href="journey.html">Part One: The Seasons of Your Wealth</a>
+</footer>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true">
+  <button class="x" id="sx" aria-label="Close">&#10005;</button>
+  <span class="stg" id="s-stg"></span>
+  <h3 id="s-t"></h3>
+  <p id="s-d"></p>
+  <div class="calcline" id="s-c" style="display:none"></div>
+  <div class="cites" id="s-cite" style="display:none"><b>Legal references</b><span id="s-cite-t"></span></div>
+  <div class="why"><b>Why it matters</b><span id="s-w"></span></div>
+</div>
+
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+
+/* ================= DATA ================= */
+const PHASES=[
+{era:"Days 0–10 · The first days",icon:"🕯️",t:"Breathe, then gather",
+ lead:"Nothing on this page is due this week. The only real tasks are gentle ones: certificates, the original documents, and securing what needs securing.",
+ bubs:[
+  {t:"Order death certificates",s:"Get more than you think — 10 to 12.",d:"The funeral home orders certified death certificates from Vital Records. Nearly every institution — banks, insurers, DMV, Social Security, the clerk of court — wants its own certified copy. Ordering 10–12 up front costs little and saves weeks of waiting later.",w:"Running out of certificates in month two is the most common small delay in every estate."},
+  {t:"Find the original will",s:"The original — copies usually aren't enough.",d:"Check the fireproof safe, the attorney's vault, and — carefully — any safe-deposit box. The clerk of court generally requires the signed original to probate the will. If you built a letter of instruction, it says exactly where everything is.",w:"The original will is the key that opens the entire process."},
+  {t:"Secure the property",s:"Lock, insure, and freeze.",d:"Lock the home and vehicles, keep insurance in force (vacant-home coverage if needed), freeze credit cards, and forward the mail. Don't distribute anything yet — even to family, even 'what mom promised me.' Everything waits for authority.",w:"Well-meaning early distributions are how executors end up personally liable."},
+  {t:"Don't rush the money",s:"Almost nothing is truly urgent.",d:"Bills can wait a few weeks; creditors have a formal process and a formal window. The one exception: keep the lights, insurance, and mortgage current on real property. Everything else goes through the estate — later, in order.",w:"The estate pays in a legal order of priority. Paying the loudest creditor first can be paying the wrong one."},
+  {t:"Notify Social Security & employers",s:"Stop payments, start benefits.",d:"The funeral home usually reports to Social Security; confirm it. Notify employers (final paycheck, life insurance, retirement plans), and ask about survivor benefits — the surviving spouse may be owed more than expected.",w:"Overpaid Social Security benefits must be clawed back — easier to stop them than repay them."},
+  {t:"The year's allowance",tag:"Spouse",cond:"spouse",s:"$60,000, off the top, ahead of creditors.",d:"North Carolina gives the surviving spouse a $60,000 'year's allowance' from personal property — paid before creditors, before taxes, before everyone. Eligible children can receive $10,000 each. It's claimed through a short filing with the clerk and exists so the family can eat while the estate grinds.",w:"It's the bridge money the law reserves for the family — many families never claim it."}
+ ],
+ adv:[
+  {t:"Priority to serve as personal representative",s:"Who the clerk appoints, in order.",cite:"N.C.G.S. §28A-4-1; §28A-5-1",d:"With a will: the named executor has first right. Without one (or if the executor declines), the statute sets the order: surviving spouse, then devisees/heirs, then next of kin, then creditors, then anyone competent. A person with priority can renounce — expressly, or implicitly by sitting on it for 30 days after notice.\n\nDisqualifications include minority, incompetence, felony conviction (unrestored citizenship), and nonresidents who fail to appoint a resident process agent.",w:"Families that fight over who serves lose months; the statute already has the tiebreaker."},
+  {t:"The will must be 'proved'",s:"Self-proving vs. witness-hunting.",cite:"N.C.G.S. §28A-2A-1 et seq.; §31-11.6",d:"A self-proving will (two witnesses plus notarized affidavits) is admitted on the paperwork alone. A will that isn't self-proving requires locating a living witness — years or decades later — to testify to its execution. Holographic (handwritten) wills need proof of handwriting and that it was found among valuable papers.",w:"Thirty seconds with a notary at signing saves a witness hunt at the worst possible time."},
+  {t:"Safe-deposit boxes seal at death",s:"Access requires procedure, not a key.",cite:"N.C.G.S. §28A-15-13",d:"A decedent's box can be inventoried and opened under supervision to search for a will or burial instructions before letters issue — but general access waits for the personal representative's authority. This is exactly why the original will and letter of instruction belong in a fireproof safe at home instead.",w:"The single most important document is often locked in the one place nobody can open."}
+ ]},
+{era:"Weeks 1–4 · Qualification",icon:"🏛️",t:"The courthouse step",
+ lead:"One trip to the clerk of court turns a grieving family member into a legal officer of the estate. This is where authority begins.",
+ bubs:[
+  {t:"Apply to the clerk of court",s:"The estate opens where they lived.",d:"The named executor (or closest family member if there's no will) files an application with the clerk of superior court in the county where the person lived, bringing the original will, a death certificate, and a preliminary list of what the person owned.",w:"Until this filing, nobody — not even the spouse — has legal authority over the estate's assets."},
+  {t:"Take the oath, post bond if required",s:"A promise, and sometimes insurance on it.",d:"The personal representative swears to administer the estate faithfully. A bond — an insurance policy protecting the estate from mismanagement — is often waived by the will for a trusted executor, but usually required for administrators when there's no will.",w:"The bond isn't an insult; it's the court protecting heirs from the rare bad actor."},
+  {t:"Receive your Letters",s:"The paper that opens every door.",d:"The clerk issues 'Letters Testamentary' (with a will) or 'Letters of Administration' (without). Certified copies of this one-page document are what banks, brokerages, the DMV, and title companies demand before they'll speak with you. Order several.",w:"Letters are to the estate what keys are to a house."},
+  {t:"When there's no will",tag:"No will",cond:"nowill",s:"State law writes one for you.",d:"Dying 'intestate' means North Carolina's intestacy statutes decide who inherits — a fixed formula that splits property among spouse, children, and parents in shares that surprise most families. The spouse does NOT automatically receive everything, especially with children or surviving parents.",w:"The intestacy formula is the estate plan you get when you didn't write one."},
+  {t:"Ancillary probate",tag:"Other states",cond:"land",s:"Each state where land sits gets a file.",d:"Real estate probates where it's located, not where the owner lived. A beach house in another state means opening a second, 'ancillary' proceeding there — its own clerk, its own filings, sometimes its own attorney.",w:"Five states of scattered land can mean five courthouses — unless a trust holds the deeds."}
+ ],
+ adv:[
+  {t:"Letters: issuance & what they empower",s:"Title vests, authority begins.",cite:"N.C.G.S. §28A-6-1; §28A-13-3",d:"The application (AOC-E-201/-202) states heirs, assets, and values; the clerk issues letters upon qualification. Title to personal property vests in the personal representative as of death (relation back); real property vests in heirs/devisees at death, subject to being brought back into administration if needed to pay claims. §28A-13-3 enumerates the PR's powers — collect, insure, continue a business briefly, sell personalty, sue and be sued.",w:"The letters date starts several statutory clocks — inventory and creditor windows run from here."},
+  {t:"Bond mechanics",s:"When required, how sized.",cite:"N.C.G.S. §28A-8-1; §28A-8-2",d:"Bond is required unless excused: wills commonly waive it for the named executor; resident administrators typically post bond at 1.25× personal property value (corporate surety) or double for personal sureties. Nonresident PRs generally must post bond regardless of waiver and appoint a resident process agent (§28A-4-2).",w:"Bond premiums are an estate expense — a will's waiver clause saves real money every year the estate stays open."},
+  {t:"Intestate shares, precisely",s:"The formula families never expect.",cite:"N.C.G.S. §29-14; §29-15",d:"Surviving spouse + one child: spouse takes the first $60,000 of personal property plus half the balance, and half the real property. Spouse + two or more children: first $60,000 plus one-third; children split the rest. Spouse + parents, no children: first $100,000 plus half. Everything to the spouse ONLY if no children and no parents survive.\n\nIllegitimate, adopted, and half-blood relations each have their own rules; 'per stirpes' branching applies among descendants.",w:"'The spouse gets it all' is the most expensive assumption in intestacy."},
+  {t:"Renunciation & disclaimers",s:"Sometimes the smartest move is 'no.'",cite:"N.C.G.S. ch. 31B; IRC §2518",d:"An heir or beneficiary can disclaim an inheritance — in writing, generally within nine months, before accepting benefits — and be treated as having predeceased. Done correctly it's not a gift by the disclaimant: the property passes as if they were never in line. A qualified disclaimer is post-mortem planning's sharpest tool: it can re-route assets to the next generation, fund a bypass structure, or fix a beneficiary-form mistake.",w:"Nine months of disclaimer window is the one second chance the tax code gives a plan."}
+ ]},
+{era:"Month 1 · Opening the estate",icon:"🗂️",t:"The estate becomes real",
+ lead:"The estate is now its own legal person. It gets a tax ID, a bank account, and a paper trail — and its debts get put on the clock.",
+ bubs:[
+  {t:"Get the estate its EIN",s:"A tax ID for a new 'person.'",d:"The estate is a new taxpayer, separate from the person who died. Apply to the IRS for an Employer Identification Number (EIN) — free, online, ten minutes. Every account, filing, and 1099 from here forward uses it instead of the decedent's Social Security number.",w:"Banks won't open the estate account without it — this small step unblocks everything."},
+  {t:"Open the estate checking account",s:"One account. Everything through it.",d:"Open a dedicated estate checking account with the EIN and your Letters. Every dollar in (account collections, refunds, sale proceeds) and every dollar out (bills, fees, distributions) flows through this one account — never, ever your personal one.",w:"The estate account IS the accounting. Commingle once and the final accounting becomes archaeology."},
+  {t:"Publish the notice to creditors",s:"Start the 90-day clock.",d:"A legal notice runs in the local newspaper once a week for four weeks, telling creditors to present claims. Known creditors get mailed notice directly. Claims are due by the deadline stated — at least 90 days from first publication. The estate generally stays open through the window.",w:"This clock is the reason estates take months: it can't close before creditors have had their say."},
+  {t:"Marshal the assets",s:"Find it, list it, value it.",d:"Collect statements, retitle accounts to the estate, secure appraisals for real property, businesses, and valuables as of the date of death. This becomes the official inventory — and those date-of-death values also set the heirs' new tax basis.",w:"The values you document now decide both the court filings and the family's future capital-gains bills."},
+  {t:"Claim the allowances",tag:"Spouse",cond:"spouse",s:"File before the money runs through.",d:"The spousal ($60,000) and child ($10,000) allowances are claimed by application to the clerk and paid from personal property ahead of creditors. File early — the allowance comes 'off the top,' and waiting only invites complications.",w:"It's first-in-line money; being late in line defeats the point."}
+ ],
+ adv:[
+  {t:"EIN & the fiduciary relationship",s:"Form SS-4 · Form 56.",cite:"IRC §6109; Form SS-4; Form 56",d:"The EIN (Form SS-4, online issuance) establishes the estate as a taxpayer. Form 56 notifies the IRS of the fiduciary relationship, so notices route to the personal representative. If a revocable trust is in the picture, a §645 election lets the trust be taxed as part of the estate — one 1041, a fiscal-year option, and several administrative simplifications.",w:"The §645 election is the quiet coordination move between the probate estate and the trust."},
+  {t:"Notice to creditors: the machinery",s:"Publication, mailing, and the bar.",cite:"N.C.G.S. §28A-14-1; §28A-19-3",d:"Publication runs once weekly for four consecutive weeks; the claims deadline must be at least three months (90 days) after first publication. Personal delivery or mail is required to creditors actually known or reasonably ascertainable — publication alone doesn't bar a known creditor (constitutional due-process floor). Claims not presented by the bar date are barred; §28A-19-3 layers the nonclaim periods.",w:"A properly run notice converts unknown debts from a lifetime risk into a 90-day window."},
+  {t:"The inventory",s:"Due at 3 months, values at date of death.",cite:"N.C.G.S. §28A-20-1",d:"Within three months of qualification the PR files the inventory (AOC-E-505): all personal property, bank balances, and estate-administered realty at date-of-death values, with supporting appraisals where needed. Supplemental inventories follow for after-discovered assets. The clerk audits against it at every accounting.",w:"The inventory is the baseline every later accounting must reconcile to — precision here is borrowed time later."},
+  {t:"Allowances, precisely",s:"Off the top, ahead of every claim class.",cite:"N.C.G.S. §30-15; §30-17",d:"Spousal year's allowance: $60,000 from personal property, claimed within one year of death, paid ahead of all creditor classes. Eligible children (under 18, certain students to 22, disabled, etc.): $10,000 each. Beyond the statutory amounts, a spouse can petition superior court for a larger allowance based on the standard of living.",w:"Allowances outrank even the funeral bill — the legislature decided the family eats first."}
+ ]},
+{era:"Months 2–4 · The waiting window",icon:"⏳",t:"Claims, bills, and patience",
+ lead:"The public thinks this stretch is 'waiting.' Inside the estate, it's triage: which claims are valid, which are paid, and in exactly what order.",
+ bubs:[
+  {t:"Review every claim",s:"Valid, inflated, or expired?",d:"Creditors file claims against the estate; the personal representative accepts, negotiates, or formally rejects each one. A rejected creditor has a limited time to sue or the claim dies. Old debts, unenforceable claims, and duplicates are more common than families expect.",w:"Every invalid claim paid is money taken directly from the heirs."},
+  {t:"Pay in the legal order",s:"There's a priority list. Follow it.",d:"If the estate can't pay everything, the law ranks who gets paid: costs of administration first, then funeral expenses (capped), taxes and secured debts, medical bills from the last illness, judgments, then general unsecured creditors — and heirs only after all of it. Paying out of order can make the executor personally liable.",w:"The order isn't a suggestion; the executor's own wallet backstops mistakes."},
+  {t:"Keep real property alive",s:"Insurance, taxes, upkeep.",d:"Houses in an estate still need insurance, property tax, and maintenance. Decide early: will the house be distributed, sold, or rented pending settlement? Selling may require specific authority from the will or a court proceeding.",w:"An uninsured estate house is the executor's personal nightmare scenario."},
+  {t:"Communicate with the heirs",s:"Silence breeds suspicion.",d:"A short monthly update — what's filed, what's pending, what the timeline looks like — prevents most estate conflict. Heirs who understand the 90-day creditor window stop asking why 'it's taking so long.'",w:"Most will contests start as communication failures, not legal disputes."},
+  {t:"Selling real estate to pay debts",tag:"No will",cond:"nowill",s:"Sometimes the land must come back.",d:"In North Carolina, real property passes to heirs at death — but if the personal property can't cover the debts, the personal representative can petition to bring real estate back into the estate and sell it. It's a formal special proceeding with its own notices and timelines.",w:"Heirs can 'own' land for months and still lose it to the estate's debts."}
+ ],
+ adv:[
+  {t:"Order of claims, precisely",s:"The statutory priority ladder.",cite:"N.C.G.S. §28A-19-6",d:"(1) Administration costs and the year's allowances ride ahead. Then: first-class — property liens up to the collateral's value; second — funeral up to the statutory cap; third — federal taxes and obligations; fourth — state taxes; fifth — judgments docketed as liens; sixth — wages and medical expenses of the final illness (12-month window); seventh — everything else. Within a class, no preference; a partial estate pays pro rata within the reached class.",w:"Personal liability attaches to the PR who pays class seven while class three goes unpaid."},
+  {t:"Rejecting a claim",s:"Start the creditor's own clock.",cite:"N.C.G.S. §28A-19-16",d:"Written rejection of a claim forces the creditor to commence action within three months of rejection or be forever barred. It's the estate's cleanup tool for stale, inflated, or unprovable claims — and it shifts the burden of litigation onto the claimant.",w:"A one-page rejection letter is often worth more than a negotiation."},
+  {t:"Bringing land back to pay debts",s:"The special proceeding.",cite:"N.C.G.S. §28A-15-1; §28A-17-1 et seq.",d:"All property — real and personal — is available for claims, but personalty is the natural first fund. When it's insufficient, the PR petitions the clerk in a special proceeding to take possession of and sell real property; heirs and devisees are necessary parties, and the will's power-of-sale clause (if any) can bypass much of the process.",w:"A will that grants an express power of sale saves the estate a lawsuit-shaped detour."},
+  {t:"Insolvent estates",s:"When there isn't enough.",cite:"N.C.G.S. §28A-19-6; §28A-22-2",d:"If claims exceed assets, the estate is administered as insolvent: classes are paid in order until money runs out, pro rata within the last reached class; heirs take nothing, and the PR's protection is strict adherence to the statute. Distributions already made can be clawed back to satisfy higher classes.",w:"In an insolvent estate the priority ladder isn't guidance — it's the entire job."}
+ ]},
+{era:"Month 9 · The tax gauntlet",icon:"🧾",t:"Three returns, one deadline",
+ lead:"Every estate faces income taxes; large ones face the federal estate tax with a hard nine-month deadline. This is where the planning done in life pays for itself — or doesn't.",
+ bubs:[
+  {t:"The final income tax return",s:"The last 1040 they'll ever file.",d:"Income earned from January 1 to the date of death goes on the decedent's final Form 1040, due the following April as usual. A surviving spouse can typically still file jointly for the year of death.",w:"Refunds due the decedent are estate assets — don't let them evaporate."},
+  {t:"The estate's own income taxes",s:"Form 1041, for money earned after death.",d:"Interest, dividends, rent, and gains earned by the estate after death go on the estate's fiduciary return (Form 1041), filed under the EIN. Distributions to heirs can carry the income out to them — often at lower rates than the estate's own brutally compressed brackets.",w:"Estate tax brackets hit the top rate around $15,000 of income — distribution timing is real money."},
+  {t:"The federal estate tax return",s:"Due at nine months. Cash, not promises.",d:"Estates above the federal exemption ($15M per person in 2026) file Form 706, due nine months after death — with the tax due in cash. Extensions exist for filing, and installment relief exists for some business-heavy estates, but the default is a nine-month, seven-figure check.",w:"This is the deadline every liquidity plan (like life insurance in trust) was built for."},
+  {t:"Portability: file even if no tax is due",s:"Preserve the unused exemption.",tag:"Spouse",cond:"spouse",d:"If the deceased spouse didn't use their full federal exemption, the survivor can inherit the unused portion — but ONLY by filing a 706 and electing portability, even when no tax is owed. Miss it and the survivor's estate may pay 40% on millions that could have been sheltered.",w:"A 'no tax due' filing today can save the family seven figures at the second death."},
+  {t:"The step-up, applied",s:"Lock in the new basis now.",d:"Inherited assets generally reset their income-tax basis to date-of-death value. Document those values meticulously — appraisals, statements, closing prices — because every future sale by every heir will be measured against them.",w:"An undocumented step-up becomes the IRS's number, not yours."}
+ ],
+ adv:[
+  {t:"Form 706 mechanics",s:"Nine months; extension of time to file ≠ pay.",cite:"IRC §6075(a); §6081; §6161; §6166",d:"The 706 is due nine months after death; Form 4768 extends filing six months, but payment remains due at nine unless §6161 (reasonable cause, year-by-year) or §6166 (closely-held business >35% of AGE — installments over up to 14 years, interest-only first four) applies. The gross estate sweeps probate and non-probate alike: revocable trusts (§2038), joint property (§2040), life insurance with incidents of ownership (§2042), QTIP inclusions (§2044).",w:"Month nine is why estates without liquidity planning sell assets at the worst possible time."},
+  {t:"Portability election, precisely",s:"DSUE rides on a timely 706.",cite:"IRC §2010(c); Rev. Proc. 2022-32",d:"The Deceased Spousal Unused Exclusion transfers only via a complete and timely 706 (a simplified late-relief path allows up to five years for estates under the filing threshold). DSUE is frozen at the first death, is lost on the survivor's remarriage-and-second-widowhood cycle in some fact patterns, and never applies to the GST exemption — which dies unused if not allocated.",w:"Portability is a filing, not a default — and GST exemption doesn't port at all."},
+  {t:"Income in respect of a decedent",s:"The assets that never step up.",cite:"IRC §691; §1014(c)",d:"IRAs, 401(k)s, unpaid salary, and accrued but unrecognized income carry NO basis step-up; recipients pay ordinary income as collected, with a §691(c) deduction for estate tax attributable to the IRD. Beneficiary-designated retirement accounts also ride the 10-year distribution clock for most non-spouse heirs.",w:"Which heir receives the IRA versus the brokerage account is a materially unequal gift with equal face values."},
+  {t:"Alternate valuation & special use",s:"Two elective discounts.",cite:"IRC §2032; §2032A",d:"§2032 lets the estate value everything six months after death instead — only if it lowers BOTH the gross estate and the tax. §2032A lets qualifying family farms/business realty be valued at current use rather than highest-and-best use (capped reduction, family-use and 10-year recapture strings attached).",w:"Elections made on one return echo through every heir's basis for decades."}
+ ]},
+{era:"Year 1+ · Distribution & discharge",icon:"🕊️",t:"The handoff, completed",
+ lead:"Claims resolved, taxes filed, the window closed. What remains is the part the family has waited for — done carefully enough that it never has to be done twice.",
+ fork:[
+  {tag:"THE SMOOTH CLOSE",color:"#a9884f",h:"A well-run estate wraps up",
+   items:["Claims paid in order, receipts in the file","Distributions match the will (or the statute) exactly","Heirs sign receipts; refunding agreements protect the executor","Final accounting filed, audited, and approved","Letters discharged — the executor's liability ends"]},
+  {tag:"THE LONG ROAD",color:"#8a3d3a",h:"Where estates go sideways",
+   items:["Distributions made before claims closed — then clawed back","Missing receipts turn the audit into a reconstruction","Family disputes surface exactly at distribution time","Real estate sits unsold, bleeding taxes and insurance","Executor personally exposed for order-of-payment mistakes"]}
+ ],
+ bubs:[
+  {t:"Distribute — in the right order",s:"Specific gifts first, then the rest.",d:"The will's specific gifts (the watch, the farm, the $10,000 to a niece) are satisfied first, then the residue is divided. If assets ran short, gifts abate in reverse order — residue first. Get signed receipts for everything.",w:"Receipts and refunding agreements are the executor's exit visa."},
+  {t:"The final accounting",s:"Every dollar, in and out, reconciled.",d:"The final account shows the inventory values, everything received, everything paid, and everything distributed — reconciled to the penny against the estate checking account. The clerk audits it. Annual accounts are required if the estate stays open past a year.",w:"This is why the single-account discipline from month one was never optional."},
+  {t:"Discharge: the finish line",s:"Authority ends, liability ends.",d:"When the final account is approved, the personal representative is discharged — the legal role ends, and with it the personal exposure. The estate is closed. What the family remembers from here is how it felt, not how long it took.",w:"An estate isn't 'done' when the money moves — it's done when the court says the executor is."},
+  {t:"The small-estate shortcut",tag:"Spouse",cond:"spouse",s:"Sometimes the whole map collapses to a page.",d:"Small estates — personal property up to $20,000, or $30,000 when the surviving spouse inherits everything — can often skip full administration entirely with a simple affidavit filed 30 days after death. And when the spouse is the sole heir, 'summary administration' can close things almost immediately.",w:"The best version of this timeline is the one your planning made unnecessary."}
+ ],
+ adv:[
+  {t:"Abatement & ademption",s:"When the will's math doesn't fit reality.",cite:"N.C.G.S. §28A-15-5; common law",d:"Shortfalls abate in order: intestate property, residue, general legacies, then specific devises — unless the will directs otherwise. A specifically devised asset that no longer exists at death adeems (the gift fails; the beneficiary generally gets nothing in its place). Tax apportionment follows its own statute unless the will overrides.",w:"'Sell the house and split it' wills meet abatement rules the drafter never considered."},
+  {t:"Accountings & the audit",s:"Annual and final, to the clerk.",cite:"N.C.G.S. §28A-21-1; §28A-21-2",d:"Annual accounts are due within 30 days after each year anniversary of qualification; the final account when administration completes. Vouchers/receipts substantiate every disbursement; the clerk audits, and approval of the final account plus distribution receipts operates as the PR's protection. Commissions (up to 5% of receipts and expenditures, in the clerk's discretion) are typically taken at accounting.",w:"The audit is friendly exactly in proportion to the quality of the records."},
+  {t:"Fees & commissions, precisely",s:"What administration actually costs.",cite:"N.C.G.S. §7A-307; §28A-23-3",calc:"fee",d:"Court costs: $4.00 per $1,000 of personal property (gross estate for costs purposes), capped at $6,000, plus fixed filing fees. PR commissions: up to 5% of receipts and disbursements, set by the clerk based on effort and complexity — waived by many family executors, fully earned by most. Attorney and appraisal fees are administration expenses paid ahead of claims.",w:"On a mid-size estate, commissions — not court costs — are the number worth discussing in advance."},
+  {t:"Small estates & summary administration",s:"The statutory off-ramps.",cite:"N.C.G.S. §28A-25-1; §28A-28-1",calc:"small",d:"Collection by affidavit: personal property ≤ $20,000 ($30,000 if the surviving spouse is sole heir), available 30 days after death, no letters required — the affiant assumes distribution duties. Summary administration: spouse as sole devisee/heir may petition to close immediately, taking the assets AND assuming the decedent's debts to the value received.",w:"Two statutes exist purely to spare small and spouse-only estates the full machine."}
+ ]}
+];
+
+/* ================= STATE & CALC ================= */
+const EX=15000000;
+const state={nw:null};
+const fmt=n=>{
+  if(n>=1e6){const m=n/1e6;return '$'+(m>=100?Math.round(m):Math.round(m*10)/10).toLocaleString()+'M';}
+  return '$'+Math.round(n).toLocaleString();
+};
+function calcVals(){
+  const V=state.nw;
+  if(!V)return null;
+  return {V,
+    fee:Math.min(6000,V*.004),
+    comm:V*.05,
+    federal:V>EX,
+    over:Math.max(0,V-EX),
+    smallOK:V<=20000, smallSpouse:V<=30000};
+}
+const CALC={
+  fee:c=>c?`At ${fmt(c.V)}: court costs ≈ ${fmt(c.fee)} (capped at $6,000); maximum commissions ≈ ${fmt(c.comm)} at 5% — the number worth a family conversation.`:'Enter an estate value (top right) to see the fee meter.',
+  small:c=>c?(c.smallSpouse?`At ${fmt(c.V)}, the affidavit shortcut may be available${c.smallOK?'':' (spouse-as-sole-heir limit)'} — full administration might be skippable.`:`At ${fmt(c.V)}, the shortcuts don't apply — this page is the road map.`):'Enter an estate value (top right) to check eligibility.',
+  federal:c=>c?(c.federal?`At ${fmt(c.V)}, a Form 706 is REQUIRED — ${fmt(c.over)} over the ${fmt(EX)} exemption, tax due in cash at month nine.`:`At ${fmt(c.V)}, no federal estate tax is due (under the ${fmt(EX)} exemption) — but a portability-only 706 may still be the smartest filing the survivor never knew about.`):'Enter an estate value (top right) to check the federal threshold.'
+};
+
+/* ================= RENDER ================= */
+const wrap=document.getElementById('stages');
+PHASES.forEach((se,si)=>{
+  const sec=document.createElement('section');sec.className='stage';
+  let advHtml=`<div class="lane-a">
+    <div class="alane-note">The machinery — statutes and filings behind each step. Tap for depth.</div>`+
+    se.adv.map((a,ai)=>`
+    <div class="abub" data-s="${si}" data-a="${ai}" role="button" tabindex="0">
+      <span class="atag">Advanced</span>
+      <b>${a.t}</b><small>${a.s}</small>
+      ${a.cite?`<span class="cite">${a.cite}</span>`:''}
+      ${a.calc?`<span class="num" data-calc="${a.calc}"></span>`:''}
+    </div>`).join('')+`</div>`;
+  let clientHtml=`<div class="lane-c">
+    <span class="era">${se.era}</span>
+    <div class="panel glass">
+      <span class="icon">${se.icon}</span>
+      <h2>${se.t}</h2>
+      <p class="lead">${se.lead}</p>
+    </div>`;
+  if(se.fork){
+    clientHtml+=`<div class="fork">`+se.fork.map(f=>`
+      <div class="road glass">
+        <span class="roadtag" style="background:${f.color}18;border:1px solid ${f.color}55;color:${f.color}">${f.tag}</span>
+        <h4>${f.h}</h4>
+        <ul>${f.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>`).join('')+`</div>`;
+  }
+  clientHtml+=`<div class="bubbles">`+se.bubs.map((b,bi)=>`
+    <div class="bub${b.cond?' cond':''}" data-cond="${b.cond||''}" data-s="${si}" data-b="${bi}" style="--d:${120+bi*100}ms" role="button" tabindex="0">
+      ${b.tag?`<span class="tag">${b.tag}</span>`:''}
+      <b>${b.t}</b><small>${b.s}</small>
+    </div>`).join('')+`</div></div>`;
+  sec.innerHTML=advHtml+`<div></div>`+clientHtml;
+  wrap.appendChild(sec);
+});
+
+/* ================= BEHAVIOR ================= */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')}),{threshold:0.15});
+document.querySelectorAll('.stage').forEach(s=>io.observe(s));
+
+const journey=document.querySelector('.journey'),trav=document.getElementById('traveler');
+function moveTraveler(){
+  const r=journey.getBoundingClientRect(),vh=window.innerHeight;
+  const prog=Math.min(1,Math.max(0,(vh*.45-r.top)/r.height));
+  trav.style.top=(prog*r.height)+'px';
+}
+window.addEventListener('scroll',moveTraveler,{passive:true});
+window.addEventListener('resize',moveTraveler);moveTraveler();
+
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    c.classList.toggle('on');
+    const p=c.dataset.p,on=c.classList.contains('on');
+    document.querySelectorAll(`.bub[data-cond="${p}"]`).forEach(b=>{
+      b.classList.toggle('show',on);
+      if(on)b.style.setProperty('--d','60ms');
+    });
+  });
+});
+
+/* advanced toggle + estate value */
+const sw=document.getElementById('advsw');
+function toggleAdv(){document.body.classList.toggle('adv');sw.setAttribute('aria-checked',document.body.classList.contains('adv'));calcAll();}
+sw.addEventListener('click',toggleAdv);
+sw.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleAdv();}});
+const nwIn=document.getElementById('nw');
+nwIn.addEventListener('input',()=>{
+  const raw=nwIn.value.replace(/[^0-9]/g,'');
+  state.nw=raw?parseInt(raw,10):null;
+  nwIn.value=raw?parseInt(raw,10).toLocaleString():'';
+  calcAll();
+});
+
+function calcAll(){
+  const c=calcVals();
+  document.querySelectorAll('[data-calc]').forEach(el=>{el.textContent=CALC[el.dataset.calc](c);});
+}
+calcAll();
+
+/* ================= MODAL ================= */
+const veil=document.getElementById('veil'),sheet=document.getElementById('sheet');
+function openSheet(si,idx,isAdv){
+  const se=PHASES[si];
+  const b=isAdv?se.adv[idx]:se.bubs[idx];
+  sheet.classList.toggle('advm',!!isAdv);
+  document.getElementById('s-stg').textContent=(isAdv?'Advanced · ':'')+se.t+' — '+se.era.split('·')[0].trim();
+  document.getElementById('s-t').textContent=b.t;
+  document.getElementById('s-d').textContent=b.d;
+  const cl=document.getElementById('s-c');
+  if(b.calc){cl.style.display='block';cl.textContent=CALC[b.calc](calcVals());}
+  else cl.style.display='none';
+  const ci=document.getElementById('s-cite');
+  if(b.cite){ci.style.display='block';document.getElementById('s-cite-t').textContent=b.cite;}
+  else ci.style.display='none';
+  document.getElementById('s-w').textContent=b.w;
+  veil.classList.add('open');sheet.classList.add('open');
+}
+function closeSheet(){veil.classList.remove('open');sheet.classList.remove('open');}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('.abub');
+  if(a){openSheet(+a.dataset.s,+a.dataset.a,true);return;}
+  const b=e.target.closest('.bub');
+  if(b)openSheet(+b.dataset.s,+b.dataset.b,false);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeSheet();
+  if(e.key==='Enter'){
+    const el=document.activeElement;
+    if(el.classList.contains('bub'))openSheet(+el.dataset.s,+el.dataset.b,false);
+    if(el.classList.contains('abub'))openSheet(+el.dataset.s,+el.dataset.a,true);
+  }
+});
+veil.addEventListener('click',closeSheet);
+document.getElementById('sx').addEventListener('click',closeSheet);
+</script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% seo %}
+<style>
+  :root{
+    --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e;
+    --ink:#1e2b36; --muted:#5a6a78; --line:#e4ddd0; --bg:#faf8f3;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.7; -webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Georgia,"Times New Roman",serif; color:var(--navy)}
+  a{color:var(--navy-2); text-decoration:none} a:hover{color:var(--gold)}
+  .wrap{max-width:760px; margin:0 auto; padding:0 24px}
+  nav{position:sticky; top:0; z-index:20; background:rgba(250,248,243,.92);
+    backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+  nav .nw{max-width:920px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:58px}
+  .brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); font-size:1.02rem}
+  .navlinks a{margin-left:22px; font-size:.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
+  .navlinks a:hover{color:var(--navy)}
+  @media(max-width:680px){.navlinks{display:none}}
+  article{padding:54px 0 40px}
+  .kicker{color:var(--gold); text-transform:uppercase; letter-spacing:.2em; font-size:.74rem; margin:0 0 10px}
+  article h1{font-size:2.2rem; line-height:1.16; margin:0 0 10px}
+  .pmeta{color:var(--muted); font-size:.9rem; margin:0 0 34px}
+  .content{font-size:1.04rem}
+  .content h2{font-size:1.5rem; margin:38px 0 12px}
+  .content h3{font-size:1.18rem; margin:30px 0 10px}
+  .content p{margin:0 0 18px}
+  .content ul,.content ol{margin:0 0 18px; padding-left:24px}
+  .content li{margin-bottom:8px}
+  .content blockquote{margin:24px 0; padding:14px 22px; border-left:3px solid var(--gold);
+    background:#fff; color:var(--muted); font-style:italic}
+  .content a{border-bottom:1px solid var(--gold-soft)}
+  .backrow{border-top:1px solid var(--line); padding:26px 0 60px; font-size:.92rem; display:flex; flex-wrap:wrap; gap:12px 28px}
+  footer{background:var(--navy); color:#7f93a4; text-align:center; padding:26px 0; font-size:.82rem}
+  footer a{color:#aebeca}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nw">
+    <a class="brand" href="/">Kristian&nbsp;R.&nbsp;Pfeffer</a>
+    <span class="navlinks">
+      <a href="/#about">About</a>
+      <a href="/#capstone">Capstone</a>
+      <a href="/journey.html">Wealth Guide</a>
+      <a href="/succession.html">Estate Guide</a>
+      <a href="/blog/">Blog</a>
+      <a href="/#contact">Contact</a>
+    </span>
+  </div>
+</nav>
+
+<div class="wrap">
+  <article>
+    <p class="kicker">Essay</p>
+    <h1>{{ page.title }}</h1>
+    <p class="pmeta">By Kristian R. Pfeffer · {{ page.date | date: "%B %-d, %Y" }}</p>
+    <div class="content">
+      {{ content }}
+    </div>
+  </article>
+  <div class="backrow">
+    <a href="/blog/">← All essays</a>
+    <a href="/journey.html">The Wealth Guide</a>
+    <a href="/succession.html">The Estate Guide</a>
+    <a href="mailto:mail@kpfeffer.com">Start a conversation</a>
+  </div>
+</div>
+
+<footer>
+  <div>© Kristian R. Pfeffer · Fayetteville, NC · <a href="/">kpfeffer.com</a></div>
+</footer>
+</body>
+</html>

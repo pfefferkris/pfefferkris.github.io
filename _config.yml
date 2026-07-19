@@ -1,0 +1,29 @@
+title: Kristian R. Pfeffer
+tagline: Trust & Wealth Management
+description: >-
+  Trust administration, estate and gift taxation, and wealth transfer —
+  plain-English guides and essays by Kristian R. Pfeffer, Master of Trust and
+  Wealth Management candidate and U.S. Army veteran.
+url: "https://kpfeffer.com"
+author:
+  name: Kristian R. Pfeffer
+  email: mail@kpfeffer.com
+
+permalink: /blog/:title/
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
+
+feed:
+  path: feed.xml
+
+social:
+  name: Kristian R. Pfeffer
+  links:
+    - https://www.linkedin.com/in/kristian-pfeffer-20484b8b
+    - https://kpfeffer.com
+
+exclude:
+  - README.md
