@@ -9,7 +9,7 @@ author:
   name: Kristian R. Pfeffer
   email: mail@kpfeffer.com
 
-permalink: /blog/:title/
+permalink: /newsletter/:title/
 
 plugins:
   - jekyll-seo-tag

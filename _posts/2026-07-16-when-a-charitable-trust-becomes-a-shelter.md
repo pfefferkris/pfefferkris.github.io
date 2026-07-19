@@ -13,7 +13,7 @@ The IRS just made its position unmistakable, and the fallout is now landing on a
 
 Following [final regulations that named certain charitable remainder annuity trust (CRAT) structures as listed transactions](https://www.wealthmanagement.com/philanthropy/a-new-caution-for-advisors-using-crats), the practical burden has shifted onto the advisory community. Material advisors and participants now carry an affirmative duty to disclose, and the penalties for skipping that disclosure are severe — reporting failures in this regime run into six figures per lapse. The message to anyone whose name touches one of these trusts: the reporting is not optional, and "I didn't know I had to file" is not a defense.
 
-(For the mechanics of the abusive structure itself — the appreciated-property transfer, the single-premium annuity, and the §72/§664 sleight of hand — see my earlier note, [*When Silence Becomes the Violation*](/blog/silence-is-the-violation-irs-lists-crat-transactions/).)
+(For the mechanics of the abusive structure itself — the appreciated-property transfer, the single-premium annuity, and the §72/§664 sleight of hand — see my earlier note, [*When Silence Becomes the Violation*](/newsletter/silence-is-the-violation-irs-lists-crat-transactions/).)
 
 ## More paperwork, or a clean conscience?
 
