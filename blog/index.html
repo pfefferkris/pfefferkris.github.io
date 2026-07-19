@@ -36,6 +36,14 @@ description: Plain-English essays on trust administration, estate planning, and 
   .post .d{color:var(--gold); font-size:.86rem; margin:0 0 8px}
   .post p{margin:0; color:var(--muted)}
   .list{padding-bottom:70px}
+  .subrow{display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:22px 0 6px}
+  .subbtn{display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border-radius:2px;
+    font-size:.9rem; font-weight:600; letter-spacing:.02em}
+  .subbtn.rss{background:var(--gold); color:#1a1204}
+  .subbtn.rss:hover{background:var(--gold-soft); color:#1a1204}
+  .subbtn.email{background:transparent; border:1px solid var(--line); color:var(--navy)}
+  .subbtn.email:hover{border-color:var(--gold); color:var(--gold)}
+  .subnote{font-size:.82rem; color:var(--muted); margin:8px 0 0}
   footer{background:var(--navy); color:#7f93a4; text-align:center; padding:26px 0; font-size:.82rem}
   footer a{color:#aebeca}
 </style>
@@ -60,6 +68,14 @@ description: Plain-English essays on trust administration, estate planning, and 
     <p class="kicker">The Blog</p>
     <h1>Essays on Trust &amp; Wealth</h1>
     <p>Plain-English writing on trust administration, estate planning, and the craft of safeguarding what belongs to others. New essays also appear on <a href="https://www.linkedin.com/in/kristian-pfeffer-20484b8b">LinkedIn</a> — they live here first.</p>
+    <div class="subrow">
+      <a class="subbtn rss" href="/feed.xml">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="4.5" cy="19.5" r="2.5"/><path d="M2 10.5a11.5 11.5 0 0 1 11.5 11.5h3A14.5 14.5 0 0 0 2 7.5z"/><path d="M2 3a19 19 0 0 1 19 19h3A22 22 0 0 0 2 0z"/></svg>
+        Subscribe via RSS
+      </a>
+      <a class="subbtn email" href="https://www.linkedin.com/in/kristian-pfeffer-20484b8b">Follow on LinkedIn</a>
+    </div>
+    <p class="subnote">New to RSS? Paste <strong>https://kpfeffer.com/feed.xml</strong> into a reader like Feedly, Inoreader, or your browser's feed reader, and every new essay arrives automatically.</p>
   </header>
   <div class="list">
     {% for post in site.posts %}
