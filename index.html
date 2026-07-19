@@ -40,7 +40,7 @@
     "Prudent Investor Rule", "Regulation 9", "Uniform Trust Code",
     "High-Net-Worth Clients", "Business Succession Planning", "Wealth Management"
   ],
-  "sameAs": ["https://www.linkedin.com/in/kristian-pfeffer-20484b8b"]
+  "sameAs": ["https://www.linkedin.com/in/kristian-pfeffer-20484b8b", "https://www.strava.com/athletes/44119116"]
 }
 </script>
 <style>
@@ -63,9 +63,9 @@
   /* Nav */
   nav{position:sticky; top:0; z-index:20; background:rgba(250,248,243,.92);
     backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
-  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:62px}
-  .brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); letter-spacing:.3px; font-size:1.05rem}
-  .navlinks a{margin-left:26px; font-size:.9rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
+  nav .wrap{max-width:1080px; display:flex; align-items:center; justify-content:space-between; height:58px}
+  .brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); letter-spacing:.3px; font-size:1.02rem}
+  .navlinks a{margin-left:24px; font-size:.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
   .navlinks a:hover{color:var(--navy)}
   @media(max-width:640px){.navlinks{display:none}}
 
@@ -144,6 +144,23 @@
   .aside b{color:var(--navy)}
   @media(max-width:560px){.ms{flex-direction:column; gap:2px} .ms .yr{flex:none}}
 
+  /* About portrait */
+  .about-top{display:flex; gap:34px; align-items:flex-start; margin-top:4px}
+  .about-portrait{flex:0 0 auto}
+  .about-portrait img{width:220px; height:220px; border-radius:50%; object-fit:cover;
+    border:4px solid var(--gold-soft); box-shadow:0 10px 30px rgba(18,41,63,.15); display:block}
+  .about-bio{flex:1 1 auto; min-width:0}
+  @media(max-width:640px){.about-top{flex-direction:column; align-items:center} .about-portrait img{width:168px; height:168px}}
+
+  /* Off the clock photos */
+  .photos{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:26px}
+  .photos figure{margin:0}
+  .photos img{width:100%; height:260px; object-fit:cover; border-radius:4px; border:1px solid var(--line);
+    filter:grayscale(100%) contrast(1.03); transition:filter .55s ease; display:block}
+  .photos figure:hover img{filter:grayscale(0)}
+  .photos figcaption{font-size:.82rem; color:var(--muted); margin-top:8px}
+  @media(max-width:640px){.photos{grid-template-columns:1fr} .photos img{height:220px}}
+
   @media print{
     nav,header.hero .cta,#contact{display:none}
     body{background:#fff}
@@ -187,8 +204,15 @@
   <div class="wrap">
     <p class="kicker">Professional Summary</p>
     <h2>Safeguarding what belongs to others</h2>
-    <p class="lead">I am a Master of Trust and Wealth Management (MTWM) candidate at Campbell University — the nation's only graduate program of its kind — with advanced training in trust administration, fiduciary principles, estate and gift taxation, investment analysis, and wealth-transfer planning for high-net-worth individuals and families.</p>
-    <p>I combine six years as a U.S. Army officer accountable for $15M+ in assets with entrepreneurial success building a $2.2M first-year real estate practice. The through-line is a fiduciary mindset shaped by military stewardship: safeguarding what belongs to others, managing risk, and earning the trust of the people I serve. Trust administration, fiduciary service, estate and tax planning, and wealth transfer are that same promise, kept.</p>
+    <div class="about-top">
+      <div class="about-portrait">
+        <img src="img/headshot.jpg" width="300" height="300" alt="Kristian R. Pfeffer, Trust &amp; Wealth Management" loading="lazy">
+      </div>
+      <div class="about-bio">
+        <p class="lead" style="margin-top:0">I am a Master of Trust and Wealth Management (MTWM) candidate at Campbell University — the nation's only graduate program of its kind — with advanced training in trust administration, fiduciary principles, estate and gift taxation, investment analysis, and wealth-transfer planning for high-net-worth individuals and families.</p>
+        <p style="margin-bottom:0">I combine six years as a U.S. Army officer accountable for $15M+ in assets with entrepreneurial success building a $2.2M first-year real estate practice. The through-line is a fiduciary mindset shaped by military stewardship: safeguarding what belongs to others, managing risk, and earning the trust of the people I serve. Trust administration, fiduciary service, estate and tax planning, and wealth transfer are that same promise, kept.</p>
+      </div>
+    </div>
 
     <div class="grid" style="margin-top:30px">
       <div class="card">
@@ -315,7 +339,18 @@
       <div class="ms"><span class="yr">Ongoing</span><span class="ev">Road racing with the <b>Cross Creek Cycling Club (C4)</b> — including the <b>Five-O Memorial Ride</b> in Raleigh, benefiting law-enforcement causes</span></div>
       <div class="ms"><span class="yr">In training</span><span class="ev">My first <b>IRONMAN 70.3 North Carolina</b> — Wilmington</span></div>
     </div>
+    <div class="photos">
+      <figure>
+        <img src="img/rugby.jpg" width="960" height="639" alt="Kristian Pfeffer at flanker for Florida Atlantic University rugby, breaking with the ball" loading="lazy">
+        <figcaption>Flanker, No.&nbsp;7 — NCAA Division&nbsp;I rugby, Florida Atlantic University.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/cycling.jpg" width="2000" height="1500" alt="Cross Creek Cycling Club riders at the Five-O Memorial Ride in Raleigh, North Carolina" loading="lazy">
+        <figcaption>With the Cross Creek Cycling Club at the Five-O Memorial Ride, Raleigh.</figcaption>
+      </figure>
+    </div>
     <p class="closer">Wealth transfer is a distance event, too. The plan that matters isn't the one that looks fast off the start line — it's the one still standing at mile 26, and the one a family inherits at the finish.</p>
+    <p style="margin-top:18px"><a href="https://www.strava.com/athletes/44119116"><b>Follow the training on Strava →</b></a></p>
     <p class="aside">Off my feet, you'll find me deep in the archives of <b><a href="https://xkcd.com/">xkcd</a></b> — smart, geeky, and reliably funny. Good company for a rest day.</p>
   </div>
 </section>
@@ -329,6 +364,7 @@
       <a href="mailto:mail@kpfeffer.com">mail@kpfeffer.com</a>
       <a href="tel:+19108476692">(910) 847-6692</a>
       <a href="https://www.linkedin.com/in/kristian-pfeffer-20484b8b">LinkedIn</a>
+      <a href="https://www.strava.com/athletes/44119116">Strava</a>
     </div>
   </div>
 </section>
