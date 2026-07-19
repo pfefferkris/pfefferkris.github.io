@@ -44,6 +44,13 @@ description: Plain-English essays on trust administration, estate planning, and 
   .subbtn.email{background:transparent; border:1px solid var(--line); color:var(--navy)}
   .subbtn.email:hover{border-color:var(--gold); color:var(--gold)}
   .subnote{font-size:.82rem; color:var(--muted); margin:8px 0 0}
+  .emailform{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0; max-width:460px}
+  .emailform input[type=email]{flex:1 1 220px; padding:11px 14px; border:1px solid var(--line);
+    border-radius:2px; font:inherit; font-size:.92rem; color:var(--ink); background:#fff}
+  .emailform input[type=email]:focus{outline:2px solid var(--gold-soft); outline-offset:1px}
+  .emailform button{padding:11px 20px; border:none; border-radius:2px; background:var(--navy);
+    color:#fff; font:inherit; font-size:.9rem; font-weight:600; cursor:pointer}
+  .emailform button:hover{background:var(--navy-2)}
   footer{background:var(--navy); color:#7f93a4; text-align:center; padding:26px 0; font-size:.82rem}
   footer a{color:#aebeca}
 </style>
@@ -54,7 +61,7 @@ description: Plain-English essays on trust administration, estate planning, and 
     <a class="brand" href="/">Kristian&nbsp;R.&nbsp;Pfeffer</a>
     <span class="navlinks">
       <a href="/#about">About</a>
-      <a href="/#capstone">Capstone</a>
+      <a href="/services.html">Services</a>
       <a href="/journey.html">Wealth Guide</a>
       <a href="/succession.html">Estate Guide</a>
       <a href="/blog/">Blog</a>
@@ -73,9 +80,10 @@ description: Plain-English essays on trust administration, estate planning, and 
         <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="4.5" cy="19.5" r="2.5"/><path d="M2 10.5a11.5 11.5 0 0 1 11.5 11.5h3A14.5 14.5 0 0 0 2 7.5z"/><path d="M2 3a19 19 0 0 1 19 19h3A22 22 0 0 0 2 0z"/></svg>
         Subscribe via RSS
       </a>
+      <a class="subbtn email" href="mailto:mail@kpfeffer.com?subject=Subscribe%20me%20to%20the%20blog&amp;body=Please%20add%20me%20to%20your%20email%20list%20for%20new%20essays.">Get essays by email</a>
       <a class="subbtn email" href="https://www.linkedin.com/in/kristian-pfeffer-20484b8b">Follow on LinkedIn</a>
     </div>
-    <p class="subnote">New to RSS? Paste <strong>https://kpfeffer.com/feed.xml</strong> into a reader like Feedly, Inoreader, or your browser's feed reader, and every new essay arrives automatically.</p>
+    <p class="subnote">Prefer a feed reader? Paste <strong>https://kpfeffer.com/feed.xml</strong> into Feedly, Inoreader, or your browser, and every new essay arrives automatically.</p>
   </header>
   <div class="list">
     {% for post in site.posts %}
