@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Seasons of Your Wealth — Kristian R. Pfeffer</title>
+<meta name="description" content="An interactive guide to estate and wealth planning across life's seasons — from first paycheck to legacy — by Kristian R. Pfeffer, Trust &amp; Wealth Management.">
+<style>
+:root{
+  --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e;
+  --ink:#1e2b36; --muted:#5a6a78; --line:#e4ddd0; --bg:#faf8f3; --card:#ffffff;
+  --brick:#8a3d3a; --gold-ink:#7c5f2e;
+  --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,
+    #faf8f3 0%, #f7f2e7 10%,
+    #f3ecd8 22%, #efe3c4 32%,
+    #e9d9b8 44%, #ddc59c 54%, #cdae86 62%,
+    #dde3e6 74%, #ccd6dc 84%,
+    #f0ede3 94%, #faf8f3 100%);
+  min-height:100vh;overflow-x:hidden;
+}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif}
+a{color:var(--navy-2); text-decoration:none}
+a:hover{color:var(--gold)}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.22;pointer-events:none;z-index:0}
+.orb.o1{width:500px;height:500px;background:#e8dcc0;top:-130px;left:-120px}
+.orb.o2{width:480px;height:480px;background:#cdae86;top:40%;right:-160px;opacity:.2}
+.orb.o3{width:500px;height:500px;background:#b9c3cc;bottom:-150px;left:-120px;opacity:.18}
+
+.glass{
+  background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(255,255,255,.34));
+  backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.7);border-radius:var(--r);
+  box-shadow:0 12px 40px rgba(18,41,63,.12), inset 0 1px 0 rgba(255,255,255,.75);
+}
+
+/* ---------- site nav (matches index.html) ---------- */
+nav.site{position:sticky; top:0; z-index:60; background:rgba(250,248,243,.92);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+nav.site .navwrap{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:58px}
+.brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); letter-spacing:.3px; font-size:1.02rem}
+.navlinks a{margin-left:24px; font-size:.86rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
+.navlinks a:hover{color:var(--navy)}
+@media(max-width:640px){.navlinks{display:none}}
+
+/* ---------- header ---------- */
+header{position:relative;z-index:2;text-align:center;padding:64px 22px 26px;max-width:840px;margin:0 auto}
+header .eyebrow{color:var(--gold); text-transform:uppercase; letter-spacing:.22em; font-size:.76rem; margin-bottom:14px}
+header h1{font-size:clamp(1.9rem,4.6vw,2.9rem);font-weight:700;letter-spacing:-.01em;line-height:1.14;color:var(--navy)}
+header .sub{margin:18px auto 0;max-width:620px;font-size:1.02rem;color:var(--muted);line-height:1.65}
+
+/* ---------- controls ---------- */
+.advbox{position:fixed;top:70px;right:16px;z-index:55;padding:12px 16px;border-radius:18px;max-width:280px}
+.advrow{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.advrow .lb{font-size:.8rem;font-weight:700;letter-spacing:.05em;color:var(--navy);text-transform:uppercase}
+.sw{position:relative;width:46px;height:26px;border-radius:14px;background:rgba(18,41,63,.16);cursor:pointer;transition:background .25s;flex:none}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:left .25s}
+body.adv .sw{background:var(--navy-2)}
+body.adv .sw::after{left:23px}
+.nwrow{display:none;margin-top:10px}
+body.adv .nwrow{display:block}
+.nwrow label{display:block;font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.nwrow .field{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);border-radius:10px;padding:8px 12px}
+.nwrow .field span{font-weight:700;color:var(--muted)}
+.nwrow input{border:none;background:transparent;outline:none;font:inherit;font-weight:650;width:100%;color:var(--ink)}
+.nwrow .hint{font-size:.66rem;color:var(--muted);margin-top:6px;line-height:1.4}
+
+.persona{position:relative;z-index:3;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:22px auto 6px;padding:10px 14px;max-width:660px;border-radius:30px}
+.persona .lbl{font-size:.74rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);align-self:center}
+.chip{font-size:.83rem;font-weight:600;padding:8px 15px;border-radius:20px;cursor:pointer;user-select:none;border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:all .25s;color:var(--ink)}
+.chip:hover{transform:translateY(-1px)}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ---------- journey: content justified right ---------- */
+.journey{position:relative;z-index:1;max-width:1280px;margin:26px auto 0;padding:10px 22px 50px}
+.spine{position:absolute;left:38%;top:0;bottom:0;width:2px;background:linear-gradient(180deg,rgba(18,41,63,.18),rgba(250,248,243,0));border-radius:2px}
+.traveler{position:absolute;left:38%;width:16px;height:16px;transform:translate(-7px,-8px);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--gold));box-shadow:0 0 18px rgba(169,136,79,.75);z-index:3;transition:top .12s linear}
+
+.stage{position:relative;display:grid;grid-template-columns:34% 8% 58%;padding:56px 0;opacity:0;transform:translateY(38px);transition:opacity .8s ease,transform .8s ease}
+.stage.vis{opacity:1;transform:none}
+.lane-a{grid-column:1;display:flex;flex-direction:column;gap:12px;align-items:flex-end;padding-top:70px}
+.lane-c{grid-column:3}
+.wide{grid-column:1/-1}
+
+.era{display:block;font-size:.74rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px;color:var(--gold)}
+.panel{position:relative;max-width:620px;padding:30px 34px}
+.panel .icon{font-size:1.9rem;display:block;margin-bottom:8px;filter:saturate(.7)}
+.panel h2{font-size:1.55rem;font-weight:700;letter-spacing:-.01em;margin-bottom:8px;color:var(--navy)}
+.panel p.lead{font-size:.97rem;line-height:1.65;color:var(--muted)}
+
+/* ---------- client bubbles (right lane) ---------- */
+.bubbles{display:flex;flex-wrap:wrap;gap:13px;justify-content:flex-start;max-width:660px;margin:24px 0 0}
+.bub{--d:0ms;position:relative;padding:13px 19px;border-radius:14px;cursor:pointer;text-align:left;max-width:250px;
+  background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(255,255,255,.36));
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:0 8px 26px rgba(18,41,63,.1), inset 0 1px 0 rgba(255,255,255,.75);
+  opacity:0;transform:translateY(22px) scale(.94);
+  transition:opacity .6s ease var(--d),transform .6s cubic-bezier(.2,.9,.3,1.2) var(--d),box-shadow .25s}
+.stage.vis .bub{opacity:1;transform:none}
+.bub:hover{box-shadow:0 14px 34px rgba(18,41,63,.18), inset 0 1px 0 rgba(255,255,255,.85)}
+.bub b{display:block;font-size:.93rem;font-weight:650;margin-bottom:3px;color:var(--ink)}
+.bub small{display:block;font-size:.78rem;line-height:1.45;color:var(--muted)}
+.bub .tag{position:absolute;top:-9px;right:12px;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:10px;background:var(--navy);color:#fff}
+.bub.cond{display:none}
+.bub.cond.show{display:block}
+
+/* ---------- advanced bubbles (left lane) ---------- */
+.abub{display:none;position:relative;max-width:340px;padding:13px 18px;border-radius:12px;cursor:pointer;text-align:left;
+  background:linear-gradient(135deg,rgba(226,232,238,.62),rgba(226,232,238,.32));
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  border:1px solid rgba(28,61,92,.28);
+  box-shadow:0 8px 26px rgba(18,41,63,.12), inset 0 1px 0 rgba(255,255,255,.7)}
+body.adv .abub{display:block;animation:pop .5s ease both}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:none}}
+.abub b{display:block;font-size:.89rem;font-weight:650;margin-bottom:3px;color:var(--navy)}
+.abub small{display:block;font-size:.76rem;line-height:1.45;color:var(--muted)}
+.abub .atag{position:absolute;top:-9px;left:12px;font-size:.56rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 9px;border-radius:10px;background:var(--navy-2);color:#fff}
+.abub .num{display:block;margin-top:6px;font-size:.77rem;font-weight:700;color:var(--navy-2)}
+.alane-note{display:none;font-size:.7rem;color:var(--muted);text-align:right;max-width:340px;line-height:1.5;font-style:italic}
+body.adv .alane-note{display:block}
+
+/* ---------- whiteboard ---------- */
+.board{display:none;margin:44px auto 0;max-width:1080px;padding:34px 36px 30px;border-radius:20px;
+  background:linear-gradient(150deg,rgba(255,255,255,.88),rgba(255,255,255,.7));
+  backdrop-filter:blur(26px) saturate(1.4);-webkit-backdrop-filter:blur(26px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.9);box-shadow:0 24px 60px rgba(18,41,63,.16)}
+body.adv .board{display:block}
+.board h3{font-size:1.22rem;font-weight:700;margin-bottom:4px;color:var(--navy)}
+.board .bsub{font-size:.85rem;color:var(--muted);margin-bottom:22px;line-height:1.55}
+.routes{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.route{border-radius:14px;padding:20px 22px;border:1.5px dashed rgba(138,61,58,.4);background:rgba(255,255,255,.42)}
+.route.bad{border-color:rgba(138,61,58,.4)}
+.route.good{border-color:rgba(169,136,79,.5)}
+.route h4{font-size:.93rem;font-weight:700;margin-bottom:12px;letter-spacing:.01em}
+.route.bad h4{color:var(--brick)}
+.route.good h4{color:var(--gold-ink)}
+.wbox{border:1.5px solid rgba(30,41,54,.25);border-radius:10px;padding:9px 13px;margin-bottom:8px;font-size:.81rem;line-height:1.45;background:rgba(255,255,255,.58)}
+.wbox b{font-size:.83rem}
+.wbox.cst{border-color:var(--gold);background:rgba(169,136,79,.1)}
+.wbox.qtip{border-color:var(--gold-soft);background:rgba(198,168,110,.12)}
+.wbox.tax{border-color:var(--brick);background:rgba(138,61,58,.08)}
+.warrow{text-align:center;font-size:.98rem;color:var(--muted);margin:2px 0 8px}
+.verdict{margin-top:20px;padding:16px 20px;border-radius:12px;text-align:center;background:rgba(169,136,79,.12);border:1px solid rgba(169,136,79,.35);font-size:.93rem;color:var(--ink)}
+.verdict b{font-size:1.1rem;color:var(--gold-ink)}
+.stand{display:none;margin:26px auto 0;max-width:1080px;padding:18px 26px;border-radius:14px;text-align:center;font-size:.93rem;line-height:1.6;
+  background:rgba(28,61,92,.08);border:1px solid rgba(28,61,92,.28);color:var(--navy)}
+body.adv .stand{display:block}
+.stand b{font-weight:750}
+
+/* ---------- fork ---------- */
+.fork{display:flex;gap:16px;flex-wrap:wrap;max-width:660px;margin:24px 0 0}
+.road{flex:1 1 300px;padding:22px 24px;text-align:left}
+.road h4{font-size:.98rem;font-weight:700;margin-bottom:8px;color:var(--navy)}
+.road ul{margin:0 0 4px 18px}
+.road li{font-size:.84rem;line-height:1.5;margin-bottom:5px;color:var(--muted)}
+.road .roadtag{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:10px;margin-bottom:10px}
+
+/* ---------- modal ---------- */
+.veil{position:fixed;inset:0;background:rgba(15,25,35,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:80;opacity:0;pointer-events:none;transition:opacity .3s}
+.veil.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;top:50%;transform:translate(-50%,-46%) scale(.96);z-index:90;width:min(520px,92vw);max-height:86vh;overflow:auto;
+  padding:34px 34px 28px;opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.2,.9,.3,1.1);
+  background:linear-gradient(150deg,rgba(255,255,255,.9),rgba(255,255,255,.72));
+  backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.88);border-radius:20px;box-shadow:0 30px 80px rgba(15,29,43,.32)}
+.sheet.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.sheet .stg{font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);margin-bottom:8px;display:block}
+.sheet.advm .stg{color:var(--navy-2)}
+.sheet h3{font-size:1.28rem;font-weight:700;margin-bottom:12px;color:var(--navy)}
+.sheet p{font-size:.95rem;line-height:1.66;color:rgba(30,43,54,.86);margin-bottom:12px;white-space:pre-line}
+.sheet .why{font-size:.84rem;line-height:1.6;padding:12px 16px;border-radius:12px;background:rgba(169,136,79,.14);border:1px solid rgba(169,136,79,.32)}
+.sheet .why b{font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;display:block;margin-bottom:4px;color:var(--gold-ink)}
+.sheet .calcline{margin-top:12px;font-size:.89rem;font-weight:700;padding:10px 16px;border-radius:10px;background:rgba(28,61,92,.1);border:1px solid rgba(28,61,92,.32);color:var(--navy)}
+.sheet .x{position:absolute;top:16px;right:18px;width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;background:rgba(18,41,63,.08);font-size:1rem;font-weight:600;color:var(--ink)}
+.sheet .x:hover{background:rgba(18,41,63,.16)}
+
+.closing{position:relative;z-index:1;text-align:center;padding:36px 22px 26px}
+.closing .panel2{max-width:600px;margin:0 auto;padding:36px 34px}
+.closing h2{font-size:1.55rem;font-weight:700;margin-bottom:12px;color:var(--navy)}
+.closing p{font-size:.95rem;line-height:1.7;color:var(--muted);margin-bottom:10px}
+.cta{display:inline-block;margin-top:12px;padding:13px 28px;border-radius:2px;font-weight:600;font-size:.9rem;letter-spacing:.03em;text-decoration:none;background:var(--gold);color:#1a1204}
+.cta:hover{background:var(--gold-soft);color:#1a1204}
+footer{position:relative;z-index:1;text-align:center;padding:24px 20px 38px;font-size:.72rem;color:var(--muted);line-height:1.7}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--navy)}
+
+@media(max-width:900px){
+  .stage{grid-template-columns:1fr;padding:44px 0}
+  .lane-a{grid-column:1;order:2;align-items:stretch;padding-top:20px}
+  .lane-c{grid-column:1;order:1}
+  .abub{max-width:100%}
+  .spine,.traveler{left:12px}
+  .routes{grid-template-columns:1fr}
+  .advbox{max-width:230px;top:64px}
+  .alane-note{text-align:left}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+
+<nav class="site">
+  <div class="navwrap">
+    <a class="brand" href="index.html">Kristian&nbsp;R.&nbsp;Pfeffer</a>
+    <span class="navlinks">
+      <a href="index.html#about">About</a>
+      <a href="index.html#capstone">Capstone</a>
+      <a href="index.html#contact">Contact</a>
+    </span>
+  </div>
+</nav>
+
+<div class="advbox glass">
+  <div class="advrow">
+    <span class="lb">Advanced</span>
+    <div class="sw" id="advsw" role="switch" aria-checked="false" tabindex="0"></div>
+  </div>
+  <div class="nwrow">
+    <label for="nw">Approx. family net worth</label>
+    <div class="field"><span>$</span><input id="nw" inputmode="numeric" placeholder="e.g. 70,000,000"></div>
+    <div class="hint">Powers the whiteboard &amp; the blue bubbles. Toggle “Married” below too. Nothing is stored or sent anywhere.</div>
+  </div>
+</div>
+
+<header>
+  <p class="eyebrow">A Client Guide</p>
+  <h1>Wealth has seasons.<br>Here's the whole year.</h1>
+  <p class="sub">Spring plants it, summer grows it, autumn harvests it, winter protects it — and a new spring hands it on. Scroll the seasons, tap any bubble to learn the move. Flip <b>Advanced</b> (top right) to see the machinery underneath — the structures advisors and estate attorneys actually use.</p>
+</header>
+
+<div class="persona glass">
+  <span class="lbl">This is me:</span>
+  <span class="chip" data-p="married">Married</span>
+  <span class="chip" data-p="kids">Kids</span>
+  <span class="chip" data-p="biz">Business owner</span>
+  <span class="chip" data-p="sn">Loved one with special needs</span>
+</div>
+
+<div class="journey">
+  <div class="spine"></div>
+  <div class="traveler" id="traveler"></div>
+  <div id="stages"></div>
+</div>
+
+<section class="closing">
+  <div class="panel2 glass">
+    <h2>The seasons are the same for everyone.<br>The plan never is.</h2>
+    <p>A one-hour conversation can tell you which season you're in and which two or three moves matter most right now.</p>
+    <p><em>What would happen if it all happened today?</em> If you can't answer comfortably, that's the place to start.</p>
+    <a class="cta" href="mailto:mail@kpfeffer.com">Start the conversation</a>
+  </div>
+</section>
+
+<footer>
+  Educational only — not legal, tax, or investment advice. Figures use 2026 federal exemptions ($15M/person, 40% top rate) and North Carolina examples; illustrative growth of ~71% over the survivor's remaining years. Your state, numbers, and outcome will differ.<br>
+  © <span id="yr"></span> Kristian R. Pfeffer · <a href="index.html">kpfeffer.com</a>
+</footer>
+
+<div class="veil" id="veil"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true">
+  <button class="x" id="sx" aria-label="Close">&#10005;</button>
+  <span class="stg" id="s-stg"></span>
+  <h3 id="s-t"></h3>
+  <p id="s-d"></p>
+  <div class="calcline" id="s-c" style="display:none"></div>
+  <div class="why"><b>Why it matters</b><span id="s-w"></span></div>
+</div>
+
+<script>
+document.getElementById('yr').textContent=new Date().getFullYear();
+
+/* ================= DATA ================= */
+const SEASONS=[
+{era:"Spring · Formative years & early career",icon:"🌱",t:"Plant",
+ lead:"The habits season. Small automatic moves now outgrow heroic ones later — and yes, even now, two documents belong in your drawer.",
+ bubs:[
+  {t:"Pay yourself first",s:"Automate savings before you see the money.",d:"Set an automatic transfer the day you're paid — retirement first, then an emergency fund of 3–6 months of expenses. Wealth is mostly a plumbing problem: route the money before you can spend it.",w:"Every later season of this map is funded by the habit you build here."},
+  {t:"Grab the 401(k) match",s:"It's a 100% return. Take it.",d:"If your employer matches contributions, contribute at least enough to capture all of it. It is the highest guaranteed return you will ever be offered, and it compounds for decades.",w:"A skipped match in your 20s can quietly cost six figures by retirement."},
+  {t:"Name your beneficiaries",s:"These forms outrank your will.",d:"Retirement accounts and life insurance pass by contract — the beneficiary form controls, not your will. Name a primary and a contingent on every account, and re-check after every big life event.",w:"A forgotten form can send money to an ex, or dump it into a slow court process."},
+  {t:"Your first will & powers of attorney",s:"You're never too young.",d:"Anyone over 18 should have a simple will plus two 'if I can't speak for myself' documents: a financial power of attorney and a healthcare power of attorney. A car accident doesn't check your age first.",w:"Without them, your family may need a court's permission just to help you."},
+  {t:"Term life insurance",tag:"Kids",cond:"kids",s:"Cheap while you're young and healthy.",d:"Once anyone depends on your income, inexpensive term insurance replaces it if the worst happens — covering the mortgage, childcare, and college while your savings are still small.",w:"It buys your family time to grieve without a financial emergency attached."},
+  {t:"Name a guardian",tag:"Kids",cond:"kids",s:"Your will nominates who raises them.",d:"Your will is where you nominate a guardian for minor children. A court has the final say, but your written choice carries heavy weight — and without one, relatives may fight it out.",w:"It's the single most important sentence a young parent ever signs."}
+ ],
+ adv:[
+  {t:"The four doors out of an estate",s:"Will/intestacy · operation of law · contract · funded trust.",d:"Every asset leaves through one of four doors, and only the first goes through probate: (1) will or intestacy — solely owned property, tenancy-in-common fractions, anything payable to the estate, testamentary trusts, pour-over transfers; (2) operation of law — JTWROS, entireties, POD/TOD, life estates; (3) contract — beneficiary designations; (4) a revocable trust funded before death.\n\nCritical distinction: the probate estate is not the gross estate. A revocable-trust asset skips probate but is fully in the taxable gross estate. An ILIT-owned policy is out of both.",w:"Every planning technique downstream is just choosing which door each asset uses."},
+  {t:"Beneficiary forms are contracts",s:"Three ways insurance lands in probate anyway.",d:"Life insurance and retirement plans pay by contract — but they fall into the probate estate if (1) the estate is named beneficiary, (2) all named beneficiaries predecease and no contingent exists, or (3) the form is left blank and the policy defaults to the estate. Then the proceeds face creditors and probate fees, and the will (or intestacy) decides who collects.",w:"A primary and a contingent on every account is free insurance against the court process."},
+  {t:"Basis: carryover vs. step-up",s:"Why the records habit starts now.",d:"Gifted assets carry the giver's old basis; inherited assets reset ('step up') to date-of-death value. Jointly held property splits basis by contribution — which nobody can prove thirty years later without records. Track purchase prices, improvements, and contributions from the first dollar.",w:"Basis records made now decide capital-gains bills your heirs pay decades later."}
+ ]},
+{era:"Summer · Mid-career",icon:"☀️",t:"Grow",
+ lead:"Income rises and life gets complicated — a house, kids, maybe a business. Grow the engine; stop the leaks before they start.",
+ bubs:[
+  {t:"Max the tax-advantaged buckets",s:"401(k), IRA, HSA — in that spirit.",d:"As cash flow grows, push contributions up with every raise. Tax-advantaged accounts shelter growth for decades; the HSA is triple tax-free if you have a qualifying health plan.",w:"The difference between 'contributing' and 'maxing' is often the difference between retiring at 70 and 62."},
+  {t:"How your home is titled",s:"Titles beat wills. Check yours.",d:"How an asset is titled decides where it goes — automatically, no matter what your will says. Married couples in many states can hold their home as 'tenancy by the entirety,' adding creditor protection and a seamless transfer.",w:"Titling mistakes are the #1 way good estate plans fail silently."},
+  {t:"Never co-own with a non-spouse",s:"The quiet double-tax trap.",d:"Adding a child or sibling as joint owner of a house or account seems convenient — but it exposes the asset to their creditors, lets them empty it, and can even disinherit other family members by accident. Use a power of attorney or a trust instead.",w:"One helpful bank visit has accidentally disinherited entire branches of families."},
+  {t:"Umbrella liability coverage",s:"A million dollars of oops insurance.",d:"An umbrella policy sits on top of your home and auto coverage and protects everything you're building from a lawsuit — typically a few hundred dollars a year for a million or more in protection.",w:"You're now worth suing. This is the cheapest defense there is."},
+  {t:"College funding (529)",tag:"Kids",cond:"kids",s:"Tax-free growth for education.",d:"529 plans grow tax-free for education and stay in your control — and grandparents can contribute as part of their own estate planning. Start small and early; the calendar does the heavy lifting.",w:"Every dollar saved is a dollar your child doesn't borrow at interest."},
+  {t:"A buy-sell agreement",tag:"Business",cond:"biz",s:"Your business needs its own will.",d:"A closely held business is usually worth exactly one thing: you. A buy-sell agreement plus key-person insurance decides in advance who takes over and how your family gets paid — before the value evaporates.",w:"Without a succession plan, a business's value can flop overnight."},
+  {t:"Marriage changes the math",tag:"Married",cond:"married",s:"Spouses get special rules.",d:"Married couples get an unlimited tax-free transfer between each other, special titling options, and protections that prevent accidental disinheritance. It's also when 'my stuff' quietly becomes 'our plan' — coordinate, don't duplicate.",w:"Most couple-planning mistakes come from two individual plans that never met."}
+ ],
+ adv:[
+  {t:"The §2040 joint-tenancy rule",s:"Full inclusion unless you can prove otherwise.",d:"Non-spouse JTWROS: the ENTIRE value is included in the first-to-die tenant's gross estate unless the survivor proves contribution to the purchase price or improvements, or that both received it by gift or inheritance from a third party. Then the survivor owns 100% — and it's fully taxed AGAIN at their death. Spouses are simpler: automatic 50% inclusion at the first death, step-up on that half only.",w:"This one rule is why 'just add me to the deed' can tax the same asset twice."},
+  {t:"Tenancy by the entirety",s:"The married-couple shield (~18 states).",d:"Beyond survivorship, entireties titling adds two protections: neither spouse can convey without the other's consent, and a creditor must hold a judgment against BOTH spouses to force a sale. It bypasses probate by operation of law. Available for real property in North Carolina; some states extend it further.",w:"For a married couple's home, it's asset protection that costs nothing."},
+  {t:"Community property mechanics",s:"Character survives the moving truck.",d:"In community states (CA, TX, AZ, NV…), earnings during marriage are communal regardless of title; gifts and inheritances stay separate until co-mingled — the unforgivable sin. Once community, always community, even after moving to a separate-property state. The prize: a community asset left to the surviving spouse gets a FULL step-up in basis, not half.\n\nBuying a beach house in NC with California earnings? Still community property.",w:"One intake question — 'ever lived in a community property state?' — changes the whole plan."},
+  {t:"Gifts: exclusion vs. exemption",s:"And why funding date is everything.",d:"Annual-exclusion gifts pass free without paperwork; larger gifts consume the unified lifetime exemption ($15M in 2026) and carry the giver's old basis. The credit is locked at the moment of an irrevocable, funded transfer — not when a trust is signed. When exemptions were about to sunset, wealthy families raced to fund trusts precisely because used credit can't be clawed back.",w:"Congress can change the number tomorrow; a funded transfer yesterday is untouchable."}
+ ]},
+{era:"Autumn · Pre-retirement & the harvest",icon:"🍂",t:"Harvest",
+ lead:"Peak earning, kids launching, the 401(k) getting everything you can throw at it — then the great reversal, when the accounts start paying you. This is where the plan graduates from documents to architecture.",
+ board:true,
+ bubs:[
+  {t:"Catch-up contributions",s:"50+ unlocks bigger limits.",d:"At 50, the IRS lets you contribute thousands more per year to retirement accounts. These cash-flow-rich years — mortgage shrinking, kids leaving — are exactly when to use every inch of that room.",w:"The last 15 working years often contribute a third of the final nest egg."},
+  {t:"Upgrade to a living trust?",s:"Privacy, speed, and no courthouse.",d:"A revocable living trust holds your assets while you're alive and hands them off privately when you're not — skipping the public, months-long court process called probate. You keep full control; you can change it anytime. The key: it only works for assets actually re-titled into it.",w:"An unfunded trust is just expensive paper. Funding it is the whole game."},
+  {t:"The long-term care decision",s:"$8–12k a month. Have a plan.",d:"Extended care routinely runs $8,000–$12,000 per month. The three honest options: self-fund it, insure it, or plan around it years in advance with an attorney. Choosing none of them is also a choice — the worst one.",w:"This one bill can undo four decades of careful saving."},
+  {t:"Turn savings into a paycheck",s:"Design the income, then relax.",d:"Retirement income is a plumbing project: Social Security, withdrawals, pensions, maybe rental income — sequenced so the essentials are always covered and market storms don't force bad sales.",w:"People don't fear running out of money; they fear not having a plan for it."},
+  {t:"Social Security timing",s:"Each year you wait, the check grows.",d:"Claiming early shrinks your benefit for life; waiting toward 70 grows it roughly 8% a year. The right answer depends on health, spouse, and cash flow — it's a math problem worth an hour of real analysis.",w:"For couples, the higher earner's timing also sets the survivor's check."},
+  {t:"Start giving — wisely",s:"Warm hands beat cold ones.",d:"Annual gifts to family, funding grandkids' 529s, giving to causes you love — done while you're alive, you see the joy and shrink the taxable estate at the same time. Keep records; the paperwork matters.",w:"Giving with a plan multiplies impact; giving without one multiplies paperwork."},
+  {t:"Concentrated stock & windfalls",s:"Don't let one ticker own you.",d:"Company stock, an inheritance, a business sale — big single positions feel like loyalty and taste like risk. Diversify deliberately; for charitable-minded families, a charitable trust can unwind a position with less tax drag.",w:"One-fifth of your wealth in one company can disappear overnight."},
+  {t:"Equal isn't always equitable",tag:"Kids",cond:"kids",s:"Fair can mean different things.",d:"A surgeon child and a struggling child may need very different inheritances — different amounts, or the same amount with different guardrails (like a trust). Talking it through now prevents the resentments that surface later.",w:"Most family fights aren't about money; they're about surprises."},
+  {t:"A special needs trust",tag:"Special needs",cond:"sn",s:"Protect benefits and add comfort.",d:"A loved one receiving government benefits can lose them by inheriting directly. A special needs trust acts as a firewall: the money is there for the extras — mobility, therapies, quality of life — without disqualifying their support.",w:"A well-meant direct gift can accidentally cost someone their safety net."},
+  {t:"Don't leave everything outright",tag:"Married",cond:"married",s:"The classic wealthy-couple mistake.",d:"'Everything to my spouse, then the kids' feels natural — but for larger estates it can waste powerful tax shelters and leave the survivor's estate to swell into a bigger tax bill. Trust-based designs protect the survivor and the next generation. The whiteboard on the left shows exactly how — with your numbers.",w:"In one worked example, the unplanned version cost the family a $36 million check."}
+ ],
+ adv:[
+  {t:"Credit shelter vs. portability",s:"Ported credit is frozen; sheltered growth is free.",calc:"cst",d:"Portability moves the deceased spouse's unused exemption (DSUE) to the survivor — but that number is locked forever while the survivor's estate keeps compounding. The credit shelter (bypass) trust instead captures the exemption AND everything it grows into: fund it with the appreciating assets, give the survivor discretionary access, and the entire trust — principal plus growth — bypasses the survivor's estate to the children tax-free.\n\nTypical sweet spot: combined estates of roughly $25–30M and up. And it can be a dynasty trust, running for generations.",w:"The exemption is a number; the trust is a container that grows. Containers beat numbers."},
+  {t:"The marital trust menu",s:"GPOA trust · QTIP · estate trust.",d:"The balance above the exemption goes to a marital deduction trust, which must genuinely serve the spouse to qualify: all income at least annually, and (for the GPOA version) a general power of appointment — the survivor can appoint to anyone, including herself. The QTIP variant fixes the remainder beneficiaries — the blended-family workhorse: income to the survivor, principal ultimately to YOUR children. Either way the assets roll into the survivor's gross estate: the marital deduction defers tax, it never cancels it.",w:"QTIP is how you provide for a second spouse without disinheriting the first family."},
+  {t:"GST: the exemption that dies unused",s:"Not portable. Layer it deliberately.",d:"The generation-skipping exemption cannot be ported to the surviving spouse — use it or lose it at the first death. The move: split the credit shelter into a GST-exempt trust (allocated for grandchildren and beyond) alongside the children's share. Skipping a generation on purpose avoids a full 40% haircut at every tier.",w:"Families that layer GST correctly tax wealth once a century instead of once a generation."},
+  {t:"ILIT mechanics & the 3-year rule",s:"Liquidity that lands outside the estate.",calc:"ilit",d:"An irrevocable life insurance trust owns the policy, so the face value stays out of the gross estate. At death the trustee holds cash and — by discretion, never mandate — purchases assets FROM the estate, injecting exactly the liquidity the 706 demands. Best practice: the trustee buys the policy new inside the trust; transferring an existing policy starts the §2035 three-year clock, and dying inside it pulls the whole face value back in.",w:"The estate tax is a cash bill at month nine. The ILIT is cash that arrives at month zero."},
+  {t:"The freeze toolbox",s:"QPRT · GRAT/GRUT · CRT.",d:"QPRT: the home transfers at a discounted gift value while you keep living in it for a term — appreciation escapes the estate. GRAT/GRUT: assets go in, an annuity flows back, growth above the hurdle rate passes free. CRT (CRAT/CRUT): appreciated positions — concentrated stock, collections — are sold inside the trust with minimal drag, income returns for life, charity takes the remainder plus you get a deduction now.",w:"Freezes convert 'what it becomes' into 'what it was' for tax purposes — the whole game for growing estates."},
+  {t:"SNT: first-party vs. third-party",s:"Who funds it changes everything.",d:"Third-party SNT (family money): any age, no government payback — the standard planning tool, and the vehicle that receives a disabled child's share from the credit shelter trust. First-party SNT (the beneficiary's own money, e.g. a settlement): must be established before 65, and the state recovers against it at death. Both: purely discretionary distributions, supplemental needs only, corporate trustee, plus a family trust protector who can demand distributions and fire the trustee.",w:"The structure decides whether the safety net and the inheritance can coexist."},
+  {t:"Retirement accounts ≠ estate liquidity",s:"IRD assets get no step-up.",d:"Inherited IRAs and 401(k)s are 'income in respect of a decedent' — no step-up, and every withdrawn dollar is ordinary income to the heir, generally on a forced 10-year clock. Using them to pay estate costs means paying income tax to raise estate-tax cash: a tax to pay a tax. Point beneficiary forms at people (or the right trusts), and let the ILIT carry the liquidity job.",w:"The most expensive dollar in the estate is the one pulled early from an inherited IRA."}
+ ]},
+{era:"Winter · Preparing",icon:"❄️",t:"Protect",
+ lead:"The dignity season. The work now is making everything easy: your wishes written, your people empowered, your family spared from guessing.",
+ bubs:[
+  {t:"The medical documents",s:"Living will · healthcare power of attorney.",d:"A living will states how you want the end handled — life support, artificial nutrition, comfort care. A healthcare power of attorney names the person who speaks when you can't. Written, witnessed, notarized: hospitals are required by federal law to ask for them.",w:"Without them, your family guesses — under fluorescent lights, on the worst day of their lives."},
+  {t:"Durable power of attorney",s:"Your money keeps working if you can't.",d:"A durable financial power of attorney survives incapacity, so a trusted person can pay bills, manage accounts, and sign for you without any court involvement. Made effective immediately, with named backups — never co-agents who could deadlock.",w:"The alternative is guardianship: a public court process that strips rights."},
+  {t:"The letter of instruction",s:"The kindest document you'll write.",d:"Not a legal document — a guidebook. Where the accounts and policies are, who to call, what kind of goodbye you want. Handwritten means more. Keep it with your documents in a fireproof safe at home — not a safe-deposit box, which seals at exactly the wrong moment.",w:"When the patriarch or matriarch dies, everyone scrambles. This is the anti-scramble."},
+  {t:"One last titling & beneficiary sweep",s:"Make the paperwork match the plan.",d:"Confirm every account's beneficiaries, every deed's titling, and that the trust actually owns what it's supposed to own. Update after every family change. This one afternoon of review is what makes the next season gentle instead of grinding.",w:"Plans don't fail in the design. They fail in the details left unchecked."},
+  {t:"Talk to your family",s:"Surprise is the enemy of peace.",d:"You don't have to share numbers — share the shape. Who's in charge, where things are, what you decided and why. Ask your chosen executor and agents if they're willing before they find out at the reading.",w:"The families who talk are the families who don't end up in court."}
+ ],
+ adv:[
+  {t:"DPOA fine print",s:"Immediate vs. springing · specific powers · staleness.",d:"Powers of attorney are now presumed durable in NC. Make them effective immediately — 'springing' powers force your agent to carry doctors' letters proving incapacity. Gifting, changing beneficiary designations, and creating survivorship rights all require SPECIFIC granted authority; the statutory incorporation isn't enough. Banks can question stale documents and demand attorney certification. And spouses cannot act for each other without one — the healthy spouse can't even sign the deed.",w:"A POA drafted loosely is a lawsuit; drafted tightly, it's a court-avoidance machine."},
+  {t:"Guardianship: the fallback nobody wants",s:"What it takes, what it strips.",d:"Petition, guardian ad litem, competency hearing, medical evidence — then the ward loses the rights to contract, vote, drive, and own firearms. Guardian of the person (care decisions), guardian of the estate (finances, bonded — NC minimum ~$10k bond — with annual accountings to the clerk), or general guardian (both). The court must find no less-restrictive alternative exists — which is exactly what your documents are.",w:"Every incapacity document you sign is one court hearing your family never attends."},
+  {t:"Will formalities & the elective share",s:"Self-proving, interested witnesses, spousal floor.",d:"Two competent witnesses plus a notary makes a will self-proving — the court accepts it without hunting down witnesses years later. An interested witness in NC voids their own bequest (the will survives). And a spouse can't truly be disinherited: the elective share lets the survivor claim a statutory percentage (up to ~half after a long marriage) regardless of the documents. One original only; codicils for small changes, re-execution for big ones.",w:"Formalities feel fussy until a $30M estate turns on a missing signature."}
+ ]},
+{era:"A New Spring · The handoff",icon:"🌸",t:"Hand On",
+ lead:"Everything above was the design. This is what your family actually experiences — and it goes one of two very different ways.",
+ fork:[
+  {tag:"THE PLANNED ROAD",color:"#a9884f",h:"A funded trust settles quietly",
+   items:["No courthouse, no public file, no months of waiting","Your successor trustee pays the bills and follows your instructions","Assets pass with a stepped-up tax basis — appreciation forgiven","Clear beneficiaries and allowances bridge the gap immediately","Often wrapped up in weeks, in private, with room to grieve"]},
+  {tag:"THE DEFAULT ROAD",color:"#8a3d3a",h:"Probate: the court runs it",
+   items:["A judge's office supervises: letters, inventories, filings, fees","Creditors get a 90-day window; the estate waits open","Everything becomes public record — assets, heirs, the will itself","No will? State law decides who gets what — not you","Months at best; years for complicated or multi-state estates"]}
+ ],
+ bubs:[
+  {t:"What your family does first",s:"A short, doable list.",d:"Death certificates, the original will or trust, a call to the advisor and attorney, freeze the cards. If you built the letter of instruction, they're holding the checklist you wrote them.",w:"Grief plus paperwork is brutal. Preparation converts panic into steps."},
+  {t:"The step-up: a quiet gift",s:"Appreciation, forgiven at death.",d:"Most inherited assets reset their tax basis to date-of-death value — decades of growth pass without capital gains tax. It's one of the biggest reasons what you hold, and how, matters right to the end.",w:"Selling the right asset the day before vs. after death can differ by a lifetime of tax."},
+  {t:"Legacy is more than money",s:"The plan is the final love letter.",d:"A clear plan says: I thought about you. It protects the vulnerable, funds the causes you believed in, keeps the farm or the business in the family, and hands the next generation a map instead of a mess.",w:"People remember how the handoff felt long after the numbers fade."}
+ ],
+ adv:[
+  {t:"The probate sequence, in order",s:"Letters → notice → inventory → claims → taxes → discharge.",calc:"fee",d:"(1) Qualification: the clerk issues letters testamentary (or of administration if no will — intestacy then controls). (2) Notice to creditors published; NC's claim window is 90 days, and the estate stays open through it. (3) Year's allowances come off the top ahead of creditors: $60,000 to the surviving spouse, $10,000 per eligible child. (4) Inventory filed within 90 days of qualification. (5) Claims paid by statutory priority class. (6) Taxes: estimated 706 payment due month nine (filing extendable to fifteen); final 1040 and fiduciary 1041s. (7) Distributions — in kind where authorized — then annual/final accountings, audit, and discharge.\n\nNC fee meter: $4 per $1,000 of the personal-property probate estate, capped at $6,000; personal-representative commissions up to 5% of receipts and disbursements.",w:"Every step is public, clocked, and supervised — which is either reassuring or exactly what you planned to avoid."},
+  {t:"The shortcuts",s:"Small-estate affidavit · summary administration.",calc:"small",d:"NC collection by affidavit: personal property up to $20,000 — $30,000 when the surviving spouse is sole heir — collected 30 days after death with a simple affidavit, no full administration. Summary administration: when the spouse inherits everything, the estate can close almost immediately (the spouse assumes the debts). These exist because full probate costs time and money; good planning makes one of them — or the trust track — the family's reality.",w:"The best administration is the one the plan made unnecessary."},
+  {t:"Ancillary administration",s:"Every state where land lies gets its own probate.",d:"Personal property probates in the state of domicile; real property probates where it sits. Own land in five states and die intestate, and five different intestacy schemes carve up your legacy five different ways. A revocable trust holding the out-of-state parcels erases the entire problem.",w:"One trust deed recorded per state beats one probate file opened per state."},
+  {t:"Step-up mechanics & the IRD exception",s:"What resets, what doesn't.",d:"At death, most assets reset basis to date-of-death value — the credit shelter trust's contents took their step-up at the FIRST death, which is precisely why appreciation parked there escapes. Community property earns a full step-up on both halves when left to the spouse; separate-property JTWROS steps up the decedent's half only. The exception: retirement accounts and other 'income in respect of a decedent' never step up — heirs pay ordinary income as they withdraw.",w:"Which asset the heirs sell — and which they stretch — is a six-figure decision written in basis."}
+ ]}
+];
+
+/* ================= STATE & CALC ================= */
+const G=120/70; /* illustrative growth: $70M -> $120M over survivor's years */
+const EX=15000000, RATE=.4;
+const state={nw:null,married:false};
+const fmt=n=>{
+  if(n>=1e6){const m=n/1e6;return '$'+(m>=100?Math.round(m):Math.round(m*10)/10).toLocaleString()+'M';}
+  return '$'+Math.round(n).toLocaleString();
+};
+function calcVals(){
+  const V=state.nw;
+  if(!V)return null;
+  const m=state.married;
+  const shelterA=m?EX*2:EX;
+  const grown=V*G;
+  const taxA=Math.max(0,(grown-shelterA))*RATE;
+  let cst=0,taxB=taxA,save=0;
+  if(m){
+    cst=Math.min(EX,V/2);
+    taxB=Math.max(0,(V-cst)*G-EX)*RATE;
+    save=Math.max(0,taxA-taxB);
+  }
+  return {V,m,grown,shelterA,taxA,cst,cstGrown:cst*G,taxB,save,
+    fee:Math.min(6000,V*.004),
+    smallOK:V<=20000, smallSpouse:V<=30000};
+}
+const CALC={
+  cst:c=>c?(c.m?`Your numbers: shelter ${fmt(c.cst)} at the first death → grows to ~${fmt(c.cstGrown)} passing tax-free. Illustrative saving vs. portability-only: ~${fmt(c.save)}.`:`Single filer: exemption ${fmt(EX)}; illustrative exposure above it ~${fmt(Math.max(0,(c.grown-EX))*RATE)}. Freeze tools (QPRT/GRAT/CRT) do the heavy lifting.`):'Enter a net worth (top right) to personalize this.',
+  ilit:c=>c?`Illustrative liquidity need at month nine: ~${fmt(c.m?c.taxB:Math.max(0,(c.grown-EX))*RATE)} — the check the ILIT exists to cover.`:'Enter a net worth (top right) to estimate the month-nine cash need.',
+  fee:c=>c?`At ${fmt(c.V)}, the NC probate fee meter reads ~${fmt(c.fee)} (capped at $6,000) — commissions up to 5% are the larger line.`:'Enter a net worth (top right) to see the fee meter.',
+  small:c=>c?(c.smallSpouse?`At ${fmt(c.V)}, the small-estate shortcut may be available.`:`At ${fmt(c.V)}, the shortcuts are off the table — the trust track is the shortcut.`):'Enter a net worth (top right) to check eligibility.'
+};
+
+/* ================= RENDER ================= */
+const wrap=document.getElementById('stages');
+SEASONS.forEach((se,si)=>{
+  const sec=document.createElement('section');sec.className='stage';
+  let advHtml=`<div class="lane-a">
+    <div class="alane-note">The machinery — the structures behind the plan. Tap for depth.</div>`+
+    se.adv.map((a,ai)=>`
+    <div class="abub" data-s="${si}" data-a="${ai}" role="button" tabindex="0">
+      <span class="atag">Advanced</span>
+      <b>${a.t}</b><small>${a.s}</small>
+      ${a.calc?`<span class="num" data-calc="${a.calc}"></span>`:''}
+    </div>`).join('')+`</div>`;
+  let clientHtml=`<div class="lane-c">
+    <span class="era">${se.era}</span>
+    <div class="panel glass">
+      <span class="icon">${se.icon}</span>
+      <h2>${se.t}</h2>
+      <p class="lead">${se.lead}</p>
+    </div>`;
+  if(se.fork){
+    clientHtml+=`<div class="fork">`+se.fork.map(f=>`
+      <div class="road glass">
+        <span class="roadtag" style="background:${f.color}18;border:1px solid ${f.color}55;color:${f.color}">${f.tag}</span>
+        <h4>${f.h}</h4>
+        <ul>${f.items.map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>`).join('')+`</div>`;
+  }
+  clientHtml+=`<div class="bubbles">`+se.bubs.map((b,bi)=>`
+    <div class="bub${b.cond?' cond':''}" data-cond="${b.cond||''}" data-s="${si}" data-b="${bi}" style="--d:${120+bi*100}ms" role="button" tabindex="0">
+      ${b.tag?`<span class="tag">${b.tag}</span>`:''}
+      <b>${b.t}</b><small>${b.s}</small>
+    </div>`).join('')+`</div></div>`;
+  let boardHtml='';
+  if(se.board){
+    boardHtml=`<div class="wide">
+    <div class="stand" id="stand">Flip on <b>Advanced</b> and enter a net worth to see where you stand against the federal exemption.</div>
+    <div class="board">
+      <h3>The Whiteboard — what happens at the first death</h3>
+      <p class="bsub">A worked example: a $30M husband and $40M wife, and the two roads their $70M can take. Enter your own number top-right and the board redraws itself. Illustrative growth of ~71% over the survivor's remaining years; exemptions at 2026's $15M/person, 40% rate.</p>
+      <div class="routes">
+        <div class="route bad">
+          <h4>Road 1 — Everything outright + portability</h4>
+          <div class="wbox"><b>First death:</b> all <span data-f="half"></span> to the survivor. No tax — unlimited marital deduction. Unused $15M exemption ports over (DSUE) and freezes.</div>
+          <div class="warrow">↓ &nbsp;the survivor's years pass&nbsp; ↓</div>
+          <div class="wbox"><b>Second death:</b> estate has grown to <span data-f="grown"></span>. Shelter: <span data-f="shelterA"></span> — her exemption plus the frozen DSUE.</div>
+          <div class="wbox tax"><b>The check to the IRS:</b> 40% of the excess ≈ <span data-f="taxA"></span></div>
+        </div>
+        <div class="route good">
+          <h4>Road 2 — The AB architecture</h4>
+          <div class="wbox cst"><b>Credit Shelter Trust:</b> funded with <span data-f="cst"></span> — deliberately the appreciating assets. Irrevocable; survivor has discretionary benefit; can run as a dynasty / GST-exempt layer for grandchildren.</div>
+          <div class="wbox qtip"><b>Marital / QTIP Trust:</b> the balance, <span data-f="qtip"></span>. All income to the survivor at least annually; defers (never cancels) the tax; rolls into her estate.</div>
+          <div class="wbox"><b>Alongside:</b> the ILIT waits outside both estates, ready to buy assets and inject the month-nine cash.</div>
+          <div class="warrow">↓ &nbsp;the same years pass&nbsp; ↓</div>
+          <div class="wbox cst"><b>CST at second death:</b> grown to <span data-f="cstGrown"></span> — principal AND growth pass to the children tax-free. Special-needs share drops into the SNT firewall.</div>
+          <div class="wbox tax"><b>The check to the IRS:</b> ≈ <span data-f="taxB"></span></div>
+        </div>
+      </div>
+      <div class="verdict">Same family. Same assets. Same law. Illustrative difference: <b data-f="save"></b> kept by the next generation — because the plan chose containers over numbers.</div>
+    </div></div>`;
+  }
+  sec.innerHTML=advHtml+`<div></div>`+clientHtml+boardHtml;
+  wrap.appendChild(sec);
+});
+
+/* ================= BEHAVIOR ================= */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')}),{threshold:0.15});
+document.querySelectorAll('.stage').forEach(s=>io.observe(s));
+
+const journey=document.querySelector('.journey'),trav=document.getElementById('traveler');
+function moveTraveler(){
+  const r=journey.getBoundingClientRect(),vh=window.innerHeight;
+  const prog=Math.min(1,Math.max(0,(vh*.45-r.top)/r.height));
+  trav.style.top=(prog*r.height)+'px';
+}
+window.addEventListener('scroll',moveTraveler,{passive:true});
+window.addEventListener('resize',moveTraveler);moveTraveler();
+
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    c.classList.toggle('on');
+    const p=c.dataset.p,on=c.classList.contains('on');
+    if(p==='married'){state.married=on;calcAll();}
+    document.querySelectorAll(`.bub[data-cond="${p}"]`).forEach(b=>{
+      b.classList.toggle('show',on);
+      if(on)b.style.setProperty('--d','60ms');
+    });
+  });
+});
+
+/* advanced toggle + net worth */
+const sw=document.getElementById('advsw');
+function toggleAdv(){document.body.classList.toggle('adv');sw.setAttribute('aria-checked',document.body.classList.contains('adv'));calcAll();}
+sw.addEventListener('click',toggleAdv);
+sw.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleAdv();}});
+const nwIn=document.getElementById('nw');
+nwIn.addEventListener('input',()=>{
+  const raw=nwIn.value.replace(/[^0-9]/g,'');
+  state.nw=raw?parseInt(raw,10):null;
+  nwIn.value=raw?parseInt(raw,10).toLocaleString():'';
+  calcAll();
+});
+
+function calcAll(){
+  const c=calcVals();
+  /* bubble teaser lines */
+  document.querySelectorAll('[data-calc]').forEach(el=>{el.textContent=CALC[el.dataset.calc](c);});
+  /* whiteboard */
+  const set=(f,v)=>document.querySelectorAll(`[data-f="${f}"]`).forEach(el=>el.textContent=v);
+  if(c&&c.m){
+    set('half',fmt(c.V));set('grown',fmt(c.grown));set('shelterA',fmt(c.shelterA));
+    set('taxA',fmt(c.taxA));set('cst',fmt(c.cst));set('qtip',fmt(Math.max(0,c.V/2-c.cst)+c.V/2));
+    set('cstGrown',fmt(c.cstGrown));set('taxB',fmt(c.taxB));set('save',fmt(c.save));
+  }else if(c&&!c.m){
+    set('half',fmt(c.V));set('grown',fmt(c.grown));set('shelterA',fmt(EX));
+    set('taxA',fmt(Math.max(0,c.grown-EX)*RATE));
+    set('cst','— (toggle “Married” for the AB design)');set('qtip','—');set('cstGrown','—');set('taxB','—');set('save','—');
+  }else{
+    /* default worked example: $70M couple */
+    set('half','$70M ($30M + $40M)');set('grown','$120M');set('shelterA','$30M');set('taxA','$36M');
+    set('cst','$15M');set('qtip','$55M');set('cstGrown','$28M');set('taxB','~$31M');set('save','~$5M+ (and far more with GST layering)');
+  }
+  const stand=document.getElementById('stand');
+  if(stand){
+    if(!c){stand.innerHTML='Flip on <b>Advanced</b> and enter a net worth to see where you stand against the federal exemption.';}
+    else if((c.m?c.V:c.V)<= (c.m?EX*2:EX)){
+      stand.innerHTML=`<b>Where you stand:</b> at ${fmt(c.V)}${c.m?' (married)':''}, you're currently under the federal exemption (${fmt(c.m?EX*2:EX)}). Today the estate tax isn't your problem — <b>control, titling, incapacity, and probate-avoidance are</b>. But exemptions are legislation, not physics: the architecture on the whiteboard is how families your size prepare for the day the number moves.`;
+    }else{
+      stand.innerHTML=`<b>Where you stand:</b> at ${fmt(c.V)}${c.m?' (married)':''}, you're ${fmt(c.V-(c.m?EX*2:EX))} over the federal exemption before any growth. Illustrative exposure if nothing is done: <b>~${fmt(c.taxA)}</b> at the survivor's death. The whiteboard below is your conversation.`;
+    }
+  }
+}
+calcAll();
+
+/* ================= MODAL ================= */
+const veil=document.getElementById('veil'),sheet=document.getElementById('sheet');
+function openSheet(si,idx,isAdv){
+  const se=SEASONS[si];
+  const b=isAdv?se.adv[idx]:se.bubs[idx];
+  sheet.classList.toggle('advm',!!isAdv);
+  document.getElementById('s-stg').textContent=(isAdv?'Advanced · ':'')+se.t+' — '+se.era.split('·')[0].trim();
+  document.getElementById('s-t').textContent=b.t;
+  document.getElementById('s-d').textContent=b.d;
+  const cl=document.getElementById('s-c');
+  if(b.calc){cl.style.display='block';cl.textContent=CALC[b.calc](calcVals());}
+  else cl.style.display='none';
+  document.getElementById('s-w').textContent=b.w;
+  veil.classList.add('open');sheet.classList.add('open');
+}
+function closeSheet(){veil.classList.remove('open');sheet.classList.remove('open');}
+document.addEventListener('click',e=>{
+  const a=e.target.closest('.abub');
+  if(a){openSheet(+a.dataset.s,+a.dataset.a,true);return;}
+  const b=e.target.closest('.bub');
+  if(b)openSheet(+b.dataset.s,+b.dataset.b,false);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeSheet();
+  if(e.key==='Enter'){
+    const el=document.activeElement;
+    if(el.classList.contains('bub'))openSheet(+el.dataset.s,+el.dataset.b,false);
+    if(el.classList.contains('abub'))openSheet(+el.dataset.s,+el.dataset.a,true);
+  }
+});
+veil.addEventListener('click',closeSheet);
+document.getElementById('sx').addEventListener('click',closeSheet);
+</script>
+</body>
+</html>
