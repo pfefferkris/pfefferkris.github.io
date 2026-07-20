@@ -10,10 +10,16 @@ description: Held in Trust — plain-English essays on trust administration, est
 {% seo %}
 <style>
   :root{
-    --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e;
+    --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e; --gold-text:#8a6d3b;
     --ink:#1e2b36; --muted:#5a6a78; --line:#e4ddd0; --bg:#faf8f3;
   }
   *{box-sizing:border-box}
+  .ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round;vertical-align:-.14em;display:inline-block;flex:none}
+  .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--navy);color:#fff;
+    padding:10px 16px;border-radius:0 0 4px 0}
+  .skip:focus{left:0}
+  a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:2px}
   body{margin:0; background:var(--bg); color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     line-height:1.65; -webkit-font-smoothing:antialiased}
@@ -26,9 +32,24 @@ description: Held in Trust — plain-English essays on trust administration, est
   .brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); font-size:1.02rem}
   .navlinks a{margin-left:24px; font-size:.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
   .navlinks a:hover{color:var(--navy)}
-  @media(max-width:680px){.navlinks{display:none}}
+  .navmenu{display:none}
+  @media(max-width:680px){
+    .navlinks{display:none}
+    .navmenu{display:block; position:relative}
+    .navmenu summary{list-style:none; cursor:pointer; display:flex; align-items:center; gap:6px;
+      color:var(--navy); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; padding:8px 6px; min-height:44px}
+    .navmenu summary::-webkit-details-marker{display:none}
+    .navmenu[open] summary .ic{transform:rotate(180deg)}
+    .navmenu summary .ic{transition:transform .2s ease; width:1.15em; height:1.15em}
+    .navmenu .panel{position:absolute; right:0; top:100%; background:var(--bg);
+      border:1px solid var(--line); border-radius:4px; box-shadow:0 12px 30px rgba(18,41,63,.14);
+      min-width:200px; padding:6px 0; z-index:30}
+    .navmenu .panel a{display:block; padding:11px 18px; font-size:.82rem; color:var(--muted);
+      text-transform:uppercase; letter-spacing:.08em; margin:0}
+    .navmenu .panel a:hover{color:var(--navy); background:#fff}
+  }
   header.bh{padding:58px 0 10px}
-  .kicker{color:var(--gold); text-transform:uppercase; letter-spacing:.28em; font-size:.72rem; margin:0 0 14px}
+  .kicker{color:var(--gold-text); text-transform:uppercase; letter-spacing:.28em; font-size:.72rem; margin:0 0 14px}
   .masthead{display:inline-block; margin:0 0 14px}
   .masthead h1{font-size:3rem; letter-spacing:.01em; margin:0; line-height:1.05; color:var(--navy)}
   .masthead .rule{height:2px; width:100%; margin-top:12px;
@@ -39,7 +60,7 @@ description: Held in Trust — plain-English essays on trust administration, est
   @media(max-width:560px){.masthead h1{font-size:2.3rem}}
   .post{padding:26px 0; border-bottom:1px solid var(--line)}
   .post h2{font-size:1.4rem; margin:0 0 6px}
-  .post .d{color:var(--gold); font-size:.86rem; margin:0 0 8px}
+  .post .d{color:var(--gold-text); font-size:.86rem; margin:0 0 8px}
   .post p{margin:0; color:var(--muted)}
   .list{padding-bottom:70px}
   .subrow{display:flex; flex-wrap:wrap; gap:12px; align-items:center; margin:22px 0 6px}
@@ -62,7 +83,8 @@ description: Held in Trust — plain-English essays on trust administration, est
 </style>
 </head>
 <body>
-<nav>
+<a class="skip" href="#main">Skip to content</a>
+<nav aria-label="Primary">
   <div class="nw">
     <a class="brand" href="/">Kristian&nbsp;R.&nbsp;Pfeffer</a>
     <span class="navlinks">
@@ -73,11 +95,22 @@ description: Held in Trust — plain-English essays on trust administration, est
       <a href="/newsletter/">Held in Trust</a>
       <a href="/#contact">Contact</a>
     </span>
+    <details class="navmenu">
+      <summary aria-label="Menu">Menu <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <div class="panel">
+        <a href="/#about">About</a>
+        <a href="/services.html">Services</a>
+        <a href="/journey.html">Wealth Guide</a>
+        <a href="/succession.html">Estate Guide</a>
+        <a href="/newsletter/">Held in Trust</a>
+        <a href="/#contact">Contact</a>
+      </div>
+    </details>
   </div>
 </nav>
 
 <div class="wrap">
-  <header class="bh">
+  <header class="bh" id="main" tabindex="-1">
     <p class="kicker">The Newsletter</p>
     <div class="masthead">
       <h1>Held in Trust</h1>

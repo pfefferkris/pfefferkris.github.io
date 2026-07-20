@@ -15,13 +15,22 @@
 </script>
 <style>
 :root{
-  --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e;
+  --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e; --gold-text:#8a6d3b;
   --ink:#1e2b36; --muted:#5a6a78; --line:#e4ddd0; --bg:#faf8f3; --card:#ffffff;
   --brick:#8a3d3a; --gold-ink:#7c5f2e;
   --r:16px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;overflow-x:hidden}
+.ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;vertical-align:-.14em;display:inline-block;flex:none}
+.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--navy);color:#fff;
+  padding:10px 16px;border-radius:0 0 4px 0}
+.skip:focus{left:0}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible,summary:focus-visible,
+.chip:focus-visible,.bub:focus-visible,.abub:focus-visible,.sw:focus-visible{
+  outline:2px solid var(--gold);outline-offset:2px;border-radius:2px}
+.nwrow .field:focus-within{outline:2px solid var(--gold);outline-offset:2px}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   color:var(--ink);
@@ -54,11 +63,26 @@ nav.site .navwrap{max-width:1080px;margin:0 auto;padding:0 24px;display:flex;ali
 .brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); letter-spacing:.3px; font-size:1.02rem}
 .navlinks a{margin-left:24px; font-size:.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
 .navlinks a:hover{color:var(--navy)}
-@media(max-width:640px){.navlinks{display:none}}
+.navmenu{display:none}
+@media(max-width:640px){
+  .navlinks{display:none}
+  .navmenu{display:block; position:relative}
+  .navmenu summary{list-style:none; cursor:pointer; display:flex; align-items:center; gap:6px;
+    color:var(--navy); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; padding:8px 6px; min-height:44px}
+  .navmenu summary::-webkit-details-marker{display:none}
+  .navmenu[open] summary .ic{transform:rotate(180deg)}
+  .navmenu summary .ic{transition:transform .2s ease; width:1.15em; height:1.15em}
+  .navmenu .panel{position:absolute; right:0; top:100%; background:var(--bg);
+    border:1px solid var(--line); border-radius:4px; box-shadow:0 12px 30px rgba(18,41,63,.14);
+    min-width:200px; padding:6px 0; z-index:61}
+  .navmenu .panel a{display:block; padding:11px 18px; font-size:.82rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.08em; margin:0}
+  .navmenu .panel a:hover{color:var(--navy); background:#fff}
+}
 
 /* ---------- header ---------- */
 header{position:relative;z-index:2;text-align:center;padding:64px 22px 26px;max-width:840px;margin:0 auto}
-header .eyebrow{color:var(--gold); text-transform:uppercase; letter-spacing:.22em; font-size:.76rem; margin-bottom:14px}
+header .eyebrow{color:var(--gold-text); text-transform:uppercase; letter-spacing:.22em; font-size:.76rem; margin-bottom:14px}
 header h1{font-size:clamp(1.9rem,4.6vw,2.9rem);font-weight:700;letter-spacing:-.01em;line-height:1.14;color:var(--navy)}
 header .sub{margin:18px auto 0;max-width:640px;font-size:1.02rem;color:var(--muted);line-height:1.65}
 
@@ -95,7 +119,7 @@ body.adv .nwrow{display:block}
 .lane-c{grid-column:3}
 .wide{grid-column:1/-1}
 
-.era{display:block;font-size:.74rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px;color:var(--gold)}
+.era{display:block;font-size:.74rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px;color:var(--gold-text)}
 .panel{position:relative;max-width:620px;padding:30px 34px}
 .panel .icon{font-size:1.9rem;display:block;margin-bottom:8px;filter:saturate(.7)}
 .panel h2{font-size:1.55rem;font-weight:700;letter-spacing:-.01em;margin-bottom:8px;color:var(--navy)}
@@ -182,13 +206,21 @@ footer a:hover{color:var(--navy)}
   .advbox{max-width:230px;top:64px}
   .alane-note{text-align:left}
 }
+@media(max-width:480px){
+  header{padding:44px 18px 22px}
+  .panel{padding:22px 20px}
+  .advbox{max-width:190px;top:60px;right:10px;padding:10px 12px}
+  .sheet{padding:26px 22px 22px}
+  .sheet .x{width:36px;height:36px}
+}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
-<div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+<a class="skip" href="#main">Skip to content</a>
+<div class="orb o1" aria-hidden="true"></div><div class="orb o2" aria-hidden="true"></div><div class="orb o3" aria-hidden="true"></div>
 
-<nav class="site">
+<nav class="site" aria-label="Primary">
   <div class="navwrap">
     <a class="brand" href="index.html">Kristian&nbsp;R.&nbsp;Pfeffer</a>
     <span class="navlinks">
@@ -199,13 +231,24 @@ footer a:hover{color:var(--navy)}
       <a href="newsletter/">Held in Trust</a>
       <a href="index.html#contact">Contact</a>
     </span>
+    <details class="navmenu">
+      <summary aria-label="Menu">Menu <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <div class="panel">
+        <a href="index.html#about">About</a>
+        <a href="services.html">Services</a>
+        <a href="journey.html">Wealth Guide</a>
+        <a href="succession.html">Estate Guide</a>
+        <a href="newsletter/">Held in Trust</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+    </details>
   </div>
 </nav>
 
 <div class="advbox glass">
   <div class="advrow">
-    <span class="lb">Advanced</span>
-    <div class="sw" id="advsw" role="switch" aria-checked="false" tabindex="0"></div>
+    <span class="lb" id="advlb">Advanced</span>
+    <div class="sw" id="advsw" role="switch" aria-checked="false" tabindex="0" aria-labelledby="advlb"></div>
   </div>
   <div class="nwrow">
     <label for="nw">Approx. estate value</label>
@@ -214,7 +257,7 @@ footer a:hover{color:var(--navy)}
   </div>
 </div>
 
-<header>
+<header id="main" tabindex="-1">
   <p class="eyebrow">A Client Guide · Part Two</p>
   <h1>When someone dies,<br>the estate has a clock.</h1>
   <p class="sub">Grief doesn't come with instructions — but the estate does. This is the settlement timeline in plain English: what has to happen, in what order, and when the deadlines land. Flip <b>Advanced</b> (top right) to see the legal machinery — statutes, filings, and the citations behind every step.</p>

@@ -46,10 +46,18 @@
 <style>
   :root{
     --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e;
+    --gold-text:#8a6d3b;
     --ink:#1e2b36; --muted:#5a6a78; --line:#e4ddd0; --bg:#faf8f3; --card:#ffffff;
   }
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
+  .ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round;vertical-align:-.14em;display:inline-block;flex:none}
+  .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--navy);color:#fff;
+    padding:10px 16px;border-radius:0 0 4px 0}
+  .skip:focus{left:0}
+  a:focus-visible,button:focus-visible,[tabindex]:focus-visible,
+  .cta:focus-visible,summary:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:2px}
   body{
     margin:0; background:var(--bg); color:var(--ink);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -67,7 +75,23 @@
   .brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); letter-spacing:.3px; font-size:1.02rem}
   .navlinks a{margin-left:24px; font-size:.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
   .navlinks a:hover{color:var(--navy)}
-  @media(max-width:640px){.navlinks{display:none}}
+  .navmenu{display:none}
+  @media(max-width:640px){
+    .navlinks{display:none}
+    .navmenu{display:block; position:relative}
+    .navmenu summary{list-style:none; cursor:pointer; display:flex; align-items:center; gap:6px;
+      color:var(--navy); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em;
+      padding:8px 6px; min-height:44px}
+    .navmenu summary::-webkit-details-marker{display:none}
+    .navmenu[open] summary .ic{transform:rotate(180deg)}
+    .navmenu summary .ic{transition:transform .2s ease; width:1.15em; height:1.15em}
+    .navmenu .panel{position:absolute; right:0; top:100%; background:var(--bg);
+      border:1px solid var(--line); border-radius:4px; box-shadow:0 12px 30px rgba(18,41,63,.14);
+      min-width:200px; padding:6px 0; z-index:30}
+    .navmenu .panel a{display:block; padding:11px 18px; font-size:.82rem; color:var(--muted);
+      text-transform:uppercase; letter-spacing:.08em; margin:0}
+    .navmenu .panel a:hover{color:var(--navy); background:#fff}
+  }
 
   /* Hero */
   header.hero{background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%); color:#f5f1e8; padding:76px 0 66px}
@@ -85,7 +109,7 @@
 
   /* Sections */
   section{padding:60px 0; border-bottom:1px solid var(--line)}
-  .kicker{color:var(--gold); text-transform:uppercase; letter-spacing:.2em; font-size:.76rem; margin:0 0 8px}
+  .kicker{color:var(--gold-text); text-transform:uppercase; letter-spacing:.2em; font-size:.76rem; margin:0 0 8px}
   section h2{font-size:1.9rem; margin:0 0 26px; color:var(--navy)}
   p{margin:0 0 16px}
   .lead{font-size:1.08rem; color:var(--ink)}
@@ -96,18 +120,22 @@
   .job-head{display:flex; justify-content:space-between; flex-wrap:wrap; gap:4px 16px; align-items:baseline}
   .job-title{font-weight:700; color:var(--navy); font-size:1.08rem}
   .job-org{color:var(--muted)}
-  .job-dates{color:var(--gold); font-size:.9rem; white-space:nowrap; font-variant-numeric:tabular-nums}
+  .job-dates{color:var(--gold-text); font-size:.9rem; white-space:nowrap; font-variant-numeric:tabular-nums}
   .job ul{margin:12px 0 0; padding-left:20px}
   .job li{margin:0 0 8px}
   .role{margin-top:14px; font-size:.96rem}
-  .role .rt{font-weight:600; color:var(--ink)}
+  .role .rt{font-weight:600; color:var(--ink); display:flex; justify-content:space-between;
+    align-items:baseline; gap:6px 16px; flex-wrap:wrap}
+  .role .rt .rt-title{min-width:0}
+  .role .rt .rt-date{color:var(--gold-text); font-weight:600; font-size:.9rem;
+    white-space:nowrap; font-variant-numeric:tabular-nums; margin-left:auto}
 
   /* Cards / grids */
   .grid{display:grid; grid-template-columns:1fr 1fr; gap:26px}
   @media(max-width:640px){.grid{grid-template-columns:1fr}}
   .card{background:var(--card); border:1px solid var(--line); border-radius:3px; padding:24px}
   .card h3{margin:0 0 8px; font-size:1.12rem; color:var(--navy)}
-  .card .sub{color:var(--gold); font-size:.86rem; margin:0 0 10px; letter-spacing:.03em}
+  .card .sub{color:var(--gold-text); font-size:.86rem; margin:0 0 10px; letter-spacing:.03em}
   .creds{margin:0; padding-left:18px}
   .creds li{margin:0 0 7px; color:var(--ink)}
   .creds li:last-child{margin-bottom:0}
@@ -120,8 +148,9 @@
 
   /* Capstone list */
   .tech{list-style:none; padding:0; margin:16px 0 0}
-  .tech li{padding:10px 0 10px 26px; border-top:1px solid var(--line); position:relative}
-  .tech li:before{content:"§"; position:absolute; left:0; top:10px; color:var(--gold); font-family:Georgia,serif; font-weight:700}
+  .tech li{padding:10px 0 10px 30px; border-top:1px solid var(--line); position:relative}
+  .tech li:before{content:""; position:absolute; left:0; top:14px; width:16px; height:16px;
+    background:no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a6d3b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E")}
   .tech b{color:var(--navy)}
 
   /* Honors */
@@ -140,7 +169,7 @@
   /* Off the clock */
   .milestones{margin-top:24px; border-top:1px solid var(--line)}
   .ms{display:flex; gap:20px; padding:13px 0; border-bottom:1px solid var(--line); align-items:baseline}
-  .ms .yr{flex:0 0 104px; color:var(--gold); font-size:.86rem; font-weight:600; font-variant-numeric:tabular-nums}
+  .ms .yr{flex:0 0 104px; color:var(--gold-text); font-size:.86rem; font-weight:600; font-variant-numeric:tabular-nums}
   .ms .ev{color:var(--ink)}
   .ms .ev b{color:var(--navy)}
   .closer{margin-top:22px; font-size:1.02rem; color:var(--muted); max-width:720px}
@@ -165,6 +194,28 @@
   .photos figcaption{font-size:.82rem; color:var(--muted); margin-top:8px}
   @media(max-width:640px){.photos{grid-template-columns:1fr} .photos img{height:220px}}
 
+  .meta a,.contact-row a{display:inline-flex; align-items:center; gap:7px}
+  .meta span{display:inline-flex; align-items:center; gap:7px}
+  .cta{display:inline-flex; align-items:center; gap:8px; justify-content:center}
+
+  @media(max-width:768px){
+    header.hero{padding:56px 0 48px}
+    header.hero h1{font-size:2.3rem}
+    header.hero .lede{font-size:1.08rem}
+    section{padding:46px 0}
+    section h2{font-size:1.6rem; margin:0 0 22px}
+  }
+  @media(max-width:480px){
+    .wrap{padding:0 18px}
+    header.hero{padding:44px 0 40px}
+    header.hero h1{font-size:1.95rem}
+    section h2{font-size:1.4rem}
+    header.hero .cta{display:flex; width:100%; margin-left:0}
+    header.hero .cta.ghost{margin-left:0; margin-top:12px}
+    #capstone p .cta.primary{display:flex; width:100%; margin-left:0 !important}
+    #capstone p .cta.primary + .cta.primary{margin-top:12px}
+  }
+
   @media print{
     nav,header.hero .cta,#contact{display:none}
     body{background:#fff}
@@ -173,8 +224,9 @@
 </style>
 </head>
 <body>
+<a class="skip" href="#main">Skip to content</a>
 
-<nav>
+<nav aria-label="Primary">
   <div class="wrap">
     <span class="brand">Kristian&nbsp;R.&nbsp;Pfeffer</span>
     <span class="navlinks">
@@ -185,21 +237,32 @@
       <a href="newsletter/">Held in Trust</a>
       <a href="#contact">Contact</a>
     </span>
+    <details class="navmenu">
+      <summary aria-label="Menu">Menu <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <div class="panel">
+        <a href="#about">About</a>
+        <a href="services.html">Services</a>
+        <a href="journey.html">Wealth Guide</a>
+        <a href="succession.html">Estate Guide</a>
+        <a href="newsletter/">Held in Trust</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </details>
   </div>
 </nav>
 
-<header class="hero">
+<header class="hero" id="main" tabindex="-1">
   <div class="wrap">
     <p class="eyebrow">Trust &amp; Wealth Management · Fiduciary Services</p>
     <h1>Kristian R. Pfeffer</h1>
     <p class="lede">Master of Trust and Wealth Management candidate, U.S. Army veteran, and entrepreneur — bringing a fiduciary mindset shaped by military stewardship to trust administration, estate and tax planning, and wealth transfer for high-net-worth families.</p>
-    <a class="cta primary" href="#contact">Get in touch</a>
-    <a class="cta ghost" href="Pfeffer_Resume.pdf">Download résumé (PDF)</a>
+    <a class="cta primary" href="#contact"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4Z"/></svg>Get in touch</a>
+    <a class="cta ghost" href="Pfeffer_Resume.pdf"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Download résumé (PDF)</a>
     <div class="meta">
-      <span>Fayetteville, NC</span>
-      <a href="mailto:mail@kpfeffer.com">mail@kpfeffer.com</a>
-      <a href="tel:+19108476692">(910) 847-6692</a>
-      <a href="https://www.linkedin.com/in/kristian-pfeffer-20484b8b">LinkedIn</a>
+      <span><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Fayetteville, NC</span>
+      <a href="mailto:mail@kpfeffer.com"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>mail@kpfeffer.com</a>
+      <a href="tel:+19108476692"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>(910) 847-6692</a>
+      <a href="https://www.linkedin.com/in/kristian-pfeffer-20484b8b"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6Z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn</a>
     </div>
   </div>
 </header>
@@ -210,7 +273,7 @@
     <h2>Safeguarding what belongs to others</h2>
     <div class="about-top">
       <div class="about-portrait">
-        <img src="img/headshot.png" width="300" height="300" alt="Kristian R. Pfeffer, Trust &amp; Wealth Management" loading="lazy">
+        <img src="img/headshot.webp" width="440" height="440" alt="Kristian R. Pfeffer, Trust &amp; Wealth Management" decoding="async" fetchpriority="high">
       </div>
       <div class="about-bio">
         <p class="lead" style="margin-top:0">I am a Master of Trust and Wealth Management (MTWM) candidate at Campbell University — the nation's only graduate program of its kind — with advanced training in trust administration, fiduciary principles, estate and gift taxation, investment analysis, and wealth-transfer planning for high-net-worth individuals and families.</p>
@@ -222,7 +285,14 @@
       <div class="card">
         <h3>Master of Trust &amp; Wealth Management</h3>
         <p class="sub">Campbell University · Lundy-Fetterman School of Business · Aug 2026</p>
-        <p style="margin:0">Coursework in Investment Analysis; Advanced Income, Estate, Gift &amp; Fiduciary Income Taxation; Fiduciary Principles; Advanced Estate Planning; Wealth Management Sales; and Legal &amp; Regulatory Issues (Regulation 9, Uniform Trust Code, Prudent Investor Act, OFAC/BSA-AML).</p>
+        <ul class="creds">
+          <li>Investment Analysis</li>
+          <li>Advanced Income, Estate, Gift &amp; Fiduciary Income Taxation</li>
+          <li>Fiduciary Principles</li>
+          <li>Advanced Estate Planning</li>
+          <li>Wealth Management Sales</li>
+          <li>Legal &amp; Regulatory Issues (Regulation 9, Uniform Trust Code, Prudent Investor Act, OFAC/BSA-AML)</li>
+        </ul>
       </div>
       <div class="card">
         <h3>Credentials &amp; Licensure</h3>
@@ -253,7 +323,7 @@
       <li><b>Liquidity &amp; titling</b> — payable-on-death designations for immediate spousal access, and correcting asset titling (tenancy by the entirety, JTWROS, tenancy in common) to align with the plan.</li>
     </ul>
     <p style="margin-top:20px; color:var(--muted); font-size:.92rem">Full memorandum available on request.</p>
-    <p style="margin-top:22px"><a class="cta primary" style="color:#1a1204" href="journey.html">Explore the Wealth Guide →</a> <a class="cta primary" style="color:#1a1204;margin-left:10px" href="succession.html">Explore the Estate Guide →</a></p>
+    <p style="margin-top:22px"><a class="cta primary" style="color:#1a1204" href="journey.html">Explore the Wealth Guide <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a> <a class="cta primary" style="color:#1a1204;margin-left:10px" href="succession.html">Explore the Estate Guide <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></p>
   </div>
 </section>
 
@@ -281,7 +351,7 @@
         <span class="job-dates">2015 — 2021</span>
       </div>
       <div class="role">
-        <div class="rt">Company Executive Officer (Logistics) · 2018–2020</div>
+        <div class="rt"><span class="rt-title">Company Executive Officer (Logistics)</span><span class="rt-date">2018–2020</span></div>
         <ul>
           <li>Accountable steward of 197 property lines valued at $15M+ — a fiduciary-style duty of care requiring meticulous documentation, account reviews, audits, and internal controls.</li>
           <li>Recovered $250,000 in lost government equipment and reduced excess property by $166,000 by coaching leaders and rebuilding a culture of accountability.</li>
@@ -290,14 +360,14 @@
         </ul>
       </div>
       <div class="role">
-        <div class="rt">Battalion Planning Assistant · 2018</div>
+        <div class="rt"><span class="rt-title">Battalion Planning Assistant</span><span class="rt-date">2018</span></div>
         <ul>
           <li>Redesigned ammunition sourcing from push to pull, producing accurate forecasts and recapturing unexpended allocations — disciplined resource forecasting analogous to portfolio, asset allocation, and cash-flow planning.</li>
           <li>Analyzed and planned 32 operations orders and coordinated 115 ranges in 5 months across 7 organizations.</li>
         </ul>
       </div>
       <div class="role">
-        <div class="rt">Platoon Leader (Forward Operations, Mosul, Iraq) · 2017–2018</div>
+        <div class="rt"><span class="rt-title">Platoon Leader (Forward Operations, Mosul, Iraq)</span><span class="rt-date">2017–2018</span></div>
         <ul>
           <li>Accountable for $7M in equipment in a combat environment; sustained zero losses of personnel or property across 30 combat convoy operations.</li>
           <li>Trained and advised 6 coalition brigades through key-leader engagements, building trusted relationships and influence across cultures and organizations.</li>
@@ -350,11 +420,11 @@
     </div>
     <div class="photos">
       <figure>
-        <img src="img/rugby.jpg" width="960" height="639" alt="Kristian Pfeffer at flanker for Florida Atlantic University rugby, breaking with the ball" loading="lazy">
+        <img src="img/rugby-860.jpg" srcset="img/rugby-430.jpg 430w, img/rugby-860.jpg 860w" sizes="(max-width:640px) calc(100vw - 36px), 427px" width="860" height="524" alt="Kristian Pfeffer at flanker for Florida Atlantic University rugby, breaking with the ball" loading="lazy" decoding="async">
         <figcaption>Flanker, No.&nbsp;7 — NCAA Division&nbsp;I rugby, Florida Atlantic University.</figcaption>
       </figure>
       <figure>
-        <img src="img/cycling.jpg" width="2000" height="1500" alt="Cross Creek Cycling Club riders at the Five-O Memorial Ride in Raleigh, North Carolina" loading="lazy">
+        <img src="img/cycling-860.jpg" srcset="img/cycling-430.jpg 430w, img/cycling-860.jpg 860w" sizes="(max-width:640px) calc(100vw - 36px), 427px" width="860" height="524" alt="Cross Creek Cycling Club riders at the Five-O Memorial Ride in Raleigh, North Carolina" loading="lazy" decoding="async">
         <figcaption>With the Cross Creek Cycling Club at the Five-O Memorial Ride, Raleigh.</figcaption>
       </figure>
     </div>
@@ -370,10 +440,10 @@
     <h2>Let's talk</h2>
     <p style="max-width:560px;margin:0 auto;color:#c4d0da">I'm seeking opportunities in trust administration and wealth management. I'd welcome a conversation.</p>
     <div class="contact-row">
-      <a href="mailto:mail@kpfeffer.com">mail@kpfeffer.com</a>
-      <a href="tel:+19108476692">(910) 847-6692</a>
-      <a href="https://www.linkedin.com/in/kristian-pfeffer-20484b8b">LinkedIn</a>
-      <a href="https://www.strava.com/athletes/44119116">Strava</a>
+      <a href="mailto:mail@kpfeffer.com"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>mail@kpfeffer.com</a>
+      <a href="tel:+19108476692"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"/></svg>(910) 847-6692</a>
+      <a href="https://www.linkedin.com/in/kristian-pfeffer-20484b8b"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6Z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn</a>
+      <a href="https://www.strava.com/athletes/44119116"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Strava</a>
     </div>
   </div>
 </section>
