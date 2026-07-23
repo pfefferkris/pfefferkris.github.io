@@ -166,19 +166,6 @@
 
   footer{background:var(--navy); color:#7f93a4; text-align:center; padding:26px 0; font-size:.82rem}
 
-  /* Subscribe */
-  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  #subscribe .lead{max-width:680px}
-  .subscribe-form{display:flex; flex-wrap:wrap; gap:12px; margin-top:26px; max-width:560px}
-  .subscribe-form input[type=email]{flex:1 1 260px; min-width:0; padding:13px 16px; border:1px solid var(--line);
-    border-radius:2px; font-size:1rem; background:#fff; color:var(--ink); font-family:inherit}
-  .subscribe-form input[type=email]::placeholder{color:#9aa7b2}
-  .subscribe-form input[type=email]:focus{outline:2px solid var(--gold); outline-offset:1px; border-color:var(--gold)}
-  .subscribe-form button.cta.primary{border:none; cursor:pointer; font-family:inherit}
-  .subscribe-note{margin-top:14px; font-size:.86rem; color:var(--muted)}
-  .subscribe-note a{color:var(--navy-2)} .subscribe-note a:hover{color:var(--gold)}
-  @media(max-width:480px){.subscribe-form button.cta.primary{flex:1 1 100%}}
-
   /* Off the clock */
   .milestones{margin-top:24px; border-top:1px solid var(--line)}
   .ms{display:flex; gap:20px; padding:13px 0; border-bottom:1px solid var(--line); align-items:baseline}
@@ -445,20 +432,6 @@
     <p class="closer">Wealth transfer is a distance event, too. The plan that matters isn't the one that looks fast off the start line — it's the one still standing at mile 26, and the one a family inherits at the finish.</p>
     <p style="margin-top:18px"><a href="https://www.strava.com/athletes/44119116"><b>Follow the training on Strava →</b></a></p>
     <p class="aside">Off my feet, you'll find me deep in the archives of <b><a href="https://xkcd.com/">xkcd</a></b> — smart, geeky, and reliably funny. Good company for a rest day.</p>
-  </div>
-</section>
-
-<section id="subscribe">
-  <div class="wrap">
-    <p class="kicker">The Newsletter</p>
-    <h2>Held in Trust</h2>
-    <p class="lead">Plain-English essays on safeguarding what belongs to others: trust administration and fiduciary service, comprehensive financial planning, estate and tax planning, and fiduciary investment management. One considered issue at a time, sent straight to your inbox.</p>
-    <form action="https://buttondown.com/api/emails/embed-subscribe/pfefferk" method="post" class="embeddable-buttondown-form subscribe-form" target="_blank">
-      <label class="sr-only" for="bd-email">Email address</label>
-      <input type="email" name="email" id="bd-email" placeholder="you@example.com" required autocomplete="email">
-      <button type="submit" class="cta primary"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>Subscribe</button>
-    </form>
-    <p class="subscribe-note">No spam, and you can unsubscribe anytime. <a href="newsletter/">Browse past issues &rarr;</a></p>
   </div>
 </section>
 
