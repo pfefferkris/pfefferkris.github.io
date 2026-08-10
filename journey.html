@@ -646,18 +646,23 @@ document.getElementById('sx').addEventListener('click',closeSheet);
 .teeth .meter{height:10px;border-radius:6px;background:#e4ddd0;overflow:hidden;margin-top:8px}
 .teeth .meter i{display:block;height:100%;background:linear-gradient(90deg,#a9884f,#2e6b4f);width:0;transition:width .5s}
 .teeth .foot{font-size:.68rem;color:var(--muted);margin-top:8px;line-height:1.45}
-.teeth .advline{display:none;background:rgba(18,41,63,.06);border-left:4px solid var(--navy-2);border-radius:9px;padding:9px 12px;margin-top:8px;font-size:.76rem;line-height:1.5;color:var(--ink)}
-.teeth .advline b{color:var(--navy)}
-body.adv .teeth .advline{display:block}
+.advline{display:none;position:relative;max-width:340px;padding:16px 18px 13px;border-radius:12px;text-align:left;margin-top:14px;
+  background:linear-gradient(135deg,rgba(226,232,238,.62),rgba(226,232,238,.32));
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  border:1px solid rgba(28,61,92,.28);box-shadow:0 8px 26px rgba(18,41,63,.12), inset 0 1px 0 rgba(255,255,255,.7);
+  font-size:.76rem;line-height:1.5;color:var(--ink)}
+.advline::before{content:'The math and the law';position:absolute;top:-9px;left:12px;font-size:.56rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 9px;border-radius:10px;background:var(--navy-2);color:#fff}
+.advline b{color:var(--navy)}
+body.adv .advline{display:block;animation:pop .5s ease both}
 .gl{border-bottom:1px dashed var(--gold);cursor:help;position:relative}
 .glpop{display:none;position:absolute;left:0;bottom:calc(100% + 6px);z-index:40;background:var(--navy);color:#fff;border-radius:10px;padding:9px 12px;font-size:.74rem;line-height:1.45;width:230px;font-style:normal;font-weight:400;box-shadow:0 10px 28px rgba(18,41,63,.35)}
 .gl.open .glpop{display:block}
 .steprail{position:fixed;left:16px;bottom:16px;z-index:55;padding:9px 15px;border-radius:16px;font-size:.7rem;color:var(--muted);max-width:230px;line-height:1.4}
 .steprail b{display:block;font-size:.76rem;color:var(--navy);letter-spacing:.04em}
 @media(max-width:900px){.steprail{display:none}}
-@media(min-width:901px){.advbox{left:16px;right:auto;max-width:250px}}
 .teeth .addrow{border:1px dashed var(--gold);background:transparent;color:var(--gold-ink);border-radius:10px;padding:6px 12px;font-size:.76rem;cursor:pointer;margin-top:6px}
 .teeth .flagbad{color:#8a3b2e;font-weight:700}
+@media(max-width:900px){.advline{max-width:100%}}
 </style>
 <script>
 /* ===== TEETH LAYER v2 ===== */
@@ -677,7 +682,7 @@ document.title=document.title.replace('The Wealth Guide: Estate & Wealth Plannin
 const h1=document.querySelector('header h1');
 if(h1)h1.innerHTML='Building an unshakable foundation.';
 const sub=document.querySelector('header .sub');
-if(sub)sub.innerHTML='Wealth is planted, grown, harvested, protected, and handed on. Scroll the seasons, tap any bubble to learn the move, and put YOUR numbers in as you go: the guide computes with live rates and public records, explains every term, and never stores a thing you type. Flip <b>Advanced</b> (left side) to see the math and the law underneath each answer.';
+if(sub)sub.innerHTML='Wealth is planted, grown, harvested, protected, and handed on. Scroll the seasons, tap any bubble to learn the move, and put YOUR numbers in as you go: the guide computes with live rates and public records, explains every term, and never stores a thing you type. Flip <b>Advanced</b> (top right) and the math and the law appear beside each season, on the left of the timeline.';
 
 /* glossary */
 const GLOSS={
@@ -751,7 +756,21 @@ document.querySelectorAll('.stage').forEach((sec,si)=>{
   const d=document.createElement('div');d.className='teeth glass';
   d.innerHTML='<p class="disc">'+BLOCKS[si].q+'</p><p class="tsub">'+BLOCKS[si].sub+'</p>'+BLOCKS[si].body;
   lane.appendChild(d);
+  /* the math and the law live in the LEFT lane with the other advanced tiles */
+  const al=d.querySelector('.advline'),la=sec.querySelector('.lane-a');
+  if(al&&la)la.appendChild(al);
 });
+
+/* the full This is me set: the guide carries every profile the toolbox knows */
+const personaRow=document.querySelector('.persona');
+if(personaRow){
+  [['minor','Minor children'],['char','Charitably inclined'],['blended','Blended family'],['nc','Noncitizen spouse']].forEach(pair=>{
+    if(personaRow.querySelector('[data-p="'+pair[0]+'"]'))return;
+    const c=document.createElement('span');c.className='chip';c.dataset.p=pair[0];c.textContent=pair[1];
+    c.addEventListener('click',()=>{c.classList.toggle('on');tcalc();});
+    personaRow.appendChild(c);
+  });
+}
 
 /* CFP seven step rail */
 const STEPS=[
@@ -908,6 +927,10 @@ function tcalc(){
     if(flags.indexOf('kids')>-1)tools.push('annual exclusion gifting at $19,000 per child per donor, doubled for a married couple, plus 529 front loading');
     if(flags.indexOf('biz')>-1)tools.push('a buy sell agreement funded with life insurance, and entity walls between business risk and family assets');
     if(flags.indexOf('sn')>-1)tools.push('a special needs trust, so an inheritance supplements benefits instead of disqualifying them');
+    if(flags.indexOf('minor')>-1)tools.push('a guardian nomination in the will plus a minor trust or 2503(c) structure, because a minor can never take property outright');
+    if(flags.indexOf('char')>-1)tools.push('charitable remainder and lead trusts, income now or later with the remainder doing good, plus the 10 percent test that keeps them qualified');
+    if(flags.indexOf('blended')>-1)tools.push('the QTIP election, which lets the first spouse guarantee today that his or her share ultimately reaches his or her own children');
+    if(flags.indexOf('nc')>-1)tools.push('a QDOT, because the unlimited marital deduction is not available to a noncitizen spouse without one');
     if(T.homeVal&&T.homeBasis&&(T.homeVal-T.homeBasis)>250000)tools.push('a QPRT candidacy check, because the home is carrying '+tfmt(T.homeVal-T.homeBasis)+' of appreciation a residence trust can freeze');
     if(T.pos&&T.pos.length&&T.pos.some(p=>p.val/T.pos.reduce((s,x)=>s+x.val,0)>0.10))tools.push('a charitable remainder trust look at the concentrated stock position, diversification without the immediate gains bill');
     o4.innerHTML='<b>Your seasons so far:</b> '+parts.join(', ')+'.'+(T.docs<6?' The fastest way to change this picture is not a bigger portfolio, it is the missing documents in Winter.':' The documents are done, which puts you ahead of most millionaires.')+(tools.length?' <b>Based on what you have told the guide, the toolbox to read first:</b> '+tools.join('; ')+'. Every one of these is built out with live numbers in the <a href="capstone.html"><b>Capstone guide</b></a>.':'')+' Estate tax only enters the story above the federal exclusion, and the whiteboard in Harvest shows that math with your net worth. Everything below that line is about control, protection, and kindness, which cost almost nothing.';
