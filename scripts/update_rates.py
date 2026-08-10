@@ -26,6 +26,11 @@ def fetch_7520(existing):
         rows = re.findall(r"(" + months + r")\s+(20\d\d)\s+([0-9]+\.[0-9]+)", text)
         if not rows:
             raise ValueError("no rate rows found")
+        # a 7520 rate is 120 percent of the midterm AFR rounded to the nearest 0.2,
+        # so valid values are always even tenths; anything else is a misparse
+        rows = [r for r in rows if float((__import__("decimal").Decimal(r[2]) * 5) % 1) == 0 and 0 < float(r[2]) < 20]
+        if not rows:
+            raise ValueError("no valid 7520 shaped rates found")
         # newest by (year, month index)
         order = ("January","February","March","April","May","June","July","August","September","October","November","December")
         rows.sort(key=lambda r: (int(r[1]), order.index(r[0])))
