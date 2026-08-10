@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       "https://api.rentcast.io/v1/avm/value?address=" + encodeURIComponent(address),
       { headers: { "X-Api-Key": key, Accept: "application/json" } }
     );
-    if (!r.ok) return res.status(502).json({ error: "valuation service unavailable" });
+    if (!r.ok) { const body = await r.text(); console.log("rentcast", r.status, body.slice(0,300)); return res.status(502).json({ error: "valuation service unavailable", upstream: r.status }); }
     const d = await r.json();
     const out = {
       price: d.price ?? null,
