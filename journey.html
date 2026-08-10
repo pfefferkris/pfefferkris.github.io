@@ -662,6 +662,18 @@ body.adv .advline{display:block;animation:pop .5s ease both}
 @media(max-width:900px){.steprail{display:none}}
 .teeth .addrow{border:1px dashed var(--gold);background:transparent;color:var(--gold-ink);border-radius:10px;padding:6px 12px;font-size:.76rem;cursor:pointer;margin-top:6px}
 .teeth .flagbad{color:#8a3b2e;font-weight:700}
+.teeth .lesson{margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.5);font-size:.84rem;line-height:1.5}
+.teeth .lesson b{color:var(--navy)}
+.teeth .lesson input[type=range]{accent-color:#a9884f}
+.teeth .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:10px;margin-top:12px}
+.teeth .tcard{border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:rgba(255,255,255,.55);opacity:.4;transition:opacity .35s,border-color .35s,box-shadow .35s}
+.teeth .tcard.fit{opacity:1;border-color:var(--gold);box-shadow:0 6px 18px rgba(18,41,63,.1)}
+.teeth .tcard .cat{font-size:.56rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-ink)}
+.teeth .tcard h4{font-size:.85rem;margin:4px 0;color:var(--navy);font-family:Georgia,serif}
+.teeth .tcard p{font-size:.72rem;line-height:1.45;color:var(--muted);margin:0}
+.teeth .tcard .fitlb{display:inline-block;margin-top:6px;font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#2e6b4f}
+.teeth .tcard .whyln{display:none;font-size:.7rem;line-height:1.45;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);color:var(--ink)}
+body.adv .teeth .tcard .whyln{display:block}
 @media(max-width:900px){.advline{max-width:100%}}
 </style>
 <script>
@@ -728,6 +740,17 @@ const BLOCKS=[
  <div id="t_pos"></div>
  <button class="addrow" id="t_addpos" type="button">+ Add a position</button>
  <div class="tout" id="t_outp" style="display:none"></div>
+ <p class="tsub" style="margin-top:16px">Three lessons the curriculum teaches every future trust officer, live:</p>
+ <div class="lesson"><b>1. The gold lesson.</b> Start at 100 percent stocks, then slide gold into the mix and watch what happens to risk and efficiency.
+  <label style="margin-top:8px">Gold in the portfolio: <span id="t_goldpct">0</span>%<input type="range" id="t_gold" min="0" max="40" step="5" value="0" style="width:100%;margin-top:4px"></label>
+  <div class="tout" id="t_goldout"></div></div>
+ <div class="lesson"><b>2. The fee lesson.</b> What does the expense ratio quietly cost over a working lifetime?
+  <div class="trow"><label>Fund expense ratio (%)<input type="number" id="t_fee" step="0.05" min="0" max="3" placeholder="0.75"></label></div>
+  <div class="tout" id="t_feeout" style="display:none"></div></div>
+ <div class="lesson"><b>3. The allocation lesson.</b> Pop quiz: what explains over 90 percent of the difference in returns between portfolios?
+  <div class="docck" id="t_alloc">
+   <span data-a="picks">Picking the right stocks</span><span data-a="timing">Timing the market</span><span data-a="alloc">Asset allocation</span><span data-a="fees">Low fees</span>
+  </div><div class="tout" id="t_allocout" style="display:none"></div></div>
  <div class="advline" id="t_adv1"></div>`},
 {q:'Help me understand how your most important assets are actually owned.',
  sub:'For most families the home is the largest asset, and the public record already knows its story. Type the address and let the records do the work.',
@@ -746,8 +769,10 @@ const BLOCKS=[
 {q:'Tell me what you would want to happen to everything you have built.',
  sub:'Everything you entered above, translated into where you stand and what to do next.',
  body:`<div class="tout" id="t_out4">Work through the seasons above and this summary assembles itself.</div>
+ <p class="tsub" style="margin-top:16px">The full toolbox, all 21 instruments. Cards light up as the guide learns your situation; the rest stay dimmed so you can always see the whole landscape. Flip Advanced for the why behind each one.</p>
+ <div class="tgrid" id="t_tgrid"></div>
  <div class="advline" id="t_adv4"></div>
- <div class="foot">Educational illustration only, not legal, tax, or investment advice. Ready for the deep end? The <a href="capstone.html"><b>Capstone guide</b></a> builds the full trust architecture with the same live numbers.</div>`}
+ <div class="foot">Educational illustration only, not legal, tax, or investment advice. The <a href="capstone.html"><b>Capstone case study</b></a> shows one family's complete plan built from these same instruments.</div>`}
 ];
 
 document.querySelectorAll('.stage').forEach((sec,si)=>{
@@ -764,12 +789,25 @@ document.querySelectorAll('.stage').forEach((sec,si)=>{
 /* the full This is me set: the guide carries every profile the toolbox knows */
 const personaRow=document.querySelector('.persona');
 if(personaRow){
-  [['minor','Minor children'],['char','Charitably inclined'],['blended','Blended family'],['nc','Noncitizen spouse']].forEach(pair=>{
+  [['char','Charitably inclined'],['blended','Blended family'],['nc','Noncitizen spouse']].forEach(pair=>{
     if(personaRow.querySelector('[data-p="'+pair[0]+'"]'))return;
     const c=document.createElement('span');c.className='chip';c.dataset.p=pair[0];c.textContent=pair[1];
     c.addEventListener('click',()=>{c.classList.toggle('on');tcalc();});
     personaRow.appendChild(c);
   });
+  /* Kids branches by age instead of a separate chip: the follow up appears only when Kids is on */
+  const kidsChip=personaRow.querySelector('[data-p="kids"]');
+  if(kidsChip&&!personaRow.querySelector('[data-p="minor"]')){
+    const mc=document.createElement('span');mc.className='chip';mc.dataset.p='minor';mc.textContent='Some are under 18';mc.style.display='none';
+    mc.addEventListener('click',()=>{mc.classList.toggle('on');tcalc();});
+    kidsChip.after(mc);
+    kidsChip.addEventListener('click',()=>{
+      const on=kidsChip.classList.contains('on');
+      mc.style.display=on?'':'none';
+      if(!on)mc.classList.remove('on');
+      setTimeout(tcalc,0);
+    });
+  }
 }
 
 /* CFP seven step rail */
@@ -813,6 +851,69 @@ const ap=$('t_addpos');if(ap)ap.addEventListener('click',()=>{addPos();});
 
 /* the persona chips steer the toolbox, so recompute when they flip */
 document.querySelectorAll('.persona [data-p]').forEach(c=>c.addEventListener('click',()=>setTimeout(tcalc,0)));
+
+/* the gold lesson: TRST 631 classroom case, two asset math with the case parameters */
+const GOLD={premS:21.7,premG:9.6,sigS:42.3,sigG:25,rho:-0.26};
+function goldCalc(w){const ws=1-w;
+  const prem=ws*GOLD.premS+w*GOLD.premG;
+  const sig=Math.sqrt(ws*ws*GOLD.sigS*GOLD.sigS+w*w*GOLD.sigG*GOLD.sigG+2*ws*w*GOLD.rho*GOLD.sigS*GOLD.sigG);
+  return {sig:Math.round(sig*10)/10,sharpe:Math.round(prem/sig*1000)/1000};}
+const goldEl=$('t_gold');
+function goldOut(){const go=$('t_goldout');if(!go||!goldEl)return;
+  const w=+goldEl.value/100;$('t_goldpct').textContent=goldEl.value;
+  const r=goldCalc(w),base=goldCalc(0);
+  if(w===0){go.innerHTML='All stocks: risk (standard deviation) <b>'+base.sig+' percent</b>, Sharpe ratio <b>'+base.sharpe+'</b>. Gold earns LESS than stocks, so adding it should make things worse. Slide and see.';return;}
+  go.innerHTML='At '+goldEl.value+' percent gold: risk falls to <b>'+r.sig+' percent</b> and the Sharpe ratio rises to <span class="big">'+r.sharpe+'</span>. It sounds like a paradox: a lower return asset made the whole portfolio better, because gold tends to zig when stocks zag. That negative correlation is the only free lunch in finance, and it is why the curriculum judges a portfolio by its Sharpe ratio, never by raw return. Classroom case figures, illustrative.';}
+if(goldEl){goldEl.addEventListener('input',goldOut);goldOut();}
+
+/* the fee lesson */
+const feeEl=$('t_fee');
+if(feeEl)feeEl.addEventListener('input',tcalc);
+
+/* the toolbox grid: the full Build Your Own instrument set, living here now */
+const TRUSTS=[
+ ['Revocable living trust','base','Foundation','The workhorse. Avoids probate in every state, manages incapacity, and splits into the whole plan at death. No tax benefit by itself.','Why: continuity and privacy. This one is about logistics, not tax. It is the chassis every other trust bolts onto.'],
+ ['Testamentary trust','base','Foundation','A trust born inside your will. Simple to create, but everything still rides through probate first.','Why: control after death at the lowest drafting cost, for estates where probate itself is not the enemy.'],
+ ['Credit shelter trust','married','Freeze','Captures the first exclusion at the first death. The assets and ALL their future growth escape the survivor estate.','Why: the first freeze most couples ever do. The exclusion is locked at the first death, so decades of growth never see the 40 percent tax.'],
+ ['GPOA marital trust','married','Control','Full marital deduction with full control for the survivor. The power of appointment is exactly what pulls it into her estate.','Why: a control decision, not a tax one. Choose it when you trust the survivor with everything, including the power to redirect it.'],
+ ['QTIP trust','blended','Control','The marital deduction while the first spouse picks the final remaindermen. The blended family answer.','Why: pure control. Same deduction as the GPOA trust, but YOU decide today who inherits, and nobody can rewrite it after you are gone.'],
+ ['Estate trust','married','Control','Marital deduction with discretionary income. Can hold unproductive assets a QTIP cannot.','Why: flexibility. When the survivor does not need income, this keeps the deduction without forcing assets to produce it.'],
+ ['QDOT','nc','Control','The only route to the marital deduction when the surviving spouse is not a U.S. citizen. A U.S. trustee withholds the tax.','Why: without it the deduction is simply denied, and the first death becomes a taxable event the family never saw coming.'],
+ ['ILIT','exposed','Liquidity','Owns life insurance outside the estate. Crummey powers turn premiums into annual exclusion gifts, and the trustee supplies estate liquidity.','Why: the tax is due nine months after death, in cash. This is how illiquid families pay it without a fire sale, and the death benefit itself escapes the 40 percent.'],
+ ['GRAT','exposed','Freeze','A fixed annuity back to you for a term. Appreciation above the 7520 rate passes to family free of further gift tax.','Why: the classic freeze. The gift is valued TODAY, so everything the asset earns above the hurdle rate transfers free. This is the zone where real preservation happens.'],
+ ['GRUT','exposed','Freeze','The same freeze with a floating payment revalued yearly. The inflation hedge version.','Why: same freeze logic, tuned for clients who fear inflation more than volatility.'],
+ ['GRIT','exposed','Freeze + discount','The original freeze, now only for remaindermen who are NOT close family: nieces, nephews, cousins, friends.','Why: the deepest discount left in the code, because the retained interest still counts when the remainderman is outside the family definition.'],
+ ['QPRT','exposed','Freeze + discount','The residence freeze. Gift the home at a discount, keep living in it through the term, pay fair rent afterward.','Why: freeze AND discount at once. The home moves at a fraction of value, appreciation escapes, and the rent phase quietly drains even more from the estate.'],
+ ['CRAT','char','Charity','A fixed income to you, remainder to charity. Sells appreciated assets tax free. No additions after funding.','Why: the escape hatch for a concentrated, low basis asset. Diversify without the capital gains tax, keep the income, give the remainder.'],
+ ['CRUT','char','Charity','Same idea with a floating payout and additional contributions allowed. Deferral variants exist for later starts.','Why: the flexible version, for donors who will keep adding or want payments to start later.'],
+ ['Charitable lead trust','char','Charity + freeze','The reverse flow: charity is paid first, family takes the remainder at a reduced transfer cost.','Why: philanthropy as a discount mechanism. The charity stream shrinks the taxable gift, and the family still lands the remainder.'],
+ ['Third party special needs trust','sn','Protection','Funded by the family. Supplements government benefits without disqualifying the beneficiary. No payback provision.','Why: protection of a person, not a bracket. One dollar outright can end SSI. Every share for this beneficiary routes here instead.'],
+ ['First party special needs trust','sn','Protection','Funded with the beneficiary’s own money, a settlement or an inheritance already received. Requires a Medicaid payback.','Why: damage control when money already reached the beneficiary directly. Preserves benefits, but the state gets paid back first.'],
+ ['Minor’s trust under 2503(c)','minor','Foundation','Annual exclusion gifts for a child despite no present interest. Assets must become available at 21.','Why: lets the annual exclusion work for a child years before they can legally hold property.'],
+ ['Dynasty trust','kids','Freeze','GST exempt and multigenerational. The transfer tax stops repeating every generation.','Why: the longest freeze there is. Allocate GST exemption once and the 40 percent toll booth closes for the grandchildren and beyond.'],
+ ['Spendthrift trust','kids','Protection','Creditor and divorce protection for a beneficiary who should not hold assets outright.','Why: protection from the beneficiary’s own life events. The trust owns it, so the creditor and the divorce court cannot.'],
+ ['Intentionally defective grantor trust','biz','Freeze + discount','You pay the trust’s income tax as an extra tax free gift, and can sell appreciating business interests to it with no gain recognized.','Why: the business owner’s freeze. Sell at today’s value, often discounted for lack of control and marketability, and every tax bill you pay for the trust is another invisible gift.']
+];
+function nwRead(){const el=document.getElementById('nw');if(!el)return 0;return +((el.value||'').replace(/[^0-9.]/g,''))||0;}
+function renderTG(flags,exposed){
+  const g=$('t_tgrid');if(!g)return;
+  g.innerHTML=TRUSTS.map(t=>{
+    const tag=t[1];
+    const fit=tag==='base'||(tag==='exposed'&&exposed)||flags.indexOf(tag)>-1;
+    return '<div class="tcard'+(fit?' fit':'')+'"><span class="cat">'+t[2]+'</span><h4>'+t[0]+'</h4><p>'+t[3]+'</p><div class="whyln">'+t[4]+'</div>'+(fit?'<span class="fitlb">Fits your profile</span>':'')+'</div>';
+  }).join('');
+}
+const nwWatch=document.getElementById('nw');
+if(nwWatch)nwWatch.addEventListener('input',()=>setTimeout(tcalc,0));
+
+/* the allocation lesson */
+const allocEl=$('t_alloc');
+if(allocEl)allocEl.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{
+  allocEl.querySelectorAll('span').forEach(x=>x.classList.remove('on'));s.classList.add('on');
+  const out=$('t_allocout');out.style.display='block';
+  const right=s.dataset.a==='alloc';
+  out.innerHTML=(right?'<b>Correct.</b> ':'The popular answer, but no. ')+'Landmark research found that <b>asset allocation</b>, the mix between stocks, bonds, and cash, explains over 90 percent of the variation in portfolio returns. Stock picking and market timing, the two things the industry sells hardest, explain almost none of it. Get the mix right for your horizon and the hard part is done.';
+}));
 
 const pull=$('t_pull');
 if(pull)pull.addEventListener('click',async()=>{
@@ -881,7 +982,7 @@ function tcalc(){
       const nestB=fv(T.retBal||0,yrs,LONGRUN/100)+fvStream((T.monthly||0)*12,yrs,LONGRUN/100);
       o1.innerHTML='By 65 this road reaches about <span class="big">'+tfmt(nestF)+'</span> at the risk free floor, and about <span class="big">'+tfmt(nestB)+'</span> near the long run market average. The gap between those two numbers is the reward the market has historically paid for staying invested through its storms.'+(bench!==null?' For context, the '+gl('benchmark','benchmark')+' ('+RTS.benchmark+') returned '+bench+' percent over the last twelve months.':'')+(nestB>1e6?' And past the first million you are worth suing, which is what the umbrella bubble above is for.':'');
     } else o1.innerHTML='Add your balance and monthly savings to project the harvest.';
-    if(a1)a1.innerHTML='<b>The math:</b> lump sum grows as PV times (1+r)^n; contributions grow as the annuity stream formula. The floor uses the live 10 year Treasury ('+RTS.tenYear+' percent); the market track uses the long run average of about '+LONGRUN+' percent'+(RTS.sp500?'; the S&P 500 stands at '+RTS.sp500.toLocaleString()+' as of '+RTS.sp500Date:'')+'. <b>The doctrine (TRST 630/631):</b> a diversified portfolio is judged against its benchmark by beta and the Sharpe ratio, (portfolio return minus the risk free rate) over standard deviation, not by raw return, because diversification removes only unsystematic risk. Past performance never guarantees future results.';
+    if(a1)a1.innerHTML='<b>The math:</b> lump sum grows as PV times (1+r)^n; contributions grow as the annuity stream formula. The floor uses the live 10 year Treasury ('+RTS.tenYear+' percent); the market track uses the long run average of about '+LONGRUN+' percent'+(RTS.sp500?'; the S&P 500 stands at '+RTS.sp500.toLocaleString()+' as of '+RTS.sp500Date:'')+'. <b>The doctrine (TRST 630/631):</b> a diversified portfolio is judged against its benchmark by beta and the Sharpe ratio, (portfolio return minus the risk free rate) over standard deviation, not by raw return, because diversification removes only unsystematic risk. Two asset portfolio variance is w1²σ1² + w2²σ2² + 2·w1·w2·ρ·σ1·σ2, and the negative correlation term is where the gold lesson lives. Brinson, Hood and Beebower is the allocation study; fee drag compounds at the same exponent returns do. Past performance never guarantees future results.';
   }
   const op=$('t_outp');
   if(op){
@@ -898,9 +999,21 @@ function tcalc(){
       }
       if(T.pos.length<10)h+='With fewer than 10 holdings most portfolios still carry meaningful single company risk; index funds get you to hundreds of names in one purchase.';
       else h+='Breadth looks healthy. The next question is whether the mix is judged by beta and the Sharpe ratio rather than raw return, which is how the pros keep score.';
-      if(heavy.length&&T.pos.length)h+=' If a concentrated position came from an employer or an inheritance, selling is not the only door: the Capstone guide covers charitable remainder trusts, which diversify a low '+gl('basis','basis')+' position without the immediate capital gains bill.';
+      if(heavy.length&&T.pos.length)h+=' If a concentrated position came from an employer or an inheritance, selling is not the only door: a charitable remainder trust diversifies a low '+gl('basis','basis')+' position without the immediate capital gains bill, and it lights up in the toolbox below when it fits.';
       op.innerHTML=h;
     } else op.style.display='none';
+  }
+  const fo=$('t_feeout');
+  if(fo){
+    const fee=+($('t_fee')&&$('t_fee').value)||0;
+    if(fee>0&&(T.retBal!==null||T.monthly!==null)){
+      const gross=fv(T.retBal||0,yrs,LONGRUN/100)+fvStream((T.monthly||0)*12,yrs,LONGRUN/100);
+      const net=fv(T.retBal||0,yrs,(LONGRUN-fee)/100)+fvStream((T.monthly||0)*12,yrs,(LONGRUN-fee)/100);
+      const idx=fv(T.retBal||0,yrs,(LONGRUN-0.05)/100)+fvStream((T.monthly||0)*12,yrs,(LONGRUN-0.05)/100);
+      fo.style.display='block';
+      fo.innerHTML='Over '+yrs+' years near the long run average, a '+fee+' percent expense ratio consumes <span class="big">'+tfmt(gross-net)+'</span> of the ending balance. The same money in a 0.05 percent index fund gives up only '+tfmt(gross-idx)+'. Research finds just 5 to 15 percent of active funds beat their benchmark net of fees, so the fee is usually paid for nothing. If we fast forward and nothing changes, the expense ratio quietly becomes one of the largest single payments of an investing lifetime.';
+    } else if(fee>0){fo.style.display='block';fo.innerHTML='Add your retirement balance and monthly savings above and the fee drag computes in dollars.';}
+    else fo.style.display='none';
   }
   const a2=$('t_adv2');
   if(a2)a2.innerHTML='<b>The law:</b> inherited assets take a date of death basis under IRC Section 1014 (the step up); lifetime gifts carry the donor basis under Section 1015. Keep living in a home you gave away and Section 2036 can pull the full date of death value back into your estate. Titling controls before either: survivorship and beneficiary deeds move property outside the will entirely.';
@@ -922,17 +1035,30 @@ function tcalc(){
     if(T.homeVal)parts.push('a home worth '+tfmt(T.homeVal)+(T.homeBasis?' carrying '+tfmt(Math.max(0,T.homeVal-T.homeBasis))+' of appreciation':''));
     parts.push(T.docs+' of 6 protection documents in place');
     const flags=[...document.querySelectorAll('.persona [data-p]')].filter(c=>c.classList.contains('on')).map(c=>c.dataset.p);
+    const nwv=nwRead();
+    const exposed=nwv>15000000;
     const tools=[];
     if(flags.indexOf('married')>-1)tools.push('the credit shelter and QTIP pairing, which uses both spouses exclusions and keeps control over where things land after the second passing');
-    if(flags.indexOf('kids')>-1)tools.push('annual exclusion gifting at $19,000 per child per donor, doubled for a married couple, plus 529 front loading');
-    if(flags.indexOf('biz')>-1)tools.push('a buy sell agreement funded with life insurance, and entity walls between business risk and family assets');
-    if(flags.indexOf('sn')>-1)tools.push('a special needs trust, so an inheritance supplements benefits instead of disqualifying them');
-    if(flags.indexOf('minor')>-1)tools.push('a guardian nomination in the will plus a minor trust or 2503(c) structure, because a minor can never take property outright');
+    if(flags.indexOf('kids')>-1){
+      tools.push('annual exclusion gifting at $19,000 per child per donor, doubled for a married couple, plus 529 front loading');
+      if(flags.indexOf('minor')>-1)tools.push('a guardian nomination in the will and a 2503(c) minor trust or custodial account, because a child under 18 can never take property outright, and a life insurance payout to a minor lands in a guardianship instead of a family');
+      else tools.push('a spendthrift provision for adult children, so a lawsuit or a divorce reaches the trust wall instead of the inheritance');
+    }
+    if(flags.indexOf('biz')>-1){
+      tools.push('a buy sell agreement funded with life insurance, and entity walls between business risk and family assets');
+      if(exposed)tools.push('an IDGT sale of business interests, valued today, often discounted, with every income tax bill you pay for the trust acting as an extra invisible gift');
+    }
+    if(flags.indexOf('sn')>-1)tools.push('a THIRD PARTY special needs trust funded by the family, no payback provision, so an inheritance supplements benefits instead of disqualifying them');
     if(flags.indexOf('char')>-1)tools.push('charitable remainder and lead trusts, income now or later with the remainder doing good, plus the 10 percent test that keeps them qualified');
     if(flags.indexOf('blended')>-1)tools.push('the QTIP election, which lets the first spouse guarantee today that his or her share ultimately reaches his or her own children');
     if(flags.indexOf('nc')>-1)tools.push('a QDOT, because the unlimited marital deduction is not available to a noncitizen spouse without one');
+    if(exposed){
+      tools.push('the freeze family, because at '+tfmt(nwv)+' the estate sits above the $15M exclusion: a GRAT passes everything the assets earn above the '+RTS.rate7520+' percent hurdle rate, and an ILIT stands ready for the tax bill that arrives in cash at month nine');
+      if(flags.indexOf('kids')>-1)tools.push('a dynasty trust with the GST exemption allocated once, closing the 40 percent toll booth for the grandchildren and beyond');
+    }
     if(T.homeVal&&T.homeBasis&&(T.homeVal-T.homeBasis)>250000)tools.push('a QPRT candidacy check, because the home is carrying '+tfmt(T.homeVal-T.homeBasis)+' of appreciation a residence trust can freeze');
     if(T.pos&&T.pos.length&&T.pos.some(p=>p.val/T.pos.reduce((s,x)=>s+x.val,0)>0.10))tools.push('a charitable remainder trust look at the concentrated stock position, diversification without the immediate gains bill');
+    renderTG(flags,exposed);
     o4.innerHTML='<b>Your seasons so far:</b> '+parts.join(', ')+'.'+(T.docs<6?' The fastest way to change this picture is not a bigger portfolio, it is the missing documents in Winter.':' The documents are done, which puts you ahead of most millionaires.')+(tools.length?' <b>Based on what you have told the guide, the toolbox to read first:</b> '+tools.join('; ')+'. Every one of these is built out with live numbers in the <a href="capstone.html"><b>Capstone guide</b></a>.':'')+' Estate tax only enters the story above the federal exclusion, and the whiteboard in Harvest shows that math with your net worth. Everything below that line is about control, protection, and kindness, which cost almost nothing.';
     if(a4)a4.innerHTML='<b>Under the hood:</b> live inputs are the 10 year Treasury ('+RTS.tenYear+' percent, '+RTS.tenYearDate+'), the Section 7520 rate ('+RTS.rate7520+' percent for '+RTS.rate7520Month+')'+(RTS.sp500?', and the S&P 500 benchmark ('+RTS.sp500.toLocaleString()+', trailing year '+RTS.sp500Return1y+' percent)':'')+', refreshed weekly by an automated pipeline. The trust architecture above the exclusion, credit shelter, QTIP, QPRT, CRT, and ILIT, lives in the Capstone guide with the same engines.';
   }
