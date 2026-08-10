@@ -115,6 +115,25 @@ table.assets td.num{text-align:right;font-variant-numeric:tabular-nums}
 .plan-card .sv{color:var(--sage);font-weight:700;font-size:1.05rem;font-family:Georgia,serif}
 footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(--muted);border-top:1px solid var(--line);padding:22px;line-height:1.6;max-width:860px;margin:30px auto 0}
 .hidden{display:none}
+.lawbar{position:relative;z-index:2;max-width:860px;margin:16px auto 0;padding:12px 18px;border-left:4px solid var(--gold);font-size:.78rem;color:var(--ink);line-height:1.55}
+.lawbar b{color:var(--navy)}
+.calcgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+@media(max-width:720px){.calcgrid{grid-template-columns:1fr}}
+.calc{border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.8);padding:16px 18px}
+.calc h3{font-size:1rem;color:var(--navy);margin-bottom:8px}
+.calc .mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.calc .mini label{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.calc .mini input{width:100%;padding:7px;border:1px solid var(--line);border-radius:8px;font-size:.95rem;margin-top:3px;background:#fff}
+.calc .out{background:var(--sage-bg);border-left:4px solid var(--sage);border-radius:8px;padding:10px 12px;margin-top:10px;font-size:.83rem;line-height:1.5}
+.calc .out .n{font-family:Georgia,serif;font-size:1.25rem;font-weight:700;color:var(--sage)}
+.calc .ex{font-size:.76rem;color:var(--muted);margin-top:8px;line-height:1.5}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:14px}
+.tcard{border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.55);padding:13px 15px;opacity:.45;transition:opacity .25s,box-shadow .25s}
+.tcard.fit{opacity:1;background:#fff;border-color:var(--gold);box-shadow:0 4px 14px rgba(169,136,79,.18)}
+.tcard h4{font-size:.9rem;color:var(--navy);margin-bottom:4px;font-family:Georgia,serif}
+.tcard p{font-size:.76rem;color:var(--muted);line-height:1.5}
+.tcard .fitlb{display:inline-block;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);font-weight:700;margin-top:6px}
+.zlink{font-size:.7rem;text-transform:none;letter-spacing:0;font-weight:400}
 </style>
 </head>
 <body>
@@ -147,6 +166,10 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
     </details>
   </div>
 </nav>
+
+<div class="lawbar glass">
+  <b>Before you scroll:</b> I am not an attorney, and this guide is education, not legal, tax, or investment advice. Under North Carolina law (Chapter 84 of the General Statutes) only a licensed attorney may draft your estate documents or advise you on your legal rights, and nothing here creates an attorney client relationship or a fiduciary engagement. Portions of this interactive guide were built with AI assistance, under my direction and review, and every figure is an illustration from stated assumptions. Bring what you learn here to a licensed North Carolina attorney and your tax advisor.
+</div>
 
 <div class="advbox glass">
   <div class="advrow">
@@ -305,6 +328,34 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
 <div id="byoMode" class="hidden">
 
 <section class="step glass">
+  <span class="stepnum">Before the estate: grow it</span>
+  <h2>The accumulation layer</h2>
+  <p class="teach">The Wealth Guide walks wealth through its seasons, and protection only matters if the planting happened first. Two tools every saver should run before a single trust gets drafted. The risk free rate below is live, the same 10 year Treasury yield the assumptions box uses.</p>
+  <div class="calcgrid">
+    <div class="calc">
+      <h3>Never leave the match</h3>
+      <div class="mini">
+        <label>Salary<input id="mSalary" type="number" value="85000"></label>
+        <label>You defer (%)<input id="mDefer" type="number" value="6"></label>
+        <label>Employer matches 100% of first (%)<input id="mCap" type="number" value="4"></label>
+        <label>Years to retirement<input id="mYears" type="number" value="25"></label>
+      </div>
+      <div class="out">Your employer adds <span class="n" id="mAnnual">$0</span> a year. Compounded at your growth assumption for the full period, the match alone becomes <span class="n" id="mFV">$0</span> of retirement wealth you did not earn, you simply claimed it.</div>
+      <p class="ex">The match is an instant 100 percent return before a dollar of market growth. Deferring less than the match cap is declining free money.</p>
+    </div>
+    <div class="calc">
+      <h3>The investor's yardsticks</h3>
+      <div class="mini">
+        <label>Portfolio beta<input id="cBeta" type="number" step="0.1" value="1.0"></label>
+        <label>Expected market return (%)<input id="cMkt" type="number" step="0.5" value="8"></label>
+      </div>
+      <div class="out">With the risk free rate at <span class="n" id="cRf">4.65%</span>, CAPM says a portfolio this risky must earn <span class="n" id="cReq">0%</span> to justify itself. Beat that number and your manager produced positive alpha. Miss it and you paid for risk you were not compensated to take.</div>
+      <p class="ex">Judge a diversified portfolio by beta and the Treynor ratio; judge a concentrated one by standard deviation and the Sharpe ratio. This is the same math an algorithmic advisor runs continuously, and it is the direction this guide is headed: transparent, computed, and yours to check.</p>
+    </div>
+  </div>
+</section>
+
+<section class="step glass">
   <span class="stepnum">Your turn</span>
   <h2>What does your version look like?</h2>
   <p class="teach">Tap what describes your life, put in round numbers, and the guide assembles the strategy stack a planner would walk you through, with the same illustrative math as the case study. Nothing you enter is stored or sent anywhere.</p>
@@ -316,16 +367,24 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
     <span class="chip" data-flag="biz" onclick="flip(this)">Business owner</span>
     <span class="chip" data-flag="char" onclick="flip(this)">Charitably inclined</span>
     <span class="chip" data-flag="blended" onclick="flip(this)">Blended family</span>
+    <span class="chip" data-flag="nc" onclick="flip(this)">Noncitizen spouse</span>
   </div>
   <div class="inputs">
     <label>Your age<input id="byoAge" type="number" value="55" min="20" max="95" onchange="recalcByo()"></label>
     <label>Total estate value<input id="byoEstate" type="number" value="20000000" onchange="recalcByo()"></label>
-    <label>Primary home value<input id="byoHome" type="number" value="2000000" onchange="recalcByo()"></label>
+    <label>Primary home value <a class="zlink" href="https://www.zillow.com/how-much-is-my-home-worth/" target="_blank" rel="noopener">(look yours up on Zillow)</a><input id="byoHome" type="number" value="2000000" onchange="recalcByo()"></label>
     <label>QPRT term<select id="byoTerm" onchange="recalcByo()"><option>5</option><option>7</option><option>10</option><option>13</option><option selected>15</option><option>20</option></select></label>
     <label>Low basis appreciated asset<input id="byoAsset" type="number" value="3000000" onchange="recalcByo()"></label>
     <label>Its cost basis<input id="byoBasis" type="number" value="500000" onchange="recalcByo()"></label>
   </div>
   <div id="byoPlan"></div>
+</section>
+
+<section class="step glass">
+  <span class="stepnum">The full toolbox</span>
+  <h2>Every trust in the kit, and which ones fit you</h2>
+  <p class="teach">There are roughly twenty distinct trusts in the estate planner's toolbox. The ones lit up below match the profile you tapped above, the same decision logic a planner runs in the first meeting. Dimmed cards still exist, they just are not your tools today.</p>
+  <div class="tgrid" id="trustGrid"></div>
 </section>
 
 </div>
@@ -363,7 +422,50 @@ function qprtFactor(age,term){const r=(parseFloat($('a7520').value)||5.2)/100;re
 function grow(v,y){const g=(parseFloat($('aGrowth').value)||4.65)/100;return v*Math.pow(1+g,y);}
 
 const S={foundation:'trust',split:'cst',marital:'qtip',home:'paired',malibu:'qprt',trains:'crt',ilit:'ilit'};
-const FLAGS={married:true,kids:true,minor:false,sn:false,biz:false,char:false,blended:false};
+const FLAGS={married:true,kids:true,minor:false,sn:false,biz:false,char:false,blended:false,nc:false};
+
+const TRUSTS=[
+ ['Revocable living trust','base','The workhorse. Avoids probate in every state, manages incapacity, and splits into the whole plan at death. No tax benefit by itself.'],
+ ['Testamentary trust','base','A trust born inside your will. Simple to create, but everything still rides through probate first.'],
+ ['Credit shelter trust','married','Captures the first exclusion at the first death. The assets and ALL their future growth escape the survivor estate.'],
+ ['GPOA marital trust','married','Full marital deduction with full control for the survivor. The power of appointment is exactly what pulls it into her estate.'],
+ ['QTIP trust','blended','The marital deduction while the first spouse picks the final remaindermen. The blended family answer.'],
+ ['Estate trust','married','Marital deduction with discretionary income. Can hold unproductive assets a QTIP cannot.'],
+ ['QDOT','nc','The only route to the marital deduction when the surviving spouse is not a U.S. citizen. A U.S. trustee withholds the tax.'],
+ ['ILIT','exposed','Owns life insurance outside the estate. Crummey powers turn premiums into annual exclusion gifts, and the trustee supplies estate liquidity.'],
+ ['GRAT','exposed','A fixed annuity back to you for a term. Appreciation above the 7520 rate passes to family free of further gift tax.'],
+ ['GRUT','exposed','The same freeze with a floating payment revalued yearly. The inflation hedge version.'],
+ ['GRIT','exposed','The original freeze, now only for remaindermen who are NOT close family: nieces, nephews, cousins, friends.'],
+ ['QPRT','exposed','The residence freeze. Gift the home at a discount, keep living in it through the term, pay fair rent afterward.'],
+ ['CRAT','char','A fixed income to you, remainder to charity. Sells appreciated assets tax free. No additions after funding.'],
+ ['CRUT','char','Same idea with a floating payout and additional contributions allowed. Deferral variants exist for later starts.'],
+ ['Charitable lead trust','char','The reverse flow: charity is paid first, family takes the remainder at a reduced transfer cost.'],
+ ['Third party special needs trust','sn','Funded by the family. Supplements government benefits without disqualifying the beneficiary. No payback provision.'],
+ ['First party special needs trust','sn','Funded with the beneficiary’s own money, a settlement or an inheritance already received. Requires a Medicaid payback.'],
+ ['Minor’s trust under 2503(c)','minor','Annual exclusion gifts for a child despite no present interest. Assets must become available at 21.'],
+ ['Dynasty trust','kids','GST exempt and multigenerational. The transfer tax stops repeating every generation.'],
+ ['Spendthrift trust','kids','Creditor and divorce protection for a beneficiary who should not hold assets outright.'],
+ ['Intentionally defective grantor trust','biz','You pay the trust’s income tax as an extra tax free gift, and can sell appreciating business interests to it with no gain recognized.']
+];
+function renderTrusts(exposed){
+  const g=$('trustGrid'); if(!g)return;
+  g.innerHTML=TRUSTS.map(t=>{
+    const tag=t[1];
+    const fit = tag==='base' || (tag==='exposed'&&exposed) || FLAGS[tag]===true;
+    return '<div class="tcard'+(fit?' fit':'')+'"><h4>'+t[0]+'</h4><p>'+t[2]+'</p>'+(fit?'<span class="fitlb">Fits your profile</span>':'')+'</div>';
+  }).join('');
+}
+function recalcAccum(){
+  const g=(parseFloat($('aGrowth').value)||4.65)/100;
+  const sal=+$('mSalary').value||0, def=+$('mDefer').value||0, cap=+$('mCap').value||0, yrs=+$('mYears').value||0;
+  const annual=sal*Math.min(def,cap)/100;
+  const fv=g>0?annual*((Math.pow(1+g,yrs)-1)/g):annual*yrs;
+  $('mAnnual').textContent=fmt(annual); $('mFV').textContent=fmt(fv);
+  const rf=parseFloat(RATES.tenYear)||4.65, beta=parseFloat($('cBeta').value)||1, mkt=parseFloat($('cMkt').value)||8;
+  const req=rf+beta*(mkt-rf);
+  $('cRf').textContent=rf.toFixed(2)+'%'; $('cReq').textContent=req.toFixed(2)+'%';
+}
+['mSalary','mDefer','mCap','mYears','cBeta','cMkt'].forEach(id=>{document.addEventListener('change',e=>{if(e.target.id===id)recalcAccum();});});
 
 document.querySelectorAll('.options').forEach(g=>{g.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
   g.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');S[g.dataset.step]=b.dataset.val;recalc();});});
@@ -447,9 +549,12 @@ function recalcByo(){
   if(FLAGS.minor) cards.push(card('Trusts for minor children','Minors cannot take property outright. A trust with staged distributions, and the will chooses the guardian and the money manager separately. Without it, a court does both.',0));
   if(exposed>0) cards.push(card('ILIT for liquidity','Estate tax is due nine months after death. Life insurance inside an irrevocable trust pays it without fire selling the family assets, and the death benefit itself escapes the estate.',Math.min(exposed,5000000)*RATE*0.5));
   if(FLAGS.kids&&!FLAGS.minor) cards.push(card('Beneficiary design for adult children','Inheritances in trust, not outright: creditor and divorce protection, and for larger estates a generation skipping design so the next transfer tax never happens.',0));
+  if(FLAGS.nc&&FLAGS.married) cards.push(card('QDOT for a noncitizen spouse','The marital deduction is not allowed for a noncitizen surviving spouse unless the assets pass to a qualified domestic trust with a U.S. trustee who can withhold the tax. Without it, the first death is a taxable event the plan did not expect.',0));
   let html='';
   for(const c of cards){total+=c.v;html+='<div class="plan-card glass"><h3>'+c.t+'</h3><p>'+c.d+'</p>'+(c.v>0?'<p class="sv">Illustrative savings: +'+fmt(c.v)+'</p>':'')+'</div>';}
   $('byoPlan').innerHTML=html;
+  renderTrusts(exposed>0);
+  recalcAccum();
   if(document.body.classList.contains('byo')){$('runTotal').textContent='+'+fmt(total);
   $('runSub').textContent='Illustrative total for your inputs. A real plan starts with a conversation.';}
 }

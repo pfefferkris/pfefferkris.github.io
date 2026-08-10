@@ -1,10 +1,10 @@
 {
-  "updated": "2026-08-09",
-  "rate7520": 5.20,
+  "updated": "2026-08-10",
+  "rate7520": 5.23,
   "rate7520Month": "August 2026",
-  "rate7520Source": "IRS Rev. Rul. 2026-13",
+  "rate7520Source": "IRS Section 7520 interest rates page",
   "midTermAFR": 4.35,
   "tenYear": 4.65,
   "tenYearDate": "August 7, 2026",
-  "tenYearSource": "U.S. Treasury daily yield curve"
+  "tenYearSource": "U.S. Treasury daily par yield curve"
 }
