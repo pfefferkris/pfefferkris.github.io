@@ -23,18 +23,18 @@ def fetch_7520(existing):
         html = get("https://www.irs.gov/businesses/small-businesses-self-employed/section-7520-interest-rates")
         text = re.sub(r"<[^>]+>", " ", html)
         months = "January|February|March|April|May|June|July|August|September|October|November|December"
-        rows = re.findall(r"(" + months + r")\s+(20\d\d)\s+([0-9]+\.[0-9]+)", text)
+        rows = re.findall(r"(" + months + r")\s+(20\d\d)\s+([0-9]+\.[0-9]+)\s+([0-9]+\.[0-9]+)", text)
         if not rows:
             raise ValueError("no rate rows found")
         # a 7520 rate is 120 percent of the midterm AFR rounded to the nearest 0.2,
         # so valid values are always even tenths; anything else is a misparse
-        rows = [r for r in rows if float((__import__("decimal").Decimal(r[2]) * 5) % 1) == 0 and 0 < float(r[2]) < 20]
+        rows = [r for r in rows if float((__import__("decimal").Decimal(r[3]) * 5) % 1) == 0 and 0 < float(r[3]) < 20]
         if not rows:
             raise ValueError("no valid 7520 shaped rates found")
         # newest by (year, month index)
         order = ("January","February","March","April","May","June","July","August","September","October","November","December")
         rows.sort(key=lambda r: (int(r[1]), order.index(r[0])))
-        m, y, rate = rows[-1]
+        m, y, _midterm, rate = rows[-1]
         return {"rate7520": float(rate), "rate7520Month": f"{m} {y}", "rate7520Source": "IRS Section 7520 interest rates page"}
     except Exception as e:
         print(f"7520 fetch failed, keeping existing: {e}", file=sys.stderr)
