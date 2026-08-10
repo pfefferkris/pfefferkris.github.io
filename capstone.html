@@ -375,12 +375,15 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
   <div class="inputs">
     <label>Your age<input id="byoAge" type="number" value="55" min="20" max="95" onchange="recalcByo()"></label>
     <label>Total estate value<input id="byoEstate" type="number" value="20000000" onchange="recalcByo()"></label>
-    <label>What is the home worth today? <a class="zlink" href="https://www.zillow.com/how-much-is-my-home-worth/" target="_blank" rel="noopener">(look it up on Zillow)</a><input id="byoHome" type="number" value="2000000" onchange="recalcByo()"></label>
+    <label>Street address, for a live value lookup<input id="byoAddr" type="text" placeholder="123 Main St, Raleigh, NC" autocomplete="off"></label>
+    <label>&nbsp;<button type="button" id="addrBtn" class="opt" style="width:100%;min-width:0" onclick="fetchHomeValue()">Pull today's value</button></label>
+    <label>What is the home worth today? <a class="zlink" href="https://www.zillow.com/how-much-is-my-home-worth/" target="_blank" rel="noopener">(or look it up on Zillow)</a><input id="byoHome" type="number" value="2000000" onchange="recalcByo()"></label>
     <label>What was it worth when you bought it or received it?<input id="byoHomeCost" type="number" value="600000" onchange="recalcByo()"></label>
     <label>QPRT term<select id="byoTerm" onchange="recalcByo()"><option>5</option><option>7</option><option>10</option><option>13</option><option selected>15</option><option>20</option></select></label>
     <label>Low basis appreciated asset<input id="byoAsset" type="number" value="3000000" onchange="recalcByo()"></label>
     <label>Its cost basis<input id="byoBasis" type="number" value="500000" onchange="recalcByo()"></label>
   </div>
+  <div id="addrStatus" style="font-size:.74rem;color:var(--muted);margin:2px 0 10px"></div>
   <div id="byoPlan"></div>
 </section>
 
@@ -576,6 +579,24 @@ function recalcByo(){
   $('runSub').textContent='Illustrative total for your inputs. A real plan starts with a conversation.';}
 }
 function card(t,d,v){return{t:t,d:d,v:v||0};}
+
+async function fetchHomeValue(){
+  const a=$('byoAddr').value.trim(), btn=$('addrBtn'), st=$('addrStatus');
+  if(a.length<8){st.textContent='Type a full street address first, number and street and city.';return;}
+  btn.textContent='Pulling value...';btn.disabled=true;
+  try{
+    const r=await fetch('/api/home-value?address='+encodeURIComponent(a));
+    if(!r.ok)throw new Error('nope');
+    const d=await r.json();
+    if(!d.price)throw new Error('nope');
+    $('byoHome').value=Math.round(d.price);
+    st.textContent='Pulled from the '+(d.source||'valuation model')+': '+fmt(d.price)+(d.low&&d.high?' (range '+fmt(d.low)+' to '+fmt(d.high)+')':'')+'. The address goes only to the valuation provider for this one lookup and is never stored by this site.';
+    recalcByo();
+  }catch(e){
+    st.textContent='Live lookup is not active on this host yet, it lights up when the site finishes moving to its serverless home. Meanwhile the Zillow link above answers the same question in one click.';
+  }
+  btn.textContent="Pull today's value";btn.disabled=false;
+}
 
 function setMode(m){
   document.body.classList.toggle('byo',m==='byo');
