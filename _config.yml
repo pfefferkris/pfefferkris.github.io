@@ -27,3 +27,5 @@ social:
 
 exclude:
   - README.md
+  - api
+  - scripts
