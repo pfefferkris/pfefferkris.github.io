@@ -590,7 +590,16 @@ async function fetchHomeValue(){
     const d=await r.json();
     if(!d.price)throw new Error('nope');
     $('byoHome').value=Math.round(d.price);
-    st.textContent='Pulled from the '+(d.source||'valuation model')+': '+fmt(d.price)+(d.low&&d.high?' (range '+fmt(d.low)+' to '+fmt(d.high)+')':'')+'. The address goes only to the valuation provider for this one lookup and is never stored by this site.';
+    let msg='Pulled from the '+(d.source||'valuation model')+': '+fmt(d.price)+(d.low&&d.high?' (range '+fmt(d.low)+' to '+fmt(d.high)+')':'')+'.';
+    try{
+      const r2=await fetch('/api/property-record?address='+encodeURIComponent(a));
+      if(r2.ok){const p=await r2.json();
+        if(p.lastSalePrice){$('byoHomeCost').value=Math.round(p.lastSalePrice);
+          const dt=p.lastSaleDate?new Date(p.lastSaleDate).toLocaleDateString('en-US',{year:'numeric',month:'long'}):null;
+          msg+=' Public records show the last recorded sale'+(dt?' in '+dt:'')+' at '+fmt(p.lastSalePrice)+', so your basis starting point and the capital appreciation below were filled in for you.';}
+      }
+    }catch(e2){}
+    st.textContent=msg+' The address goes only to the records provider for this lookup and is never stored by this site.';
     recalcByo();
   }catch(e){
     st.textContent='Live lookup is not active on this host yet, it lights up when the site finishes moving to its serverless home. Meanwhile the Zillow link above answers the same question in one click.';
