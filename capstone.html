@@ -133,6 +133,9 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
 .tcard h4{font-size:.9rem;color:var(--navy);margin-bottom:4px;font-family:Georgia,serif}
 .tcard p{font-size:.76rem;color:var(--muted);line-height:1.5}
 .tcard .fitlb{display:inline-block;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--sage);font-weight:700;margin-top:6px}
+.tcard .cat{display:inline-block;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--gold-ink);background:rgba(169,136,79,.14);border-radius:8px;padding:2px 8px;margin-bottom:6px}
+.tcard .whyln{font-size:.74rem;color:var(--ink);margin-top:6px;line-height:1.5}
+.tcard .whyln b{color:var(--navy)}
 .zlink{font-size:.7rem;text-transform:none;letter-spacing:0;font-weight:400}
 </style>
 </head>
@@ -270,7 +273,7 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
     <button class="opt" data-val="none">No QPRT, ride the estate<small>Full value taxed at death</small></button>
   </div>
   <div class="result"><div class="val" id="r_home">$0</div><div class="why" id="w_home"></div></div>
-  <div class="note">After the term the couple stays by paying fair market rent to the trust, which quietly moves even more out of the estate. A working farm can never use this tool: it fails the personal residence test.</div>
+  <div class="note">After the term the couple stays by paying fair market rent to the trust, which quietly moves even more out of the estate. A working farm can never use this tool: it fails the personal residence test. And notice the discipline in her 13 year term: at 70, the mortality table puts her remaining life expectancy in the mid teens, so her term sits inside the table, never past it. Insurers build their books on these tables because the tables are right.</div>
 </section>
 
 <section class="step glass">
@@ -372,7 +375,8 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
   <div class="inputs">
     <label>Your age<input id="byoAge" type="number" value="55" min="20" max="95" onchange="recalcByo()"></label>
     <label>Total estate value<input id="byoEstate" type="number" value="20000000" onchange="recalcByo()"></label>
-    <label>Primary home value <a class="zlink" href="https://www.zillow.com/how-much-is-my-home-worth/" target="_blank" rel="noopener">(look yours up on Zillow)</a><input id="byoHome" type="number" value="2000000" onchange="recalcByo()"></label>
+    <label>What is the home worth today? <a class="zlink" href="https://www.zillow.com/how-much-is-my-home-worth/" target="_blank" rel="noopener">(look it up on Zillow)</a><input id="byoHome" type="number" value="2000000" onchange="recalcByo()"></label>
+    <label>What was it worth when you bought it or received it?<input id="byoHomeCost" type="number" value="600000" onchange="recalcByo()"></label>
     <label>QPRT term<select id="byoTerm" onchange="recalcByo()"><option>5</option><option>7</option><option>10</option><option>13</option><option selected>15</option><option>20</option></select></label>
     <label>Low basis appreciated asset<input id="byoAsset" type="number" value="3000000" onchange="recalcByo()"></label>
     <label>Its cost basis<input id="byoBasis" type="number" value="500000" onchange="recalcByo()"></label>
@@ -383,7 +387,7 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
 <section class="step glass">
   <span class="stepnum">The full toolbox</span>
   <h2>Every trust in the kit, and which ones fit you</h2>
-  <p class="teach">There are roughly twenty distinct trusts in the estate planner's toolbox. The ones lit up below match the profile you tapped above, the same decision logic a planner runs in the first meeting. Dimmed cards still exist, they just are not your tools today.</p>
+  <p class="teach">The big picture first: wealth is preserved with two levers, FREEZING an asset so its future growth escapes the estate, and DISCOUNTING it so it moves out at less than its face value. Below the exclusion these levers do not matter yet. As an estate climbs toward and past it, and especially in the roughly $25M to $35M range where planners see the heaviest activity, the grantor retained and split interest trusts take over: you push the asset out, keep the use or the income, and the gift is valued at what the asset is worth today, not what it will be worth. Every card below is tagged with its job, freeze, discount, control, protection, charity, or liquidity, because knowing WHY a trust exists is what separates picking a tool from understanding one. The lit cards match the profile you tapped above.</p>
   <div class="tgrid" id="trustGrid"></div>
 </section>
 
@@ -424,37 +428,41 @@ function grow(v,y){const g=(parseFloat($('aGrowth').value)||4.65)/100;return v*M
 const S={foundation:'trust',split:'cst',marital:'qtip',home:'paired',malibu:'qprt',trains:'crt',ilit:'ilit'};
 const FLAGS={married:true,kids:true,minor:false,sn:false,biz:false,char:false,blended:false,nc:false};
 
+// name, fit tag, category, what it is, WHY it exists (control vs tax vs protection)
 const TRUSTS=[
- ['Revocable living trust','base','The workhorse. Avoids probate in every state, manages incapacity, and splits into the whole plan at death. No tax benefit by itself.'],
- ['Testamentary trust','base','A trust born inside your will. Simple to create, but everything still rides through probate first.'],
- ['Credit shelter trust','married','Captures the first exclusion at the first death. The assets and ALL their future growth escape the survivor estate.'],
- ['GPOA marital trust','married','Full marital deduction with full control for the survivor. The power of appointment is exactly what pulls it into her estate.'],
- ['QTIP trust','blended','The marital deduction while the first spouse picks the final remaindermen. The blended family answer.'],
- ['Estate trust','married','Marital deduction with discretionary income. Can hold unproductive assets a QTIP cannot.'],
- ['QDOT','nc','The only route to the marital deduction when the surviving spouse is not a U.S. citizen. A U.S. trustee withholds the tax.'],
- ['ILIT','exposed','Owns life insurance outside the estate. Crummey powers turn premiums into annual exclusion gifts, and the trustee supplies estate liquidity.'],
- ['GRAT','exposed','A fixed annuity back to you for a term. Appreciation above the 7520 rate passes to family free of further gift tax.'],
- ['GRUT','exposed','The same freeze with a floating payment revalued yearly. The inflation hedge version.'],
- ['GRIT','exposed','The original freeze, now only for remaindermen who are NOT close family: nieces, nephews, cousins, friends.'],
- ['QPRT','exposed','The residence freeze. Gift the home at a discount, keep living in it through the term, pay fair rent afterward.'],
- ['CRAT','char','A fixed income to you, remainder to charity. Sells appreciated assets tax free. No additions after funding.'],
- ['CRUT','char','Same idea with a floating payout and additional contributions allowed. Deferral variants exist for later starts.'],
- ['Charitable lead trust','char','The reverse flow: charity is paid first, family takes the remainder at a reduced transfer cost.'],
- ['Third party special needs trust','sn','Funded by the family. Supplements government benefits without disqualifying the beneficiary. No payback provision.'],
- ['First party special needs trust','sn','Funded with the beneficiary’s own money, a settlement or an inheritance already received. Requires a Medicaid payback.'],
- ['Minor’s trust under 2503(c)','minor','Annual exclusion gifts for a child despite no present interest. Assets must become available at 21.'],
- ['Dynasty trust','kids','GST exempt and multigenerational. The transfer tax stops repeating every generation.'],
- ['Spendthrift trust','kids','Creditor and divorce protection for a beneficiary who should not hold assets outright.'],
- ['Intentionally defective grantor trust','biz','You pay the trust’s income tax as an extra tax free gift, and can sell appreciating business interests to it with no gain recognized.']
+ ['Revocable living trust','base','Foundation','The workhorse. Avoids probate in every state, manages incapacity, and splits into the whole plan at death. No tax benefit by itself.','Why: continuity and privacy. This one is about logistics, not tax. It is the chassis every other trust bolts onto.'],
+ ['Testamentary trust','base','Foundation','A trust born inside your will. Simple to create, but everything still rides through probate first.','Why: control after death at the lowest drafting cost, for estates where probate itself is not the enemy.'],
+ ['Credit shelter trust','married','Freeze','Captures the first exclusion at the first death. The assets and ALL their future growth escape the survivor estate.','Why: the first freeze most couples ever do. The exclusion is locked at the first death, so decades of growth never see the 40 percent tax.'],
+ ['GPOA marital trust','married','Control','Full marital deduction with full control for the survivor. The power of appointment is exactly what pulls it into her estate.','Why: a control decision, not a tax one. Choose it when you trust the survivor with everything, including the power to redirect it.'],
+ ['QTIP trust','blended','Control','The marital deduction while the first spouse picks the final remaindermen. The blended family answer.','Why: pure control. Same deduction as the GPOA trust, but YOU decide today who inherits, and nobody can rewrite it after you are gone.'],
+ ['Estate trust','married','Control','Marital deduction with discretionary income. Can hold unproductive assets a QTIP cannot.','Why: flexibility. When the survivor does not need income, this keeps the deduction without forcing assets to produce it.'],
+ ['QDOT','nc','Control','The only route to the marital deduction when the surviving spouse is not a U.S. citizen. A U.S. trustee withholds the tax.','Why: without it the deduction is simply denied, and the first death becomes a taxable event the family never saw coming.'],
+ ['ILIT','exposed','Liquidity','Owns life insurance outside the estate. Crummey powers turn premiums into annual exclusion gifts, and the trustee supplies estate liquidity.','Why: the tax is due nine months after death, in cash. This is how illiquid families pay it without a fire sale, and the death benefit itself escapes the 40 percent.'],
+ ['GRAT','exposed','Freeze','A fixed annuity back to you for a term. Appreciation above the 7520 rate passes to family free of further gift tax.','Why: the classic freeze. The gift is valued TODAY, so everything the asset earns above the hurdle rate transfers free. This is the zone where real preservation happens.'],
+ ['GRUT','exposed','Freeze','The same freeze with a floating payment revalued yearly. The inflation hedge version.','Why: same freeze logic, tuned for clients who fear inflation more than volatility.'],
+ ['GRIT','exposed','Freeze + discount','The original freeze, now only for remaindermen who are NOT close family: nieces, nephews, cousins, friends.','Why: the deepest discount left in the code, because the retained interest still counts when the remainderman is outside the family definition.'],
+ ['QPRT','exposed','Freeze + discount','The residence freeze. Gift the home at a discount, keep living in it through the term, pay fair rent afterward.','Why: freeze AND discount at once. The home moves at a fraction of value, appreciation escapes, and the rent phase quietly drains even more from the estate.'],
+ ['CRAT','char','Charity','A fixed income to you, remainder to charity. Sells appreciated assets tax free. No additions after funding.','Why: the escape hatch for a concentrated, low basis asset. Diversify without the capital gains tax, keep the income, give the remainder.'],
+ ['CRUT','char','Charity','Same idea with a floating payout and additional contributions allowed. Deferral variants exist for later starts.','Why: the flexible version, for donors who will keep adding or want payments to start later.'],
+ ['Charitable lead trust','char','Charity + freeze','The reverse flow: charity is paid first, family takes the remainder at a reduced transfer cost.','Why: philanthropy as a discount mechanism. The charity stream shrinks the taxable gift, and the family still lands the remainder.'],
+ ['Third party special needs trust','sn','Protection','Funded by the family. Supplements government benefits without disqualifying the beneficiary. No payback provision.','Why: protection of a person, not a bracket. One dollar outright can end SSI. Every share for this beneficiary routes here instead.'],
+ ['First party special needs trust','sn','Protection','Funded with the beneficiary’s own money, a settlement or an inheritance already received. Requires a Medicaid payback.','Why: damage control when money already reached the beneficiary directly. Preserves benefits, but the state gets paid back first.'],
+ ['Minor’s trust under 2503(c)','minor','Foundation','Annual exclusion gifts for a child despite no present interest. Assets must become available at 21.','Why: lets the annual exclusion work for a child years before they can legally hold property.'],
+ ['Dynasty trust','kids','Freeze','GST exempt and multigenerational. The transfer tax stops repeating every generation.','Why: the longest freeze there is. Allocate GST exemption once and the 40 percent toll booth closes for the grandchildren and beyond.'],
+ ['Spendthrift trust','kids','Protection','Creditor and divorce protection for a beneficiary who should not hold assets outright.','Why: protection from the beneficiary’s own life events. The trust owns it, so the creditor and the divorce court cannot.'],
+ ['Intentionally defective grantor trust','biz','Freeze + discount','You pay the trust’s income tax as an extra tax free gift, and can sell appreciating business interests to it with no gain recognized.','Why: the business owner’s freeze. Sell at today’s value, often discounted for lack of control and marketability, and every tax bill you pay for the trust is another invisible gift.']
 ];
 function renderTrusts(exposed){
   const g=$('trustGrid'); if(!g)return;
   g.innerHTML=TRUSTS.map(t=>{
     const tag=t[1];
     const fit = tag==='base' || (tag==='exposed'&&exposed) || FLAGS[tag]===true;
-    return '<div class="tcard'+(fit?' fit':'')+'"><h4>'+t[0]+'</h4><p>'+t[2]+'</p>'+(fit?'<span class="fitlb">Fits your profile</span>':'')+'</div>';
+    return '<div class="tcard'+(fit?' fit':'')+'"><span class="cat">'+t[2]+'</span><h4>'+t[0]+'</h4><p>'+t[3]+'</p><div class="whyln">'+t[4]+'</div>'+(fit?'<span class="fitlb">Fits your profile</span>':'')+'</div>';
   }).join('');
 }
+// remaining life expectancy from the same survival table, and the QPRT term ceiling built on it
+function lifeExp(age){let s=0;for(let t=1;t<=100-age;t++){s+=lx(age+t)/lx(age);}return s+0.5;}
+function qprtTermCap(age){return Math.max(2,Math.min(20,Math.floor(lifeExp(age))));}
 function recalcAccum(){
   const g=(parseFloat($('aGrowth').value)||4.65)/100;
   const sal=+$('mSalary').value||0, def=+$('mDefer').value||0, cap=+$('mCap').value||0, yrs=+$('mYears').value||0;
@@ -531,17 +539,26 @@ function recalc(){
 function flip(el){el.classList.toggle('on');FLAGS[el.dataset.flag]=el.classList.contains('on');recalcByo();}
 function recalcByo(){
   const age=+$('byoAge').value||55, est=+$('byoEstate').value||0, home=+$('byoHome').value||0,
-        term=+$('byoTerm').value||15, asset=+$('byoAsset').value||0, basis=+$('byoBasis').value||0;
+        homeCost=+$('byoHomeCost').value||0, askTerm=+$('byoTerm').value||15,
+        asset=+$('byoAsset').value||0, basis=+$('byoBasis').value||0;
+  const cap=qprtTermCap(age), term=Math.min(askTerm,cap);
   const cards=[];let total=0;
   const ex=FLAGS.married?EXEMPT*2:EXEMPT;
   const exposed=Math.max(0,est-ex),baseTax=exposed*RATE;
-  cards.push(card('Where you stand',(FLAGS.married?'As a married couple you have '+fmt(ex)+' of combined exclusion in 2026.':'Your 2026 exclusion is '+fmt(ex)+'.')+' Your exposure above it is '+fmt(exposed)+', which is '+fmt(baseTax)+' of potential estate tax before any growth.',0));
+  let stage;
+  if(est<ex*0.6) stage='You are in the ACCUMULATION season. Below the exclusion, the transfer tax tools above the line do not apply to you yet, and that is good news: your work is the foundation documents, the beneficiary designations, and the growth engine in the section above. Come back to the freeze tools when the number climbs.';
+  else if(est<ex) stage='You are APPROACHING THE LINE. You sit under the exclusion today, but growth compounds and exemptions can shrink by legislation. This is the season to get the foundation perfect and start watching the freeze tools, because the best time to freeze is right before you need to.';
+  else stage='You are in the FREEZE AND DISCOUNT zone, where serious preservation happens (planners see the heaviest activity in the roughly $25M to $35M range and up). The logic of everything below: PUSH assets out of the estate at the value they carry TODAY while keeping the use or income, because appreciating assets gifted now are valued now, and every dollar of future growth escapes the 40 percent. Freezing and discounting are the two levers; the grantor retained and split interest trusts are how you pull them.';
+  cards.push(card('Where you stand',(FLAGS.married?'As a married couple you have '+fmt(ex)+' of combined exclusion in 2026.':'Your 2026 exclusion is '+fmt(ex)+'.')+' Your exposure above it is '+fmt(exposed)+', which is '+fmt(baseTax)+' of potential estate tax before any growth. '+stage,0));
   cards.push(card('The foundation everyone needs','A revocable living trust, will, durable power of attorney, health care power of attorney, and coordinated beneficiary designations. Probate avoided in every state where you own real estate, privacy kept, incapacity covered.',Math.min(est*0.02,150000)));
   if(FLAGS.married&&exposed>0){const g=grow(Math.min(EXEMPT,est/2),8)-Math.min(EXEMPT,est/2);
     cards.push(card('Credit shelter trust at the first death','Locks the first exclusion and all of its future growth out of the survivor estate, where portability alone leaves the growth exposed.',g*RATE));}
   if(FLAGS.married&&FLAGS.blended) cards.push(card('QTIP marital trust','Your spouse is provided for with mandatory income for life while you decide today who ultimately inherits. In a blended family this is the piece that prevents the quiet disinheritance.',0));
   if(home>0&&exposed>0){const f=qprtFactor(age,term),gift=home*f,fv=grow(home,term+5),mort=1-pSurvive(age,term);
-    cards.push(card('QPRT on the home, '+term+' year term at age '+age,'Gift the house at '+pct(f)+' percent of value, about '+fmt(gift)+', keep living in it through the term, and the projected growth to '+fmt(fv)+' escapes the estate. Honest risk: at your age the odds of not surviving a '+term+' year term are about '+pct(mort)+' percent, and death during the term undoes the freeze. Pick the term to fit the odds.',(fv-gift)*RATE));}
+    const apprec=Math.max(0,home-homeCost);
+    let capNote = askTerm>cap ? ' Your requested '+askTerm+' year term was CAPPED AT '+cap+' YEARS: the mortality table puts remaining life expectancy at your age near '+Math.floor(lifeExp(age))+' years, and a QPRT term should never bet past the table. Insurance companies build their books on these numbers because they are right.' : ' The table allows up to '+cap+' years at your age; longer terms discount more but bet harder against the actuaries.';
+    let basisNote = apprec>0 ? ' Your home has already appreciated '+fmt(apprec)+' since you got it. A QPRT hands that gain and all future growth to the next generation at CARRYOVER basis, no step up, so weigh the embedded capital gain against the estate tax saved.' : '';
+    cards.push(card('QPRT on the home, '+term+' year term at age '+age,'Gift the house at '+pct(f)+' percent of value, about '+fmt(gift)+', keep living in it through the term, and the projected growth to '+fmt(fv)+' escapes the estate. Odds of not surviving the term at your age: about '+pct(mort)+' percent, and death during the term undoes the freeze.'+capNote+basisNote,(fv-gift)*RATE));}
   if(FLAGS.char&&asset>0){const g2=Math.max(0,asset-basis);
     cards.push(card('Charitable remainder trust','Your appreciated asset sells inside the trust with no capital gains tax, pays you an income for up to 20 years, and the remainder goes to your charity. Pair it with insurance to make the family whole.',g2*CG+asset*0.36*INC+(exposed>0?grow(asset,15)*RATE:0)));}
   if(FLAGS.biz) cards.push(card('Business owner toolkit','Entity structuring with valuation discounts for lack of control and marketability, a grantor trust sale to move growth, buy sell funding, and installment relief under Section 6166 if the estate stays illiquid. This is its own conversation.',0));
