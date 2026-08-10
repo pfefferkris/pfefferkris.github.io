@@ -627,5 +627,296 @@ document.addEventListener('keydown',e=>{
 veil.addEventListener('click',closeSheet);
 document.getElementById('sx').addEventListener('click',closeSheet);
 </script>
+<style>
+/* ===== TEETH LAYER v2: Building an Unshakable Foundation ===== */
+.teeth{margin:22px 0 6px;padding:18px 20px;border-radius:16px;position:relative}
+.teeth .disc{font-family:Georgia,serif;font-style:italic;font-size:1.02rem;color:var(--navy);margin:0 0 4px;line-height:1.4}
+.teeth .tsub{font-size:.78rem;color:var(--muted);margin:0 0 12px;line-height:1.5}
+.teeth .trow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0}
+.teeth label{font-size:.64rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block}
+.teeth input[type=text],.teeth input[type=number]{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:9px;font-size:.95rem;margin-top:3px;background:#fff}
+.teeth .tout{background:#e9f2ec;border-left:4px solid #2e6b4f;border-radius:9px;padding:10px 13px;margin-top:10px;font-size:.84rem;line-height:1.55;color:var(--ink)}
+.teeth .tout b{color:#2e6b4f}
+.teeth .tout .big{font-family:Georgia,serif;font-size:1.15rem;font-weight:700;color:#2e6b4f}
+.teeth .tbtn{border:1px solid var(--gold);background:#fff;color:var(--gold-ink);border-radius:10px;padding:8px 14px;font-size:.84rem;cursor:pointer;margin-top:4px}
+.teeth .tbtn:disabled{opacity:.5}
+.teeth .docck{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.teeth .docck span{border:1px solid var(--line);border-radius:16px;padding:7px 14px;font-size:.8rem;cursor:pointer;background:#fff;user-select:none}
+.teeth .docck span.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.teeth .meter{height:10px;border-radius:6px;background:#e4ddd0;overflow:hidden;margin-top:8px}
+.teeth .meter i{display:block;height:100%;background:linear-gradient(90deg,#a9884f,#2e6b4f);width:0;transition:width .5s}
+.teeth .foot{font-size:.68rem;color:var(--muted);margin-top:8px;line-height:1.45}
+.teeth .advline{display:none;background:rgba(18,41,63,.06);border-left:4px solid var(--navy-2);border-radius:9px;padding:9px 12px;margin-top:8px;font-size:.76rem;line-height:1.5;color:var(--ink)}
+.teeth .advline b{color:var(--navy)}
+body.adv .teeth .advline{display:block}
+.gl{border-bottom:1px dashed var(--gold);cursor:help;position:relative}
+.glpop{display:none;position:absolute;left:0;bottom:calc(100% + 6px);z-index:40;background:var(--navy);color:#fff;border-radius:10px;padding:9px 12px;font-size:.74rem;line-height:1.45;width:230px;font-style:normal;font-weight:400;box-shadow:0 10px 28px rgba(18,41,63,.35)}
+.gl.open .glpop{display:block}
+.steprail{position:fixed;left:16px;bottom:16px;z-index:55;padding:9px 15px;border-radius:16px;font-size:.7rem;color:var(--muted);max-width:230px;line-height:1.4}
+.steprail b{display:block;font-size:.76rem;color:var(--navy);letter-spacing:.04em}
+@media(max-width:900px){.steprail{display:none}}
+@media(min-width:901px){.advbox{left:16px;right:auto;max-width:250px}}
+.teeth .addrow{border:1px dashed var(--gold);background:transparent;color:var(--gold-ink);border-radius:10px;padding:6px 12px;font-size:.76rem;cursor:pointer;margin-top:6px}
+.teeth .flagbad{color:#8a3b2e;font-weight:700}
+</style>
+<script>
+/* ===== TEETH LAYER v2 ===== */
+(function(){
+const T={age:null,expenses:null,salary:null,defer:6,cap:4,retBal:null,monthly:null,goals:[],pos:[],homeVal:null,homeBasis:null,saleDate:null,docs:0};
+let RTS={tenYear:4.65,tenYearDate:"August 7, 2026",rate7520:5.2,sp500:null,sp500Return1y:null,benchmark:"S&P 500"};
+const LONGRUN=10; /* long run U.S. large cap average, teaching constant */
+fetch('data/rates.json').then(r=>r.json()).then(d=>{RTS=Object.assign(RTS,d);tcalc();}).catch(()=>{});
+const tfmt=n=>{if(n>=1e6)return '$'+(Math.round(n/1e5)/10).toLocaleString()+'M';if(n>=1e3)return '$'+Math.round(n/1e3).toLocaleString()+'K';return '$'+Math.round(n).toLocaleString()};
+const rf=()=>RTS.tenYear/100;
+function fv(p,y,r){return p*Math.pow(1+r,y);}
+function fvStream(a,y,r){return r>0?a*((Math.pow(1+r,y)-1)/r):a*y;}
+function pmtFor(target,y,r){const f=r>0?((Math.pow(1+r,y)-1)/r):y;return target/f/12;}
+
+/* retitle: his own sentence from the TRST 631 case answer becomes the banner */
+document.title=document.title.replace('The Wealth Guide: Estate & Wealth Planning Across a Lifetime','Building an Unshakable Foundation — The Wealth Guide');
+const h1=document.querySelector('header h1');
+if(h1)h1.innerHTML='Building an unshakable foundation.';
+const sub=document.querySelector('header .sub');
+if(sub)sub.innerHTML='Wealth is planted, grown, harvested, protected, and handed on. Scroll the seasons, tap any bubble to learn the move, and put YOUR numbers in as you go: the guide computes with live rates and public records, explains every term, and never stores a thing you type. Flip <b>Advanced</b> (left side) to see the math and the law underneath each answer.';
+
+/* glossary */
+const GLOSS={
+ deferral:'The percent of your paycheck you choose to put into the retirement plan before you ever see it. Elective, changeable, and the trigger for the match.',
+ match:'Free money from your employer, usually 100 percent of what you defer up to a cap. An instant 100 percent return before any market growth.',
+ riskfree:'The return you can earn with essentially no risk of loss, by convention the 10 year U.S. Treasury yield. Every risky investment must promise more than this to be worth owning.',
+ benchmark:'The yardstick a portfolio is measured against. For U.S. stocks the standard benchmark is the S&P 500 index of 500 large companies.',
+ basis:'What you paid for an asset in the eyes of the tax code. Sell above basis and the difference is capital gain.',
+ stepup:'At death, most inherited assets reset their basis to date of death value, forgiving a lifetime of gain. Gifts during life do NOT get this: they carry the old basis.',
+ beneficiary:'The person named on an account or policy form to receive it at death. These forms override your will.',
+ compounding:'Growth earning growth. Time matters more than amount, which is why starting early beats starting big.',
+ poa:'Power of attorney: a document naming someone to act for you, financially (durable POA) or medically (healthcare POA), if you cannot.',
+ probate:'The public court process that moves assets after death when no faster door (trust, title, or beneficiary form) was set up.'
+};
+function gl(key,txt){return '<span class="gl" data-g="'+key+'">'+txt+'<span class="glpop">'+GLOSS[key]+'</span></span>';}
+document.addEventListener('click',e=>{
+  const g=e.target.closest('.gl');
+  document.querySelectorAll('.gl.open').forEach(x=>{if(x!==g)x.classList.remove('open');});
+  if(g)g.classList.toggle('open');
+});
+
+const BLOCKS=[
+{q:'Help me understand what this money is ultimately for.',
+ sub:'Planting starts with a goal and three numbers. Every figure computed below uses the live risk free rate as its floor.',
+ body:`<div class="trow">
+   <label>Your age<input type="number" id="t_age" min="18" max="95" placeholder="30"></label>
+   <label>Monthly expenses<input type="number" id="t_exp" placeholder="4000"></label>
+   <label>Salary<input type="number" id="t_sal" placeholder="70000"></label>
+   <label>You defer (%)<input type="number" id="t_def" value="6"></label>
+   <label>Match cap (%)<input type="number" id="t_cap" value="4"></label>
+ </div>
+ <div id="t_goals"></div>
+ <button class="addrow" id="t_addgoal" type="button">+ Add another goal</button>
+ <div class="tout" id="t_out0">Fill in what you know. Everything stays on this page and is never stored or sent anywhere.</div>
+ <div class="advline" id="t_adv0"></div>`},
+{q:'Help me understand how your money is working, and what it is actually invested in.',
+ sub:'The engine season. Two numbers show where the current road ends, at the floor and at the benchmark.',
+ body:`<div class="trow">
+   <label>Retirement balance today<input type="number" id="t_bal" placeholder="60000"></label>
+   <label>You save monthly<input type="number" id="t_mon" placeholder="800"></label>
+ </div><div class="tout" id="t_out1">Add your balance and monthly savings to project the harvest.</div>
+ <p class="tsub" style="margin-top:14px">Do you also hold individual stocks, your own picks, company shares, or something a parent handed down? List them and the guide checks the portfolio the way the curriculum does.</p>
+ <div id="t_pos"></div>
+ <button class="addrow" id="t_addpos" type="button">+ Add a position</button>
+ <div class="tout" id="t_outp" style="display:none"></div>
+ <div class="advline" id="t_adv1"></div>`},
+{q:'Help me understand how your most important assets are actually owned.',
+ sub:'For most families the home is the largest asset, and the public record already knows its story. Type the address and let the records do the work.',
+ body:`<div class="trow" style="grid-template-columns:2fr 1fr">
+   <label>Street address<input type="text" id="t_addr" placeholder="123 Main St, Raleigh, NC" autocomplete="off"></label>
+   <label>&nbsp;<button class="tbtn" id="t_pull" type="button">Pull the record</button></label>
+ </div><div class="tout" id="t_out2">The lookup reads the current value estimate AND the last recorded sale from public property records, then computes your basis and capital appreciation for you. The address goes only to the records provider and is never stored.</div>
+ <div class="advline" id="t_adv2"></div>`},
+{q:'Help me understand what would need to happen for your family if you were not here tomorrow.',
+ sub:'Six documents decide how gentle this season is. Tap what you already have.',
+ body:`<div class="docck" id="t_docs">
+   <span data-d="will">A will</span><span data-d="dpoa">Durable POA</span><span data-d="hcpoa">Healthcare POA</span>
+   <span data-d="lw">Living will</span><span data-d="ben">Beneficiaries checked this year</span><span data-d="loi">Letter of instruction</span>
+ </div><div class="meter"><i id="t_meter"></i></div><div class="tout" id="t_out3">0 of 6. Every one of these is inexpensive, and none of them require wealth. Planning is not only for the wealthy, it is a kindness to the people who love you.</div>
+ <div class="advline" id="t_adv3"></div>`},
+{q:'Tell me what you would want to happen to everything you have built.',
+ sub:'Everything you entered above, translated into where you stand and what to do next.',
+ body:`<div class="tout" id="t_out4">Work through the seasons above and this summary assembles itself.</div>
+ <div class="advline" id="t_adv4"></div>
+ <div class="foot">Educational illustration only, not legal, tax, or investment advice. Ready for the deep end? The <a href="capstone.html"><b>Capstone guide</b></a> builds the full trust architecture with the same live numbers.</div>`}
+];
+
+document.querySelectorAll('.stage').forEach((sec,si)=>{
+  if(!BLOCKS[si])return;
+  const lane=sec.querySelector('.lane-c');if(!lane)return;
+  const d=document.createElement('div');d.className='teeth glass';
+  d.innerHTML='<p class="disc">'+BLOCKS[si].q+'</p><p class="tsub">'+BLOCKS[si].sub+'</p>'+BLOCKS[si].body;
+  lane.appendChild(d);
+});
+
+/* CFP seven step rail */
+const STEPS=[
+ ['Step 1 of 7','Establish the relationship. That is this page: free, educational, on your side.'],
+ ['Step 2 of 7','Gather your goals and data. That is what Spring is asking you for.'],
+ ['Step 3 of 7','Analyze where you stand. Summer runs your numbers against the floor and the benchmark.'],
+ ['Step 4 of 7','Develop the recommendations. Harvest turns records into decisions.'],
+ ['Step 5 of 7','Implement. Winter is the checklist season.'],
+ ['Steps 6 and 7','Present, then monitor. The handoff is the plan working without you.']
+];
+const rail=document.createElement('div');rail.className='steprail glass';rail.innerHTML='<b>'+STEPS[0][0]+'</b>'+STEPS[0][1];
+document.body.appendChild(rail);
+const stages=[...document.querySelectorAll('.stage')];
+const railIO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=stages.indexOf(e.target)+1;if(STEPS[i])rail.innerHTML='<b>'+STEPS[i][0]+'</b>'+STEPS[i][1];}})},{threshold:0.3});
+stages.forEach(s=>railIO.observe(s));
+
+const $=id=>document.getElementById(id);
+['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',tcalc);});
+const docEl=$('t_docs');
+if(docEl)docEl.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{s.classList.toggle('on');tcalc();}));
+
+/* several goals, not one */
+const goalsEl=$('t_goals');
+function addGoal(){if(!goalsEl)return;
+  const r=document.createElement('div');r.className='trow goalrow';
+  r.innerHTML='<label>Goal<input type="text" class="g_name" placeholder="Down payment"></label><label>What it costs<input type="number" class="g_cost" placeholder="60000"></label><label>Years away<input type="number" class="g_yrs" placeholder="5"></label>';
+  r.querySelectorAll('input').forEach(i=>i.addEventListener('input',tcalc));
+  goalsEl.appendChild(r);}
+addGoal();
+const ag=$('t_addgoal');if(ag)ag.addEventListener('click',addGoal);
+
+/* stock positions, the diversification checkup */
+const posEl=$('t_pos');
+function addPos(){if(!posEl)return;
+  const r=document.createElement('div');r.className='trow posrow';r.style.gridTemplateColumns='1fr 2fr';
+  r.innerHTML='<label>Ticker<input type="text" class="p_tkr" placeholder="AAPL" style="text-transform:uppercase"></label><label>Value held<input type="number" class="p_val" placeholder="15000"></label>';
+  r.querySelectorAll('input').forEach(i=>i.addEventListener('input',tcalc));
+  posEl.appendChild(r);}
+const ap=$('t_addpos');if(ap)ap.addEventListener('click',()=>{addPos();});
+
+/* the persona chips steer the toolbox, so recompute when they flip */
+document.querySelectorAll('.persona [data-p]').forEach(c=>c.addEventListener('click',()=>setTimeout(tcalc,0)));
+
+const pull=$('t_pull');
+if(pull)pull.addEventListener('click',async()=>{
+  const a=($('t_addr').value||'').trim();const out=$('t_out2');
+  if(a.length<8){out.innerHTML='Type a full street address first, number, street, city.';return;}
+  pull.disabled=true;pull.textContent='Reading the record...';
+  try{
+    const [v,p]=await Promise.all([
+      fetch('/api/home-value?address='+encodeURIComponent(a)).then(r=>r.ok?r.json():null).catch(()=>null),
+      fetch('/api/property-record?address='+encodeURIComponent(a)).then(r=>r.ok?r.json():null).catch(()=>null)
+    ]);
+    if(v&&v.price){T.homeVal=v.price;}
+    if(p&&p.lastSalePrice){T.homeBasis=p.lastSalePrice;T.saleDate=p.lastSaleDate;}
+    if(!T.homeVal&&!T.homeBasis)throw new Error('none');
+    let h='';
+    if(T.homeVal)h+='Today the model values it at <span class="big">'+tfmt(T.homeVal)+'</span>'+(v.low?' (range '+tfmt(v.low)+' to '+tfmt(v.high)+')':'')+'. ';
+    if(T.homeBasis){const dt=T.saleDate?new Date(T.saleDate).toLocaleDateString('en-US',{year:'numeric',month:'long'}):'';
+      h+='The last recorded sale'+(dt?' in '+dt:'')+' was <b>'+tfmt(T.homeBasis)+'</b>, your '+gl('basis','basis')+' starting point. ';
+      if(T.homeVal&&T.homeVal>T.homeBasis)h+='That is <span class="big">'+tfmt(T.homeVal-T.homeBasis)+'</span> of capital appreciation the deed has quietly watched happen. Held until death it earns the '+gl('stepup','step up')+'; gifted during life it carries the old basis with it.';}
+    if(p&&p.yearBuilt)h+=' Built in '+p.yearBuilt+', the deed carries a chain of custody older than most family stories.';
+    if(p&&p.county){const q=encodeURIComponent(p.county+' County register of deeds deed search');
+      h+=' The deed itself is on file with the <a href="https://www.google.com/search?q='+q+'" target="_blank" rel="noopener"><b>'+p.county+' County Register of Deeds</b></a>. Pull the grantor and grantee index and read the chain of title yourself: every owner, every lien, every easement, all public record. Would it be unreasonable to spend ten minutes reading the legal story of your own home?';}
+    out.innerHTML=h;
+    const nw=document.getElementById('nw');
+    if(nw&&T.homeVal&&!nw.value){nw.value=T.homeVal.toLocaleString();nw.dispatchEvent(new Event('input'));}
+  }catch(e){out.innerHTML='No public record answered for that address. The seasons work fine without it.';}
+  pull.disabled=false;pull.textContent='Pull the record';
+  tcalc();
+});
+
+function tcalc(){
+  T.age=+($('t_age')&&$('t_age').value)||null;
+  T.expenses=+($('t_exp')&&$('t_exp').value)||null;
+  T.salary=+($('t_sal')&&$('t_sal').value)||null;
+  T.defer=+($('t_def')&&$('t_def').value)||0;
+  T.cap=+($('t_cap')&&$('t_cap').value)||0;
+  T.retBal=+($('t_bal')&&$('t_bal').value)||null;
+  T.monthly=+($('t_mon')&&$('t_mon').value)||null;
+  T.goals=goalsEl?[...goalsEl.querySelectorAll('.goalrow')].map(r=>({name:(r.querySelector('.g_name').value||'').trim(),cost:+r.querySelector('.g_cost').value||0,yrs:+r.querySelector('.g_yrs').value||0})).filter(g=>g.cost>0&&g.yrs>0):[];
+  T.pos=posEl?[...posEl.querySelectorAll('.posrow')].map(r=>({tkr:(r.querySelector('.p_tkr').value||'').trim().toUpperCase(),val:+r.querySelector('.p_val').value||0})).filter(p=>p.val>0):[];
+  T.docs=docEl?docEl.querySelectorAll('span.on').length:0;
+  const yrs=T.age?Math.max(1,65-T.age):35;
+  const bench=RTS.sp500Return1y!==null&&RTS.sp500Return1y!==undefined?RTS.sp500Return1y:null;
+
+  const o0=$('t_out0'),a0=$('t_adv0');
+  if(o0){
+    if(T.expenses||T.salary||T.goals.length){
+      let h='';
+      if(T.expenses)h+='Emergency fund target: <b>'+tfmt(T.expenses*3)+' to '+tfmt(T.expenses*6)+'</b> (3 to 6 months). ';
+      if(T.salary&&T.cap){const match=T.salary*Math.min(T.defer,T.cap)/100;
+        h+='Your employer '+gl('match','match')+' is worth <b>'+tfmt(match)+'</b> a year, and claimed every year to 65 it compounds to <span class="big">'+tfmt(fvStream(match,yrs,rf()))+'</span> at the '+gl('riskfree','risk free rate')+' alone'+(T.defer<T.cap?'. Right now your '+gl('deferral','deferral')+' leaves some of it unclaimed: raise it to at least '+T.cap+' percent.':'.');}
+      if(T.goals.length){
+        let tot1=0,tot2=0;
+        T.goals.forEach(g=>{const m1=pmtFor(g.cost,g.yrs,rf()),m2=pmtFor(g.cost,g.yrs,LONGRUN/100);tot1+=m1;tot2+=m2;
+          h+=' '+(g.name?('<b>'+g.name+'</b>'):'That goal')+': '+tfmt(g.cost)+' in '+g.yrs+' years takes about <b>'+tfmt(m1)+' a month</b> at the risk free floor, or '+tfmt(m2)+' invested near the long run average.';});
+        if(T.goals.length>1)h+=' All together that is <span class="big">'+tfmt(tot1)+' a month</span> at the floor, '+tfmt(tot2)+' at the long run average.';
+        h+=' Goals inside 3 years should lean on the floor; the 10 year ones can lean on the market. Sorting them that way is the NOW, SOON, LATER discipline.';}
+      o0.innerHTML=h;
+    } else o0.innerHTML='Fill in what you know. Everything stays on this page and is never stored or sent anywhere.';
+    if(a0)a0.innerHTML='<b>The math:</b> future value of an annual stream = payment times ((1+r)^n minus 1) over r. The floor r is the live 10 year Treasury ('+RTS.tenYear+' percent); the long run figure is the historical U.S. large cap average of about '+LONGRUN+' percent, which is an average, not a promise. <b>The law:</b> deferrals are elective contributions governed by your plan document and IRC Section 402(g) limits; the match follows the plan formula and its vesting schedule.';
+  }
+  const o1=$('t_out1'),a1=$('t_adv1');
+  if(o1){
+    if(T.retBal!==null||T.monthly!==null){
+      const nestF=fv(T.retBal||0,yrs,rf())+fvStream((T.monthly||0)*12,yrs,rf());
+      const nestB=fv(T.retBal||0,yrs,LONGRUN/100)+fvStream((T.monthly||0)*12,yrs,LONGRUN/100);
+      o1.innerHTML='By 65 this road reaches about <span class="big">'+tfmt(nestF)+'</span> at the risk free floor, and about <span class="big">'+tfmt(nestB)+'</span> near the long run market average. The gap between those two numbers is the reward the market has historically paid for staying invested through its storms.'+(bench!==null?' For context, the '+gl('benchmark','benchmark')+' ('+RTS.benchmark+') returned '+bench+' percent over the last twelve months.':'')+(nestB>1e6?' And past the first million you are worth suing, which is what the umbrella bubble above is for.':'');
+    } else o1.innerHTML='Add your balance and monthly savings to project the harvest.';
+    if(a1)a1.innerHTML='<b>The math:</b> lump sum grows as PV times (1+r)^n; contributions grow as the annuity stream formula. The floor uses the live 10 year Treasury ('+RTS.tenYear+' percent); the market track uses the long run average of about '+LONGRUN+' percent'+(RTS.sp500?'; the S&P 500 stands at '+RTS.sp500.toLocaleString()+' as of '+RTS.sp500Date:'')+'. <b>The doctrine (TRST 630/631):</b> a diversified portfolio is judged against its benchmark by beta and the Sharpe ratio, (portfolio return minus the risk free rate) over standard deviation, not by raw return, because diversification removes only unsystematic risk. Past performance never guarantees future results.';
+  }
+  const op=$('t_outp');
+  if(op){
+    if(T.pos.length){
+      op.style.display='block';
+      const tot=T.pos.reduce((s,p)=>s+p.val,0);
+      const sorted=[...T.pos].sort((a,b)=>b.val-a.val);
+      const heavy=sorted.filter(p=>p.val/tot>0.10);
+      let h='It sounds like the portfolio holds <b>'+T.pos.length+'</b> position'+(T.pos.length===1?'':'s')+' worth '+tfmt(tot)+' together. ';
+      if(heavy.length){
+        h+='If we fast forward through one bad year for '+(heavy.length===1?'a single name':'a few names')+', the damage is concentrated: '+heavy.map(p=>'<span class="flagbad">'+(p.tkr||'one position')+' is '+Math.round(p.val/tot*100)+' percent</span>').join(', ')+' of the whole. Anything past 10 percent in one name is concentration the market does not pay you extra for carrying, that is unsystematic risk, and diversification removes it for free. ';
+      } else {
+        h+='No single name breaks 10 percent, which is the shape diversification is supposed to have. What remains is market risk itself, measured by beta against the '+gl('benchmark','benchmark')+', and that risk the market DOES pay for. ';
+      }
+      if(T.pos.length<10)h+='With fewer than 10 holdings most portfolios still carry meaningful single company risk; index funds get you to hundreds of names in one purchase.';
+      else h+='Breadth looks healthy. The next question is whether the mix is judged by beta and the Sharpe ratio rather than raw return, which is how the pros keep score.';
+      if(heavy.length&&T.pos.length)h+=' If a concentrated position came from an employer or an inheritance, selling is not the only door: the Capstone guide covers charitable remainder trusts, which diversify a low '+gl('basis','basis')+' position without the immediate capital gains bill.';
+      op.innerHTML=h;
+    } else op.style.display='none';
+  }
+  const a2=$('t_adv2');
+  if(a2)a2.innerHTML='<b>The law:</b> inherited assets take a date of death basis under IRC Section 1014 (the step up); lifetime gifts carry the donor basis under Section 1015. Keep living in a home you gave away and Section 2036 can pull the full date of death value back into your estate. Titling controls before either: survivorship and beneficiary deeds move property outside the will entirely.';
+  const o3=$('t_out3'),m=$('t_meter'),a3=$('t_adv3');
+  if(o3&&m){
+    m.style.width=(T.docs/6*100)+'%';
+    const msgs=['0 of 6. Every one of these is inexpensive, and none of them require wealth. Planning is not only for the wealthy, it is a kindness to the people who love you.',
+      'of 6. A start. The will and the two powers of attorney are the floor for every adult.',
+      'of 6. Halfway. The '+gl('beneficiary','beneficiary')+' sweep is a free afternoon that prevents the most common estate failure there is.',
+      'of 6 complete. Your winter is ready. The letter of instruction is the kindest one, write it by hand.'];
+    o3.innerHTML=T.docs===0?msgs[0]:T.docs<3?('<b>'+T.docs+'</b> '+msgs[1]):T.docs<6?('<b>'+T.docs+'</b> '+msgs[2]):('<b>6</b> '+msgs[3]);
+    if(a3)a3.innerHTML='<b>The law:</b> powers of attorney are presumed durable in North Carolina under Chapter 32C; springing powers force your agent to prove incapacity first. Beneficiary designations pass by contract and OVERRIDE the will. Without the documents, the fallback is guardianship, a public court process, and intestacy under Chapter 29, where the statute, not you, decides who takes.';
+  }
+  const o4=$('t_out4'),a4=$('t_adv4');
+  if(o4){
+    const parts=[];
+    if(T.salary&&T.cap){const match=T.salary*Math.min(T.defer,T.cap)/100;parts.push('claimed match worth '+tfmt(fvStream(match,yrs,rf()))+' by 65');}
+    if(T.retBal!==null||T.monthly!==null)parts.push('a projected nest egg of '+tfmt(fv(T.retBal||0,yrs,rf())+fvStream((T.monthly||0)*12,yrs,rf()))+' at the floor');
+    if(T.homeVal)parts.push('a home worth '+tfmt(T.homeVal)+(T.homeBasis?' carrying '+tfmt(Math.max(0,T.homeVal-T.homeBasis))+' of appreciation':''));
+    parts.push(T.docs+' of 6 protection documents in place');
+    const flags=[...document.querySelectorAll('.persona [data-p]')].filter(c=>c.classList.contains('on')).map(c=>c.dataset.p);
+    const tools=[];
+    if(flags.indexOf('married')>-1)tools.push('the credit shelter and QTIP pairing, which uses both spouses exclusions and keeps control over where things land after the second passing');
+    if(flags.indexOf('kids')>-1)tools.push('annual exclusion gifting at $19,000 per child per donor, doubled for a married couple, plus 529 front loading');
+    if(flags.indexOf('biz')>-1)tools.push('a buy sell agreement funded with life insurance, and entity walls between business risk and family assets');
+    if(flags.indexOf('sn')>-1)tools.push('a special needs trust, so an inheritance supplements benefits instead of disqualifying them');
+    if(T.homeVal&&T.homeBasis&&(T.homeVal-T.homeBasis)>250000)tools.push('a QPRT candidacy check, because the home is carrying '+tfmt(T.homeVal-T.homeBasis)+' of appreciation a residence trust can freeze');
+    if(T.pos&&T.pos.length&&T.pos.some(p=>p.val/T.pos.reduce((s,x)=>s+x.val,0)>0.10))tools.push('a charitable remainder trust look at the concentrated stock position, diversification without the immediate gains bill');
+    o4.innerHTML='<b>Your seasons so far:</b> '+parts.join(', ')+'.'+(T.docs<6?' The fastest way to change this picture is not a bigger portfolio, it is the missing documents in Winter.':' The documents are done, which puts you ahead of most millionaires.')+(tools.length?' <b>Based on what you have told the guide, the toolbox to read first:</b> '+tools.join('; ')+'. Every one of these is built out with live numbers in the <a href="capstone.html"><b>Capstone guide</b></a>.':'')+' Estate tax only enters the story above the federal exclusion, and the whiteboard in Harvest shows that math with your net worth. Everything below that line is about control, protection, and kindness, which cost almost nothing.';
+    if(a4)a4.innerHTML='<b>Under the hood:</b> live inputs are the 10 year Treasury ('+RTS.tenYear+' percent, '+RTS.tenYearDate+'), the Section 7520 rate ('+RTS.rate7520+' percent for '+RTS.rate7520Month+')'+(RTS.sp500?', and the S&P 500 benchmark ('+RTS.sp500.toLocaleString()+', trailing year '+RTS.sp500Return1y+' percent)':'')+', refreshed weekly by an automated pipeline. The trust architecture above the exclusion, credit shelter, QTIP, QPRT, CRT, and ILIT, lives in the Capstone guide with the same engines.';
+  }
+}
+tcalc();
+})();
+</script>
+
 </body>
 </html>
