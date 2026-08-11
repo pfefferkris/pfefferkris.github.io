@@ -7,7 +7,7 @@
       "vendor": "Tyler Self-Service",
       "url": "https://rodrecords.wake.gov/web/",
       "deep": null,
-      "note": "The county asks for a human checkbox first (its bot protection), then accept the disclaimer and use Search with the Book and Page; the scanned deed opens right in the browser."
+      "note": "Wake asks for a human check before it opens the records site (its bot protection), so the scanned image cannot display here. The book and page above are the county's own record: open the site, accept the disclaimer, and search those two numbers."
     },
     "MECKLENBURG": {
       "name": "Mecklenburg County Register of Deeds online search",
@@ -43,7 +43,8 @@
       "vendor": "BIS",
       "url": "https://www.forsythdeeds.com/forsythNameSearch.php?Accept=Accept",
       "deep": null,
-      "note": "Accept the disclaimer, then use the Book-Page search with those two numbers."
+      "note": "The scanned deed serves straight into the guide's viewer from the county imaging system.",
+      "pdf": true
     },
     "NEW HANOVER": {
       "name": "New Hanover County Register of Deeds deed search",

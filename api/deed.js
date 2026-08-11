@@ -32,7 +32,41 @@ export default async function handler(req, res) {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.t < TTL) return res.status(200).json(hit.data);
 
+  // Wake keeps its own parcel layer with the deed book, page AND the recording
+  // date, which the statewide layer lacks. Raleigh addresses get the county's
+  // own record; everything else falls through to the statewide layer below.
+  async function wakeCounty() {
+    const w = "SITE_ADDRESS LIKE '" + street.replace(/'/g, "''") + "%'";
+    const u = "https://maps.wake.gov/arcgis/rest/services/Property/Parcels/MapServer/0/query?where=" +
+      encodeURIComponent(w) + "&outFields=SITE_ADDRESS,DEED_BOOK,DEED_PAGE,DEED_DATE,PIN_NUM&returnGeometry=false&resultRecordCount=1&f=json";
+    const r = await fetch(u, { headers: { "User-Agent": "kpfeffer.com education proxy; contact mail@kpfeffer.com" } });
+    if (!r.ok) return null;
+    const j = await r.json();
+    const f = (j.features || [])[0];
+    if (!f) return null;
+    const a = f.attributes || {};
+    const bk = (a.DEED_BOOK || "").toString().replace(/^0+(?=\d)/, "");
+    const pg = (a.DEED_PAGE || "").toString().replace(/^0+(?=\d)/, "");
+    if (!bk || !pg) return null;
+    return {
+      county: "Wake",
+      siteAddress: a.SITE_ADDRESS || null,
+      sourceRef: "Deed Book/Page " + a.DEED_BOOK + "/" + a.DEED_PAGE,
+      book: bk, page: pg,
+      legal: null,
+      recorded: a.DEED_DATE ? new Date(a.DEED_DATE).toISOString().slice(0, 10) : null,
+      use: null,
+      source: "Wake County parcel record (the county's own GIS)"
+    };
+  }
+
   try {
+    if (!county || county.indexOf("WAKE") === 0) {
+      try {
+        const wk = await wakeCounty();
+        if (wk) { cache.set(key, { t: Date.now(), data: wk }); return res.status(200).json(wk); }
+      } catch (e) {}
+    }
     let where = "UPPER(SITEADD) LIKE '" + street.replace(/'/g, "''") + "%'";
     if (county) where += " AND UPPER(CNTYNAME) LIKE '" + county + "%'";
     const url = "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/0/query" +

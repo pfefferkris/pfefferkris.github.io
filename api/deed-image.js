@@ -10,7 +10,8 @@
 
 const COUNTIES = {
   "CUMBERLAND": { base: "https://www.ccrodinternet.org/", type: "loganBlazor" },
-  "NEW HANOVER": { base: "https://search.newhanoverdeeds.com/", type: "bis" }
+  "NEW HANOVER": { base: "https://search.newhanoverdeeds.com/", type: "bis", detail: "DetailScreen.php", bookcode: "RB" },
+  "FORSYTH": { base: "https://www.forsythdeeds.com/", type: "bis", detail: "forsythDetailScreen.php", bookcode: "RE" }
 };
 
 const UA = "Mozilla/5.0 (kpfeffer.com education viewer; contact mail@kpfeffer.com)";
@@ -167,9 +168,10 @@ async function tiffToPdf(buf) {
   return Buffer.from(await pdf.save());
 }
 
-async function fetchBis(base, book, page) {
-  const detailUrl = base + "DetailScreen.php?Accept=Accept&book%5Bbookcode%5D=RB&book%5Bbooknum%5D=" +
-    encodeURIComponent(book.replace(/^0+/, "")) + "&book%5Bpagenum%5D=" + encodeURIComponent(page.replace(/^0+/, ""));
+async function fetchBis(c, book, page) {
+  const base = c.base;
+  const detailUrl = base + (c.detail || "DetailScreen.php") + "?Accept=Accept&book%5Bbookcode%5D=" + (c.bookcode || "RB") +
+    "&book%5Bbooknum%5D=" + encodeURIComponent(book.replace(/^0+/, "")) + "&book%5Bpagenum%5D=" + encodeURIComponent(page.replace(/^0+/, ""));
   const r = await fetch(detailUrl, { headers: { "User-Agent": UA } });
   if (!r.ok) return null;
   const html = await r.text();
@@ -214,7 +216,7 @@ export default async function handler(req, res) {
   if (c.type === "bis") {
     if (n > 1) return res.status(404).json({ error: "no image at that book and page" });
     try {
-      const buf = await fetchBis(c.base, book, page);
+      const buf = await fetchBis(c, book, page);
       if (buf) return send(buf);
     } catch (e) {
       return res.status(404).json({ error: "no image at that book and page", detail: String(e && e.message || e).slice(0, 200) });

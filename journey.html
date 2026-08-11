@@ -1335,7 +1335,21 @@ async function ocrPdf(url,maxPages){
 }
 function analyzeDeedText(txt){
   const t=(txt||'').toUpperCase().replace(/\s+/g,' ').replace(/\bP\.?L\.?L\.?C\b/g,'PLC'); /* law firm PLLCs must not read as LLC titling */
-  const a={form:'sole',refs:[],quit:false,warranty:false,easement:false,subjectTo:false,dot:false};
+  const a={form:'sole',refs:[],quit:false,warranty:false,easement:false,subjectTo:false,dot:false,doc:'deed',span:null};
+  /* WHAT is this instrument? the county parcel record sometimes points at
+     something that is not a conveyance deed at all, and calling a condominium
+     declaration a titling form would be plainly wrong */
+  const head=t.slice(0,2600);
+  if(/DECLARATION OF (UNIT OWNERSHIP|CONDOMINIUM)|CONDOMINIUM DECLARATION/.test(head))a.doc='condo';
+  else if(/EASEMENT AGREEMENT|GRANT OF EASEMENT|RIGHT[- ]OF[- ]WAY AGREEMENT/.test(head))a.doc='easement';
+  else if(/DECLARATION OF (RESTRICTIVE COVENANTS|RESTRICTIONS|PROTECTIVE COVENANTS)|RESTRICTIVE COVENANTS/.test(head))a.doc='covenants';
+  else if(/\bDEED OF TRUST\b/.test(head)&&!/(WARRANTY|QUITCLAIM|QUIT CLAIM|TRUSTEE.S) DEED/.test(head))a.doc='dot';
+  else if(/SATISFACTION|CANCELLATION OF/.test(head))a.doc='satisfaction';
+  else if(/POWER OF ATTORNEY/.test(head))a.doc='poa';
+  else if(/\bPLAT\b.{0,30}\bMAP\b|MAP OF SURVEY/.test(head))a.doc='plat';
+  /* the recording header names the page span of this instrument (PG: 1617 - 1645) */
+  const sp=t.match(/(?:START PAGE|PG:?)\s*0*(\d{1,6})\s*(?:-|END PAGE|TO)\s*0*(\d{1,6})/);
+  if(sp)a.span=[+sp[1],+sp[2]];
   const severed=/SEVER\w*[^.]{0,80}ENTIRET/.test(t); /* a deed SEVERING the entirety is ending that form, not creating it */
   if(/JOINT\s+TENAN\w*[^.]{0,60}SURVIVORSHIP|RIGHTS?\s+OF\s+SURVIVORSHIP/.test(t))a.form='jtwros';
   else if(!severed&&/TENAN\w*\s+BY\s+THE\s+ENTIRET/.test(t))a.form='tbe';
@@ -1380,7 +1394,16 @@ async function runTitleRead(){
       try{text=await ocrPdf(pu2(cur.b,cur.g),hop===0?2:1);}catch(e){say('Could not read Book '+cur.b+' Page '+cur.g+' (older books can live in a different image set at the county).');break;}
       const an=analyzeDeedText(text);
       hops.push({b:cur.b,g:cur.g,an:an});
-      const prior=an.refs.find(r=>{const k=r.b+'/'+r.g;return k!==key&&!seen.has(k)&&+r.b<=+cur.b;});
+      const prior=an.refs.find(r=>{
+        const k=r.b+'/'+r.g;
+        if(k===key||seen.has(k))return false;
+        if(+r.b>+cur.b)return false;                                   /* never forward in time */
+        if(+r.b===+cur.b){
+          if(+r.g>=+cur.g)return false;                                /* same book: must be an earlier page */
+          if(an.span&&+r.g>=an.span[0]&&+r.g<=an.span[1])return false; /* and not a page of THIS document */
+        }
+        return true;
+      });
       if(prior){nextRef=prior;cur={b:prior.b,g:prior.g};}
       else cur=null;
     }
@@ -1397,6 +1420,26 @@ async function runTitleRead(){
     else if(a.form==='life')be='The remainder passes outside probate automatically at death. Read the reservation paragraph closely: if the owner kept the power to sell, gift, and mortgage, it is the enhanced (Lady Bird) version and they kept full control for life.';
     else if(a.form==='entity')be=(chips.indexOf('biz')>=0?'<b>Does this behoove you? It matches your playbook:</b> you told me you own a business, and this is exactly how business property gets titled. ':'')+'<b>The examiner&#8217;s checks:</b> the operating agreement should say exactly where your membership interest goes at death; that interest should be coordinated with Winter&#8217;s documents (a will or trust can catch it); and know the trade: a home owned by your own company usually gives up the primary residence capital gain exclusion and can complicate homestead and insurance, so this container is built for rental and business property, not the house you live in.';
     const ENTM='<b>Titled in a company.</b> The deed conveys this property to a business entity, an LLC or corporation, so the COMPANY owns it, not a person. That changes how it passes entirely: the real estate itself never probates, because a company never dies. What passes at your death is your MEMBERSHIP INTEREST in the company, and THAT follows your will, or your trust if the interest was assigned to it. Landlords and investors title this way on purpose, for liability separation: a lawsuit about the property stops at the company wall.';
+    /* the county parcel record does not always point at a conveyance deed.
+       Naming the instrument honestly beats forcing a titling answer onto it. */
+    const DOCM={
+      condo:'<b>This is a Declaration of Condominium, not a deed.</b> It is the founding document of the whole condominium: it creates the units, defines what is yours alone and what everyone shares (the common elements), and binds every owner who ever buys in. It is recorded once, by the developer, and the parcel record points at it because it is where this property legally begins. <b>What it means for you:</b> read the shared-element and assessment sections, because they decide who pays for the roof, and your own DEED, the one with your name on it, is a separate later document. Tap what your deed says above and I will tell you how it passes.',
+      easement:'<b>This is an easement agreement, not a conveyance deed.</b> Nobody bought the land here; somebody was granted the RIGHT to use part of it, a driveway, a utility line, a right of way. It rides with the land forever, binding every future owner, whether or not anyone reads it at closing. <b>What it means for you:</b> know exactly where it runs before you fence, build, or plant. For how the property itself passes, tap what your deed says above.',
+      covenants:'<b>These are restrictive covenants, not a deed.</b> This is the neighborhood rulebook recorded against the land: what you may build, what you may park, what color you may paint. It binds every owner who buys in, HOA or no HOA. <b>What it means for you:</b> these are enforceable property rights, not suggestions. For how the home itself passes, tap what your deed says above.',
+      dot:'<b>This is a deed of trust, not a deed.</b> Despite the name, it does not transfer ownership: it is the security instrument for a loan, giving a trustee the power to sell if the borrower defaults. It is the mortgage in North Carolina form. <b>What it means for you:</b> every one of these must be cancelled of record when the loan is paid, and an uncancelled one from an owner ago is the single most common cloud on title. For how the home passes, tap what your deed says above.',
+      satisfaction:'<b>This is a satisfaction or cancellation, not a deed.</b> It is the paperwork that clears an old loan off the record, which is exactly the document whose ABSENCE creates a cloud on title. <b>What it means for you:</b> seeing one here is good news. For how the home passes, tap what your deed says above.',
+      poa:'<b>This is a power of attorney, not a deed.</b> It is recorded so an agent can sign real estate documents for someone else. <b>What it means for you:</b> Winter&#8217;s documents cover exactly this instrument, and it dies with the principal, which is the part most families learn too late.',
+      plat:'<b>This is a plat, a recorded survey map, not a deed.</b> It draws the lots, the streets, and the easements, and it is what your legal description points back to when it says LOT 39, SECTION II. <b>What it means for you:</b> the plat outranks the street address in describing what you own. For how it passes, tap what your deed says above.'
+    };
+    if(a.doc!=='deed'&&DOCM[a.doc]){
+      let dv='<b>I read the public record for you</b>, and the first honest thing to say is that this document is not what most people expect.<br><br>'+DOCM[a.doc];
+      if(hops.length>1)dv+='<br><br><b>The chain I walked:</b> '+hops.map(h=>'Book '+h.b+'/'+h.g).join(' &#8592; ')+'.';
+      dv+='<br><br><b>One honest limit:</b> I read a scanned image with optical character recognition, so a faded stamp or an odd font can slip past me, and a clean deed is still not a clean title: liens and judgments live in the county INDEX, not on the deed. This is a reading lesson, not a legal opinion; closings use a title attorney and title insurance for a reason.';
+      oo.innerHTML=dv;
+      syncSoon();
+      OCRBUSY=false;
+      return;
+    }
     let v='<b>I read the deed for you.</b> Here is what the words on the recorded page actually mean:<br><br>'+(a.form==='entity'?ENTM:(TITLEM[a.form]||''));
     if(be)v+='<br><br>'+be;
     const notes=[];
