@@ -2,7 +2,7 @@
   "name": "kpfeffer-site",
   "private": true,
   "dependencies": {
-    "playwright-core": "1.49.1",
+    "puppeteer-core": "23.11.1",
     "@sparticuz/chromium": "131.0.1"
   }
 }

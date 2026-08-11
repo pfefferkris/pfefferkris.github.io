@@ -27,39 +27,53 @@ async function tryDirect(url) {
 // Drive the county's public Logan/Blazor imaging viewer to make it generate the PDF.
 async function generateViaViewer(base, book, page) {
   const chromium = (await import("@sparticuz/chromium")).default;
-  const { chromium: pw } = await import("playwright-core");
-  const br = await pw.launch({
+  const puppeteer = await import("puppeteer-core");
+  const br = await puppeteer.launch({
     args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
     executablePath: await chromium.executablePath(),
-    headless: true
+    headless: chromium.headless
   });
   try {
-    const pg = await br.newPage({ userAgent: UA });
+    const pg = await br.newPage();
+    await pg.setUserAgent(UA);
+
+    // capture the generated PDF the moment the viewer requests it
+    let pdfUrl = null, pdfBuf = null;
+    let resolvePdf; const pdfSeen = new Promise(ok => { resolvePdf = ok; });
+    pg.on("response", async r => {
+      if (r.url().indexOf("/PDFs/") >= 0 && r.status() === 200) {
+        pdfUrl = r.url();
+        try { const b = await r.buffer(); if (b && b.length > 500) pdfBuf = b; } catch (e) {}
+        resolvePdf();
+      }
+    });
+
     await pg.goto(base + "Imaging", { waitUntil: "load", timeout: 25000 });
     // welcome screen -> the imaging form
-    await pg.getByRole("button", { name: "Imaging System Only" }).click({ timeout: 20000 });
-    const bookBox = pg.getByRole("textbox", { name: "Book", exact: true });
-    await bookBox.waitFor({ timeout: 20000 });
+    const enter = await pg.waitForSelector('::-p-aria([role="button"][name="Imaging System Only"])', { timeout: 20000 });
+    await enter.click();
+    const bookBox = await pg.waitForSelector('::-p-aria([role="textbox"][name="Book"])', { timeout: 20000 });
     // books 10000+ live in the "Deed 10000" image set; older books in "Deed"
     if (parseInt(book, 10) >= 10000) {
-      await pg.getByRole("combobox", { name: "Image Set" }).click({ timeout: 10000 });
-      await pg.getByRole("option", { name: "Deed 10000" }).click({ timeout: 10000 });
+      const combo = await pg.waitForSelector('::-p-aria([role="combobox"][name="Image Set"])', { timeout: 10000 });
+      await combo.click();
+      const opt = await pg.waitForSelector('::-p-aria([role="option"][name="Deed 10000"])', { timeout: 10000 });
+      await opt.click();
+      await new Promise(r => setTimeout(r, 400));
     }
-    await bookBox.fill(book);
-    await pg.getByRole("textbox", { name: "Page", exact: true }).fill(page);
-    const waitPdf = pg.waitForResponse(
-      r => r.url().indexOf("/PDFs/") >= 0 && r.ok(),
-      { timeout: 35000 }
-    );
-    await pg.getByRole("button", { name: "View Pages" }).click({ timeout: 10000 });
-    const resp = await waitPdf;
-    try {
-      const body = await resp.body();
-      if (body && body.length > 500) return body;
-    } catch (e) { /* fall through to refetch */ }
-    const url = resp.url();
-    await br.close();
-    return await tryDirect(url);
+    await bookBox.click();
+    await bookBox.type(book, { delay: 20 });
+    const pageBox = await pg.waitForSelector('::-p-aria([role="textbox"][name="Page"])', { timeout: 10000 });
+    await pageBox.click();
+    await pageBox.type(page, { delay: 20 });
+    const view = await pg.waitForSelector('::-p-aria([role="button"][name="View Pages"])', { timeout: 10000 });
+    await view.click();
+
+    await Promise.race([pdfSeen, new Promise(r => setTimeout(r, 35000))]);
+    if (pdfBuf) return pdfBuf;
+    if (pdfUrl) { await br.close(); return await tryDirect(pdfUrl); }
+    return null;
   } finally {
     try { await br.close(); } catch (e) {}
   }
@@ -98,7 +112,7 @@ export default async function handler(req, res) {
       const buf = await generateViaViewer(c.base, book, page);
       if (buf) return send(buf);
     } catch (e) {
-      return res.status(404).json({ error: "no image at that book and page", detail: String(e && e.message || e).slice(0, 160) });
+      return res.status(404).json({ error: "no image at that book and page", detail: String(e && e.message || e).slice(0, 400) });
     }
   }
   return res.status(404).json({ error: "no image at that book and page" });
