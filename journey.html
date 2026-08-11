@@ -1318,15 +1318,19 @@ if(pull)pull.addEventListener('click',async()=>{
       const dd=await fetch('/api/deed?address='+encodeURIComponent(a)+(p&&p.county?'&county='+encodeURIComponent(p.county):'')).then(r2=>r2.ok?r2.json():null).catch(()=>null);
       const card=document.getElementById('t_deedcard');
       if(card&&dd&&(dd.book||dd.sourceRef)){
-        const RODS={
-          WAKE:{n:'Wake County Register of Deeds, Consolidated Real Property Index',u:'https://rodcrpi.wakegov.com/booksweb/genextsearch.aspx'},
-          MECKLENBURG:{n:'Mecklenburg County Register of Deeds online search',u:'https://meckrod.manatron.com/'},
-          CUMBERLAND:{n:'Cumberland County Register of Deeds public records',u:'https://www.ccrodinternet.org/'}
-        };
+        if(!window.RODMAP){try{window.RODMAP=await fetch('data/rodmap.json').then(r3=>r3.ok?r3.json():null);}catch(e2){window.RODMAP=null;}}
         const ck=(dd.county||'').toUpperCase();
-        const rod=RODS[ck]||null;
+        const rod=window.RODMAP&&window.RODMAP.counties?window.RODMAP.counties[ck]:null;
         const rodQ=encodeURIComponent((dd.county||'')+' County NC register of deeds search deed book '+(dd.book||'')+' page '+(dd.page||''));
-        const link=rod?'<a href="'+rod.u+'" target="_blank" rel="noopener"><b>Open the '+dd.county+' County register</b></a>, enter Book '+(dd.book||'')+' and Page '+(dd.page||'')+', and the scanned deed image opens right in the browser.':'<a href="https://www.google.com/search?q='+rodQ+'" target="_blank" rel="noopener"><b>Open the register and pull this page</b></a>; most counties let you read the scanned deed image in the browser once you enter the book and page.';
+        let link;
+        if(rod&&rod.deep&&dd.book&&dd.page){
+          const du=rod.deep.replace('{book}',encodeURIComponent(dd.book)).replace('{page}',encodeURIComponent(dd.page));
+          link='<a href="'+du+'" target="_blank" rel="noopener"><b>Open this exact deed record</b></a> at the '+dd.county+' County Register of Deeds, one click, no typing. (If the county system asks anything, the <a href="'+rod.url+'" target="_blank" rel="noopener">search page</a> takes Book '+dd.book+' and Page '+dd.page+'.)';
+        } else if(rod){
+          link='<a href="'+rod.url+'" target="_blank" rel="noopener"><b>Open the '+dd.county+' County register</b></a>. '+(rod.note||'Enter the Book and Page and the scanned deed opens in the browser.');
+        } else {
+          link='<a href="https://www.google.com/search?q='+rodQ+'" target="_blank" rel="noopener"><b>Open the register and pull this page</b></a>; most counties let you read the scanned deed image in the browser once you enter the book and page.';
+        }
         card.innerHTML='<b>The recording itself, from the county GIS record:</b><br>'+(dd.book?'Book <span class="deedbig">'+dd.book+'</span> &nbsp;Page <span class="deedbig">'+dd.page+'</span>':dd.sourceRef)+(dd.recorded?'<br>Recorded '+dd.recorded:'')+(dd.legal?'<br><i>'+dd.legal+'</i>':'')+'<br>This is the exact book and page your home&#8217;s story lives under. '+link;
         syncSoon();
       } else if(card) card.innerHTML='';
