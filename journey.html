@@ -292,7 +292,7 @@ footer a:hover{color:var(--navy)}
 </div>
 
 <div class="lawbar glass">
-  <b>Before you scroll:</b> I am not an attorney, and this guide is education, not legal, tax, or investment advice. Under North Carolina law (Chapter 84 of the General Statutes) only a licensed attorney may draft your estate documents or advise you on your legal rights, and nothing here creates an attorney client relationship or a fiduciary engagement. Every figure is an illustration from stated assumptions. Bring what you learn here to a licensed North Carolina attorney and your tax advisor.
+  <b>Before you scroll:</b> I am not an attorney, and I am not a registered investment adviser. This guide is education for the general public, not legal, tax, or investment advice, and nothing here is a recommendation to buy or sell any security or a substitute for advice about your specific situation. Under North Carolina law (Chapter 84 of the General Statutes) only a licensed attorney may draft your estate documents or advise you on your legal rights, and nothing here creates an attorney client relationship or a fiduciary engagement. Every figure is an illustration computed from stated assumptions and historical data; hypothetical projections are not promises, and past performance never guarantees future results. Bring what you learn here to a licensed North Carolina attorney, a tax professional, and a registered investment adviser.
 </div>
 
 <header id="main" tabindex="-1">
@@ -737,7 +737,8 @@ const GLOSS={
  capm:'The return the market DEMANDS for a given level of risk. A holding earning less than CAPM asks was not worth its risk.',
  replacement:'The percent of your final working year salary that keeps arriving after you retire. Planners aim for roughly 70 to 80 percent; Social Security typically covers about 40 for an average earner, and your savings must carry the rest.',
  fourpct:'A rule of thumb: withdraw about 4 percent of the nest egg in year one of retirement, adjust for inflation after, and the money has historically outlived the retiree. Multiply the nest egg by 0.04 for a sustainable first year income.',
- expratio:'The yearly fee a fund charges, quietly subtracted from returns. An index fund charges around 0.05 percent; many active funds charge ten times that for results that usually trail the benchmark.'
+ expratio:'The yearly fee a fund charges, quietly subtracted from returns. An index fund charges around 0.05 percent; many active funds charge ten times that for results that usually trail the benchmark.',
+ covariance:'The measure of whether two holdings move together or take turns. Positive: they rise and fall as a pair. Negative: one tends to zig when the other zags, which smooths the whole portfolio. Correlation is the same idea scaled from minus 1 to plus 1 so humans can read it.'
 };
 function gl(key,txt){return '<span class="gl" data-g="'+key+'">'+txt+'<span class="glpop">'+GLOSS[key]+'</span></span>';}
 document.addEventListener('click',e=>{
@@ -749,10 +750,16 @@ document.addEventListener('click',e=>{
 const BLOCKS=[
 {q:'Help me understand what this money is ultimately for.',
  sub:'Planting starts with a goal and three numbers. Every figure computed below uses the live risk free rate as its floor.',
- body:`<p class="tsub" style="margin-top:4px"><b>STEP 0, footing first.</b> Investing is not rocket science, but it does have an order of operations, and it starts before the first dollar is planted: a starter emergency fund of $1,000, then the high interest debt goes. Tap what is true today.</p>
+ body:`<p class="tsub" style="margin-top:4px"><b>STEP 0, footing first.</b> Investing is not rocket science, but it does have an order of operations, a ladder everyone climbs the same way: first a starter cushion of $1,000, second the high interest debt dies, third the cushion grows to 3 to 6 months of expenses, fourth about 15 percent of income starts flowing to retirement, and only then come the bigger rungs, college for the kids, the house paid off, and building wealth worth giving away. Everything below this line is the ladder; this step is the first two rungs. Tap what is true today.</p>
  <div class="docck" id="t_foot"><span data-f="fund">I have $1,000 set aside</span><span data-f="debt">No high interest credit card debt</span></div>
  <div class="tout" id="t_foot_out"></div>
- <div class="trow" style="margin-top:14px">
+ <p class="tsub" style="margin-top:14px"><b>Know what you actually owe.</b> Most people guess their card rate low and their balance lower. Pull your free credit reports from all three bureaus at <a href="https://www.annualcreditreport.com" target="_blank" rel="noopener"><b>AnnualCreditReport.com</b></a>, the only federally authorized free source, read the real numbers, and copy each debt below exactly as it appears. Like everything on this page, what you type stays in this browser tab and goes nowhere.</p>
+ <div id="t_debts"></div>
+ <button class="addrow" id="t_adddebt" type="button">+ Add a debt</button>
+ <div class="tout" id="t_debtplan" style="display:none"></div>
+ <div class="advline" id="t_advdebt" data-anchor="#t_debtplan"></div>
+ <p class="tsub" style="margin-top:16px"><b>Now the planting numbers.</b> Two of the boxes below confuse everyone, so plainly: <b>You defer</b> is the percent of each paycheck you choose to send into your retirement plan before the money ever reaches your pocket. The <b>match cap</b> is the free money ceiling: many employers add a dollar for every dollar you put in, up to a cap, commonly 3 to 6 percent of your pay. If the cap is 4 and you only defer 2, half the free money is left on the table every single payday. Both numbers are in your HR portal or plan summary.</p>
+ <div class="trow">
    <label>Your age<input type="number" id="t_age" min="18" max="95" placeholder="30"></label>
    <label>Monthly expenses<input type="number" id="t_exp" placeholder="4000"></label>
    <label>Salary<input type="number" id="t_sal" placeholder="70000"></label>
@@ -762,10 +769,11 @@ const BLOCKS=[
  <div id="t_goals"></div>
  <button class="addrow" id="t_addgoal" type="button">+ Add another goal</button>
  <div class="tout" id="t_out0">Fill in what you know. Everything stays on this page and is never stored or sent anywhere.</div>
+ <p class="tsub" style="margin-top:12px">When the footing is set and the goals have real numbers, keep scrolling: <b>Summer takes these exact numbers with it</b>, your salary, your match, your monthly savings, and puts them to work. The seasons remember as you go.</p>
  <div class="advline" id="t_adv0"></div>`},
 {q:'Help me understand how your money is working, and what it is actually invested in.',
  sub:'The engine season, run like a fund review. Wealth grows in layers of assets: cash for the near goals, funds and stocks for the long ones, retirement accounts with their own rules, the home (Harvest reads its public record below), sometimes a business. Three steps: project the road, grade what you own, then ask if it will be enough.',
- body:`<p class="tsub" style="margin-top:4px"><b>STEP 1 · Where the current road ends.</b> Two numbers, one projection at the risk free floor and one near the long run market average.</p>
+ body:`<p class="tsub" style="margin-top:4px"><b>STEP 1 · Where the current road ends.</b> Spring handed this season your numbers, the salary, the employer match, the monthly savings, and here they go to work. Two projections: one at the risk free floor, one near the long run market average.</p>
  <div class="trow">
    <label>Retirement balance today<input type="number" id="t_bal" placeholder="60000"></label>
    <label>You save monthly<input type="number" id="t_mon" placeholder="800"></label>
@@ -785,7 +793,7 @@ const BLOCKS=[
   <div class="anstats" id="t_anstats"></div>
   <div class="tout" id="t_anout"></div>
  </div>
- <p class="tsub" style="margin-top:18px"><b>STEP 3 · Will it be enough to retire on?</b> The prospectus method: project the nest egg, turn it into income, and compare it to your final working year of pay. That percentage is your ${gl('replacement','replacement rate')}, and it is the number retirement planning actually optimizes.</p>
+ <p class="tsub" style="margin-top:18px"><b>STEP 3 · Will it be enough to retire on?</b> My method: project the nest egg, turn it into income, and compare it to your final working year of pay. That percentage is your ${gl('replacement','replacement rate')}, and it is the number retirement planning actually optimizes.</p>
  <div class="trow">
    <label>Retire at age<input type="number" id="t_retage" value="65" min="45" max="80"></label>
    <label>Salary today<input type="number" id="t_rsal" placeholder="from Spring, or type it"></label>
@@ -794,7 +802,7 @@ const BLOCKS=[
  <div class="tout" id="t_ret">Add your age (Spring), salary, balance and monthly savings, and the replacement rate computes here.</div>
  <div class="advline" id="t_advret" data-anchor="#t_ret"><b>The law of the nest egg:</b> workplace plans live under ERISA, which does three quiet favors most savers never notice: a fiduciary duty on whoever runs the plan, federal protection from creditors (the anti alienation rule), and automatic spousal rights on the money. For 2026 the IRS elective deferral limit is <b>$24,500</b> (IRC Section 402(g)); an IRA adds up to <b>$7,500</b> more (Section 219), each with extra catch up room after age 50. Traditional dollars are taxed on the way out, Roth dollars on the way in, and the employer match is always traditional. IRAs carry their own armor: protected in bankruptcy, and in North Carolina shielded from general creditors as well. The hedge lesson grows up here too: as retirement nears, the hedge seat in the portfolio is supposed to expand, and that gradual shift is the entire idea inside a target date fund.</div>
  <p class="tsub" style="margin-top:18px"><b>The three ideas behind every grade above.</b></p>
- <div class="lesson"><b>1. The hedge lesson.</b> Start at 100 percent stocks, then slide a hedge asset into the mix and watch what happens to risk and efficiency. The classroom case happens to use gold, but this is NOT about buying gold: it is the reason balanced portfolios hold bonds, and why the classic mix is stocks plus something that zigs when stocks zag.
+ <div class="lesson"><b>1. The hedge lesson.</b> Start at 100 percent stocks, then slide a hedge asset into the mix and watch what happens to risk and efficiency. The case I built this from happens to use gold, but this is NOT about buying gold: it is the reason balanced portfolios hold bonds, and why the classic mix is stocks plus something that zigs when stocks zag.
   <label style="margin-top:8px">Hedge asset in the portfolio: <span id="t_goldpct">0</span>%<input type="range" id="t_gold" min="0" max="40" step="5" value="0" style="width:100%;margin-top:4px"></label>
   <div class="tout" id="t_goldout"></div></div>
  <div class="lesson"><b>2. The fee lesson.</b> What does the ${gl('expratio','expense ratio')} quietly cost over a working lifetime?
@@ -890,6 +898,7 @@ function saveSession(){try{
   const de=$('t_docs');if(de)F.docs=[...de.querySelectorAll('span.on')].map(s=>s.dataset.d);
   const fe=$('t_foot');if(fe)F.foot=[...fe.querySelectorAll('span.on')].map(s=>s.dataset.f);
   F.goals=(T.goals||[]).map(g=>({n:g.name,c:g.cost,y:g.yrs}));
+  F.debts=(T.debts||[]).map(d=>({n:d.name,b:d.bal,r:d.rate}));
   F.pos=(T.pos||[]).map(x=>({t:x.tkr,v:x.val}));
   sessionStorage.setItem('unshakable',JSON.stringify(F));
 }catch(e){}}
@@ -901,12 +910,21 @@ function restoreSession(){try{
   const fe=$('t_foot');if(fe)(F.foot||[]).forEach(ff=>{const s=fe.querySelector('span[data-f="'+ff+'"]');if(s&&!s.classList.contains('on'))s.classList.add('on');});
   (F.goals||[]).forEach((g,i)=>{if(i>0&&typeof addGoal==='function')addGoal();const r=goalsEl?goalsEl.children[i]:null;if(r){r.querySelector('.g_name').value=g.n||'';r.querySelector('.g_cost').value=g.c||'';r.querySelector('.g_yrs').value=g.y||'';}});
   (F.pos||[]).forEach(x=>{if(typeof addPos==='function'&&posEl){addPos();const r=posEl.lastChild;r.querySelector('.p_tkr').value=x.t||'';r.querySelector('.p_val').value=x.v||'';}});
+  (F.debts||[]).forEach((d,i)=>{if(i>0&&typeof addDebt==='function')addDebt();const r=debtsEl?debtsEl.children[i]:null;if(r){r.querySelector('.d_name').value=d.n==='that debt'?'':(d.n||'');r.querySelector('.d_bal').value=d.b||'';r.querySelector('.d_rate').value=d.r||'';}});
 }catch(e){}}
 ['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon','t_retage','t_rsal','t_wage'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',tcalc);});
 const docEl=$('t_docs');
 if(docEl)docEl.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{s.classList.toggle('on');tcalc();}));
 const footWire=$('t_foot');
 if(footWire)footWire.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{s.classList.toggle('on');tcalc();}));
+const debtsEl=$('t_debts');
+function addDebt(){if(!debtsEl)return;
+  const r=document.createElement('div');r.className='trow debtrow';
+  r.innerHTML='<label>What it is<input type="text" class="d_name" placeholder="Visa card"></label><label>Balance<input type="number" class="d_bal" placeholder="4200"></label><label>Interest rate (%)<input type="number" class="d_rate" step="0.1" placeholder="24.9"></label>';
+  r.querySelectorAll('input').forEach(i=>i.addEventListener('input',tcalc));
+  debtsEl.appendChild(r);}
+if(debtsEl)addDebt();
+const adbt=$('t_adddebt');if(adbt)adbt.addEventListener('click',addDebt);
 
 /* several goals, not one */
 const goalsEl=$('t_goals');
@@ -949,7 +967,7 @@ const ap=$('t_addpos');if(ap)ap.addEventListener('click',()=>{addPos();});
 /* the persona chips steer the toolbox, so recompute when they flip */
 document.querySelectorAll('.persona [data-p]').forEach(c=>c.addEventListener('click',()=>setTimeout(tcalc,0)));
 
-/* the gold lesson: TRST 631 classroom case, two asset math with the case parameters */
+/* the hedge lesson: two asset math with case parameters */
 const GOLD={premS:21.7,premG:9.6,sigS:42.3,sigG:25,rho:-0.26};
 function goldCalc(w){const ws=1-w;
   const prem=ws*GOLD.premS+w*GOLD.premG;
@@ -960,7 +978,7 @@ function goldOut(){const go=$('t_goldout');if(!go||!goldEl)return;
   const w=+goldEl.value/100;$('t_goldpct').textContent=goldEl.value;
   const r=goldCalc(w),base=goldCalc(0);
   if(w===0){go.innerHTML='All stocks: risk (standard deviation) <b>'+base.sig+' percent</b>, Sharpe ratio <b>'+base.sharpe+'</b>. The hedge asset earns LESS than stocks, so adding it should make things worse. Slide and see.';return;}
-  go.innerHTML='At '+goldEl.value+' percent hedge: risk falls to <b>'+r.sig+' percent</b> and the Sharpe ratio rises to <span class="big">'+r.sharpe+'</span>. It sounds like a paradox: a lower return asset made the whole portfolio better, because it tends to zig when stocks zag. That negative correlation is the only free lunch in finance. In real portfolios this seat is usually filled by <b>bonds</b>, the boring asset that earns its keep on the bad days; the classroom case used gold to make the same point. This is a lesson about hedging, not a recommendation to buy any particular asset. Classroom case figures, illustrative.';}
+  go.innerHTML='At '+goldEl.value+' percent hedge: risk falls to <b>'+r.sig+' percent</b> and the Sharpe ratio rises to <span class="big">'+r.sharpe+'</span>. It sounds like a paradox: a lower return asset made the whole portfolio better, because it tends to zig when stocks zag. That negative correlation is the only free lunch in finance. In real portfolios this seat is usually filled by <b>bonds</b>, the boring asset that earns its keep on the bad days; the case used gold to make the same point. This is a lesson about hedging, not a recommendation to buy any particular asset. Case figures, illustrative.';}
 if(goldEl){goldEl.addEventListener('input',goldOut);goldOut();}
 
 /* the fee lesson */
@@ -1088,18 +1106,33 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
     const body=rows.map(r=>'<tr><td><b>'+r.s+'</b></td><td>'+Math.round(r.w*100)+'%</td><td>'+anPct(r.real)+'</td><td>'+(r.sd*100).toFixed(0)+'%</td><td>'+r.beta.toFixed(2)+'</td><td class="'+(r.alpha>=0?'pass':'fail')+'">'+anPct(r.alpha)+'</td><td class="'+(r.pass?'pass':'fail')+'">'+(r.pass?'Pass':'Fail')+'</td></tr>').join('');
     const prow='<tr class="port"><td>YOUR PORTFOLIO</td><td>100%</td><td>'+anPct(pReal)+'</td><td>'+(pSd*100).toFixed(0)+'%</td><td>'+pBeta.toFixed(2)+'</td><td></td><td>Sharpe '+pSharpe.toFixed(2)+'</td></tr>';
     const mrow='<tr class="mkt"><td>S&amp;P 500</td><td></td><td>'+anPct(mktReal)+'</td><td>'+(mSd*100).toFixed(0)+'%</td><td>1.00</td><td>0.0%</td><td>Sharpe '+mSharpe.toFixed(2)+'</td></tr>';
-    if(tech)tech.innerHTML='<div class="antab-wrap"><table class="antab">'+head+body+prow+mrow+'</table></div>'+
+    let corrTab='';
+    if(rows.length>1){
+      corrTab='<div class="antab-wrap" style="margin-top:10px"><table class="antab"><tr><th>Correlation</th>'+rows.map(r=>'<th>'+r.s+'</th>').join('')+'</tr>';
+      for(let i=0;i<rows.length;i++){
+        corrTab+='<tr><td><b>'+rows[i].s+'</b></td>';
+        for(let j=0;j<rows.length;j++){
+          const c=anCov(rets[i],rets[j])/Math.sqrt(anCov(rets[i],rets[i])*anCov(rets[j],rets[j]));
+          corrTab+='<td class="'+(i===j?'':c<0?'pass':c>=0.7?'fail':'')+'">'+c.toFixed(2)+'</td>';
+        }
+        corrTab+='</tr>';
+      }
+      corrTab+='</table></div><div class="anlegend"><b>Reading the correlation table:</b> this is the covariance matrix made human. Each cell asks, when THIS holding moves, does THAT one move with it? 1.00 on the diagonal is each holding agreeing with itself. Green negatives are the free lunch, pairs that take turns and smooth the ride. Brick reds above 0.70 are pairs that pretend to be two investments while behaving as one.</div>';
+    }
+    if(tech)tech.innerHTML='<div class="antab-wrap"><table class="antab">'+head+body+prow+mrow+'</table></div>'+corrTab+
       '<div class="anlegend"><b>How to read it:</b> '+gl('sigma','Risk')+' is how bumpy the ride was. '+gl('beta','Beta')+' is how hard a holding swings when the market swings. '+gl('alpha','Alpha')+' is the return earned beyond what that risk level demanded, computed against '+gl('capm','what CAPM asks')+'. The test passes a holding that beat its risk requirement without carrying meaningfully more swing than the market itself (a small tolerance keeps a total market fund riding at beta 1.0 from failing on a rounding edge). The '+gl('sharpe','Sharpe ratio')+' is the final grade: how well you were paid for every unit of worry.</div>'+
-      '<div style="margin-top:8px"><b>The machinery, straight from the Week 7 workbook of the advanced investment course:</b> daily log returns LN(P<sub>t</sub> / P<sub>t-1</sub>) over '+common.length+' aligned trading days; a sample covariance matrix across every pair; beta = COV(stock, market) / VAR(market); realized return = e<sup>sum of log returns</sup> - 1; CAPM required return = r<sub>f</sub> + beta (r<sub>market</sub> - r<sub>f</sub>) with the live 10 year Treasury at '+RTS.tenYear+' percent; Jensen alpha = realized minus required; portfolio variance is the double sum w<sub>i</sub>w<sub>j</sub>COV<sub>ij</sub>, annualized by 252 trading days.</div>';
+      '<div style="margin-top:8px"><b>The machinery, straight from my own analysis workbook:</b> daily log returns LN(P<sub>t</sub> / P<sub>t-1</sub>) over '+common.length+' aligned trading days; a sample covariance matrix across every pair; beta = COV(stock, market) / VAR(market); realized return = e<sup>sum of log returns</sup> - 1; CAPM required return = r<sub>f</sub> + beta (r<sub>market</sub> - r<sub>f</sub>) with the live 10 year Treasury at '+RTS.tenYear+' percent; Jensen alpha = realized minus required; portfolio variance is the double sum w<sub>i</sub>w<sub>j</sub>COV<sub>ij</sub>, annualized by 252 trading days.</div>';
     const best=[...rows].sort((a,b)=>b.alpha-a.alpha)[0];
     const worst=[...rows].sort((a,b)=>a.alpha-b.alpha)[0];
     const heavy2=rows.filter(r=>r.w>0.10&&rows.length>1);
-    let v='<b>Performance, in plain words.</b> The portfolio earned '+anPct(pReal)+' over the last year, while the market as a whole (the S&P 500, the 500 biggest U.S. companies) earned '+anPct(mktReal)+'. That raw number is where most people stop, and it is the wrong place to stop, because it says nothing about how rough the ride was on the way. So the curriculum asks a better question: how much were you PAID for each unit of worry you carried? That is the '+gl('sharpe','Sharpe ratio')+', and it is the single best one number grade a portfolio gets. Yours came out to <b>'+pSharpe.toFixed(2)+'</b>; the market pays '+mSharpe.toFixed(2)+' for simply owning everything. '+(pSharpe>=mSharpe?'<span class="big">You were paid better per unit of risk than the market pays</span>, which is what skill, or honest diversification, actually looks like.':'<span class="flagbad">You carried more worry per dollar of reward than the market required</span>: the same or better result was available with less risk, just by owning the whole market.')+' ';
+    let v='<b>Performance, in plain words.</b> The portfolio earned '+anPct(pReal)+' over the last year. For comparison, the market as a whole, meaning the S&P 500, a basket of the 500 biggest U.S. companies that you can buy in one purchase through an index fund, earned '+anPct(mktReal)+'. Most people stop at that raw number, and it is the wrong place to stop, because it says nothing about how rough the ride was. Think of two roads to the same town: one is smooth highway, the other is a cliff edge in the rain. Same destination, very different trips, and investing grades the trip. The grade is the '+gl('sharpe','Sharpe ratio')+': how much return you were PAID for each unit of worry you carried. Yours came out to <b>'+pSharpe.toFixed(2)+'</b>; simply owning the whole market pays '+mSharpe.toFixed(2)+'. '+(pSharpe>=mSharpe?'<span class="big">You were paid better per unit of risk than the market pays</span>, which is what skill, or honest diversification, actually looks like.':'<span class="flagbad">You carried more worry per dollar of reward than the market required</span>: the same or better result was available with a calmer ride, just by owning everything.')+' ';
     if(rows.length>1){
       v+='Inside the portfolio, each holding gets measured against what its own risk level DEMANDED, a hurdle called '+gl('capm','CAPM')+': the riskier a stock behaves, the more return it owes you. Return above that hurdle is called '+gl('alpha','alpha')+', and it is the only return that counts as earned. <b>'+best.s+'</b> cleared its hurdle by '+anPct(best.alpha)+(worst.alpha<0?', while <b>'+worst.s+'</b> came in '+anPct(worst.alpha)+' below what its risk level owed you: it took big swings and did not pay for them.':', the strongest earner for its risk.')+' ';
     }
-    v+='<br><br><b>The shape of the risk.</b> The whole portfolio moves at '+gl('beta','beta')+' '+pBeta.toFixed(2)+', meaning when the market moves a dollar, this mix tends to move about '+(pBeta>=1?'$'+pBeta.toFixed(2)+', harder than the market itself':'$'+pBeta.toFixed(2)+', gentler than the market')+'. Its swings ran '+(pSd*100).toFixed(0)+' percent over the year, against '+(mSd*100).toFixed(0)+' for the market. '+(heavy2.length?'And the weight sits piled up: '+heavy2.map(r=>'<span class="flagbad">'+r.s+' is '+Math.round(r.w*100)+' percent</span>').join(', ')+' of everything you listed. Here is why that matters: risk that comes from one company having a bad year is called unsystematic risk, and the market pays you NOTHING extra for carrying it, because spreading the money across many companies removes it for free. Concentration is unpaid risk.':'No single holding dominates the pile, which is the shape diversification is supposed to have: whatever risk remains is market risk, the kind you actually get paid for.')+' ';
-    v+='<b>The recommendation, the way the prospectus writes one: budget the risk.</b> '+(pSharpe>=mSharpe&&!heavy2.length?'This mix is earning its risk budget, so the work now is protecting it: keep the fees at index fund levels (lesson 2 below), keep the hedge seat filled (lesson 1), and let the allocation, not the picking, carry the load (lesson 3).':heavy2.length?'The first move is not finding a better stock. It is spreading the piled up weight so the same return costs less worry; the hedge lesson below shows the mechanism. And if the big position carries years of gains, selling is not the only door: a charitable remainder trust can diversify a low '+gl('basis','basis')+' position without triggering the capital gains bill.':'Own the whole market before trying to beat it: broad index funds at index fund prices, the hedge seat filled, and the allocation doing the heavy lifting.')+' Then Step 3 below turns this same engine toward the question all of this exists to answer: will it be enough?';
+    let avgCorr=null;
+    if(rows.length>1){let cs=0,cn=0;for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){const c=anCov(rets[i],rets[j])/Math.sqrt(anCov(rets[i],rets[i])*anCov(rets[j],rets[j]));cs+=c;cn++;}avgCorr=cs/cn;}
+    v+='<br><br><b>The shape of the risk.</b> The whole portfolio moves at '+gl('beta','beta')+' '+pBeta.toFixed(2)+', meaning when the market moves a dollar, this mix tends to move about '+(pBeta>=1?'$'+pBeta.toFixed(2)+', harder than the market itself':'$'+pBeta.toFixed(2)+', gentler than the market')+'. Its swings ran '+(pSd*100).toFixed(0)+' percent over the year, against '+(mSd*100).toFixed(0)+' for the market. '+(avgCorr!==null?'And here is the part almost nobody checks: how the holdings move TOGETHER, which the math calls '+gl('covariance','covariance')+'. Your holdings moved with an average correlation of <b>'+avgCorr.toFixed(2)+'</b> on a scale where 1.00 means perfectly in step and anything near or below zero means they take turns. '+(avgCorr>=0.6?'That is high: when one of yours has a bad day, the others usually have it too, so the eggs are riding in one basket even though the names look different.':avgCorr>=0.3?'That is moderate: some genuine spreading is happening, though the holdings still lean the same way in a storm.':'<span class="big">That is genuinely diversified</span>: your holdings zig at different times, which quietly smooths the whole ride, the same free lunch the hedge lesson below demonstrates.')+' ':'')+(heavy2.length?'And the weight sits piled up: '+heavy2.map(r=>'<span class="flagbad">'+r.s+' is '+Math.round(r.w*100)+' percent</span>').join(', ')+' of everything you listed. Here is why that matters: risk that comes from one company having a bad year is called unsystematic risk, and the market pays you NOTHING extra for carrying it, because spreading the money across many companies removes it for free. Concentration is unpaid risk.':'No single holding dominates the pile, which is the shape diversification is supposed to have: whatever risk remains is market risk, the kind you actually get paid for.')+' ';
+    v+='<b>What I recommend: budget the risk.</b> '+(pSharpe>=mSharpe&&!heavy2.length?'This mix is earning its risk budget, so the work now is protecting it: keep the fees at index fund levels (lesson 2 below), keep the hedge seat filled (lesson 1), and let the allocation, not the picking, carry the load (lesson 3).':heavy2.length?'The first move is not finding a better stock. It is spreading the piled up weight so the same return costs less worry; the hedge lesson below shows the mechanism. And if the big position carries years of gains, selling is not the only door: a charitable remainder trust can diversify a low '+gl('basis','basis')+' position without triggering the capital gains bill.':'Own the whole market before trying to beat it: broad index funds at index fund prices, the hedge seat filled, and the allocation doing the heavy lifting.')+' Then Step 3 below turns this same engine toward the question all of this exists to answer: will it be enough?';
     v+=' <b>This is live:</b> computed seconds ago from '+common.length+' trading days of real closing prices, '+dfmt(common[0])+' to '+dfmt(common[common.length-1])+', pulled the moment you tapped the button and never stored. One year of history, illustrative only; past performance never guarantees future results. Flip <b>Advanced</b> (top right) and the full workbook table appears beside this season.';
     out.innerHTML=v;
     wrap.style.display='block';
@@ -1249,7 +1282,7 @@ function tcalc(){
       const nestB=fv(T.retBal||0,yrs,LONGRUN/100)+fvStream(contrib,yrs,LONGRUN/100);
       o1.innerHTML=(matchA?'Spring carries down here: counting the employer match it found ('+tfmt(matchA)+' a year of free money on top of your own savings), by':'By')+' 65 this road reaches about <span class="big">'+tfmt(nestF)+'</span> at the risk free floor, and about <span class="big">'+tfmt(nestB)+'</span> near the long run market average. The gap between those two numbers is the reward the market has historically paid for staying invested through its storms.'+(bench!==null?' For context, the '+gl('benchmark','benchmark')+' ('+RTS.benchmark+') returned '+bench+' percent over the last twelve months.':'')+(nestB>1e6?' And past the first million you are worth suing, which is what the umbrella bubble above is for.':'');
     } else o1.innerHTML='Add your balance and monthly savings to project the harvest.';
-    if(a1)a1.innerHTML='<b>The math:</b> lump sum grows as PV times (1+r)^n; contributions grow as the annuity stream formula. The floor uses the live 10 year Treasury ('+RTS.tenYear+' percent); the market track uses the long run average of about '+LONGRUN+' percent'+(RTS.sp500?'; the S&P 500 stands at '+RTS.sp500.toLocaleString()+' as of '+RTS.sp500Date:'')+'. <b>The doctrine (TRST 630/631):</b> a diversified portfolio is judged against its benchmark by beta and the Sharpe ratio, (portfolio return minus the risk free rate) over standard deviation, not by raw return, because diversification removes only unsystematic risk. Two asset portfolio variance is w1²σ1² + w2²σ2² + 2·w1·w2·ρ·σ1·σ2, and the negative correlation term is where the gold lesson lives. Brinson, Hood and Beebower is the allocation study; fee drag compounds at the same exponent returns do. Past performance never guarantees future results.';
+    if(a1)a1.innerHTML='<b>The math:</b> lump sum grows as PV times (1+r)^n; contributions grow as the annuity stream formula. The floor uses the live 10 year Treasury ('+RTS.tenYear+' percent); the market track uses the long run average of about '+LONGRUN+' percent'+(RTS.sp500?'; the S&P 500 stands at '+RTS.sp500.toLocaleString()+' as of '+RTS.sp500Date:'')+'. <b>The doctrine:</b> a diversified portfolio is judged against its benchmark by beta and the Sharpe ratio, (portfolio return minus the risk free rate) over standard deviation, not by raw return, because diversification removes only unsystematic risk. Two asset portfolio variance is w1²σ1² + w2²σ2² + 2·w1·w2·ρ·σ1·σ2, and the negative correlation term is where the hedge lesson lives. Brinson, Hood and Beebower is the allocation study; fee drag compounds at the same exponent returns do. Past performance never guarantees future results.';
   }
   const op=$('t_outp');
   if(op){
@@ -1281,6 +1314,24 @@ function tcalc(){
     else if(!haveFund&&noDebt)footOut.innerHTML='Debt free is a head start most people never get. One piece missing: the $1,000 starter cushion, so the next surprise bill does not become the first new debt. Set it aside this month, then everything below is yours.';
     else footOut.innerHTML='<b>Footing set.</b> No high interest debt and a cushion in place, which means every dollar from here compounds on solid ground. This is exactly where planting begins.';
   }
+  T.debts=debtsEl?[...debtsEl.querySelectorAll('.debtrow')].map(r=>({name:(r.querySelector('.d_name').value||'').trim()||'that debt',bal:+r.querySelector('.d_bal').value||0,rate:+r.querySelector('.d_rate').value||0})).filter(d=>d.bal>0):[];
+  const dp=$('t_debtplan'),da=$('t_advdebt');
+  if(dp){
+    if(T.debts.length){
+      dp.style.display='block';
+      const snow=[...T.debts].sort((a,b)=>a.bal-b.bal);
+      const totD=T.debts.reduce((s,d)=>s+d.bal,0);
+      const rfPct=RTS.tenYear;
+      let m='<b>Here is the plan I recommend: the snowball.</b> Pay the minimum on everything, then aim every spare dollar at the SMALLEST balance first: '+snow.map((d,i)=>(i+1)+'. '+d.name+' ('+tfmt(d.bal)+(d.rate?' at '+d.rate+'%':'')+')').join(', ')+'. When the first one dies, roll its whole payment onto the next. Why smallest first instead of the math answer? Because money is only half math; the other half is staying in the fight, and a win in month two keeps people going where a spreadsheet never has. ';
+      m+='<b>Which debts are worth attacking at all?</b> Compare each rate to two yardsticks. The '+gl('riskfree','risk free rate')+' is what saved money can earn today with zero risk of loss, currently '+rfPct+' percent: any debt charging more than that is bleeding you faster than safe savings can heal you, so paying it off IS the better investment, guaranteed. The '+gl('benchmark','benchmark')+' is what the stock market has averaged over long stretches, roughly '+LONGRUN+' percent, but never guaranteed and never in a straight line: a debt charging more than THAT beats even the best realistic investment you could make instead. A card at 24 percent clears both bars by a mile.';
+      const worst=T.debts.filter(d=>d.rate>=LONGRUN);
+      if(worst.length)m+=' Right now that is true of '+worst.map(d=>'<b>'+d.name+'</b>').join(' and ')+': killing '+(worst.length>1?'them':'it')+' is the single best investment available to you, full stop.';
+      m+=' <b>One more thing, because you are also building a credit score:</b> paying debts OFF does not mean closing every account. Keep the oldest card open and lightly used, keep whatever installment loan life already gave you (the car, later the mortgage), keep the balances you do carry under about 30 percent of the limit, and skip the retail store cards entirely, their promotional rates are a trap dressed as a discount. Total owed here: <b>'+tfmt(totD)+'</b>.';
+      dp.innerHTML=m;
+      if(da)da.innerHTML='<b>The math order, for the disciplined:</b> the avalanche, highest rate first: '+[...T.debts].sort((a,b)=>b.rate-a.rate).map((d,i)=>(i+1)+'. '+d.name+' ('+(d.rate||0)+'%)').join(', ')+'. The avalanche always minimizes total interest dollars, and behavioral research on debt repayment finds completion rates are higher when small balances die first, which is why the snowball is my default and this order is here for those who will actually stick to it. <b>The score under the hood:</b> FICO weighs payment history about 35 percent, amounts owed about 30 (utilization: balances over limits), length of history 15, new credit 10, and credit mix 10, which is why one old card plus one installment loan, both paid on time with low balances, quietly builds the score while the debt dies.';
+    } else {dp.style.display='none';if(da)da.innerHTML='';}
+  }
+
   /* STEP 3: the prospectus method, replacement rate */
   const ro=$('t_ret');
   if(ro){
@@ -1300,7 +1351,7 @@ function tcalc(){
       const cls=eff>=0.8?'big':'flagbad';
       let r='Retiring at '+rAge+', your final working year of pay projects to about <b>'+tfmt(finalSal)+'</b>. The nest egg turns into income by the '+gl('fourpct','four percent rule')+': at the floor that is '+tfmt(nestF2*0.04)+' a year, a '+gl('replacement','replacement rate')+' of <span class="'+cls+'">'+Math.round(repF*100)+'%</span>; near the long run average, '+tfmt(nestB2*0.04)+' a year, or <span class="'+cls+'">'+Math.round(repB*100)+'%</span>. Social Security typically adds roughly 40 points for an average earner. ';
       if(eff>=0.8)r+='<b>It sounds like the road you are on arrives.</b> The plan now is protecting it: fees, concentration, and the Winter documents.';
-      else r+='<b>It sounds like the replacement rate comes up short of the 70 to 80 percent planners target.</b> The prospectus answer is one of two levers, and only two: a more aggressive savings strategy, or a later retirement age. Nudge the monthly savings in Step 1 or the age above and watch this number move.';
+      else r+='<b>It sounds like the replacement rate comes up short of the 70 to 80 percent planners target.</b> My answer is one of two levers, and only two: a more aggressive savings strategy, or a later retirement age. Nudge the monthly savings in Step 1 or the age above and watch this number move.';
       r+=' One honest caveat: this math assumes one steady career and a raise every year, and real lives zig. Job changes, gaps, and pivots are normal, which is why this number wants a fresh look every year, not one look ever.';
       ro.innerHTML=r;
     } else ro.innerHTML='Add your age (Spring), salary, balance and monthly savings, and the replacement rate computes here.';
