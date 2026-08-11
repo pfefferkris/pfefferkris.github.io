@@ -26,6 +26,13 @@ async function tryDirect(url) {
 
 // Drive the county's public Logan/Blazor imaging viewer to make it generate the PDF.
 async function generateViaViewer(base, book, page) {
+  // a container recycled from an older deployment can hold a half-extracted
+  // /tmp/chromium without its shared libraries; sweep it so the pack re-extracts
+  try {
+    const fs = await import("fs");
+    const libsPresent = fs.existsSync("/tmp/al2023") || fs.existsSync("/tmp/lib") || fs.existsSync("/tmp/aws");
+    if (fs.existsSync("/tmp/chromium") && !libsPresent) fs.rmSync("/tmp/chromium", { force: true, recursive: true });
+  } catch (e) {}
   const chromium = (await import("@sparticuz/chromium-min")).default;
   const puppeteer = await import("puppeteer-core");
   const br = await puppeteer.launch({
