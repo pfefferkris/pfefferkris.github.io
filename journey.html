@@ -243,6 +243,8 @@ footer a:hover{color:var(--navy)}
   .sheet .x{width:36px;height:36px}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.lawbar{position:relative;z-index:2;max-width:860px;margin:16px auto 0;padding:12px 18px;border-left:4px solid var(--gold);font-size:.78rem;color:var(--ink);line-height:1.55;border-radius:0 14px 14px 0}
+.lawbar b{color:var(--navy)}
 </style>
 <script data-goatcounter="https://kpfeffer.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -287,6 +289,10 @@ footer a:hover{color:var(--navy)}
     <div class="field"><span>$</span><input id="nw" inputmode="numeric" placeholder="e.g. 70,000,000"></div>
     <div class="hint">Powers the whiteboard &amp; the blue bubbles. Toggle “Married” below too. Nothing is stored or sent anywhere.</div>
   </div>
+</div>
+
+<div class="lawbar glass">
+  <b>Before you scroll:</b> I am not an attorney, and this guide is education, not legal, tax, or investment advice. Portions of this interactive guide were built with AI assistance, under my direction and review, and every figure is an illustration from stated assumptions. Bring what you learn here to a licensed North Carolina attorney and your tax advisor.
 </div>
 
 <header id="main" tabindex="-1">
@@ -675,6 +681,15 @@ body.adv .advline{display:block;animation:pop .5s ease both}
 .teeth .tcard .whyln{display:none;font-size:.7rem;line-height:1.45;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);color:var(--ink)}
 body.adv .teeth .tcard .whyln{display:block}
 .teeth .tcard .num{display:block;margin-top:7px;padding-top:7px;border-top:1px dashed rgba(46,107,79,.4);font-size:.73rem;line-height:1.45;font-weight:700;color:#2e6b4f}
+.teeth .antab-wrap{overflow-x:auto;margin-top:10px}
+.teeth .antab{width:100%;border-collapse:collapse;font-size:.74rem;background:rgba(255,255,255,.65);border-radius:10px;overflow:hidden}
+.teeth .antab th{background:var(--navy);color:#fff;padding:7px 9px;text-align:right;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.teeth .antab th:first-child,.teeth .antab td:first-child{text-align:left}
+.teeth .antab td{padding:6px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.teeth .antab tr.mkt td{background:rgba(18,41,63,.07);font-weight:700}
+.teeth .antab tr.port td{background:#e9f2ec;font-weight:700}
+.teeth .antab .pass{color:#2e6b4f;font-weight:800}
+.teeth .antab .fail{color:#8a3b2e;font-weight:800}
 @media(max-width:900px){.advline{max-width:100%}}
 </style>
 <script>
@@ -741,6 +756,12 @@ const BLOCKS=[
  <div id="t_pos"></div>
  <button class="addrow" id="t_addpos" type="button">+ Add a position</button>
  <div class="tout" id="t_outp" style="display:none"></div>
+ <button class="tbtn" id="t_run" type="button" style="display:none;margin-top:10px">Run the full analysis on these positions</button>
+ <div id="t_anwrap" style="display:none">
+  <div class="antab-wrap"><table class="antab" id="t_antab"></table></div>
+  <div class="tout" id="t_anout"></div>
+  <div class="advline" id="t_anadv" style="max-width:100%"></div>
+ </div>
  <p class="tsub" style="margin-top:16px">Three lessons the curriculum teaches every future trust officer, live:</p>
  <div class="lesson"><b>1. The gold lesson.</b> Start at 100 percent stocks, then slide gold into the mix and watch what happens to risk and efficiency.
   <label style="margin-top:8px">Gold in the portfolio: <span id="t_goldpct">0</span>%<input type="range" id="t_gold" min="0" max="40" step="5" value="0" style="width:100%;margin-top:4px"></label>
@@ -783,7 +804,7 @@ document.querySelectorAll('.stage').forEach((sec,si)=>{
   d.innerHTML='<p class="disc">'+BLOCKS[si].q+'</p><p class="tsub">'+BLOCKS[si].sub+'</p>'+BLOCKS[si].body;
   lane.appendChild(d);
   /* the math and the law live in the LEFT lane with the other advanced tiles */
-  const al=d.querySelector('.advline'),la=sec.querySelector('.lane-a');
+  const al=d.querySelector('#t_adv'+si),la=sec.querySelector('.lane-a');
   if(al&&la)la.appendChild(al);
 });
 
@@ -936,6 +957,74 @@ function renderTG(flags,exposed,nwv){
 const nwWatch=document.getElementById('nw');
 if(nwWatch)nwWatch.addEventListener('input',()=>setTimeout(tcalc,0));
 
+/* ===== THE FULL ANALYSIS: the Week 7 advanced investment workbook, cloned and run live =====
+   Pipeline, exactly as the spreadsheet: daily closes -> log returns -> covariance matrix ->
+   beta, realized return, CAPM required return, Jensen alpha, workbook pass test -> portfolio metrics. */
+function anMean(r){return r.reduce((s,x)=>s+x,0)/r.length;}
+function anCov(a,b){const n=a.length,ma=anMean(a),mb=anMean(b);let s=0;for(let i=0;i<n;i++)s+=(a[i]-ma)*(b[i]-mb);return s/(n-1);}
+async function anFetch(sym){
+  const r=await fetch('/api/history?symbol='+encodeURIComponent(sym));
+  if(!r.ok)throw new Error(sym);
+  return r.json();
+}
+const anPct=x=>(x>=0?'+':'')+(x*100).toFixed(1)+'%';
+const runBtn=$('t_run');
+if(runBtn)runBtn.addEventListener('click',async()=>{
+  const held=T.pos.filter(p=>p.tkr&&p.val>0);
+  const wrap=$('t_anwrap'),out=$('t_anout'),tab=$('t_antab'),adv=$('t_anadv');
+  if(!held.length)return;
+  runBtn.disabled=true;runBtn.textContent='Reading a year of market data...';
+  try{
+    const syms=held.map(p=>p.tkr);
+    const data=await Promise.all(syms.concat(['^GSPC']).map(anFetch));
+    const maps=data.map(d=>new Map(d.points));
+    const common=[...maps[maps.length-1].keys()].filter(t=>maps.every(m=>m.has(t))).sort((a,b)=>a-b);
+    if(common.length<40)throw new Error('overlap');
+    const series=maps.map(m=>common.map(t=>m.get(t)));
+    const rets=series.map(s=>{const r=[];for(let i=1;i<s.length;i++)r.push(Math.log(s[i]/s[i-1]));return r;});
+    const mkt=rets[rets.length-1];
+    const mktVar=anCov(mkt,mkt);
+    const rfA=rf();
+    const real=rets.map(r=>Math.exp(r.reduce((s,x)=>s+x,0))-1);
+    const mktReal=real[real.length-1];
+    const tot=held.reduce((s,p)=>s+p.val,0);
+    const rows=held.map((p,i)=>{
+      const beta=anCov(rets[i],mkt)/mktVar;
+      const capm=rfA+beta*(mktReal-rfA);
+      const alpha=real[i]-capm;
+      return {s:p.tkr,w:p.val/tot,real:real[i],sd:Math.sqrt(anCov(rets[i],rets[i])*252),beta,capm,alpha,
+              pass:alpha>=0&&beta<=1};
+    });
+    let pvar=0;
+    for(let i=0;i<rows.length;i++)for(let j=0;j<rows.length;j++)pvar+=rows[i].w*rows[j].w*anCov(rets[i],rets[j]);
+    const pSd=Math.sqrt(pvar*252);
+    const pReal=rows.reduce((s,r)=>s+r.w*r.real,0);
+    const pBeta=rows.reduce((s,r)=>s+r.w*r.beta,0);
+    const pSharpe=pSd>0?(pReal-rfA)/pSd:0;
+    const mSd=Math.sqrt(mktVar*252);
+    const mSharpe=mSd>0?(mktReal-rfA)/mSd:0;
+    const head='<tr><th>Holding</th><th>Weight</th><th>Return, 1y</th><th>Risk (sigma)</th><th>Beta</th><th>CAPM asks</th><th>Alpha</th><th>Workbook test</th></tr>';
+    const body=rows.map(r=>'<tr><td><b>'+r.s+'</b></td><td>'+Math.round(r.w*100)+'%</td><td>'+anPct(r.real)+'</td><td>'+(r.sd*100).toFixed(1)+'%</td><td>'+r.beta.toFixed(2)+'</td><td>'+anPct(r.capm)+'</td><td class="'+(r.alpha>=0?'pass':'fail')+'">'+anPct(r.alpha)+'</td><td class="'+(r.pass?'pass':'fail')+'">'+(r.pass?'Pass':'Fail')+'</td></tr>').join('');
+    const prow='<tr class="port"><td>YOUR PORTFOLIO</td><td>100%</td><td>'+anPct(pReal)+'</td><td>'+(pSd*100).toFixed(1)+'%</td><td>'+pBeta.toFixed(2)+'</td><td></td><td></td><td>Sharpe '+pSharpe.toFixed(2)+'</td></tr>';
+    const mrow='<tr class="mkt"><td>S&amp;P 500</td><td></td><td>'+anPct(mktReal)+'</td><td>'+(mSd*100).toFixed(1)+'%</td><td>1.00</td><td></td><td>0.0%</td><td>Sharpe '+mSharpe.toFixed(2)+'</td></tr>';
+    tab.innerHTML=head+body+prow+mrow;
+    const best=[...rows].sort((a,b)=>b.alpha-a.alpha)[0];
+    const worst=[...rows].sort((a,b)=>a.alpha-b.alpha)[0];
+    let v='It sounds like the portfolio earned '+anPct(pReal)+' over the year the market returned '+anPct(mktReal)+'. But raw return is never the grade. ';
+    v+='The '+gl('benchmark','benchmark')+' Sharpe ratio, return earned per unit of risk taken, is '+mSharpe.toFixed(2)+', and yours is <b>'+pSharpe.toFixed(2)+'</b>: '+(pSharpe>=mSharpe?'you were paid MORE per unit of risk than the market paid, which is what skill, or good diversification, looks like.':'you carried more risk per unit of reward than the market required. The market would have paid you the same or better for less worry.')+' ';
+    if(rows.length>1)v+='<b>'+best.s+'</b> earned its keep with '+anPct(best.alpha)+' of alpha, return beyond what CAPM demands for its beta of '+best.beta.toFixed(2)+'.'+(worst.alpha<0?' <b>'+worst.s+'</b> fell '+anPct(worst.alpha)+' short of what its risk level required: the market rate for beta '+worst.beta.toFixed(2)+' was '+anPct(worst.capm)+', and it delivered '+anPct(worst.real)+'.':'');
+    else v+=(rows[0].alpha>=0?'A positive alpha means the return beat what CAPM demands for that level of market risk.':'A negative alpha means the risk taken was not paid for: the same market exposure via an index fund earned more.');
+    v+=' Every figure is one year of history, illustrative only, and past performance never guarantees future results.';
+    out.innerHTML=v;
+    adv.innerHTML='<b>The machinery, straight from the Week 7 workbook of the advanced investment course:</b> daily log returns LN(P<sub>t</sub> / P<sub>t-1</sub>) over '+common.length+' aligned trading days; a sample covariance matrix across every pair; beta = COV(stock, market) / VAR(market); realized return = e<sup>sum of log returns</sup> - 1; CAPM required return = r<sub>f</sub> + beta (r<sub>market</sub> - r<sub>f</sub>) with the live 10 year Treasury at '+RTS.tenYear+' percent as the risk free rate; Jensen alpha = realized minus required; the pass test is the workbook conditional, alpha of at least zero AND beta no greater than the market. Portfolio variance is the double sum w<sub>i</sub>w<sub>j</sub>COV<sub>ij</sub>, annualized by 252 trading days; the Sharpe ratio divides excess return by that risk. Data: one year of daily closes per holding, fetched at your request, computed on this page, and never stored.';
+    wrap.style.display='block';
+  }catch(e){
+    $('t_anout').innerHTML='One of those tickers did not answer with enough history (check the symbol, foreign listings need their suffix, like MC.PA or 005930.KS). Nothing else on the page is affected.';
+    $('t_anwrap').style.display='block';$('t_antab').innerHTML='';$('t_anadv').innerHTML='';
+  }
+  runBtn.disabled=false;runBtn.textContent='Run the full analysis on these positions';
+});
+
 /* the allocation lesson */
 const allocEl=$('t_alloc');
 if(allocEl)allocEl.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{
@@ -1033,6 +1122,8 @@ function tcalc(){
       op.innerHTML=h;
     } else op.style.display='none';
   }
+  const rb=$('t_run');
+  if(rb)rb.style.display=(T.pos&&T.pos.some(p=>p.tkr&&p.val>0))?'':'none';
   const fo=$('t_feeout');
   if(fo){
     const fee=+($('t_fee')&&$('t_fee').value)||0;

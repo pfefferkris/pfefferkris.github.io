@@ -171,7 +171,7 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
 </nav>
 
 <div class="lawbar glass">
-  <b>Before you scroll:</b> I am not an attorney, and this guide is education, not legal, tax, or investment advice. Under North Carolina law (Chapter 84 of the General Statutes) only a licensed attorney may draft your estate documents or advise you on your legal rights, and nothing here creates an attorney client relationship or a fiduciary engagement. Portions of this interactive guide were built with AI assistance, under my direction and review, and every figure is an illustration from stated assumptions. Bring what you learn here to a licensed North Carolina attorney and your tax advisor.
+  <b>Before you scroll:</b> I am not an attorney, and this guide is education, not legal, tax, or investment advice. Portions of this interactive guide were built with AI assistance, under my direction and review, and every figure is an illustration from stated assumptions. Bring what you learn here to a licensed North Carolina attorney and your tax advisor.
 </div>
 
 <div class="advbox glass">
@@ -195,13 +195,8 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
 <header id="main" tabindex="-1">
   <p class="eyebrow">The Capstone</p>
   <h1>What is a plan actually worth,<br>in dollars?</h1>
-  <p class="sub">This is one family's complete estate plan, walked from the first document to the last trust. Every decision is a toggle. Flip any of them and watch the savings recompute live. Then switch modes and build the version that fits your own life. Flip <b>Assumptions</b> (top right) to change the rates underneath.</p>
+  <p class="sub">This is one family's complete estate plan, walked from the first document to the last trust. Every decision is a toggle. Flip any of them and watch the savings recompute live. The version for your own life, with your numbers and your profile, lives in the <a href="journey.html"><b>Wealth Guide</b></a>. Flip <b>Assumptions</b> (top right) to change the rates underneath.</p>
 </header>
-
-<div class="modebar">
-  <button id="modeCapBtn" class="active" onclick="setMode('cap')">The Case Study</button>
-  <button id="modeByoBtn" onclick="setMode('byo')">Build Your Own</button>
-</div>
 
 <div class="totbar glass">
   <div><div class="lb">Projected savings with this plan</div><div class="big" id="runTotal">$0</div></div>
@@ -328,74 +323,6 @@ footer{position:relative;z-index:2;text-align:center;font-size:.72rem;color:var(
 
 </div>
 
-<div id="byoMode" class="hidden">
-
-<section class="step glass">
-  <span class="stepnum">Before the estate: grow it</span>
-  <h2>The accumulation layer</h2>
-  <p class="teach">The Wealth Guide walks wealth through its seasons, and protection only matters if the planting happened first. Two tools every saver should run before a single trust gets drafted. The risk free rate below is live, the same 10 year Treasury yield the assumptions box uses.</p>
-  <div class="calcgrid">
-    <div class="calc">
-      <h3>Never leave the match</h3>
-      <div class="mini">
-        <label>Salary<input id="mSalary" type="number" value="85000"></label>
-        <label>You defer (%)<input id="mDefer" type="number" value="6"></label>
-        <label>Employer matches 100% of first (%)<input id="mCap" type="number" value="4"></label>
-        <label>Years to retirement<input id="mYears" type="number" value="25"></label>
-      </div>
-      <div class="out">Your employer adds <span class="n" id="mAnnual">$0</span> a year. Compounded at your growth assumption for the full period, the match alone becomes <span class="n" id="mFV">$0</span> of retirement wealth you did not earn, you simply claimed it.</div>
-      <p class="ex">The match is an instant 100 percent return before a dollar of market growth. Deferring less than the match cap is declining free money.</p>
-    </div>
-    <div class="calc">
-      <h3>The investor's yardsticks</h3>
-      <div class="mini">
-        <label>Portfolio beta<input id="cBeta" type="number" step="0.1" value="1.0"></label>
-        <label>Expected market return (%)<input id="cMkt" type="number" step="0.5" value="8"></label>
-      </div>
-      <div class="out">With the risk free rate at <span class="n" id="cRf">4.65%</span>, CAPM says a portfolio this risky must earn <span class="n" id="cReq">0%</span> to justify itself. Beat that number and your manager produced positive alpha. Miss it and you paid for risk you were not compensated to take.</div>
-      <p class="ex">Judge a diversified portfolio by beta and the Treynor ratio; judge a concentrated one by standard deviation and the Sharpe ratio. This is the same math an algorithmic advisor runs continuously, and it is the direction this guide is headed: transparent, computed, and yours to check.</p>
-    </div>
-  </div>
-</section>
-
-<section class="step glass">
-  <span class="stepnum">Your turn</span>
-  <h2>What does your version look like?</h2>
-  <p class="teach">Tap what describes your life, put in round numbers, and the guide assembles the strategy stack a planner would walk you through, with the same illustrative math as the case study. Nothing you enter is stored or sent anywhere.</p>
-  <div class="chips">
-    <span class="chip on" data-flag="married" onclick="flip(this)">Married</span>
-    <span class="chip on" data-flag="kids" onclick="flip(this)">Kids</span>
-    <span class="chip" data-flag="minor" onclick="flip(this)">Minor children</span>
-    <span class="chip" data-flag="sn" onclick="flip(this)">Loved one with special needs</span>
-    <span class="chip" data-flag="biz" onclick="flip(this)">Business owner</span>
-    <span class="chip" data-flag="char" onclick="flip(this)">Charitably inclined</span>
-    <span class="chip" data-flag="blended" onclick="flip(this)">Blended family</span>
-    <span class="chip" data-flag="nc" onclick="flip(this)">Noncitizen spouse</span>
-  </div>
-  <div class="inputs">
-    <label>Your age<input id="byoAge" type="number" value="55" min="20" max="95" onchange="recalcByo()"></label>
-    <label>Total estate value<input id="byoEstate" type="number" value="20000000" onchange="recalcByo()"></label>
-    <label>Street address, for a live value lookup<input id="byoAddr" type="text" placeholder="123 Main St, Raleigh, NC" autocomplete="off"></label>
-    <label>&nbsp;<button type="button" id="addrBtn" class="opt" style="width:100%;min-width:0" onclick="fetchHomeValue()">Pull today's value</button></label>
-    <label>What is the home worth today? <a class="zlink" href="https://www.zillow.com/how-much-is-my-home-worth/" target="_blank" rel="noopener">(or look it up on Zillow)</a><input id="byoHome" type="number" value="2000000" onchange="recalcByo()"></label>
-    <label>What was it worth when you bought it or received it?<input id="byoHomeCost" type="number" value="600000" onchange="recalcByo()"></label>
-    <label>QPRT term<select id="byoTerm" onchange="recalcByo()"><option>5</option><option>7</option><option>10</option><option>13</option><option selected>15</option><option>20</option></select></label>
-    <label>Low basis appreciated asset<input id="byoAsset" type="number" value="3000000" onchange="recalcByo()"></label>
-    <label>Its cost basis<input id="byoBasis" type="number" value="500000" onchange="recalcByo()"></label>
-  </div>
-  <div id="addrStatus" style="font-size:.74rem;color:var(--muted);margin:2px 0 10px"></div>
-  <div id="byoPlan"></div>
-</section>
-
-<section class="step glass">
-  <span class="stepnum">The full toolbox</span>
-  <h2>Every trust in the kit, and which ones fit you</h2>
-  <p class="teach">The big picture first: wealth is preserved with two levers, FREEZING an asset so its future growth escapes the estate, and DISCOUNTING it so it moves out at less than its face value. Below the exclusion these levers do not matter yet. As an estate climbs toward and past it, and especially in the roughly $25M to $35M range where planners see the heaviest activity, the grantor retained and split interest trusts take over: you push the asset out, keep the use or the income, and the gift is valued at what the asset is worth today, not what it will be worth. Every card below is tagged with its job, freeze, discount, control, protection, charity, or liquidity, because knowing WHY a trust exists is what separates picking a tool from understanding one. The lit cards match the profile you tapped above.</p>
-  <div class="tgrid" id="trustGrid"></div>
-</section>
-
-</div>
-
 </div>
 
 <footer>
@@ -429,54 +356,11 @@ function qprtFactor(age,term){const r=(parseFloat($('a7520').value)||5.2)/100;re
 function grow(v,y){const g=(parseFloat($('aGrowth').value)||4.65)/100;return v*Math.pow(1+g,y);}
 
 const S={foundation:'trust',split:'cst',marital:'qtip',home:'paired',malibu:'qprt',trains:'crt',ilit:'ilit'};
-const FLAGS={married:true,kids:true,minor:false,sn:false,biz:false,char:false,blended:false,nc:false};
 
 // name, fit tag, category, what it is, WHY it exists (control vs tax vs protection)
-const TRUSTS=[
- ['Revocable living trust','base','Foundation','The workhorse. Avoids probate in every state, manages incapacity, and splits into the whole plan at death. No tax benefit by itself.','Why: continuity and privacy. This one is about logistics, not tax. It is the chassis every other trust bolts onto.'],
- ['Testamentary trust','base','Foundation','A trust born inside your will. Simple to create, but everything still rides through probate first.','Why: control after death at the lowest drafting cost, for estates where probate itself is not the enemy.'],
- ['Credit shelter trust','married','Freeze','Captures the first exclusion at the first death. The assets and ALL their future growth escape the survivor estate.','Why: the first freeze most couples ever do. The exclusion is locked at the first death, so decades of growth never see the 40 percent tax.'],
- ['GPOA marital trust','married','Control','Full marital deduction with full control for the survivor. The power of appointment is exactly what pulls it into her estate.','Why: a control decision, not a tax one. Choose it when you trust the survivor with everything, including the power to redirect it.'],
- ['QTIP trust','blended','Control','The marital deduction while the first spouse picks the final remaindermen. The blended family answer.','Why: pure control. Same deduction as the GPOA trust, but YOU decide today who inherits, and nobody can rewrite it after you are gone.'],
- ['Estate trust','married','Control','Marital deduction with discretionary income. Can hold unproductive assets a QTIP cannot.','Why: flexibility. When the survivor does not need income, this keeps the deduction without forcing assets to produce it.'],
- ['QDOT','nc','Control','The only route to the marital deduction when the surviving spouse is not a U.S. citizen. A U.S. trustee withholds the tax.','Why: without it the deduction is simply denied, and the first death becomes a taxable event the family never saw coming.'],
- ['ILIT','exposed','Liquidity','Owns life insurance outside the estate. Crummey powers turn premiums into annual exclusion gifts, and the trustee supplies estate liquidity.','Why: the tax is due nine months after death, in cash. This is how illiquid families pay it without a fire sale, and the death benefit itself escapes the 40 percent.'],
- ['GRAT','exposed','Freeze','A fixed annuity back to you for a term. Appreciation above the 7520 rate passes to family free of further gift tax.','Why: the classic freeze. The gift is valued TODAY, so everything the asset earns above the hurdle rate transfers free. This is the zone where real preservation happens.'],
- ['GRUT','exposed','Freeze','The same freeze with a floating payment revalued yearly. The inflation hedge version.','Why: same freeze logic, tuned for clients who fear inflation more than volatility.'],
- ['GRIT','exposed','Freeze + discount','The original freeze, now only for remaindermen who are NOT close family: nieces, nephews, cousins, friends.','Why: the deepest discount left in the code, because the retained interest still counts when the remainderman is outside the family definition.'],
- ['QPRT','exposed','Freeze + discount','The residence freeze. Gift the home at a discount, keep living in it through the term, pay fair rent afterward.','Why: freeze AND discount at once. The home moves at a fraction of value, appreciation escapes, and the rent phase quietly drains even more from the estate.'],
- ['CRAT','char','Charity','A fixed income to you, remainder to charity. Sells appreciated assets tax free. No additions after funding.','Why: the escape hatch for a concentrated, low basis asset. Diversify without the capital gains tax, keep the income, give the remainder.'],
- ['CRUT','char','Charity','Same idea with a floating payout and additional contributions allowed. Deferral variants exist for later starts.','Why: the flexible version, for donors who will keep adding or want payments to start later.'],
- ['Charitable lead trust','char','Charity + freeze','The reverse flow: charity is paid first, family takes the remainder at a reduced transfer cost.','Why: philanthropy as a discount mechanism. The charity stream shrinks the taxable gift, and the family still lands the remainder.'],
- ['Third party special needs trust','sn','Protection','Funded by the family. Supplements government benefits without disqualifying the beneficiary. No payback provision.','Why: protection of a person, not a bracket. One dollar outright can end SSI. Every share for this beneficiary routes here instead.'],
- ['First party special needs trust','sn','Protection','Funded with the beneficiary’s own money, a settlement or an inheritance already received. Requires a Medicaid payback.','Why: damage control when money already reached the beneficiary directly. Preserves benefits, but the state gets paid back first.'],
- ['Minor’s trust under 2503(c)','minor','Foundation','Annual exclusion gifts for a child despite no present interest. Assets must become available at 21.','Why: lets the annual exclusion work for a child years before they can legally hold property.'],
- ['Dynasty trust','kids','Freeze','GST exempt and multigenerational. The transfer tax stops repeating every generation.','Why: the longest freeze there is. Allocate GST exemption once and the 40 percent toll booth closes for the grandchildren and beyond.'],
- ['Spendthrift trust','kids','Protection','Creditor and divorce protection for a beneficiary who should not hold assets outright.','Why: protection from the beneficiary’s own life events. The trust owns it, so the creditor and the divorce court cannot.'],
- ['Intentionally defective grantor trust','biz','Freeze + discount','You pay the trust’s income tax as an extra tax free gift, and can sell appreciating business interests to it with no gain recognized.','Why: the business owner’s freeze. Sell at today’s value, often discounted for lack of control and marketability, and every tax bill you pay for the trust is another invisible gift.']
-];
-function renderTrusts(exposed){
-  const g=$('trustGrid'); if(!g)return;
-  g.innerHTML=TRUSTS.map(t=>{
-    const tag=t[1];
-    const fit = tag==='base' || (tag==='exposed'&&exposed) || FLAGS[tag]===true;
-    return '<div class="tcard'+(fit?' fit':'')+'"><span class="cat">'+t[2]+'</span><h4>'+t[0]+'</h4><p>'+t[3]+'</p><div class="whyln">'+t[4]+'</div>'+(fit?'<span class="fitlb">Fits your profile</span>':'')+'</div>';
-  }).join('');
-}
 // remaining life expectancy from the same survival table, and the QPRT term ceiling built on it
 function lifeExp(age){let s=0;for(let t=1;t<=100-age;t++){s+=lx(age+t)/lx(age);}return s+0.5;}
 function qprtTermCap(age){return Math.max(2,Math.min(20,Math.floor(lifeExp(age))));}
-function recalcAccum(){
-  const g=(parseFloat($('aGrowth').value)||4.65)/100;
-  const sal=+$('mSalary').value||0, def=+$('mDefer').value||0, cap=+$('mCap').value||0, yrs=+$('mYears').value||0;
-  const annual=sal*Math.min(def,cap)/100;
-  const fv=g>0?annual*((Math.pow(1+g,yrs)-1)/g):annual*yrs;
-  $('mAnnual').textContent=fmt(annual); $('mFV').textContent=fmt(fv);
-  const rf=parseFloat(RATES.tenYear)||4.65, beta=parseFloat($('cBeta').value)||1, mkt=parseFloat($('cMkt').value)||8;
-  const req=rf+beta*(mkt-rf);
-  $('cRf').textContent=rf.toFixed(2)+'%'; $('cReq').textContent=req.toFixed(2)+'%';
-}
-['mSalary','mDefer','mCap','mYears','cBeta','cMkt'].forEach(id=>{document.addEventListener('change',e=>{if(e.target.id===id)recalcAccum();});});
 
 document.querySelectorAll('.options').forEach(g=>{g.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
   g.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');S[g.dataset.step]=b.dataset.val;recalc();});});
@@ -535,91 +419,18 @@ function recalc(){
   }
   $('totRows').innerHTML=rows.join('');
   $('grandTotal').textContent='+'+fmt(total);
-  if(!document.body.classList.contains('byo')){$('runTotal').textContent='+'+fmt(total);
+  {$('runTotal').textContent='+'+fmt(total);
   $('runSub').textContent='vs doing nothing, on the stated assumptions. Flip any option and watch it move.';}
 }
 
-function flip(el){el.classList.toggle('on');FLAGS[el.dataset.flag]=el.classList.contains('on');recalcByo();}
-function recalcByo(){
-  const age=+$('byoAge').value||55, est=+$('byoEstate').value||0, home=+$('byoHome').value||0,
-        homeCost=+$('byoHomeCost').value||0, askTerm=+$('byoTerm').value||15,
-        asset=+$('byoAsset').value||0, basis=+$('byoBasis').value||0;
-  const cap=qprtTermCap(age), term=Math.min(askTerm,cap);
-  const cards=[];let total=0;
-  const ex=FLAGS.married?EXEMPT*2:EXEMPT;
-  const exposed=Math.max(0,est-ex),baseTax=exposed*RATE;
-  let stage;
-  if(est<ex*0.6) stage='You are in the ACCUMULATION season. Below the exclusion, the transfer tax tools above the line do not apply to you yet, and that is good news: your work is the foundation documents, the beneficiary designations, and the growth engine in the section above. Come back to the freeze tools when the number climbs.';
-  else if(est<ex) stage='You are APPROACHING THE LINE. You sit under the exclusion today, but growth compounds and exemptions can shrink by legislation. This is the season to get the foundation perfect and start watching the freeze tools, because the best time to freeze is right before you need to.';
-  else stage='You are in the FREEZE AND DISCOUNT zone, where serious preservation happens (planners see the heaviest activity in the roughly $25M to $35M range and up). The logic of everything below: PUSH assets out of the estate at the value they carry TODAY while keeping the use or income, because appreciating assets gifted now are valued now, and every dollar of future growth escapes the 40 percent. Freezing and discounting are the two levers; the grantor retained and split interest trusts are how you pull them.';
-  cards.push(card('Where you stand',(FLAGS.married?'As a married couple you have '+fmt(ex)+' of combined exclusion in 2026.':'Your 2026 exclusion is '+fmt(ex)+'.')+' Your exposure above it is '+fmt(exposed)+', which is '+fmt(baseTax)+' of potential estate tax before any growth. '+stage,0));
-  cards.push(card('The foundation everyone needs','A revocable living trust, will, durable power of attorney, health care power of attorney, and coordinated beneficiary designations. Probate avoided in every state where you own real estate, privacy kept, incapacity covered.',Math.min(est*0.02,150000)));
-  if(FLAGS.married&&exposed>0){const g=grow(Math.min(EXEMPT,est/2),8)-Math.min(EXEMPT,est/2);
-    cards.push(card('Credit shelter trust at the first death','Locks the first exclusion and all of its future growth out of the survivor estate, where portability alone leaves the growth exposed.',g*RATE));}
-  if(FLAGS.married&&FLAGS.blended) cards.push(card('QTIP marital trust','Your spouse is provided for with mandatory income for life while you decide today who ultimately inherits. In a blended family this is the piece that prevents the quiet disinheritance.',0));
-  if(home>0&&exposed>0){const f=qprtFactor(age,term),gift=home*f,fv=grow(home,term+5),mort=1-pSurvive(age,term);
-    const apprec=Math.max(0,home-homeCost);
-    let capNote = askTerm>cap ? ' Your requested '+askTerm+' year term was CAPPED AT '+cap+' YEARS: the mortality table puts remaining life expectancy at your age near '+Math.floor(lifeExp(age))+' years, and a QPRT term should never bet past the table. Insurance companies build their books on these numbers because they are right.' : ' The table allows up to '+cap+' years at your age; longer terms discount more but bet harder against the actuaries.';
-    let basisNote = apprec>0 ? ' Your home has already appreciated '+fmt(apprec)+' since you got it. A QPRT hands that gain and all future growth to the next generation at CARRYOVER basis, no step up, so weigh the embedded capital gain against the estate tax saved.' : '';
-    cards.push(card('QPRT on the home, '+term+' year term at age '+age,'Gift the house at '+pct(f)+' percent of value, about '+fmt(gift)+', keep living in it through the term, and the projected growth to '+fmt(fv)+' escapes the estate. Odds of not surviving the term at your age: about '+pct(mort)+' percent, and death during the term undoes the freeze.'+capNote+basisNote,(fv-gift)*RATE));}
-  if(FLAGS.char&&asset>0){const g2=Math.max(0,asset-basis);
-    cards.push(card('Charitable remainder trust','Your appreciated asset sells inside the trust with no capital gains tax, pays you an income for up to 20 years, and the remainder goes to your charity. Pair it with insurance to make the family whole.',g2*CG+asset*0.36*INC+(exposed>0?grow(asset,15)*RATE:0)));}
-  if(FLAGS.biz) cards.push(card('Business owner toolkit','Entity structuring with valuation discounts for lack of control and marketability, a grantor trust sale to move growth, buy sell funding, and installment relief under Section 6166 if the estate stays illiquid. This is its own conversation.',0));
-  if(FLAGS.sn) cards.push(card('Third party special needs trust','Every inheritance share for your loved one flows into one trust that supplements government benefits without disqualifying them. Never an outright inheritance. This is the most important card on this page.',0));
-  if(FLAGS.minor) cards.push(card('Trusts for minor children','Minors cannot take property outright. A trust with staged distributions, and the will chooses the guardian and the money manager separately. Without it, a court does both.',0));
-  if(exposed>0) cards.push(card('ILIT for liquidity','Estate tax is due nine months after death. Life insurance inside an irrevocable trust pays it without fire selling the family assets, and the death benefit itself escapes the estate.',Math.min(exposed,5000000)*RATE*0.5));
-  if(FLAGS.kids&&!FLAGS.minor) cards.push(card('Beneficiary design for adult children','Inheritances in trust, not outright: creditor and divorce protection, and for larger estates a generation skipping design so the next transfer tax never happens.',0));
-  if(FLAGS.nc&&FLAGS.married) cards.push(card('QDOT for a noncitizen spouse','The marital deduction is not allowed for a noncitizen surviving spouse unless the assets pass to a qualified domestic trust with a U.S. trustee who can withhold the tax. Without it, the first death is a taxable event the plan did not expect.',0));
-  let html='';
-  for(const c of cards){total+=c.v;html+='<div class="plan-card glass"><h3>'+c.t+'</h3><p>'+c.d+'</p>'+(c.v>0?'<p class="sv">Illustrative savings: +'+fmt(c.v)+'</p>':'')+'</div>';}
-  $('byoPlan').innerHTML=html;
-  renderTrusts(exposed>0);
-  recalcAccum();
-  if(document.body.classList.contains('byo')){$('runTotal').textContent='+'+fmt(total);
-  $('runSub').textContent='Illustrative total for your inputs. A real plan starts with a conversation.';}
-}
 function card(t,d,v){return{t:t,d:d,v:v||0};}
 
-async function fetchHomeValue(){
-  const a=$('byoAddr').value.trim(), btn=$('addrBtn'), st=$('addrStatus');
-  if(a.length<8){st.textContent='Type a full street address first, number and street and city.';return;}
-  btn.textContent='Pulling value...';btn.disabled=true;
-  try{
-    const r=await fetch('/api/home-value?address='+encodeURIComponent(a));
-    if(!r.ok)throw new Error('nope');
-    const d=await r.json();
-    if(!d.price)throw new Error('nope');
-    $('byoHome').value=Math.round(d.price);
-    let msg='Pulled from the '+(d.source||'valuation model')+': '+fmt(d.price)+(d.low&&d.high?' (range '+fmt(d.low)+' to '+fmt(d.high)+')':'')+'.';
-    try{
-      const r2=await fetch('/api/property-record?address='+encodeURIComponent(a));
-      if(r2.ok){const p=await r2.json();
-        if(p.lastSalePrice){$('byoHomeCost').value=Math.round(p.lastSalePrice);
-          const dt=p.lastSaleDate?new Date(p.lastSaleDate).toLocaleDateString('en-US',{year:'numeric',month:'long'}):null;
-          msg+=' Public records show the last recorded sale'+(dt?' in '+dt:'')+' at '+fmt(p.lastSalePrice)+', so your basis starting point and the capital appreciation below were filled in for you.';}
-      }
-    }catch(e2){}
-    st.textContent=msg+' The address goes only to the records provider for this lookup and is never stored by this site.';
-    recalcByo();
-  }catch(e){
-    st.textContent='Live lookup is not active on this host yet, it lights up when the site finishes moving to its serverless home. Meanwhile the Zillow link above answers the same question in one click.';
-  }
-  btn.textContent="Pull today's value";btn.disabled=false;
-}
 
-function setMode(m){
-  document.body.classList.toggle('byo',m==='byo');
-  $('capMode').classList.toggle('hidden',m!=='cap');
-  $('byoMode').classList.toggle('hidden',m!=='byo');
-  $('modeCapBtn').classList.toggle('active',m==='cap');
-  $('modeByoBtn').classList.toggle('active',m==='byo');
-  if(m==='cap')recalc();else recalcByo();
-}
 const advsw=$('advsw');
 function advToggle(){document.body.classList.toggle('adv');advsw.setAttribute('aria-checked',document.body.classList.contains('adv'));}
 advsw.addEventListener('click',advToggle);
 advsw.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();advToggle();}});
-['aGrowth','a7520','aY1','aY2'].forEach(id=>$(id).addEventListener('change',()=>{recalc();if(document.body.classList.contains('byo'))recalcByo();}));
+['aGrowth','a7520','aY1','aY2'].forEach(id=>$(id).addEventListener('change',recalc));
 $('yr').textContent=new Date().getFullYear();
 recalc();
 </script>
