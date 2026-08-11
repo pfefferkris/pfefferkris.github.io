@@ -1333,14 +1333,16 @@ async function ocrPdf(url,maxPages){
   return txt;
 }
 function analyzeDeedText(txt){
-  const t=(txt||'').toUpperCase().replace(/\s+/g,' ');
+  const t=(txt||'').toUpperCase().replace(/\s+/g,' ').replace(/\bP\.?L\.?L\.?C\b/g,'PLC'); /* law firm PLLCs must not read as LLC titling */
   const a={form:'sole',refs:[],quit:false,warranty:false,easement:false,subjectTo:false,dot:false};
+  const severed=/SEVER\w*[^.]{0,80}ENTIRET/.test(t); /* a deed SEVERING the entirety is ending that form, not creating it */
   if(/JOINT\s+TENAN\w*[^.]{0,60}SURVIVORSHIP|RIGHTS?\s+OF\s+SURVIVORSHIP/.test(t))a.form='jtwros';
-  else if(/TENAN\w*\s+BY\s+THE\s+ENTIRET/.test(t))a.form='tbe';
+  else if(!severed&&/TENAN\w*\s+BY\s+THE\s+ENTIRET/.test(t))a.form='tbe';
   else if(/TENAN\w*\s+IN\s+COMMON/.test(t))a.form='tic';
   else if(/\bTRUSTEES?\b|REVOCABLE\s+TRUST|LIVING\s+TRUST|\bU\/?A\/?D\b/.test(t))a.form='trust';
   else if(/LIFE\s+ESTATE|REMAINDERM[AE]N|RESERV\w*[^.]{0,80}(LIFE|LIFETIME)/.test(t))a.form='life';
-  else if(/HUSBAND\s+AND\s+WIFE|WIFE\s+AND\s+HUSBAND/.test(t))a.form='tbe';
+  else if(!severed&&/HUSBAND\s+AND\s+WIFE|WIFE\s+AND\s+HUSBAND/.test(t))a.form='tbe';
+  else if(/\bL\.?L\.?C\b|LIMITED\s+LIABILITY\s+COMPAN|\bINCORPORATED\b|,\s?INC\b/.test(t))a.form='entity';
   a.quit=/QUIT\s?-?\s?CLAIM|REMISE,?\s+RELEASE/.test(t);
   a.warranty=/\bWARRANT(S|Y|ED)?\b/.test(t)&&!a.quit;
   a.easement=/EASEMENT|RIGHT[\s-]OF[\s-]WAY|INGRESS|EGRESS/.test(t);
@@ -1391,7 +1393,9 @@ if(ocrBtn)ocrBtn.addEventListener('click',async()=>{
     else if(a.form==='trust')be='<b>Does this behoove you? It already is working:</b> the chassis is on the road, no probate, incapacity covered, privacy kept. The examiner&#8217;s check is exact naming (trustee, trust, and its date) and remembering that anything bought AFTER the trust was signed must be deeded in too.';
     else if(a.form==='tic')be='<b>Attention:</b> tenants in common means each share probates separately under its own owner&#8217;s will, AND any co owner can force a partition sale of the whole property under Chapter 46A. If this is family land, the containers in the toolbox below are built for exactly this.';
     else if(a.form==='life')be='The remainder passes outside probate automatically at death. Read the reservation paragraph closely: if the owner kept the power to sell, gift, and mortgage, it is the enhanced (Lady Bird) version and they kept full control for life.';
-    let v='<b>I read the deed for you.</b> Here is what the words on the recorded page actually mean:<br><br>'+(TITLEM[a.form]||'');
+    else if(a.form==='entity')be=(chips.indexOf('biz')>=0?'<b>Does this behoove you? It matches your playbook:</b> you told me you own a business, and ':'')+'the examiner&#8217;s checks here: the operating agreement should say exactly where your membership interest goes at death, that interest should be coordinated with Winter&#8217;s documents (a will or trust can catch it), and know the trade: a home owned by your own company usually gives up the primary residence capital gain exclusion and can complicate homestead and insurance, so this container is built for rental and business property, not the house you live in.';
+    const ENTM='<b>Titled in a company.</b> The deed conveys this property to a business entity, an LLC or corporation, so the COMPANY owns it, not a person. That changes how it passes entirely: the real estate itself never probates, because a company never dies. What passes at your death is your MEMBERSHIP INTEREST in the company, and THAT follows your will, or your trust if the interest was assigned to it. Landlords and investors title this way on purpose, for liability separation: a lawsuit about the property stops at the company wall.';
+    let v='<b>I read the deed for you.</b> Here is what the words on the recorded page actually mean:<br><br>'+(a.form==='entity'?ENTM:(TITLEM[a.form]||''));
     if(be)v+='<br><br>'+be;
     const notes=[];
     if(a.quit)notes.push('The granting words read as <b>QUITCLAIM</b>, whatever interest I have, if anything, with no guarantee behind it. Common in family transfers, but an examiner reads the rest of the chain harder because of it.');
