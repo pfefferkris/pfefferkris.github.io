@@ -37,6 +37,9 @@ async function generateViaViewer(base, book, page) {
       try { fs.rmSync(p, { force: true, recursive: true }); } catch (e) {}
     });
   } catch (e) {}
+  // Vercel strips the AWS runtime env vars the package keys its library
+  // extraction on; restore one so libnss3 and friends actually extract
+  process.env["AWS_LAMBDA_JS_RUNTIME"] = process.env["AWS_LAMBDA_JS_RUNTIME"] || "nodejs22.x";
   const chromium = (await import("@sparticuz/chromium-min")).default;
   const puppeteer = await import("puppeteer-core");
   const br = await puppeteer.launch({
