@@ -108,6 +108,46 @@ async function generateViaViewer(base, book, page) {
 // its page carries a view_image.php link, and the county serves the scanned TIFF
 // sessionless. We convert TIFF -> PDF so the viewer and the in-browser reader
 // work identically to Cumberland.
+// FAST PATH: county scans are CCITT G4 fax TIFFs, and PDF supports that stream
+// natively (CCITTFaxDecode) — so we embed the raw strips without decoding a
+// single pixel. 29 pages convert in ~15ms instead of ~90s.
+const REV = new Uint8Array(256);
+for (let i = 0; i < 256; i++) { let v = 0; for (let b = 0; b < 8; b++) if (i & (1 << b)) v |= 1 << (7 - b); REV[i] = v; }
+function g4TiffToPdf(UTIF, buf, maxPages) {
+  const ifds = UTIF.decode(buf).slice(0, maxPages || 40);
+  if (!ifds.length) throw new Error("no pages");
+  const chunks = []; let pos = 0; const offsets = [];
+  const push = b => { chunks.push(b); pos += b.length; };
+  const obj = (num, body) => { offsets[num] = pos; push(Buffer.from(num + " 0 obj\n")); push(body); push(Buffer.from("\nendobj\n")); };
+  push(Buffer.from("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n", "latin1"));
+  const nPages = ifds.length;
+  const pageRefs = [];
+  for (let i = 0; i < nPages; i++) pageRefs.push((3 + i * 3) + " 0 R");
+  obj(1, Buffer.from("<< /Type /Catalog /Pages 2 0 R >>"));
+  obj(2, Buffer.from("<< /Type /Pages /Kids [" + pageRefs.join(" ") + "] /Count " + nPages + " >>"));
+  ifds.forEach((ifd, i) => {
+    const w = ifd.t256[0], h = ifd.t257[0];
+    if (!(ifd.t259 && ifd.t259[0] === 4)) throw new Error("not G4");
+    if ((ifd.t273 || []).length !== 1) throw new Error("multi-strip");
+    let data = Buffer.from(buf.buffer, buf.byteOffset + ifd.t273[0], ifd.t279[0]);
+    if (ifd.t266 && ifd.t266[0] === 2) { const d = Buffer.alloc(data.length); for (let k = 0; k < data.length; k++) d[k] = REV[data[k]]; data = d; }
+    const pw = 612, ph = Math.round(612 * h / w);
+    const pn = 3 + i * 3, cn = 4 + i * 3, xn = 5 + i * 3;
+    obj(pn, Buffer.from("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + pw + " " + ph + "] /Resources << /XObject << /Im" + i + " " + xn + " 0 R >> >> /Contents " + cn + " 0 R >>"));
+    const cs = Buffer.from("q " + pw + " 0 0 " + ph + " 0 0 cm /Im" + i + " Do Q");
+    obj(cn, Buffer.concat([Buffer.from("<< /Length " + cs.length + " >>\nstream\n"), cs, Buffer.from("\nendstream")]));
+    const dict = "<< /Type /XObject /Subtype /Image /Width " + w + " /Height " + h + " /BitsPerComponent 1 /ColorSpace /DeviceGray /Filter /CCITTFaxDecode /DecodeParms << /K -1 /Columns " + w + " /Rows " + h + " /BlackIs1 false >> /Length " + data.length + " >>\nstream\n";
+    obj(xn, Buffer.concat([Buffer.from(dict), data, Buffer.from("\nendstream")]));
+  });
+  const xrefPos = pos;
+  const total = 2 + nPages * 3 + 1;
+  let xr = "xref\n0 " + total + "\n0000000000 65535 f \n";
+  for (let n2 = 1; n2 < total; n2++) xr += String(offsets[n2]).padStart(10, "0") + " 00000 n \n";
+  push(Buffer.from(xr + "trailer\n<< /Size " + total + " /Root 1 0 R >>\nstartxref\n" + xrefPos + "\n%%EOF"));
+  return Buffer.concat(chunks);
+}
+
+// SLOW PATH fallback for non-G4 or multi-strip TIFFs: decode pixels, re-embed.
 async function tiffToPdf(buf) {
   const UTIF = (await import("utif2")).default;
   const { PNG } = await import("pngjs");
@@ -141,7 +181,11 @@ async function fetchBis(base, book, page) {
   if (buf.length < 500) return null;
   if (buf.slice(0, 5).toString() === "%PDF-") return buf;
   const magic = buf.slice(0, 2).toString("hex");
-  if (magic === "4949" || magic === "4d4d") return await tiffToPdf(buf);
+  if (magic === "4949" || magic === "4d4d") {
+    const UTIF = (await import("utif2")).default;
+    try { return g4TiffToPdf(UTIF, buf, 40); }
+    catch (e) { return await tiffToPdf(buf); }
+  }
   return null;
 }
 
