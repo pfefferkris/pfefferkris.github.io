@@ -770,18 +770,17 @@ const BLOCKS=[
  <div id="t_pos"></div>
  <button class="addrow" id="t_addpos" type="button">+ Add a position</button>
  <button class="addrow" id="t_sample" type="button">Show me with a sample portfolio</button>
+ <button class="addrow" id="t_famous" type="button">Autopilot check: grade a famous copy trade mix</button>
+ <p class="tsub" style="margin-top:6px;font-size:.68rem">The copy trade button loads a mix inspired by publicly disclosed congressional trading filings, the kind the copy trading apps follow. It is nobody&#8217;s actual portfolio, and the point is the grade: even a famous following gets judged by risk taken, not headlines.</p>
  <div class="tout" id="t_outp" style="display:none"></div>
  <button class="tbtn" id="t_run" type="button" style="display:none;margin-top:10px">Run the full analysis on these positions</button>
  <div id="t_anwrap" style="display:none">
   <div class="anstats" id="t_anstats"></div>
-  <div class="antab-wrap"><table class="antab" id="t_antab"></table></div>
-  <div class="anlegend" id="t_anlegend"></div>
   <div class="tout" id="t_anout"></div>
-  <div class="advline" id="t_anadv" style="max-width:100%"></div>
  </div>
  <p class="tsub" style="margin-top:16px">Three lessons the curriculum teaches every future trust officer, live:</p>
- <div class="lesson"><b>1. The gold lesson.</b> Start at 100 percent stocks, then slide gold into the mix and watch what happens to risk and efficiency.
-  <label style="margin-top:8px">Gold in the portfolio: <span id="t_goldpct">0</span>%<input type="range" id="t_gold" min="0" max="40" step="5" value="0" style="width:100%;margin-top:4px"></label>
+ <div class="lesson"><b>1. The hedge lesson.</b> Start at 100 percent stocks, then slide a hedge asset into the mix and watch what happens to risk and efficiency. The classroom case happens to use gold, but this is NOT about buying gold: it is the reason balanced portfolios hold bonds, and why the classic mix is stocks plus something that zigs when stocks zag.
+  <label style="margin-top:8px">Hedge asset in the portfolio: <span id="t_goldpct">0</span>%<input type="range" id="t_gold" min="0" max="40" step="5" value="0" style="width:100%;margin-top:4px"></label>
   <div class="tout" id="t_goldout"></div></div>
  <div class="lesson"><b>2. The fee lesson.</b> What does the expense ratio quietly cost over a working lifetime?
   <div class="trow"><label>Fund expense ratio (%)<input type="number" id="t_fee" step="0.05" min="0" max="3" placeholder="0.75"></label></div>
@@ -823,6 +822,8 @@ document.querySelectorAll('.stage').forEach((sec,si)=>{
   /* the math and the law live in the LEFT lane with the other advanced tiles */
   const al=d.querySelector('#t_adv'+si),la=sec.querySelector('.lane-a');
   if(al&&la)la.appendChild(al);
+  /* the full workbook table for the analysis also lives left, advanced only */
+  if(si===1&&la){const td=document.createElement('div');td.className='advline';td.id='t_antech';td.style.maxWidth='100%';td.style.width='100%';la.appendChild(td);}
 });
 
 /* the full This is me set: the guide carries every profile the toolbox knows */
@@ -901,8 +902,8 @@ const goldEl=$('t_gold');
 function goldOut(){const go=$('t_goldout');if(!go||!goldEl)return;
   const w=+goldEl.value/100;$('t_goldpct').textContent=goldEl.value;
   const r=goldCalc(w),base=goldCalc(0);
-  if(w===0){go.innerHTML='All stocks: risk (standard deviation) <b>'+base.sig+' percent</b>, Sharpe ratio <b>'+base.sharpe+'</b>. Gold earns LESS than stocks, so adding it should make things worse. Slide and see.';return;}
-  go.innerHTML='At '+goldEl.value+' percent gold: risk falls to <b>'+r.sig+' percent</b> and the Sharpe ratio rises to <span class="big">'+r.sharpe+'</span>. It sounds like a paradox: a lower return asset made the whole portfolio better, because gold tends to zig when stocks zag. That negative correlation is the only free lunch in finance, and it is why the curriculum judges a portfolio by its Sharpe ratio, never by raw return. Classroom case figures, illustrative.';}
+  if(w===0){go.innerHTML='All stocks: risk (standard deviation) <b>'+base.sig+' percent</b>, Sharpe ratio <b>'+base.sharpe+'</b>. The hedge asset earns LESS than stocks, so adding it should make things worse. Slide and see.';return;}
+  go.innerHTML='At '+goldEl.value+' percent hedge: risk falls to <b>'+r.sig+' percent</b> and the Sharpe ratio rises to <span class="big">'+r.sharpe+'</span>. It sounds like a paradox: a lower return asset made the whole portfolio better, because it tends to zig when stocks zag. That negative correlation is the only free lunch in finance. In real portfolios this seat is usually filled by <b>bonds</b>, the boring asset that earns its keep on the bad days; the classroom case used gold to make the same point. This is a lesson about hedging, not a recommendation to buy any particular asset. Classroom case figures, illustrative.';}
 if(goldEl){goldEl.addEventListener('input',goldOut);goldOut();}
 
 /* the fee lesson */
@@ -988,7 +989,7 @@ const anPct=x=>(x>=0?'+':'')+(x*100).toFixed(1)+'%';
 const runBtn=$('t_run');
 if(runBtn)runBtn.addEventListener('click',async()=>{
   const held=T.pos.filter(p=>p.tkr&&p.val>0);
-  const wrap=$('t_anwrap'),out=$('t_anout'),tab=$('t_antab'),adv=$('t_anadv');
+  const wrap=$('t_anwrap'),out=$('t_anout'),tech=$('t_antech');
   if(!held.length)return;
   runBtn.disabled=true;runBtn.textContent='Reading a year of market data...';
   try{
@@ -1010,7 +1011,7 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
       const capm=rfA+beta*(mktReal-rfA);
       const alpha=real[i]-capm;
       return {s:p.tkr,w:p.val/tot,real:real[i],sd:Math.sqrt(anCov(rets[i],rets[i])*252),beta,capm,alpha,
-              pass:alpha>=0&&beta<=1};
+              pass:alpha>=0&&beta<=1.05};
     });
     let pvar=0;
     for(let i=0;i<rows.length;i++)for(let j=0;j<rows.length;j++)pvar+=rows[i].w*rows[j].w*anCov(rets[i],rets[j]);
@@ -1024,34 +1025,34 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
       '<div class="anstat"><span>Your year</span><b>'+anPct(pReal)+'</b><i>market '+anPct(mktReal)+'</i></div>'+
       '<div class="anstat"><span>Your ride</span><b>'+(pSd*100).toFixed(0)+'% swings</b><i>market '+(mSd*100).toFixed(0)+'%</i></div>'+
       '<div class="anstat"><span>Paid per unit of risk</span><b>'+pSharpe.toFixed(2)+'</b><i>market '+mSharpe.toFixed(2)+', higher is better</i></div>';
+    const dfmt=t=>new Date(t*1000).toLocaleDateString('en-US',{month:'short',year:'numeric'});
     const head='<tr><th>Holding</th><th>Weight</th><th>Return, 1y</th><th>Risk</th><th>Beta</th><th>Alpha</th><th>The test</th></tr>';
     const body=rows.map(r=>'<tr><td><b>'+r.s+'</b></td><td>'+Math.round(r.w*100)+'%</td><td>'+anPct(r.real)+'</td><td>'+(r.sd*100).toFixed(0)+'%</td><td>'+r.beta.toFixed(2)+'</td><td class="'+(r.alpha>=0?'pass':'fail')+'">'+anPct(r.alpha)+'</td><td class="'+(r.pass?'pass':'fail')+'">'+(r.pass?'Pass':'Fail')+'</td></tr>').join('');
     const prow='<tr class="port"><td>YOUR PORTFOLIO</td><td>100%</td><td>'+anPct(pReal)+'</td><td>'+(pSd*100).toFixed(0)+'%</td><td>'+pBeta.toFixed(2)+'</td><td></td><td>Sharpe '+pSharpe.toFixed(2)+'</td></tr>';
     const mrow='<tr class="mkt"><td>S&amp;P 500</td><td></td><td>'+anPct(mktReal)+'</td><td>'+(mSd*100).toFixed(0)+'%</td><td>1.00</td><td>0.0%</td><td>Sharpe '+mSharpe.toFixed(2)+'</td></tr>';
-    tab.innerHTML=head+body+prow+mrow;
-    const dfmt=t=>new Date(t*1000).toLocaleDateString('en-US',{month:'short',year:'numeric'});
-    $('t_anlegend').innerHTML='<b>This is live:</b> every number above was computed seconds ago from '+common.length+' trading days of real closing prices, '+dfmt(common[0])+' to '+dfmt(common[common.length-1])+', pulled the moment you tapped the button. <b>How to read it:</b> '+gl('sigma','Risk')+' is how bumpy the ride was. '+gl('beta','Beta')+' is how hard a holding swings when the market swings. '+gl('alpha','Alpha')+' is the return earned beyond what that risk level demanded, computed against '+gl('capm','what CAPM asks')+'. The test passes a holding that beat its risk requirement without carrying more swing than the market itself. And the '+gl('sharpe','Sharpe ratio')+' is the final grade: how well you were paid for every unit of worry.';
+    if(tech)tech.innerHTML='<div class="antab-wrap"><table class="antab">'+head+body+prow+mrow+'</table></div>'+
+      '<div class="anlegend"><b>How to read it:</b> '+gl('sigma','Risk')+' is how bumpy the ride was. '+gl('beta','Beta')+' is how hard a holding swings when the market swings. '+gl('alpha','Alpha')+' is the return earned beyond what that risk level demanded, computed against '+gl('capm','what CAPM asks')+'. The test passes a holding that beat its risk requirement without carrying meaningfully more swing than the market itself (a small tolerance keeps a total market fund riding at beta 1.0 from failing on a rounding edge). The '+gl('sharpe','Sharpe ratio')+' is the final grade: how well you were paid for every unit of worry.</div>'+
+      '<div style="margin-top:8px"><b>The machinery, straight from the Week 7 workbook of the advanced investment course:</b> daily log returns LN(P<sub>t</sub> / P<sub>t-1</sub>) over '+common.length+' aligned trading days; a sample covariance matrix across every pair; beta = COV(stock, market) / VAR(market); realized return = e<sup>sum of log returns</sup> - 1; CAPM required return = r<sub>f</sub> + beta (r<sub>market</sub> - r<sub>f</sub>) with the live 10 year Treasury at '+RTS.tenYear+' percent; Jensen alpha = realized minus required; portfolio variance is the double sum w<sub>i</sub>w<sub>j</sub>COV<sub>ij</sub>, annualized by 252 trading days.</div>';
     const best=[...rows].sort((a,b)=>b.alpha-a.alpha)[0];
     const worst=[...rows].sort((a,b)=>a.alpha-b.alpha)[0];
     let v='It sounds like the portfolio earned '+anPct(pReal)+' over the year the market returned '+anPct(mktReal)+'. But raw return is never the grade. ';
     v+='The '+gl('benchmark','benchmark')+' Sharpe ratio, return earned per unit of risk taken, is '+mSharpe.toFixed(2)+', and yours is <b>'+pSharpe.toFixed(2)+'</b>: '+(pSharpe>=mSharpe?'you were paid MORE per unit of risk than the market paid, which is what skill, or good diversification, looks like.':'you carried more risk per unit of reward than the market required. The market would have paid you the same or better for less worry.')+' ';
     if(rows.length>1)v+='<b>'+best.s+'</b> earned its keep with '+anPct(best.alpha)+' of alpha, return beyond what CAPM demands for its beta of '+best.beta.toFixed(2)+'.'+(worst.alpha<0?' <b>'+worst.s+'</b> fell '+anPct(worst.alpha)+' short of what its risk level required: the market rate for beta '+worst.beta.toFixed(2)+' was '+anPct(worst.capm)+', and it delivered '+anPct(worst.real)+'.':'');
     else v+=(rows[0].alpha>=0?'A positive alpha means the return beat what CAPM demands for that level of market risk.':'A negative alpha means the risk taken was not paid for: the same market exposure via an index fund earned more.');
-    v+=' Every figure is one year of history, illustrative only, and past performance never guarantees future results.';
+    v+=' <b>This is live:</b> computed seconds ago from '+common.length+' trading days of real closing prices, '+dfmt(common[0])+' to '+dfmt(common[common.length-1])+', fetched the moment you tapped the button and never stored. Every figure is one year of history, illustrative only, and past performance never guarantees future results. Flip <b>Advanced</b> (top right) and the full workbook table appears beside this season, holding by holding.';
     out.innerHTML=v;
-    adv.innerHTML='<b>The machinery, straight from the Week 7 workbook of the advanced investment course:</b> daily log returns LN(P<sub>t</sub> / P<sub>t-1</sub>) over '+common.length+' aligned trading days; a sample covariance matrix across every pair; beta = COV(stock, market) / VAR(market); realized return = e<sup>sum of log returns</sup> - 1; CAPM required return = r<sub>f</sub> + beta (r<sub>market</sub> - r<sub>f</sub>) with the live 10 year Treasury at '+RTS.tenYear+' percent as the risk free rate; Jensen alpha = realized minus required; the pass test is the workbook conditional, alpha of at least zero AND beta no greater than the market. Portfolio variance is the double sum w<sub>i</sub>w<sub>j</sub>COV<sub>ij</sub>, annualized by 252 trading days; the Sharpe ratio divides excess return by that risk. Data: one year of daily closes per holding, fetched at your request, computed on this page, and never stored.';
     wrap.style.display='block';
   }catch(e){
     $('t_anout').innerHTML='One of those tickers did not answer with enough history. Check the symbol spelling against your brokerage app (foreign listings need their suffix, like MC.PA or 005930.KS). Fix it and tap the button again; nothing else on the page is affected.';
-    $('t_anwrap').style.display='block';$('t_antab').innerHTML='';$('t_anadv').innerHTML='';$('t_anstats').innerHTML='';$('t_anlegend').innerHTML='';
+    $('t_anwrap').style.display='block';$('t_anstats').innerHTML='';
+    if(tech)tech.innerHTML='';
   }
   runBtn.disabled=false;runBtn.textContent='Run the full analysis on these positions';
 });
-const sampleBtn=$('t_sample');
-if(sampleBtn)sampleBtn.addEventListener('click',()=>{
+function loadPreset(list){
   if(!posEl)return;
   posEl.innerHTML='';
-  [['AAPL','10000'],['MSFT','10000'],['VTI','20000']].forEach(p=>{
+  list.forEach(p=>{
     addPos();
     const r=posEl.lastChild;
     r.querySelector('.p_tkr').value=p[0];
@@ -1059,7 +1060,11 @@ if(sampleBtn)sampleBtn.addEventListener('click',()=>{
   });
   tcalc();
   if(runBtn){runBtn.style.display='';runBtn.click();}
-});
+}
+const sampleBtn=$('t_sample');
+if(sampleBtn)sampleBtn.addEventListener('click',()=>loadPreset([['AAPL','10000'],['MSFT','10000'],['VTI','20000']]));
+const famousBtn=$('t_famous');
+if(famousBtn)famousBtn.addEventListener('click',()=>loadPreset([['NVDA','25000'],['AVGO','15000'],['MSFT','15000'],['GOOGL','15000'],['PANW','10000'],['VST','10000']]));
 
 /* the allocation lesson */
 const allocEl=$('t_alloc');
