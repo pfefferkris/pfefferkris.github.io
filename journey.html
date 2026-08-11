@@ -1214,7 +1214,7 @@ fetch('data/copytrade.json').then(r=>r.json()).then(ct=>{
           if(asch)runAnalysis(asch.positions.map(x=>({tkr:String(x[0]),val:+x[1]})),'default');
         }
       }
-    });},{threshold:0.25});
+    });},{threshold:0.02});
     io2.observe(stage1);
   }
 }).catch(()=>{
