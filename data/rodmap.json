@@ -10,11 +10,11 @@
       "note": "Wake asks for a human check before it opens the records site (its bot protection), so the scanned image cannot display here. The book and page above are the county's own record: open the site, accept the disclaimer, and search those two numbers."
     },
     "MECKLENBURG": {
-      "name": "Mecklenburg County Register of Deeds online search",
+      "name": "Mecklenburg County Register of Deeds Web Access",
       "vendor": "Manatron/Aumentum",
       "url": "https://meckrod.manatron.com/",
-      "deep": null,
-      "note": "Choose Real Estate search, then Book and Page."
+      "deep": "https://meckrod.manatron.com/RealEstate/SearchDetail.aspx?bk={book}&pg={page}&type=BkPg",
+      "note": "The direct link opens this exact record. Mecklenburg asks you to acknowledge its disclaimer once per visit; if you land on the welcome page, click the link again and the record opens."
     },
     "CUMBERLAND": {
       "name": "Cumberland County Register of Deeds public records",
