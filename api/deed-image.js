@@ -84,9 +84,19 @@ async function generateViaViewer(base, book, page) {
     const view = await pg.waitForSelector('::-p-aria([role="button"][name="View Pages"])', { timeout: 10000 });
     await view.click();
 
-    await Promise.race([pdfSeen, new Promise(r => setTimeout(r, 35000))]);
-    if (pdfBuf) return pdfBuf;
-    if (pdfUrl) { await br.close(); return await tryDirect(pdfUrl); }
+    // the click makes the county server WRITE the file; headless chromium never
+    // surfaces the embed's PDF response, so poll the public URL until it answers
+    const stem = book + page.padStart(4, "0");
+    const t0 = Date.now();
+    while (Date.now() - t0 < 30000) {
+      if (pdfBuf) return pdfBuf;
+      if (pdfUrl) { const b = await tryDirect(pdfUrl); if (b) return b; }
+      for (const f of [stem + ".pdf", stem + "_1.pdf"]) {
+        const b = await tryDirect(base + "PDFs/" + f);
+        if (b) return b;
+      }
+      await new Promise(r => setTimeout(r, 1500));
+    }
     return null;
   } finally {
     try { await br.close(); } catch (e) {}
