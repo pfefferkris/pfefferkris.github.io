@@ -1310,13 +1310,28 @@ if(pull)pull.addEventListener('click',async()=>{
       h+='The last recorded sale'+(dt?' in '+dt:'')+' was <b>'+tfmt(T.homeBasis)+'</b>, your '+gl('basis','basis')+' starting point. ';
       if(T.homeVal&&T.homeVal>T.homeBasis)h+='That is <span class="big">'+tfmt(T.homeVal-T.homeBasis)+'</span> of capital appreciation the deed has quietly watched happen. Held until death it earns the '+gl('stepup','step up')+'; gifted during life it carries the old basis with it.';}
     if(p&&p.yearBuilt)h+=' Built in '+p.yearBuilt+', the deed carries a chain of custody older than most family stories.';
-    if(p&&p.county){const q=encodeURIComponent(p.county+' County register of deeds deed search');
-      h+=' The deed itself is on file with the <a href="https://www.google.com/search?q='+q+'" target="_blank" rel="noopener"><b>'+p.county+' County Register of Deeds</b></a>. Pull the grantor and grantee index and read the chain of title yourself: every owner, every lien, every easement, all public record. Would it be unreasonable to spend ten minutes reading the legal story of your own home? Flip <b>Advanced</b> and the recording itself, book and page, appears beside this season.';}
     out.innerHTML=h;
     /* the actual recording: book and page from the statewide parcel record, advanced side */
     try{
       const dd=await fetch('/api/deed?address='+encodeURIComponent(a)+(p&&p.county?'&county='+encodeURIComponent(p.county):'')).then(r2=>r2.ok?r2.json():null).catch(()=>null);
       const card=document.getElementById('t_deedcard');
+      if(dd&&(dd.book||dd.sourceRef)){
+        /* the payoff goes on the SIMPLE side, right in the result */
+        if(!window.RODMAP){try{window.RODMAP=await fetch('data/rodmap.json').then(r3=>r3.ok?r3.json():null);}catch(e2){window.RODMAP=null;}}
+        const ck0=(dd.county||'').toUpperCase();
+        const rod0=window.RODMAP&&window.RODMAP.counties?window.RODMAP.counties[ck0]:null;
+        let s='<br><br><b>And here is the recording itself.</b> Your home&#8217;s legal story lives at the '+(dd.county||'county')+' County Register of Deeds under '+(dd.book?'<span class="big">Book '+dd.book+', Page '+dd.page+'</span>':'<b>'+dd.sourceRef+'</b>')+'. ';
+        if(rod0&&rod0.deep&&dd.book&&dd.page){
+          s+='<a href="'+rod0.deep.replace('{book}',encodeURIComponent(dd.book)).replace('{page}',encodeURIComponent(dd.page))+'" target="_blank" rel="noopener"><b>Open the deed record in one click</b></a>, or use the <a href="'+rod0.url+'" target="_blank" rel="noopener">county search</a> with those two numbers.';
+        } else if(rod0){
+          s+='<a href="'+rod0.url+'" target="_blank" rel="noopener"><b>Open the county register</b></a>, enter those two numbers, and the scanned deed opens in the browser. '+(rod0.note||'');
+        } else {
+          const q0=encodeURIComponent((dd.county||'')+' County NC register of deeds search');
+          s+='<a href="https://www.google.com/search?q='+q0+'" target="_blank" rel="noopener"><b>Find the county register</b></a> and enter those two numbers.';
+        }
+        s+=' Every owner, every lien, every easement, all public record: would it be unreasonable to spend ten minutes reading the legal story of your own home?';
+        out.innerHTML+=s;
+      }
       if(card&&dd&&(dd.book||dd.sourceRef)){
         if(!window.RODMAP){try{window.RODMAP=await fetch('data/rodmap.json').then(r3=>r3.ok?r3.json():null);}catch(e2){window.RODMAP=null;}}
         const ck=(dd.county||'').toUpperCase();
