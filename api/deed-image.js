@@ -26,12 +26,12 @@ async function tryDirect(url) {
 
 // Drive the county's public Logan/Blazor imaging viewer to make it generate the PDF.
 async function generateViaViewer(base, book, page) {
-  const chromium = (await import("@sparticuz/chromium")).default;
+  const chromium = (await import("@sparticuz/chromium-min")).default;
   const puppeteer = await import("puppeteer-core");
   const br = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
+    executablePath: await chromium.executablePath("https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar"),
     headless: chromium.headless
   });
   try {
