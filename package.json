@@ -3,6 +3,9 @@
   "private": true,
   "dependencies": {
     "puppeteer-core": "23.11.1",
-    "@sparticuz/chromium-min": "131.0.1"
+    "@sparticuz/chromium-min": "131.0.1",
+    "utif2": "4.1.0",
+    "pngjs": "7.0.0",
+    "pdf-lib": "1.17.1"
   }
 }

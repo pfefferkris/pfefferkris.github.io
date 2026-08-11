@@ -1,13 +1,13 @@
 {
   "updated": "2026-08-12",
-  "note": "North Carolina Register of Deeds online systems by county. Vendors cluster: one integration covers every county on the same system. deep = URL template opening the document record directly. pdf = the county imaging system serves sessionless PDFs the guide can display inline via /api/deed-image.",
+  "note": "North Carolina Register of Deeds online systems by county. Vendors cluster: one integration covers every county on the same system. deep = URL template opening the document record directly. pdf = the guide can display the scanned document inline via /api/deed-image.",
   "counties": {
     "WAKE": {
       "name": "Wake County Register of Deeds, Consolidated Real Property Index",
-      "vendor": "BooksWeb",
-      "url": "https://rodcrpi.wakegov.com/booksweb/genextsearch.aspx",
+      "vendor": "Tyler Self-Service",
+      "url": "https://rodrecords.wake.gov/web/",
       "deep": null,
-      "note": "Use the Book and Page fields on the search form; the scanned document opens in the browser."
+      "note": "The county asks for a human checkbox first (its bot protection), then accept the disclaimer and use Search with the Book and Page; the scanned deed opens right in the browser."
     },
     "MECKLENBURG": {
       "name": "Mecklenburg County Register of Deeds online search",
@@ -35,22 +35,23 @@
       "name": "Guilford County Register of Deeds deed search",
       "vendor": "BIS",
       "url": "https://rdlxweb.guilfordcountync.gov/guilfordNameSearch.php?Accept=Accept",
-      "deep": "https://rdlxweb.guilfordcountync.gov/DetailScreen.php?Accept=Accept&book%5Bbookcode%5D=RB&book%5Bbooknum%5D={book}&book%5Bpagenum%5D={page}",
-      "note": "The direct link opens the document record (first visit may show the disclaimer once); the search page is the fallback."
+      "deep": null,
+      "note": "Accept the disclaimer, then use the Book-Page search. The state map stores only the deed BOOK for Guilford, so have the owner name or page handy."
     },
     "FORSYTH": {
       "name": "Forsyth County Register of Deeds deed search",
       "vendor": "BIS",
       "url": "https://www.forsythdeeds.com/forsythNameSearch.php?Accept=Accept",
-      "deep": "https://www.forsythdeeds.com/DetailScreen.php?Accept=Accept&book%5Bbookcode%5D=RB&book%5Bbooknum%5D={book}&book%5Bpagenum%5D={page}",
-      "note": "The direct link opens the document record (first visit may show the disclaimer once); the search page is the fallback."
+      "deep": null,
+      "note": "Accept the disclaimer, then use the Book-Page search with those two numbers."
     },
     "NEW HANOVER": {
       "name": "New Hanover County Register of Deeds deed search",
       "vendor": "BIS",
       "url": "https://search.newhanoverdeeds.com/NameSearch.php?Accept=Accept",
       "deep": "https://search.newhanoverdeeds.com/DetailScreen.php?Accept=Accept&book%5Bbookcode%5D=RB&book%5Bbooknum%5D={book}&book%5Bpagenum%5D={page}",
-      "note": "The direct link opens the document record (first visit may show the disclaimer once); the search page is the fallback."
+      "note": "The scanned deed serves straight into the guide's viewer, converted live from the county's imaging system.",
+      "pdf": true
     },
     "JOHNSTON": {
       "name": "Johnston County Register of Deeds online records",

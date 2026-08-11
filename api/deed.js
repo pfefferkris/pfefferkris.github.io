@@ -45,12 +45,12 @@ export default async function handler(req, res) {
     if (!feats.length) return res.status(404).json({ error: "no parcel matched that address" });
     const a = feats[0].attributes || {};
     const ref = pick(a, "sourceref") || "";
-    const m = ref.match(/(\d{2,6})\s*[\/\\ -]\s*0*(\d{1,6})/);
+    const m = ref.match(/(\d{2,6})\s*[\/\\, -]\s*0*(\d{1,6})/);
     const out = {
       county: pick(a, "cntyname"),
       siteAddress: pick(a, "sitead") || pick(a, "siteadd"),
       sourceRef: ref || null,
-      book: m ? m[1] : null,
+      book: m ? m[1].replace(/^0+(?=\d)/, "") : null,
       page: m ? m[2] : null,
       legal: pick(a, "legdecfull") || null,
       recorded: pick(a, "sourcedatx") || null,

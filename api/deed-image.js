@@ -9,7 +9,8 @@
 // Public records, education use, served with attribution by the guide.
 
 const COUNTIES = {
-  "CUMBERLAND": { base: "https://www.ccrodinternet.org/", loganBlazor: true }
+  "CUMBERLAND": { base: "https://www.ccrodinternet.org/", type: "loganBlazor" },
+  "NEW HANOVER": { base: "https://search.newhanoverdeeds.com/", type: "bis" }
 };
 
 const UA = "Mozilla/5.0 (kpfeffer.com education viewer; contact mail@kpfeffer.com)";
@@ -103,6 +104,47 @@ async function generateViaViewer(base, book, page) {
   }
 }
 
+// BIS counties (New Hanover): the DetailScreen deep link resolves the instrument,
+// its page carries a view_image.php link, and the county serves the scanned TIFF
+// sessionless. We convert TIFF -> PDF so the viewer and the in-browser reader
+// work identically to Cumberland.
+async function tiffToPdf(buf) {
+  const UTIF = (await import("utif2")).default;
+  const { PNG } = await import("pngjs");
+  const { PDFDocument } = await import("pdf-lib");
+  const ifds = UTIF.decode(buf).slice(0, 30);
+  const pdf = await PDFDocument.create();
+  for (const ifd of ifds) {
+    UTIF.decodeImage(buf, ifd);
+    const rgba = UTIF.toRGBA8(ifd);
+    const png = new PNG({ width: ifd.width, height: ifd.height });
+    png.data = Buffer.from(rgba);
+    const img = await pdf.embedPng(PNG.sync.write(png));
+    const page = pdf.addPage([612, 792]);
+    const s = Math.min(612 / ifd.width, 792 / ifd.height);
+    page.drawImage(img, { x: (612 - ifd.width * s) / 2, y: (792 - ifd.height * s) / 2, width: ifd.width * s, height: ifd.height * s });
+  }
+  return Buffer.from(await pdf.save());
+}
+
+async function fetchBis(base, book, page) {
+  const detailUrl = base + "DetailScreen.php?Accept=Accept&book%5Bbookcode%5D=RB&book%5Bbooknum%5D=" +
+    encodeURIComponent(book.replace(/^0+/, "")) + "&book%5Bpagenum%5D=" + encodeURIComponent(page.replace(/^0+/, ""));
+  const r = await fetch(detailUrl, { headers: { "User-Agent": UA } });
+  if (!r.ok) return null;
+  const html = await r.text();
+  const m = html.match(/view_image\.php\?[^"']+/);
+  if (!m) return null;
+  const ir = await fetch(base + m[0].replace(/&amp;/g, "&"), { headers: { "User-Agent": UA } });
+  if (!ir.ok) return null;
+  const buf = Buffer.from(await ir.arrayBuffer());
+  if (buf.length < 500) return null;
+  if (buf.slice(0, 5).toString() === "%PDF-") return buf;
+  const magic = buf.slice(0, 2).toString("hex");
+  if (magic === "4949" || magic === "4d4d") return await tiffToPdf(buf);
+  return null;
+}
+
 export default async function handler(req, res) {
   const county = (req.query.county || "").toString().trim().toUpperCase();
   const book = (req.query.book || "").toString().replace(/[^0-9]/g, "").slice(0, 6);
@@ -125,13 +167,24 @@ export default async function handler(req, res) {
     return res.status(200).send(buf);
   };
 
+  if (c.type === "bis") {
+    if (n > 1) return res.status(404).json({ error: "no image at that book and page" });
+    try {
+      const buf = await fetchBis(c.base, book, page);
+      if (buf) return send(buf);
+    } catch (e) {
+      return res.status(404).json({ error: "no image at that book and page", detail: String(e && e.message || e).slice(0, 200) });
+    }
+    return res.status(404).json({ error: "no image at that book and page" });
+  }
+
   for (const f of candidates) {
     const buf = await tryDirect(c.base + "PDFs/" + f);
     if (buf) return send(buf);
   }
   if (n > 1) return res.status(404).json({ error: "no image at that book and page" });
 
-  if (c.loganBlazor) {
+  if (c.type === "loganBlazor") {
     try {
       const buf = await generateViaViewer(c.base, book, page);
       if (buf) return send(buf);

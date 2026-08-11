@@ -859,16 +859,16 @@ document.querySelectorAll('.stage').forEach((sec,si)=>{
   const d=document.createElement('div');d.className='teeth glass';
   d.innerHTML='<p class="disc">'+BLOCKS[si].q+'</p><p class="tsub">'+BLOCKS[si].sub+'</p>'+BLOCKS[si].body;
   lane.appendChild(d);
-  /* the math and the law live in the LEFT lane with the other advanced tiles;
-     in Harvest (si 2) the tile sits full width BELOW the whiteboard instead */
+  /* the math and the law live in the LEFT lane, LATERAL to their simple content */
   const al=d.querySelector('#t_adv'+si),la=sec.querySelector('.lane-a');
-  if(al&&si===2){al.classList.add('wide');sec.appendChild(al);}
-  else if(al&&la)la.appendChild(al);
+  if(al&&la)la.appendChild(al);
   /* the full workbook table for the analysis also lives left, advanced only */
   if(si===1&&la){const td=document.createElement('div');td.className='advline';td.id='t_antech';td.style.maxWidth='100%';td.style.width='100%';la.appendChild(td);}
   if(la)d.querySelectorAll('.advline[data-anchor]').forEach(x=>la.appendChild(x));
+  /* the deed viewer spans the stage ABOVE the whiteboard; the whiteboard stays
+     the last block of Harvest, just above Winter */
   const dcw=d.querySelector('#t_deedcard');
-  if(dcw)sec.appendChild(dcw);
+  if(dcw){const bw=sec.querySelector(':scope > .wide');if(bw)sec.insertBefore(dcw,bw);else sec.appendChild(dcw);}
 });
 
 /* the full This is me set: the guide carries every profile the toolbox knows */
@@ -1459,7 +1459,9 @@ if(pull)pull.addEventListener('click',async()=>{
         const ck0=(dd.county||'').toUpperCase();
         const rod0=window.RODMAP&&window.RODMAP.counties?window.RODMAP.counties[ck0]:null;
         let s='<br><br><b>And here is the recording itself.</b> Your home&#8217;s legal story lives at the '+(dd.county||'county')+' County Register of Deeds under '+(dd.book?'<span class="big">Book '+dd.book+', Page '+dd.page+'</span>':'<b>'+dd.sourceRef+'</b>')+'. ';
-        if(rod0&&rod0.deep&&dd.book&&dd.page){
+        if(rod0&&rod0.pdf&&dd.book&&dd.page){
+          s+='Flip <b>Advanced</b> and the scanned deed itself displays beside this season, served live from the county, and the guide reads it for you below. Or <a href="'+rod0.url+'" target="_blank" rel="noopener"><b>open the county register</b></a> directly.';
+        } else if(rod0&&rod0.deep&&dd.book&&dd.page){
           s+='<a href="'+rod0.deep.replace('{book}',encodeURIComponent(dd.book)).replace('{page}',encodeURIComponent(dd.page))+'" target="_blank" rel="noopener"><b>Open the deed record in one click</b></a>, or use the <a href="'+rod0.url+'" target="_blank" rel="noopener">county search</a> with those two numbers.';
         } else if(rod0&&rod0.pdf){
           s+='Flip <b>Advanced</b> and the scanned deed itself, the actual recorded document, displays beside this season, served live from the county. Or <a href="'+rod0.url+'" target="_blank" rel="noopener"><b>open the county register</b></a> directly.';
