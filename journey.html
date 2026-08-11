@@ -1202,20 +1202,29 @@ fetch('data/copytrade.json').then(r=>r.json()).then(ct=>{
     b.addEventListener('click',()=>loadPreset(ps.positions.map(x=>[String(x[0]),String(x[1])])));
     holder.appendChild(b);
   });
-  /* default view: the AI infrastructure mix grades itself when the season first scrolls into sight */
+  /* default view: the AI infrastructure mix grades itself when the season first comes into sight.
+     Belt and suspenders: IntersectionObserver plus a plain scroll check, so it fires everywhere. */
   const stage1=document.querySelectorAll('.stage')[1];
-  if(stage1&&'IntersectionObserver' in window){
-    const io2=new IntersectionObserver(es=>{es.forEach(e=>{
-      if(e.isIntersecting&&!defaultRan){
-        defaultRan=true;io2.disconnect();
-        const userHas=T.pos&&T.pos.some(p2=>p2.tkr&&p2.val>0);
-        if(!userHas){
-          const asch=(ct.presets||[]).find(x=>x.key==='aschenbrenner');
-          if(asch)runAnalysis(asch.positions.map(x=>({tkr:String(x[0]),val:+x[1]})),'default');
-        }
+  function tryDefault(){
+    if(defaultRan||!stage1)return;
+    const rc=stage1.getBoundingClientRect();
+    if(rc.top<window.innerHeight&&rc.bottom>0){
+      defaultRan=true;
+      window.removeEventListener('scroll',tryDefault);
+      const userHas=T.pos&&T.pos.some(p2=>p2.tkr&&p2.val>0);
+      if(!userHas){
+        const asch=(ct.presets||[]).find(x=>x.key==='aschenbrenner');
+        if(asch)runAnalysis(asch.positions.map(x=>({tkr:String(x[0]),val:+x[1]})),'default');
       }
-    });},{threshold:0.02});
-    io2.observe(stage1);
+    }
+  }
+  if(stage1){
+    if('IntersectionObserver' in window){
+      const io2=new IntersectionObserver(()=>tryDefault(),{threshold:0.02});
+      io2.observe(stage1);
+    }
+    window.addEventListener('scroll',tryDefault,{passive:true});
+    setTimeout(tryDefault,800);
   }
 }).catch(()=>{
   const holder=$('t_presets');if(!holder)return;
