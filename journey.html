@@ -696,6 +696,7 @@ body.adv .teeth .tcard .whyln{display:block}
 .teeth .anstat span{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
 .teeth .anstat i{display:block;font-style:normal;font-size:.68rem;color:var(--muted);margin-top:2px}
 .teeth .anlegend{font-size:.74rem;color:var(--ink);line-height:1.65;margin-top:10px;background:rgba(255,255,255,.5);border:1px dashed var(--line);border-radius:10px;padding:9px 13px}
+#t_anout .big{font-size:1em}
 @media(max-width:900px){.advline{max-width:100%}}
 </style>
 <script>
@@ -1121,7 +1122,7 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
       }
       corrTab+='</table></div><div class="anlegend"><b>Reading the correlation table:</b> this is the covariance matrix made human. Each cell asks, when THIS holding moves, does THAT one move with it? 1.00 on the diagonal is each holding agreeing with itself. Green negatives are the free lunch, pairs that take turns and smooth the ride. Brick reds above 0.70 are pairs that pretend to be two investments while behaving as one.</div>';
     }
-    if(tech)tech.innerHTML='<div class="antab-wrap"><table class="antab">'+head+body+prow+mrow+'</table></div>'+corrTab+
+    if(tech)tech.innerHTML='<div id="t_tv" style="height:340px;margin-bottom:10px;border-radius:10px;overflow:hidden"></div><div class="antab-wrap"><table class="antab">'+head+body+prow+mrow+'</table></div>'+corrTab+
       '<div class="anlegend"><b>How to read it:</b> '+gl('sigma','Risk')+' is how bumpy the ride was. '+gl('beta','Beta')+' is how hard a holding swings when the market swings. '+gl('alpha','Alpha')+' is the return earned beyond what that risk level demanded, computed against '+gl('capm','what CAPM asks')+'. The test passes a holding that beat its risk requirement without carrying meaningfully more swing than the market itself (a small tolerance keeps a total market fund riding at beta 1.0 from failing on a rounding edge). The '+gl('sharpe','Sharpe ratio')+' is the final grade: how well you were paid for every unit of worry.</div>'+
       '<div style="margin-top:8px"><b>The machinery, straight from my own analysis workbook:</b> daily log returns LN(P<sub>t</sub> / P<sub>t-1</sub>) over '+common.length+' aligned trading days; a sample covariance matrix across every pair; beta = COV(stock, market) / VAR(market); realized return = e<sup>sum of log returns</sup> - 1; CAPM required return = r<sub>f</sub> + beta (r<sub>market</sub> - r<sub>f</sub>) with the live 10 year Treasury at '+RTS.tenYear+' percent; Jensen alpha = realized minus required; portfolio variance is the double sum w<sub>i</sub>w<sub>j</sub>COV<sub>ij</sub>, annualized by 252 trading days.</div>';
     const best=[...rows].sort((a,b)=>b.alpha-a.alpha)[0];
@@ -1139,6 +1140,24 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
     v+='<br><br>One year of history, illustrative only; past performance never guarantees future results. Flip <b>Advanced</b> (top right) and the full workbook table appears beside this season.';
     out.innerHTML=v;
     wrap.style.display='block';
+    /* TradingView line chart of the actual holdings, advanced side, fail soft */
+    try{
+      const tv=document.getElementById('t_tv');
+      if(tv){
+        tv.innerHTML='<div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div></div>';
+        const sc=document.createElement('script');
+        sc.src='https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
+        sc.async=true;
+        sc.innerHTML=JSON.stringify({
+          symbols:rows.map(r2=>[r2.s+'|12M']),
+          chartOnly:true,colorTheme:'light',autosize:true,showVolume:false,hideDateRanges:false,
+          scalePosition:'right',scaleMode:'Percentage',fontFamily:'Georgia, serif',fontSize:'10',
+          headerFontSize:'small',lineWidth:2,dateRanges:['3m|1D','12m|1D','60m|1W'],
+          noTimeScale:false,valuesTracking:'1',changeMode:'price-and-percent'
+        });
+        tv.firstChild.appendChild(sc);
+      }
+    }catch(e){}
     syncSoon();
   }catch(e){
     $('t_anout').innerHTML='One of those tickers did not answer with enough history. Check the symbol spelling against your brokerage app (foreign listings need their suffix, like MC.PA or 005930.KS). Fix it and tap the button again; nothing else on the page is affected.';
@@ -1366,7 +1385,19 @@ function tcalc(){
       let r='Retiring at '+rAge+', your final working year of pay projects to about <b>'+tfmt(finalSal)+'</b>. The nest egg turns into income by the '+gl('fourpct','four percent rule')+': at the floor that is '+tfmt(nestF2*0.04)+' a year, a '+gl('replacement','replacement rate')+' of <span class="'+cls+'">'+Math.round(repF*100)+'%</span>; near the long run average, '+tfmt(nestB2*0.04)+' a year, or <span class="'+cls+'">'+Math.round(repB*100)+'%</span>. Social Security typically adds roughly 40 points for an average earner. ';
       if(eff>=0.8)r+='<b>It sounds like the road you are on arrives.</b> The plan now is protecting it: fees, concentration, and the Winter documents.';
       else r+='<b>It sounds like the replacement rate comes up short of the 70 to 80 percent planners target.</b> My answer is one of two levers, and only two: a more aggressive savings strategy, or a later retirement age. Nudge the monthly savings in Step 1 or the age above and watch this number move.';
-      r+=' One honest caveat: this math assumes one steady career and a raise every year, and real lives zig. Job changes, gaps, and pivots are normal, which is why this number wants a fresh look every year, not one look ever.';
+      /* THE NUMBER: solve backward for the monthly contribution that reaches the target */
+      const targetRep=0.75, ssRep=0.40;
+      const needRep=Math.max(0,targetRep-ssRep);
+      const nestNeed=needRep*finalSal/0.04;
+      const haveFV=fv(T.retBal||0,y2,LONGRUN/100);
+      const annuityF=fvStream(1,y2,LONGRUN/100);
+      const needAnnual=annuityF>0?Math.max(0,nestNeed-haveFV)/annuityF:0;
+      const needMonthly=Math.max(0,(needAnnual-matchA2)/12);
+      const flags2=[...document.querySelectorAll('.persona [data-p]')].filter(c=>c.classList.contains('on')).map(c=>c.dataset.p);
+      r+='<br><br><b>Your number: '+(needMonthly<1?'<span class="big">covered</span>':tfmt(needMonthly)+' a month')+'.</b> Here is the whole chain, step by step, so you can see where it comes from. Planners target replacing about 75 percent of your final pay. Social Security carries roughly 40 of those points for an average earner, so your savings need to carry about '+Math.round(needRep*100)+'. Turning '+Math.round(needRep*100)+' percent of a '+tfmt(finalSal)+' final salary into yearly income by the four percent rule takes a nest egg of about <b>'+tfmt(nestNeed)+'</b>. What you already have grows to '+tfmt(haveFV)+' on its own by '+rAge+'. '+(needMonthly<1?'That already covers the target: <span class="big">your nest is on pace</span>, and the job now is protecting it, fees, concentration, and the Winter documents.':'Closing the rest from today takes about <b>'+tfmt(needMonthly)+' a month</b> on top of the employer match'+(matchA2?' ('+tfmt(matchA2)+' a year of match is already counted for you)':'')+'.')+(T.monthly&&needMonthly>=1?(T.monthly>=needMonthly?' You are putting in '+tfmt(T.monthly)+' now, which is <span class="big">at or above your number</span>.':' You are putting in '+tfmt(T.monthly)+' now, '+tfmt(needMonthly-T.monthly)+' short of the number each month.'):'');
+      r+='<br><br><b>Where those dollars should go, in order.</b> First into the 401(k) up to the match, because the match doubles your money before the market even opens. Second into a Roth IRA, up to $7,500 a year: you pay tax on the money now, and every dollar of growth comes out tax free in retirement, which is usually the better deal the younger and lower-bracket you are. Third, anything left goes back into the 401(k) toward its $24,500 ceiling, lowering this year&#8217;s tax bill instead.'+(flags2.indexOf('biz')>-1?' And since the Business owner toggle is on: your ceilings are higher than everyone else&#8217;s, a solo 401(k) or SEP IRA lets the business itself contribute for you.':'')+(flags2.indexOf('married')>-1?' Married: even a spouse with no income of their own can fund a spousal IRA, doubling the IRA lane for the household.':'');
+      r+='<br><br><b>And when life happens, and it will:</b> a lapse month, a job change, a year that got away, none of it breaks the plan. Come back, type in where you stand today, and the number recalculates from today to your target. The number is never a grade on the past; it is always just the road from here.';
+      r+='<br><br>One honest caveat: this math assumes steady raises, and real lives zig, which is one more reason the number wants a fresh look every year.';
       ro.innerHTML=r;
     } else ro.innerHTML='Add your age (Spring), salary, balance and monthly savings, and the replacement rate computes here.';
   }
