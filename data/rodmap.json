@@ -2,18 +2,96 @@
   "updated": "2026-08-12",
   "note": "North Carolina Register of Deeds online systems by county. Vendors cluster: one integration covers every county on the same system. deep = URL template opening the document record directly ({book}/{page} substituted).",
   "counties": {
-    "WAKE": {"name": "Wake County Register of Deeds, Consolidated Real Property Index", "vendor": "BooksWeb", "url": "https://rodcrpi.wakegov.com/booksweb/genextsearch.aspx", "deep": null, "note": "Use the Book and Page fields on the search form; the scanned document opens in the browser."},
-    "MECKLENBURG": {"name": "Mecklenburg County Register of Deeds online search", "vendor": "Manatron/Aumentum", "url": "https://meckrod.manatron.com/", "deep": null, "note": "Choose Real Estate search, then Book and Page."},
-    "CUMBERLAND": {"name": "Cumberland County Register of Deeds public records", "vendor": "Logan Systems", "url": "https://www.ccrodinternet.org/", "deep": null, "note": "Open Real Estate records and search by Book and Page; the deed image displays in the viewer."},
-    "DURHAM": {"name": "Durham County Register of Deeds online records", "vendor": "Tyler Eagle", "url": "https://rodweb.dconc.gov/web/", "deep": null, "note": "Accept the disclaimer, then Document Search by Book and Page."},
-    "GUILFORD": {"name": "Guilford County Register of Deeds deed search", "vendor": "BIS", "url": "https://rdlxweb.guilfordcountync.gov/guilfordNameSearch.php?Accept=Accept", "deep": "https://rdlxweb.guilfordcountync.gov/DetailScreen.php?book%5Bbookcode%5D=RB&book%5Bbooknum%5D={book}&book%5Bpagenum%5D={page}", "note": "The direct link opens the document record; the search page is the fallback."},
-    "FORSYTH": {"name": "Forsyth County Register of Deeds deed search", "vendor": "BIS", "url": "https://www.forsythdeeds.com/forsythNameSearch.php?Accept=Accept", "deep": "https://www.forsythdeeds.com/DetailScreen.php?book%5Bbookcode%5D=RB&book%5Bbooknum%5D={book}&book%5Bpagenum%5D={page}", "note": "The direct link opens the document record; the search page is the fallback."},
-    "NEW HANOVER": {"name": "New Hanover County Register of Deeds deed search", "vendor": "BIS", "url": "https://search.newhanoverdeeds.com/NameSearch.php?Accept=Accept", "deep": "https://search.newhanoverdeeds.com/DetailScreen.php?book%5Bbookcode%5D=RB&book%5Bbooknum%5D={book}&book%5Bpagenum%5D={page}", "note": "The direct link opens the document record; the search page is the fallback."},
-    "JOHNSTON": {"name": "Johnston County Register of Deeds online records", "vendor": "Tyler Eagle", "url": "https://erec.johnstonnc.com/recorder/web/loginPOST.jsp?guest=true", "deep": null, "note": "The link signs you in as a guest; then Document Search by Book and Page."},
-    "HARNETT": {"name": "Harnett County Register of Deeds online records", "vendor": "Courthouse Computer Systems", "url": "https://us6.courthousecomputersystems.com/HarnettNC/", "deep": null, "note": "Open View Images and enter the Book and Page."},
-    "GASTON": {"name": "Gaston County Register of Deeds online records", "vendor": "Courthouse Computer Systems", "url": "https://gastonnc.courthousecomputersystems.com/", "deep": null, "note": "Open View Images and enter the Book and Page."},
-    "UNION": {"name": "Union County Register of Deeds public records", "vendor": "Logan Systems", "url": "https://www.unionconcrod.org/", "deep": null, "note": "Open Real Estate records and search by Book and Page."},
-    "CABARRUS": {"name": "Cabarrus County Register of Deeds public records", "vendor": "Logan Systems", "url": "https://www.cabarrusncrod.org", "deep": null, "note": "Open Real Estate records and search by Book and Page."},
-    "BUNCOMBE": {"name": "Buncombe County Register of Deeds eSearch", "vendor": "Cott Systems", "url": "https://registerofdeeds.buncombenc.gov/External/Sentry/Home.aspx", "deep": null, "note": "Open Search Records and enter the Book and Page."}
+    "WAKE": {
+      "name": "Wake County Register of Deeds, Consolidated Real Property Index",
+      "vendor": "BooksWeb",
+      "url": "https://rodcrpi.wakegov.com/booksweb/genextsearch.aspx",
+      "deep": null,
+      "note": "Use the Book and Page fields on the search form; the scanned document opens in the browser."
+    },
+    "MECKLENBURG": {
+      "name": "Mecklenburg County Register of Deeds online search",
+      "vendor": "Manatron/Aumentum",
+      "url": "https://meckrod.manatron.com/",
+      "deep": null,
+      "note": "Choose Real Estate search, then Book and Page."
+    },
+    "CUMBERLAND": {
+      "name": "Cumberland County Register of Deeds public records",
+      "vendor": "Logan Systems",
+      "url": "https://www.ccrodinternet.org/",
+      "deep": null,
+      "note": "Open Real Estate records and search by Book and Page; the deed image displays in the viewer."
+    },
+    "DURHAM": {
+      "name": "Durham County Register of Deeds online records",
+      "vendor": "Tyler Eagle",
+      "url": "https://rodweb.dconc.gov/web/",
+      "deep": null,
+      "note": "Accept the disclaimer, then Document Search by Book and Page."
+    },
+    "GUILFORD": {
+      "name": "Guilford County Register of Deeds deed search",
+      "vendor": "BIS",
+      "url": "https://rdlxweb.guilfordcountync.gov/guilfordNameSearch.php?Accept=Accept",
+      "deep": "https://rdlxweb.guilfordcountync.gov/DetailScreen.php?Accept=Accept&book%5Bbookcode%5D=RB&book%5Bbooknum%5D={book}&book%5Bpagenum%5D={page}",
+      "note": "The direct link opens the document record (first visit may show the disclaimer once); the search page is the fallback."
+    },
+    "FORSYTH": {
+      "name": "Forsyth County Register of Deeds deed search",
+      "vendor": "BIS",
+      "url": "https://www.forsythdeeds.com/forsythNameSearch.php?Accept=Accept",
+      "deep": "https://www.forsythdeeds.com/DetailScreen.php?Accept=Accept&book%5Bbookcode%5D=RB&book%5Bbooknum%5D={book}&book%5Bpagenum%5D={page}",
+      "note": "The direct link opens the document record (first visit may show the disclaimer once); the search page is the fallback."
+    },
+    "NEW HANOVER": {
+      "name": "New Hanover County Register of Deeds deed search",
+      "vendor": "BIS",
+      "url": "https://search.newhanoverdeeds.com/NameSearch.php?Accept=Accept",
+      "deep": "https://search.newhanoverdeeds.com/DetailScreen.php?Accept=Accept&book%5Bbookcode%5D=RB&book%5Bbooknum%5D={book}&book%5Bpagenum%5D={page}",
+      "note": "The direct link opens the document record (first visit may show the disclaimer once); the search page is the fallback."
+    },
+    "JOHNSTON": {
+      "name": "Johnston County Register of Deeds online records",
+      "vendor": "Tyler Eagle",
+      "url": "https://erec.johnstonnc.com/recorder/web/loginPOST.jsp?guest=true",
+      "deep": null,
+      "note": "The link signs you in as a guest; then Document Search by Book and Page."
+    },
+    "HARNETT": {
+      "name": "Harnett County Register of Deeds online records",
+      "vendor": "Courthouse Computer Systems",
+      "url": "https://us6.courthousecomputersystems.com/HarnettNC/",
+      "deep": null,
+      "note": "Open View Images and enter the Book and Page."
+    },
+    "GASTON": {
+      "name": "Gaston County Register of Deeds online records",
+      "vendor": "Courthouse Computer Systems",
+      "url": "https://gastonnc.courthousecomputersystems.com/",
+      "deep": null,
+      "note": "Open View Images and enter the Book and Page."
+    },
+    "UNION": {
+      "name": "Union County Register of Deeds public records",
+      "vendor": "Logan Systems",
+      "url": "https://www.unionconcrod.org/",
+      "deep": null,
+      "note": "Open Real Estate records and search by Book and Page."
+    },
+    "CABARRUS": {
+      "name": "Cabarrus County Register of Deeds public records",
+      "vendor": "Logan Systems",
+      "url": "https://www.cabarrusncrod.org",
+      "deep": null,
+      "note": "Open Real Estate records and search by Book and Page."
+    },
+    "BUNCOMBE": {
+      "name": "Buncombe County Register of Deeds eSearch",
+      "vendor": "Cott Systems",
+      "url": "https://registerofdeeds.buncombenc.gov/External/Sentry/Home.aspx",
+      "deep": null,
+      "note": "Open Search Records and enter the Book and Page."
+    }
   }
 }
