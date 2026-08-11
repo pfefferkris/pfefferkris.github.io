@@ -1,6 +1,6 @@
 {
   "updated": "2026-08-12",
-  "note": "North Carolina Register of Deeds online systems by county. Vendors cluster: one integration covers every county on the same system. deep = URL template opening the document record directly ({book}/{page} substituted).",
+  "note": "North Carolina Register of Deeds online systems by county. Vendors cluster: one integration covers every county on the same system. deep = URL template opening the document record directly. pdf = the county imaging system serves sessionless PDFs the guide can display inline via /api/deed-image.",
   "counties": {
     "WAKE": {
       "name": "Wake County Register of Deeds, Consolidated Real Property Index",
@@ -21,7 +21,8 @@
       "vendor": "Logan Systems",
       "url": "https://www.ccrodinternet.org/",
       "deep": null,
-      "note": "Open Real Estate records and search by Book and Page; the deed image displays in the viewer."
+      "note": "The scanned deed serves directly from the county imaging system; the guide displays it inline.",
+      "pdf": true
     },
     "DURHAM": {
       "name": "Durham County Register of Deeds online records",

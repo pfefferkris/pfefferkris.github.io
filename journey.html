@@ -1323,6 +1323,8 @@ if(pull)pull.addEventListener('click',async()=>{
         let s='<br><br><b>And here is the recording itself.</b> Your home&#8217;s legal story lives at the '+(dd.county||'county')+' County Register of Deeds under '+(dd.book?'<span class="big">Book '+dd.book+', Page '+dd.page+'</span>':'<b>'+dd.sourceRef+'</b>')+'. ';
         if(rod0&&rod0.deep&&dd.book&&dd.page){
           s+='<a href="'+rod0.deep.replace('{book}',encodeURIComponent(dd.book)).replace('{page}',encodeURIComponent(dd.page))+'" target="_blank" rel="noopener"><b>Open the deed record in one click</b></a>, or use the <a href="'+rod0.url+'" target="_blank" rel="noopener">county search</a> with those two numbers.';
+        } else if(rod0&&rod0.pdf){
+          s+='Flip <b>Advanced</b> and the scanned deed itself, the actual recorded document, displays beside this season, served live from the county. Or <a href="'+rod0.url+'" target="_blank" rel="noopener"><b>open the county register</b></a> directly.';
         } else if(rod0){
           s+='<a href="'+rod0.url+'" target="_blank" rel="noopener"><b>Open the county register</b></a>, enter those two numbers, and the scanned deed opens in the browser. '+(rod0.note||'');
         } else {
@@ -1347,6 +1349,20 @@ if(pull)pull.addEventListener('click',async()=>{
           link='<a href="https://www.google.com/search?q='+rodQ+'" target="_blank" rel="noopener"><b>Open the register and pull this page</b></a>; most counties let you read the scanned deed image in the browser once you enter the book and page.';
         }
         card.innerHTML='<b>The recording itself, from the county GIS record:</b><br>'+(dd.book?'Book <span class="deedbig">'+dd.book+'</span> &nbsp;Page <span class="deedbig">'+dd.page+'</span>':dd.sourceRef)+(dd.recorded?'<br>Recorded '+dd.recorded:'')+(dd.legal?'<br><i>'+dd.legal+'</i>':'')+'<br>This is the exact book and page your home&#8217;s story lives under. '+link;
+        /* the actual scanned deed, inline, when the county imaging system serves it */
+        if(rod&&rod.pdf&&dd.book&&dd.page){
+          const pu=n=>'/api/deed-image?county='+encodeURIComponent(ck)+'&book='+encodeURIComponent(dd.book)+'&page='+encodeURIComponent(dd.page)+'&n='+n;
+          const probe=await fetch(pu(1),{method:'GET'}).then(r4=>r4.ok).catch(()=>false);
+          if(probe){
+            card.innerHTML+='<div id="t_deedpdf" style="margin-top:10px"><embed src="'+pu(1)+'" type="application/pdf" style="width:100%;height:460px;border-radius:10px;background:#fff"></embed>'+
+              '<div style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:.7rem"><button class="addrow" type="button" id="t_dpprev" style="margin-top:0">&#8592; Page</button><span id="t_dpn">Document page 1</span><button class="addrow" type="button" id="t_dpnext" style="margin-top:0">Page &#8594;</button><span style="margin-left:auto;color:var(--muted)">Served live from the '+(dd.county||'county')+' County Register of Deeds imaging system</span></div></div>';
+            let dpn=1;
+            const upd=()=>{const em=card.querySelector('#t_deedpdf embed');if(em)em.src=pu(dpn);const lb=card.querySelector('#t_dpn');if(lb)lb.textContent='Document page '+dpn;};
+            const pb=card.querySelector('#t_dpprev'),nb=card.querySelector('#t_dpnext');
+            if(pb)pb.addEventListener('click',()=>{if(dpn>1){dpn--;upd();}});
+            if(nb)nb.addEventListener('click',()=>{dpn++;upd();});
+          }
+        }
         syncSoon();
       } else if(card) card.innerHTML='';
     }catch(e){}
