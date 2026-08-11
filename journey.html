@@ -697,6 +697,7 @@ body.adv .teeth .tcard .whyln{display:block}
 .teeth .anstat i{display:block;font-style:normal;font-size:.68rem;color:var(--muted);margin-top:2px}
 .teeth .anlegend{font-size:.74rem;color:var(--ink);line-height:1.65;margin-top:10px;background:rgba(255,255,255,.5);border:1px dashed var(--line);border-radius:10px;padding:9px 13px}
 #t_anout .big{font-size:1em}
+.teeth .tvglass iframe{mix-blend-mode:multiply}
 .teeth .tvglass{margin-top:12px;height:380px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.42),rgba(255,255,255,.18));backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.65);box-shadow:0 10px 30px rgba(18,41,63,.08)}
 .teeth .deedbig{font-family:Georgia,serif;font-size:1.5rem;color:var(--navy);font-weight:700}
 @media(max-width:900px){.advline{max-width:100%}}
@@ -976,6 +977,23 @@ function addPos(){if(!posEl)return;
   posEl.appendChild(r);}
 const ap=$('t_addpos');if(ap)ap.addEventListener('click',()=>{addPos();});
 
+/* whiteboard integration: the board gets a provenance line and a bridge to the rest of the guide */
+(function(){
+  const stand=document.getElementById('stand');
+  if(stand){
+    const d=document.createElement('div');
+    d.className='tout';d.id='t_nwassembly';d.style.cssText='display:none;max-width:1080px;margin:14px auto 0';
+    stand.after(d);
+  }
+  const board=document.querySelector('.board');
+  if(board){
+    const f=document.createElement('p');
+    f.className='tsub';f.id='t_boardfoot';f.style.cssText='max-width:1080px;margin:12px auto 0;text-align:center';
+    f.innerHTML='Every container drawn on this board is a card in the <b>toolbox at the end of this guide</b>, carrying your live savings math. The day a board like this gets used is a story of its own: the <a href="succession.html"><b>Estate Guide</b></a> walks it hour by hour, and the <a href="capstone.html"><b>case study</b></a> shows one family&#8217;s board built out in full.';
+    board.after(f);
+  }
+})();
+
 /* the persona chips steer the toolbox, so recompute when they flip */
 document.querySelectorAll('.persona [data-p]').forEach(c=>c.addEventListener('click',()=>setTimeout(tcalc,0)));
 
@@ -1080,7 +1098,7 @@ async function runAnalysis(held,src){
   const wrap=$('t_anwrap'),out=$('t_anout'),tech=$('t_antech');
   if(!held||!held.length)return;
   const lbl=$('t_anlabel');
-  if(lbl)lbl.innerHTML=src==='default'?'Showing my default example, <b>the AI infrastructure mix (Aschenbrenner style)</b>, graded live so you can see how this works. Add your own positions above and run them to replace it.':'<b>Your positions, graded live.</b>';
+  if(lbl)lbl.innerHTML=src==='default'?'Showing my default example, <b>the 2025 top performers mix</b>, graded live so you can see how this works. Add your own positions above and run them to replace it.':'<b>Your positions, graded live.</b>';
   if(runBtn){runBtn.disabled=true;runBtn.textContent='Reading a year of market data...';}
   try{
     const syms=held.map(p=>p.tkr);
@@ -1162,10 +1180,10 @@ async function runAnalysis(held,src){
         sc.async=true;
         sc.innerHTML=JSON.stringify({
           autosize:true,symbol:rows[0].s,interval:'D',range:'3M',theme:'light',style:'2',locale:'en',
-          backgroundColor:'rgba(0,0,0,0)',gridColor:'rgba(18,41,63,0.06)',
-          hide_top_toolbar:false,hide_legend:false,hide_side_toolbar:true,allow_symbol_change:false,save_image:false,
-          compareSymbols:rows.slice(1).map(r2=>({symbol:r2.s,position:'SameScale'})),
-          withdateranges:true,details:false,calendar:false
+          backgroundColor:'rgba(0,0,0,0)',gridColor:'rgba(18,41,63,0.05)',
+          hide_top_toolbar:true,hide_legend:false,hide_side_toolbar:true,allow_symbol_change:false,save_image:false,
+          compareSymbols:rows.slice(1).map(r2=>({symbol:r2.s,position:'SameScale'})).concat([{symbol:'AMEX:SPY',position:'SameScale'}]),
+          withdateranges:false,details:false,calendar:false
         });
         tv.firstChild.appendChild(sc);
       }
@@ -1213,8 +1231,8 @@ fetch('data/copytrade.json').then(r=>r.json()).then(ct=>{
       window.removeEventListener('scroll',tryDefault);
       const userHas=T.pos&&T.pos.some(p2=>p2.tkr&&p2.val>0);
       if(!userHas){
-        const asch=(ct.presets||[]).find(x=>x.key==='aschenbrenner');
-        if(asch)runAnalysis(asch.positions.map(x=>({tkr:String(x[0]),val:+x[1]})),'default');
+        const dft=(ct.presets||[]).find(x=>x.key==='top2025')||(ct.presets||[])[0];
+        if(dft)runAnalysis(dft.positions.map(x=>({tkr:String(x[0]),val:+x[1]})),'default');
       }
     }
   }
@@ -1300,8 +1318,16 @@ if(pull)pull.addEventListener('click',async()=>{
       const dd=await fetch('/api/deed?address='+encodeURIComponent(a)+(p&&p.county?'&county='+encodeURIComponent(p.county):'')).then(r2=>r2.ok?r2.json():null).catch(()=>null);
       const card=document.getElementById('t_deedcard');
       if(card&&dd&&(dd.book||dd.sourceRef)){
+        const RODS={
+          WAKE:{n:'Wake County Register of Deeds, Consolidated Real Property Index',u:'https://rodcrpi.wakegov.com/booksweb/genextsearch.aspx'},
+          MECKLENBURG:{n:'Mecklenburg County Register of Deeds online search',u:'https://meckrod.manatron.com/'},
+          CUMBERLAND:{n:'Cumberland County Register of Deeds public records',u:'https://www.ccrodinternet.org/'}
+        };
+        const ck=(dd.county||'').toUpperCase();
+        const rod=RODS[ck]||null;
         const rodQ=encodeURIComponent((dd.county||'')+' County NC register of deeds search deed book '+(dd.book||'')+' page '+(dd.page||''));
-        card.innerHTML='<b>The recording itself, from the county GIS record:</b><br>'+(dd.book?'Book <span class="deedbig">'+dd.book+'</span> &nbsp;Page <span class="deedbig">'+dd.page+'</span>':dd.sourceRef)+(dd.recorded?'<br>Recorded '+dd.recorded:'')+(dd.legal?'<br><i>'+dd.legal+'</i>':'')+'<br>This is the exact book and page your home&#8217;s story lives under at the '+(dd.county||'county')+' County Register of Deeds. <a href="https://www.google.com/search?q='+rodQ+'" target="_blank" rel="noopener"><b>Open the register and pull this page</b></a>; most counties let you read the scanned deed image right in the browser once you enter the book and page.';
+        const link=rod?'<a href="'+rod.u+'" target="_blank" rel="noopener"><b>Open the '+dd.county+' County register</b></a>, enter Book '+(dd.book||'')+' and Page '+(dd.page||'')+', and the scanned deed image opens right in the browser.':'<a href="https://www.google.com/search?q='+rodQ+'" target="_blank" rel="noopener"><b>Open the register and pull this page</b></a>; most counties let you read the scanned deed image in the browser once you enter the book and page.';
+        card.innerHTML='<b>The recording itself, from the county GIS record:</b><br>'+(dd.book?'Book <span class="deedbig">'+dd.book+'</span> &nbsp;Page <span class="deedbig">'+dd.page+'</span>':dd.sourceRef)+(dd.recorded?'<br>Recorded '+dd.recorded:'')+(dd.legal?'<br><i>'+dd.legal+'</i>':'')+'<br>This is the exact book and page your home&#8217;s story lives under. '+link;
         syncSoon();
       } else if(card) card.innerHTML='';
     }catch(e){}
@@ -1455,6 +1481,14 @@ function tcalc(){
     if(sum>0&&(nwT.value===''||nwT.dataset.auto==='1')){
       const newV=Math.round(sum).toLocaleString();
       if(nwT.value!==newV){nwT.dataset.auto='1';nwSelf=true;nwT.value=newV;nwT.dispatchEvent(new Event('input'));nwSelf=false;}
+    }
+    const asy=document.getElementById('t_nwassembly');
+    if(asy){
+      if(sum>0){
+        asy.style.display='block';
+        const typed=nwT.value&&nwT.dataset.auto==='0';
+        asy.innerHTML='<b>Where this board gets its number.</b> The seasons above assembled it for you: '+layers.join(' + ')+' = <b>'+tfmt(sum)+'</b>.'+(typed?' You have typed your own figure over it ('+nwT.value+'), and your number wins: the board below is drawn from what you entered.':' It fills the family net worth box (top right) automatically, and the whiteboard below is drawn from it. Type over the box any time; your number always wins.')+' Missing a layer? The home comes from the address lookup in Harvest, the retirement balance from Step 1 of Summer, the brokerage from the positions you grade.';
+      } else asy.style.display='none';
     }
   }
   const fo=$('t_feeout');
