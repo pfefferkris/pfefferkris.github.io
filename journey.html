@@ -697,6 +697,8 @@ body.adv .teeth .tcard .whyln{display:block}
 .teeth .anstat i{display:block;font-style:normal;font-size:.68rem;color:var(--muted);margin-top:2px}
 .teeth .anlegend{font-size:.74rem;color:var(--ink);line-height:1.65;margin-top:10px;background:rgba(255,255,255,.5);border:1px dashed var(--line);border-radius:10px;padding:9px 13px}
 #t_anout .big{font-size:1em}
+.teeth .tvglass{margin-top:12px;height:380px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.42),rgba(255,255,255,.18));backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.65);box-shadow:0 10px 30px rgba(18,41,63,.08)}
+.teeth .deedbig{font-family:Georgia,serif;font-size:1.5rem;color:var(--navy);font-weight:700}
 @media(max-width:900px){.advline{max-width:100%}}
 </style>
 <script>
@@ -760,7 +762,7 @@ const BLOCKS=[
  <button class="addrow" id="t_adddebt" type="button">+ Add a debt</button>
  <div class="tout" id="t_debtplan" style="display:none"></div>
  <div class="advline" id="t_advdebt" data-anchor="#t_debtplan"></div>
- <p class="tsub" style="margin-top:16px"><b>Now the planting numbers.</b> Two of the boxes below confuse everyone, so plainly: <b>You defer</b> is the percent of each paycheck you choose to send into your retirement plan before the money ever reaches your pocket. The <b>match cap</b> is the free money ceiling: many employers add a dollar for every dollar you put in, up to a cap, commonly 3 to 6 percent of your pay. If the cap is 4 and you only defer 2, half the free money is left on the table every single payday. Both numbers are in your HR portal or plan summary. That deferral usually happens through an employer 401(k) plan, and when one exists with a match, it should: the match is the best return in this entire guide. No plan at work? An IRA does the same job on your own. Business owner (there is a toggle for you at the top of the page)? A solo 401(k) or SEP IRA are your doors, with far higher ceilings.</p>
+ <p class="tsub" style="margin-top:16px"><b>Now the planting numbers.</b> Two of the boxes below confuse everyone, so plainly: <b>You defer</b> is the percent of each paycheck you choose to send into your retirement plan before the money ever reaches your pocket. The <b>match cap</b> is the free money ceiling: many employers add a dollar for every dollar you put in, up to a cap, commonly 3 to 6 percent of your pay. If the cap is 4 and you only defer 2, half the free money is left on the table every single payday. Both numbers are in your HR portal or plan summary. That deferral usually happens through an employer 401(k) plan, and when one exists with a match, it should: the match is the best return in this entire guide. No plan at work? An IRA does the same job on your own.</p>
  <div class="trow">
    <label>Your age<input type="number" id="t_age" min="18" max="95" placeholder="30"></label>
    <label>Monthly expenses<input type="number" id="t_exp" placeholder="4000"></label>
@@ -786,13 +788,13 @@ const BLOCKS=[
  </datalist>
  <div id="t_pos"></div>
  <button class="addrow" id="t_addpos" type="button">+ Add a position</button>
- <button class="addrow" id="t_sample" type="button">Show me with a sample portfolio</button>
  <span id="t_presets"></span>
  <p class="tsub" style="margin-top:6px;font-size:.68rem">The copy trade buttons load mixes inspired by publicly disclosed congressional trading filings, the kind the copy trading apps follow, refreshed quarterly. Nobody&#8217;s actual portfolio. The point is the grade: in 2025 only about a third of congressional portfolios beat the S&amp;P 500.</p>
- <div class="tout" id="t_outp" style="display:none"></div>
  <button class="tbtn" id="t_run" type="button" style="display:none;margin-top:10px">Run the full analysis on these positions</button>
  <div id="t_anwrap" style="display:none">
+  <p class="tsub" id="t_anlabel" style="margin-top:10px"></p>
   <div class="anstats" id="t_anstats"></div>
+  <div class="tvglass" id="t_tv"></div>
   <div class="tout" id="t_anout"></div>
  </div>
  <p class="tsub" style="margin-top:18px">One more thing before the big question, because the wrappers confuse everyone: the Step 1 balance usually lives inside a <b>retirement account</b>, a 401(k) at work where a fund company manages it for you (often through a target date fund that adjusts itself as you age), or an IRA you opened yourself. The Step 2 positions usually live in a regular <b>brokerage account</b> you control directly. Different wrappers, different tax treatment, same engine underneath, and the next step asks what it all adds up to.</p>
@@ -802,16 +804,14 @@ const BLOCKS=[
    <label>Salary today<input type="number" id="t_rsal" placeholder="from Spring, or type it"></label>
    <label>Raises per year (%)<input type="number" id="t_wage" value="3" step="0.5"></label>
  </div>
+ <div class="anstats"><div class="anstat" id="t_numcard" style="display:none;flex:none;min-width:220px;border-color:var(--gold)"><span>Your number</span><b id="t_numval">&#8212;</b><i id="t_numsub"></i></div></div>
  <div class="tout" id="t_ret">Add your age (Spring), salary, balance and monthly savings, and the replacement rate computes here.</div>
  <div class="advline" id="t_advret" data-anchor="#t_ret"><b>The law of the nest egg:</b> workplace plans live under ERISA, which does three quiet favors most savers never notice: a fiduciary duty on whoever runs the plan, federal protection from creditors (the anti alienation rule), and automatic spousal rights on the money. For 2026 the IRS elective deferral limit is <b>$24,500</b> (IRC Section 402(g)); an IRA adds up to <b>$7,500</b> more (Section 219), each with extra catch up room after age 50. Traditional dollars are taxed on the way out, Roth dollars on the way in, and the employer match is always traditional. IRAs carry their own armor: protected in bankruptcy, and in North Carolina shielded from general creditors as well. The hedge lesson grows up here too: as retirement nears, the hedge seat in the portfolio is supposed to expand, and that gradual shift is the entire idea inside a target date fund.</div>
- <p class="tsub" style="margin-top:18px"><b>The three ideas behind every grade above.</b></p>
- <div class="lesson"><b>1. The hedge lesson.</b> Start at 100 percent stocks, then slide a hedge asset into the mix and watch what happens to risk and efficiency. The case I built this from happens to use gold, but this is NOT about buying gold: it is the reason balanced portfolios hold bonds, and why the classic mix is stocks plus something that zigs when stocks zag.
-  <label style="margin-top:8px">Hedge asset in the portfolio: <span id="t_goldpct">0</span>%<input type="range" id="t_gold" min="0" max="40" step="5" value="0" style="width:100%;margin-top:4px"></label>
-  <div class="tout" id="t_goldout"></div></div>
- <div class="lesson"><b>2. The fee lesson.</b> What does the ${gl('expratio','expense ratio')} quietly cost over a working lifetime?
+ <p class="tsub" style="margin-top:18px"><b>Two lessons I give everyone.</b></p>
+ <div class="lesson"><b>1. The fee lesson.</b> What does the ${gl('expratio','expense ratio')} quietly cost over a working lifetime?
   <div class="trow"><label>Fund expense ratio (%)<input type="number" id="t_fee" step="0.05" min="0" max="3" placeholder="0.75"></label></div>
   <div class="tout" id="t_feeout" style="display:none"></div></div>
- <div class="lesson"><b>3. The allocation lesson.</b> Pop quiz: what explains over 90 percent of the difference in returns between portfolios?
+ <div class="lesson"><b>2. The allocation lesson.</b> Pop quiz: what explains over 90 percent of the difference in returns between portfolios?
   <div class="docck" id="t_alloc">
    <span data-a="picks">Picking the right stocks</span><span data-a="timing">Timing the market</span><span data-a="alloc">Asset allocation</span><span data-a="fees">Low fees</span>
   </div><div class="tout" id="t_allocout" style="display:none"></div></div>
@@ -822,6 +822,7 @@ const BLOCKS=[
    <label>Street address<input type="text" id="t_addr" placeholder="123 Main St, Raleigh, NC" autocomplete="off"></label>
    <label>&nbsp;<button class="tbtn" id="t_pull" type="button">Pull the record</button></label>
  </div><div class="tout" id="t_out2">The lookup reads the current value estimate AND the last recorded sale from public property records, then computes your basis and capital appreciation for you. The address goes only to the records provider and is never stored.</div>
+ <div class="advline" id="t_deedcard" data-anchor="#t_out2"></div>
  <div class="advline" id="t_adv2"></div>`},
 {q:'Help me understand what would need to happen for your family if you were not here tomorrow.',
  sub:'Six documents decide how gentle this season is. Tap what you already have.',
@@ -936,7 +937,15 @@ function addGoal(){if(!goalsEl)return;
   r.innerHTML='<label>Goal<input type="text" class="g_name" placeholder="Down payment"></label><label>What it costs<input type="number" class="g_cost" placeholder="60000"></label><label>Years away<input type="number" class="g_yrs" placeholder="5"></label>';
   r.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>{i.dataset.auto='0';tcalc();}));
   goalsEl.appendChild(r);}
-addGoal();
+addGoal();addGoal();addGoal();
+(function(){if(!goalsEl)return;
+  const seed=(i,n,c,y)=>{const r=goalsEl.children[i];if(!r)return;
+    const a=r.querySelector('.g_name'),b=r.querySelector('.g_cost'),d=r.querySelector('.g_yrs');
+    a.value=n;a.dataset.auto='1';b.value=c;b.dataset.auto='1';d.value=y;d.dataset.auto='1';};
+  seed(0,'Emergency fund, 3 to 6 months',12000,1);
+  seed(1,'Down payment on a home',60000,5);
+  seed(2,'College for a child',80000,12);
+})();
 const ag=$('t_addgoal');if(ag)ag.addEventListener('click',addGoal);
 
 /* stock positions, the diversification checkup */
@@ -1066,11 +1075,13 @@ async function anFetch(sym){
 }
 const anPct=x=>(x>=0?'+':'')+(x*100).toFixed(1)+'%';
 const runBtn=$('t_run');
-if(runBtn)runBtn.addEventListener('click',async()=>{
-  const held=T.pos.filter(p=>p.tkr&&p.val>0);
+let LASTRUN=null;
+async function runAnalysis(held,src){
   const wrap=$('t_anwrap'),out=$('t_anout'),tech=$('t_antech');
-  if(!held.length)return;
-  runBtn.disabled=true;runBtn.textContent='Reading a year of market data...';
+  if(!held||!held.length)return;
+  const lbl=$('t_anlabel');
+  if(lbl)lbl.innerHTML=src==='default'?'Showing my default example, <b>the AI infrastructure mix (Aschenbrenner style)</b>, graded live so you can see how this works. Add your own positions above and run them to replace it.':'<b>Your positions, graded live.</b>';
+  if(runBtn){runBtn.disabled=true;runBtn.textContent='Reading a year of market data...';}
   try{
     const syms=held.map(p=>p.tkr);
     const data=await Promise.all(syms.concat(['^GSPC']).map(anFetch));
@@ -1122,7 +1133,7 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
       }
       corrTab+='</table></div><div class="anlegend"><b>Reading the correlation table:</b> this is the covariance matrix made human. Each cell asks, when THIS holding moves, does THAT one move with it? 1.00 on the diagonal is each holding agreeing with itself. Green negatives are the free lunch, pairs that take turns and smooth the ride. Brick reds above 0.70 are pairs that pretend to be two investments while behaving as one.</div>';
     }
-    if(tech)tech.innerHTML='<div id="t_tv" style="height:340px;margin-bottom:10px;border-radius:10px;overflow:hidden"></div><div class="antab-wrap"><table class="antab">'+head+body+prow+mrow+'</table></div>'+corrTab+
+    if(tech)tech.innerHTML='<div class="antab-wrap"><table class="antab">'+head+body+prow+mrow+'</table></div>'+corrTab+
       '<div class="anlegend"><b>How to read it:</b> '+gl('sigma','Risk')+' is how bumpy the ride was. '+gl('beta','Beta')+' is how hard a holding swings when the market swings. '+gl('alpha','Alpha')+' is the return earned beyond what that risk level demanded, computed against '+gl('capm','what CAPM asks')+'. The test passes a holding that beat its risk requirement without carrying meaningfully more swing than the market itself (a small tolerance keeps a total market fund riding at beta 1.0 from failing on a rounding edge). The '+gl('sharpe','Sharpe ratio')+' is the final grade: how well you were paid for every unit of worry.</div>'+
       '<div style="margin-top:8px"><b>The machinery, straight from my own analysis workbook:</b> daily log returns LN(P<sub>t</sub> / P<sub>t-1</sub>) over '+common.length+' aligned trading days; a sample covariance matrix across every pair; beta = COV(stock, market) / VAR(market); realized return = e<sup>sum of log returns</sup> - 1; CAPM required return = r<sub>f</sub> + beta (r<sub>market</sub> - r<sub>f</sub>) with the live 10 year Treasury at '+RTS.tenYear+' percent; Jensen alpha = realized minus required; portfolio variance is the double sum w<sub>i</sub>w<sub>j</sub>COV<sub>ij</sub>, annualized by 252 trading days.</div>';
     const best=[...rows].sort((a,b)=>b.alpha-a.alpha)[0];
@@ -1135,25 +1146,26 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
     }
     let avgCorr=null;
     if(rows.length>1){let cs=0,cn=0;for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){const c=anCov(rets[i],rets[j])/Math.sqrt(anCov(rets[i],rets[i])*anCov(rets[j],rets[j]));cs+=c;cn++;}avgCorr=cs/cn;}
-    v+='<br><br><b>The shape of the risk.</b> Think of '+gl('beta','beta')+' as a volume knob tied to the market: at beta 1.00 your portfolio plays exactly as loud as the market plays. Yours sits at <b>'+pBeta.toFixed(2)+'</b>, so when the market moves a dollar, this mix tends to move about $'+pBeta.toFixed(2)+', '+(pBeta>=1?'louder than the market itself':'quieter than the market')+'. Its swings ran '+(pSd*100).toFixed(0)+' percent over the year, against '+(mSd*100).toFixed(0)+' for the market. '+(avgCorr!==null?'<br><br><b>Do they move together?</b> This is the part almost nobody checks, and it was half my analysis workbook: the math of whether your holdings move as a team or take turns, called '+gl('covariance','covariance')+'. Picture two rowers: if they always pull at the same moment, the boat lurches; if they alternate, it glides. Your holdings pulled together with an average correlation of <b>'+avgCorr.toFixed(2)+'</b>, on a scale where 1.00 means perfectly in step and near zero or below means they take turns. '+(avgCorr>=0.6?'<span class="flagbad">That is high</span>: when one of yours has a bad day, the others usually have it too, so the eggs are riding in one basket even though the names look different.':avgCorr>=0.3?'That is moderate: some real spreading is happening, though the holdings still lean the same way in a storm.':'<span class="big">That is genuinely diversified</span>: your holdings zig at different times, which quietly smooths the whole ride, the same free lunch the hedge lesson below demonstrates.')+' Flip Advanced and the full pair by pair table sits beside this season. ':'')+(heavy2.length?'And the weight sits piled up: '+heavy2.map(r=>'<span class="flagbad">'+r.s+' is '+Math.round(r.w*100)+' percent</span>').join(', ')+' of everything you listed. Here is why that matters: risk that comes from one company having a bad year is called unsystematic risk, and the market pays you NOTHING extra for carrying it, because spreading the money across many companies removes it for free. Concentration is unpaid risk.':'No single holding dominates the pile, which is the shape diversification is supposed to have: whatever risk remains is market risk, the kind you actually get paid for.')+' ';
-    v+='<br><br><b>What I recommend: budget the risk.</b> '+(pSharpe>=mSharpe&&!heavy2.length?'This mix is earning its risk budget, so the work now is protecting it: keep the fees at index fund levels (lesson 2 below), keep the hedge seat filled (lesson 1), and let the allocation, not the picking, carry the load (lesson 3).':heavy2.length?'The first move is not finding a better stock. It is spreading the piled up weight so the same return costs less worry; the hedge lesson below shows the mechanism. And if the big position carries years of gains, selling is not the only door: a charitable remainder trust can diversify a low '+gl('basis','basis')+' position without triggering the capital gains bill.':'Own the whole market before trying to beat it: broad index funds at index fund prices, the hedge seat filled, and the allocation doing the heavy lifting.')+' Then Step 3 below turns this same engine toward the question all of this exists to answer: will it be enough?';
+    v+='<br><br><b>The shape of the risk.</b> Think of '+gl('beta','beta')+' as a volume knob tied to the market: at beta 1.00 your portfolio plays exactly as loud as the market plays. Yours sits at <b>'+pBeta.toFixed(2)+'</b>, so when the market moves a dollar, this mix tends to move about $'+pBeta.toFixed(2)+', '+(pBeta>=1?'louder than the market itself':'quieter than the market')+'. Its swings ran '+(pSd*100).toFixed(0)+' percent over the year, against '+(mSd*100).toFixed(0)+' for the market. '+(avgCorr!==null?'<br><br><b>Do they move together?</b> This is the part almost nobody checks, and it was half my analysis workbook: the math of whether your holdings move as a team or take turns, called '+gl('covariance','covariance')+'. Picture two rowers: if they always pull at the same moment, the boat lurches; if they alternate, it glides. Your holdings pulled together with an average correlation of <b>'+avgCorr.toFixed(2)+'</b>, on a scale where 1.00 means perfectly in step and near zero or below means they take turns. '+(avgCorr>=0.6?'<span class="flagbad">That is high</span>: when one of yours has a bad day, the others usually have it too, so the eggs are riding in one basket even though the names look different.':avgCorr>=0.3?'That is moderate: some real spreading is happening, though the holdings still lean the same way in a storm.':'<span class="big">That is genuinely diversified</span>: your holdings zig at different times, which quietly smooths the whole ride, the free lunch a bond or hedge seat buys in a balanced portfolio.')+' Flip Advanced and the full pair by pair table sits beside this season. ':'')+(heavy2.length?'And the weight sits piled up: '+heavy2.map(r=>'<span class="flagbad">'+r.s+' is '+Math.round(r.w*100)+' percent</span>').join(', ')+' of everything you listed. Here is why that matters: risk that comes from one company having a bad year is called unsystematic risk, and the market pays you NOTHING extra for carrying it, because spreading the money across many companies removes it for free. Concentration is unpaid risk.':'No single holding dominates the pile, which is the shape diversification is supposed to have: whatever risk remains is market risk, the kind you actually get paid for.')+' ';
+    v+='<br><br><b>What I recommend: budget the risk.</b> '+(pSharpe>=mSharpe&&!heavy2.length?'This mix is earning its risk budget, so the work now is protecting it: keep the fees at index fund levels (the fee lesson below), keep a hedge seat filled, something that zigs when stocks zag, usually bonds, and let the allocation, not the picking, carry the load.':heavy2.length?'The first move is not finding a better stock. It is spreading the piled up weight so the same return costs less worry; spreading is the mechanism, the same reason balanced portfolios keep a bond seat. And if the big position carries years of gains, selling is not the only door: a charitable remainder trust can diversify a low '+gl('basis','basis')+' position without triggering the capital gains bill.':'Own the whole market before trying to beat it: broad index funds at index fund prices, a bond seat for the storms, and the allocation doing the heavy lifting.')+' Then Step 3 below turns this same engine toward the question all of this exists to answer: will it be enough?';
     v+='<br><br>One year of history, illustrative only; past performance never guarantees future results. Flip <b>Advanced</b> (top right) and the full workbook table appears beside this season.';
     out.innerHTML=v;
     wrap.style.display='block';
-    /* TradingView line chart of the actual holdings, advanced side, fail soft */
+    LASTRUN={pSharpe:pSharpe,mSharpe:mSharpe,src:src||'user'};
+    /* TradingView overlay chart of the actual holdings, simple side, glass over the gradient, 3 month default */
     try{
       const tv=document.getElementById('t_tv');
       if(tv){
         tv.innerHTML='<div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div></div>';
         const sc=document.createElement('script');
-        sc.src='https://s3.tradingview.com/external-embedding/embed-widget-symbol-overview.js';
+        sc.src='https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
         sc.async=true;
         sc.innerHTML=JSON.stringify({
-          symbols:rows.map(r2=>[r2.s+'|12M']),
-          chartOnly:true,colorTheme:'light',autosize:true,showVolume:false,hideDateRanges:false,
-          scalePosition:'right',scaleMode:'Percentage',fontFamily:'Georgia, serif',fontSize:'10',
-          headerFontSize:'small',lineWidth:2,dateRanges:['3m|1D','12m|1D','60m|1W'],
-          noTimeScale:false,valuesTracking:'1',changeMode:'price-and-percent'
+          autosize:true,symbol:rows[0].s,interval:'D',range:'3M',theme:'light',style:'2',locale:'en',
+          backgroundColor:'rgba(0,0,0,0)',gridColor:'rgba(18,41,63,0.06)',
+          hide_top_toolbar:false,hide_legend:false,hide_side_toolbar:true,allow_symbol_change:false,save_image:false,
+          compareSymbols:rows.slice(1).map(r2=>({symbol:r2.s,position:'SameScale'})),
+          withdateranges:true,details:false,calendar:false
         });
         tv.firstChild.appendChild(sc);
       }
@@ -1164,8 +1176,9 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
     $('t_anwrap').style.display='block';$('t_anstats').innerHTML='';
     if(tech)tech.innerHTML='';
   }
-  runBtn.disabled=false;runBtn.textContent='Run the full analysis on these positions';
-});
+  if(runBtn){runBtn.disabled=false;runBtn.textContent='Run the full analysis on these positions';}
+}
+if(runBtn)runBtn.addEventListener('click',()=>{const held=T.pos.filter(p=>p.tkr&&p.val>0);if(held.length)runAnalysis(held,'user');});
 function loadPreset(list){
   if(!posEl)return;
   posEl.innerHTML='';
@@ -1176,18 +1189,34 @@ function loadPreset(list){
     r.querySelector('.p_val').value=p[1];
   });
   tcalc();
-  if(runBtn){runBtn.style.display='';runBtn.click();}
+  if(runBtn)runBtn.style.display='';
+  runAnalysis(T.pos.filter(p2=>p2.tkr&&p2.val>0),'user');
 }
-const sampleBtn=$('t_sample');
-if(sampleBtn)sampleBtn.addEventListener('click',()=>loadPreset([['AAPL','10000'],['MSFT','10000'],['VTI','20000']]));
 /* copy trade presets load from data/copytrade.json, refreshed quarterly from public STOCK Act disclosures */
+let CTDATA=null,defaultRan=false;
 fetch('data/copytrade.json').then(r=>r.json()).then(ct=>{
+  CTDATA=ct;
   const holder=$('t_presets');if(!holder||!ct.presets)return;
   ct.presets.forEach(ps=>{
     const b=document.createElement('button');b.type='button';b.className='addrow';b.textContent=ps.label;b.title=ps.desc;
     b.addEventListener('click',()=>loadPreset(ps.positions.map(x=>[String(x[0]),String(x[1])])));
     holder.appendChild(b);
   });
+  /* default view: the AI infrastructure mix grades itself when the season first scrolls into sight */
+  const stage1=document.querySelectorAll('.stage')[1];
+  if(stage1&&'IntersectionObserver' in window){
+    const io2=new IntersectionObserver(es=>{es.forEach(e=>{
+      if(e.isIntersecting&&!defaultRan){
+        defaultRan=true;io2.disconnect();
+        const userHas=T.pos&&T.pos.some(p2=>p2.tkr&&p2.val>0);
+        if(!userHas){
+          const asch=(ct.presets||[]).find(x=>x.key==='aschenbrenner');
+          if(asch)runAnalysis(asch.positions.map(x=>({tkr:String(x[0]),val:+x[1]})),'default');
+        }
+      }
+    });},{threshold:0.25});
+    io2.observe(stage1);
+  }
 }).catch(()=>{
   const holder=$('t_presets');if(!holder)return;
   const b=document.createElement('button');b.type='button';b.className='addrow';b.textContent='Autopilot check: grade a famous copy trade mix';
@@ -1255,8 +1284,18 @@ if(pull)pull.addEventListener('click',async()=>{
       if(T.homeVal&&T.homeVal>T.homeBasis)h+='That is <span class="big">'+tfmt(T.homeVal-T.homeBasis)+'</span> of capital appreciation the deed has quietly watched happen. Held until death it earns the '+gl('stepup','step up')+'; gifted during life it carries the old basis with it.';}
     if(p&&p.yearBuilt)h+=' Built in '+p.yearBuilt+', the deed carries a chain of custody older than most family stories.';
     if(p&&p.county){const q=encodeURIComponent(p.county+' County register of deeds deed search');
-      h+=' The deed itself is on file with the <a href="https://www.google.com/search?q='+q+'" target="_blank" rel="noopener"><b>'+p.county+' County Register of Deeds</b></a>. Pull the grantor and grantee index and read the chain of title yourself: every owner, every lien, every easement, all public record. Would it be unreasonable to spend ten minutes reading the legal story of your own home?';}
+      h+=' The deed itself is on file with the <a href="https://www.google.com/search?q='+q+'" target="_blank" rel="noopener"><b>'+p.county+' County Register of Deeds</b></a>. Pull the grantor and grantee index and read the chain of title yourself: every owner, every lien, every easement, all public record. Would it be unreasonable to spend ten minutes reading the legal story of your own home? Flip <b>Advanced</b> and the recording itself, book and page, appears beside this season.';}
     out.innerHTML=h;
+    /* the actual recording: book and page from the statewide parcel record, advanced side */
+    try{
+      const dd=await fetch('/api/deed?address='+encodeURIComponent(a)+(p&&p.county?'&county='+encodeURIComponent(p.county):'')).then(r2=>r2.ok?r2.json():null).catch(()=>null);
+      const card=document.getElementById('t_deedcard');
+      if(card&&dd&&(dd.book||dd.sourceRef)){
+        const rodQ=encodeURIComponent((dd.county||'')+' County NC register of deeds search deed book '+(dd.book||'')+' page '+(dd.page||''));
+        card.innerHTML='<b>The recording itself, from the county GIS record:</b><br>'+(dd.book?'Book <span class="deedbig">'+dd.book+'</span> &nbsp;Page <span class="deedbig">'+dd.page+'</span>':dd.sourceRef)+(dd.recorded?'<br>Recorded '+dd.recorded:'')+(dd.legal?'<br><i>'+dd.legal+'</i>':'')+'<br>This is the exact book and page your home&#8217;s story lives under at the '+(dd.county||'county')+' County Register of Deeds. <a href="https://www.google.com/search?q='+rodQ+'" target="_blank" rel="noopener"><b>Open the register and pull this page</b></a>; most counties let you read the scanned deed image right in the browser once you enter the book and page.';
+        syncSoon();
+      } else if(card) card.innerHTML='';
+    }catch(e){}
     const nw=document.getElementById('nw');
     if(nw&&T.homeVal&&!nw.value){nw.value=T.homeVal.toLocaleString();nw.dispatchEvent(new Event('input'));}
   }catch(e){out.innerHTML='No public record answered for that address. The seasons work fine without it.';}
@@ -1315,25 +1354,6 @@ function tcalc(){
       o1.innerHTML=(matchA?'Spring carries down here: counting the employer match it found ('+tfmt(matchA)+' a year of free money on top of your own savings), by':'By')+' 65 this road reaches about <span class="big">'+tfmt(nestF)+'</span> at the risk free floor, and about <span class="big">'+tfmt(nestB)+'</span> near the long run market average. The gap between those two numbers is the reward the market has historically paid for staying invested through its storms.'+(bench!==null?' For context, the '+gl('benchmark','benchmark')+' ('+RTS.benchmark+') returned '+bench+' percent over the last twelve months.':'')+(nestB>1e6?' And past the first million you are worth suing, which is what the umbrella bubble above is for.':'');
     } else o1.innerHTML='Add your balance and monthly savings to project the harvest.';
     if(a1)a1.innerHTML='<b>The math:</b> lump sum grows as PV times (1+r)^n; contributions grow as the annuity stream formula. The floor uses the live 10 year Treasury ('+RTS.tenYear+' percent); the market track uses the long run average of about '+LONGRUN+' percent'+(RTS.sp500?'; the S&P 500 stands at '+RTS.sp500.toLocaleString()+' as of '+RTS.sp500Date:'')+'. <b>The doctrine:</b> a diversified portfolio is judged against its benchmark by beta and the Sharpe ratio, (portfolio return minus the risk free rate) over standard deviation, not by raw return, because diversification removes only unsystematic risk. Two asset portfolio variance is w1²σ1² + w2²σ2² + 2·w1·w2·ρ·σ1·σ2, and the negative correlation term is where the hedge lesson lives. Brinson, Hood and Beebower is the allocation study; fee drag compounds at the same exponent returns do. Past performance never guarantees future results.';
-  }
-  const op=$('t_outp');
-  if(op){
-    if(T.pos.length){
-      op.style.display='block';
-      const tot=T.pos.reduce((s,p)=>s+p.val,0);
-      const sorted=[...T.pos].sort((a,b)=>b.val-a.val);
-      const heavy=sorted.filter(p=>p.val/tot>0.10);
-      let h='It sounds like the portfolio holds <b>'+T.pos.length+'</b> position'+(T.pos.length===1?'':'s')+' worth '+tfmt(tot)+' together. ';
-      if(heavy.length){
-        h+='If we fast forward through one bad year for '+(heavy.length===1?'a single name':'a few names')+', the damage is concentrated: '+heavy.map(p=>'<span class="flagbad">'+(p.tkr||'one position')+' is '+Math.round(p.val/tot*100)+' percent</span>').join(', ')+' of the whole. Anything past 10 percent in one name is concentration the market does not pay you extra for carrying, that is unsystematic risk, and diversification removes it for free. ';
-      } else {
-        h+='No single name breaks 10 percent, which is the shape diversification is supposed to have. What remains is market risk itself, measured by beta against the '+gl('benchmark','benchmark')+', and that risk the market DOES pay for. ';
-      }
-      if(T.pos.length<10)h+='With fewer than 10 holdings most portfolios still carry meaningful single company risk; index funds get you to hundreds of names in one purchase.';
-      else h+='Breadth looks healthy. The next question is whether the mix is judged by beta and the Sharpe ratio rather than raw return, which is how the pros keep score.';
-      if(heavy.length&&T.pos.length)h+=' If a concentrated position came from an employer or an inheritance, selling is not the only door: a charitable remainder trust diversifies a low '+gl('basis','basis')+' position without the immediate capital gains bill, and it lights up in the toolbox below when it fits.';
-      op.innerHTML=h;
-    } else op.style.display='none';
   }
   const rb=$('t_run');
   if(rb)rb.style.display=(T.pos&&T.pos.some(p=>p.tkr&&p.val>0))?'':'none';
@@ -1397,9 +1417,22 @@ function tcalc(){
       r+='<br><br><b>Your number: '+(needMonthly<1?'<span class="big">covered</span>':tfmt(needMonthly)+' a month')+'.</b> Here is the whole chain, step by step, so you can see where it comes from. Planners target replacing about 75 percent of your final pay. Social Security carries roughly 40 of those points for an average earner, so your savings need to carry about '+Math.round(needRep*100)+'. Turning '+Math.round(needRep*100)+' percent of a '+tfmt(finalSal)+' final salary into yearly income by the four percent rule takes a nest egg of about <b>'+tfmt(nestNeed)+'</b>. What you already have grows to '+tfmt(haveFV)+' on its own by '+rAge+'. '+(needMonthly<1?'That already covers the target: <span class="big">your nest is on pace</span>, and the job now is protecting it, fees, concentration, and the Winter documents.':'Closing the rest from today takes about <b>'+tfmt(needMonthly)+' a month</b> on top of the employer match'+(matchA2?' ('+tfmt(matchA2)+' a year of match is already counted for you)':'')+'.')+(T.monthly&&needMonthly>=1?(T.monthly>=needMonthly?' You are putting in '+tfmt(T.monthly)+' now, which is <span class="big">at or above your number</span>.':' You are putting in '+tfmt(T.monthly)+' now, '+tfmt(needMonthly-T.monthly)+' short of the number each month.'):'');
       r+='<br><br><b>Where those dollars should go, in order.</b> First into the 401(k) up to the match, because the match doubles your money before the market even opens. Second into a Roth IRA, up to $7,500 a year: you pay tax on the money now, and every dollar of growth comes out tax free in retirement, which is usually the better deal the younger and lower-bracket you are. Third, anything left goes back into the 401(k) toward its $24,500 ceiling, lowering this year&#8217;s tax bill instead.'+(flags2.indexOf('biz')>-1?' And since the Business owner toggle is on: your ceilings are higher than everyone else&#8217;s, a solo 401(k) or SEP IRA lets the business itself contribute for you.':'')+(flags2.indexOf('married')>-1?' Married: even a spouse with no income of their own can fund a spousal IRA, doubling the IRA lane for the household.':'');
       r+='<br><br><b>And when life happens, and it will:</b> a lapse month, a job change, a year that got away, none of it breaks the plan. Come back, type in where you stand today, and the number recalculates from today to your target. The number is never a grade on the past; it is always just the road from here.';
+      r+='<br><br><b>And keep the two buckets separate in your head, always.</b> The graded portfolio in Step 2 is your playground: individual stocks, your picks, money you can afford to think hard about. The retirement bucket is different ON PURPOSE. Workplace plans run under ERISA guardrails, and their menus are built from diversified funds and broad indexes for a reason: this money is not for playing. Your number belongs in the boring bucket, riding the whole market in an index or target date fund'+(LASTRUN&&LASTRUN.pSharpe<LASTRUN.mSharpe?', and the grade above makes the case for you: that mix currently trails the market per unit of risk, which is normal, most do, and it is exactly why the retirement money rides the index instead of the picks':'')+'. ';
       r+='<br><br>One honest caveat: this math assumes steady raises, and real lives zig, which is one more reason the number wants a fresh look every year.';
       ro.innerHTML=r;
-    } else ro.innerHTML='Add your age (Spring), salary, balance and monthly savings, and the replacement rate computes here.';
+      const nc=$('t_numcard'),nv=$('t_numval'),ns=$('t_numsub');
+      if(nc&&nv&&ns){nc.style.display='block';
+        nv.textContent=needMonthly<1?'Covered':tfmt(needMonthly)+' / mo';
+        nv.style.color=needMonthly<1||( T.monthly&&T.monthly>=needMonthly)?'#2e6b4f':'';
+        ns.textContent='to reach 75% replacement at '+rAge+(T.monthly?' (now: '+tfmt(T.monthly)+'/mo)':'');}
+    } else {
+      const miss=[];
+      if(!T.age)miss.push('your age (first box in Spring)');
+      if(!rsal)miss.push('a salary (the box above, or Spring)');
+      if(T.retBal===null&&T.monthly===null)miss.push('a balance or monthly savings (Step 1)');
+      ro.innerHTML='Almost there. Give me '+miss.join(', and ')+', and the whole chain computes right here, ending in <b>YOUR NUMBER</b>: the exact monthly contribution that reaches your target.';
+      const nc=$('t_numcard');if(nc)nc.style.display='none';
+    }
   }
   /* the family net worth tile assembles from the seasons */
   const nwT=document.getElementById('nw');
