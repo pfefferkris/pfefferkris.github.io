@@ -690,6 +690,12 @@ body.adv .teeth .tcard .whyln{display:block}
 .teeth .antab tr.port td{background:#e9f2ec;font-weight:700}
 .teeth .antab .pass{color:#2e6b4f;font-weight:800}
 .teeth .antab .fail{color:#8a3b2e;font-weight:800}
+.teeth .anstats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.teeth .anstat{flex:1;min-width:135px;background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.teeth .anstat b{display:block;font-family:Georgia,serif;font-size:1.08rem;color:var(--navy)}
+.teeth .anstat span{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.teeth .anstat i{display:block;font-style:normal;font-size:.68rem;color:var(--muted);margin-top:2px}
+.teeth .anlegend{font-size:.74rem;color:var(--ink);line-height:1.65;margin-top:10px;background:rgba(255,255,255,.5);border:1px dashed var(--line);border-radius:10px;padding:9px 13px}
 @media(max-width:900px){.advline{max-width:100%}}
 </style>
 <script>
@@ -723,7 +729,12 @@ const GLOSS={
  beneficiary:'The person named on an account or policy form to receive it at death. These forms override your will.',
  compounding:'Growth earning growth. Time matters more than amount, which is why starting early beats starting big.',
  poa:'Power of attorney: a document naming someone to act for you, financially (durable POA) or medically (healthcare POA), if you cannot.',
- probate:'The public court process that moves assets after death when no faster door (trust, title, or beneficiary form) was set up.'
+ probate:'The public court process that moves assets after death when no faster door (trust, title, or beneficiary form) was set up.',
+ beta:'How much a holding moves when the market moves. Beta 1 swings with the market. Beta 2 swings twice as hard, both directions. Below 1 is calmer than the market.',
+ alpha:'Return beyond what the risk level demanded. Positive alpha means the holding earned MORE than its risk required. Negative alpha means you were not paid for the risk you carried.',
+ sharpe:'Return earned per unit of risk taken, the single best one number grade for a portfolio. Compare yours to the market: higher means you are being paid better for your worry.',
+ sigma:'Standard deviation: how wildly the value swings around its own average. Bigger sigma, bumpier ride.',
+ capm:'The return the market DEMANDS for a given level of risk. A holding earning less than CAPM asks was not worth its risk.'
 };
 function gl(key,txt){return '<span class="gl" data-g="'+key+'">'+txt+'<span class="glpop">'+GLOSS[key]+'</span></span>';}
 document.addEventListener('click',e=>{
@@ -747,18 +758,24 @@ const BLOCKS=[
  <div class="tout" id="t_out0">Fill in what you know. Everything stays on this page and is never stored or sent anywhere.</div>
  <div class="advline" id="t_adv0"></div>`},
 {q:'Help me understand how your money is working, and what it is actually invested in.',
- sub:'The engine season. Two numbers show where the current road ends, at the floor and at the benchmark.',
+ sub:'The engine season. Wealth grows in layers of assets: cash for the near goals, funds and stocks for the long ones, retirement accounts with their own rules, the home (Harvest reads its public record below), sometimes a business. Start with the two numbers that show where the current road ends, then measure the market traded layer with real data.',
  body:`<div class="trow">
    <label>Retirement balance today<input type="number" id="t_bal" placeholder="60000"></label>
    <label>You save monthly<input type="number" id="t_mon" placeholder="800"></label>
  </div><div class="tout" id="t_out1">Add your balance and monthly savings to project the harvest.</div>
- <p class="tsub" style="margin-top:14px">Do you also hold individual stocks, your own picks, company shares, or something a parent handed down? List them and the guide checks the portfolio the way the curriculum does.</p>
+ <p class="tsub" style="margin-top:14px">Do you also hold individual stocks, your own picks, company shares, or something a parent handed down? List them and the guide runs the same analysis a portfolio manager would. Each holding goes in by its <b>ticker symbol</b>, the short code your brokerage app prints next to every position: Apple is AAPL, Microsoft is MSFT, a total market fund like Vanguard Total Stock Market is VTI. Then the rough dollar value you hold. Not sure yet? Tap the sample portfolio and watch it work first.</p>
+ <datalist id="t_tkrlist">
+  <option value="AAPL">Apple</option><option value="MSFT">Microsoft</option><option value="GOOGL">Alphabet (Google)</option><option value="AMZN">Amazon</option><option value="NVDA">NVIDIA</option><option value="META">Meta (Facebook)</option><option value="TSLA">Tesla</option><option value="BRK-B">Berkshire Hathaway</option><option value="JPM">JPMorgan Chase</option><option value="V">Visa</option><option value="MA">Mastercard</option><option value="JNJ">Johnson &amp; Johnson</option><option value="UNH">UnitedHealth</option><option value="LLY">Eli Lilly</option><option value="XOM">Exxon Mobil</option><option value="WMT">Walmart</option><option value="COST">Costco</option><option value="PG">Procter &amp; Gamble</option><option value="KO">Coca-Cola</option><option value="PEP">PepsiCo</option><option value="HD">Home Depot</option><option value="MCD">McDonalds</option><option value="DIS">Disney</option><option value="NFLX">Netflix</option><option value="AMD">AMD</option><option value="INTC">Intel</option><option value="BA">Boeing</option><option value="CAT">Caterpillar</option><option value="F">Ford</option><option value="GM">General Motors</option><option value="T">AT&amp;T</option><option value="VZ">Verizon</option><option value="PFE">Pfizer</option><option value="NKE">Nike</option><option value="VTI">Vanguard Total Stock Market fund</option><option value="VOO">Vanguard S&amp;P 500 fund</option><option value="SPY">SPDR S&amp;P 500 fund</option><option value="QQQ">Invesco Nasdaq 100 fund</option><option value="SCHD">Schwab Dividend fund</option><option value="VXUS">Vanguard International fund</option><option value="BND">Vanguard Total Bond fund</option>
+ </datalist>
  <div id="t_pos"></div>
  <button class="addrow" id="t_addpos" type="button">+ Add a position</button>
+ <button class="addrow" id="t_sample" type="button">Show me with a sample portfolio</button>
  <div class="tout" id="t_outp" style="display:none"></div>
  <button class="tbtn" id="t_run" type="button" style="display:none;margin-top:10px">Run the full analysis on these positions</button>
  <div id="t_anwrap" style="display:none">
+  <div class="anstats" id="t_anstats"></div>
   <div class="antab-wrap"><table class="antab" id="t_antab"></table></div>
+  <div class="anlegend" id="t_anlegend"></div>
   <div class="tout" id="t_anout"></div>
   <div class="advline" id="t_anadv" style="max-width:100%"></div>
  </div>
@@ -866,7 +883,7 @@ const ag=$('t_addgoal');if(ag)ag.addEventListener('click',addGoal);
 const posEl=$('t_pos');
 function addPos(){if(!posEl)return;
   const r=document.createElement('div');r.className='trow posrow';r.style.gridTemplateColumns='1fr 2fr';
-  r.innerHTML='<label>Ticker<input type="text" class="p_tkr" placeholder="AAPL" style="text-transform:uppercase"></label><label>Value held<input type="number" class="p_val" placeholder="15000"></label>';
+  r.innerHTML='<label>Ticker, start typing to pick<input type="text" class="p_tkr" list="t_tkrlist" placeholder="AAPL" style="text-transform:uppercase" autocomplete="off"></label><label>Value held<input type="number" class="p_val" placeholder="15000"></label>';
   r.querySelectorAll('input').forEach(i=>i.addEventListener('input',tcalc));
   posEl.appendChild(r);}
 const ap=$('t_addpos');if(ap)ap.addEventListener('click',()=>{addPos();});
@@ -1003,11 +1020,17 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
     const pSharpe=pSd>0?(pReal-rfA)/pSd:0;
     const mSd=Math.sqrt(mktVar*252);
     const mSharpe=mSd>0?(mktReal-rfA)/mSd:0;
-    const head='<tr><th>Holding</th><th>Weight</th><th>Return, 1y</th><th>Risk (sigma)</th><th>Beta</th><th>CAPM asks</th><th>Alpha</th><th>Workbook test</th></tr>';
-    const body=rows.map(r=>'<tr><td><b>'+r.s+'</b></td><td>'+Math.round(r.w*100)+'%</td><td>'+anPct(r.real)+'</td><td>'+(r.sd*100).toFixed(1)+'%</td><td>'+r.beta.toFixed(2)+'</td><td>'+anPct(r.capm)+'</td><td class="'+(r.alpha>=0?'pass':'fail')+'">'+anPct(r.alpha)+'</td><td class="'+(r.pass?'pass':'fail')+'">'+(r.pass?'Pass':'Fail')+'</td></tr>').join('');
-    const prow='<tr class="port"><td>YOUR PORTFOLIO</td><td>100%</td><td>'+anPct(pReal)+'</td><td>'+(pSd*100).toFixed(1)+'%</td><td>'+pBeta.toFixed(2)+'</td><td></td><td></td><td>Sharpe '+pSharpe.toFixed(2)+'</td></tr>';
-    const mrow='<tr class="mkt"><td>S&amp;P 500</td><td></td><td>'+anPct(mktReal)+'</td><td>'+(mSd*100).toFixed(1)+'%</td><td>1.00</td><td></td><td>0.0%</td><td>Sharpe '+mSharpe.toFixed(2)+'</td></tr>';
+    $('t_anstats').innerHTML=
+      '<div class="anstat"><span>Your year</span><b>'+anPct(pReal)+'</b><i>market '+anPct(mktReal)+'</i></div>'+
+      '<div class="anstat"><span>Your ride</span><b>'+(pSd*100).toFixed(0)+'% swings</b><i>market '+(mSd*100).toFixed(0)+'%</i></div>'+
+      '<div class="anstat"><span>Paid per unit of risk</span><b>'+pSharpe.toFixed(2)+'</b><i>market '+mSharpe.toFixed(2)+', higher is better</i></div>';
+    const head='<tr><th>Holding</th><th>Weight</th><th>Return, 1y</th><th>Risk</th><th>Beta</th><th>Alpha</th><th>The test</th></tr>';
+    const body=rows.map(r=>'<tr><td><b>'+r.s+'</b></td><td>'+Math.round(r.w*100)+'%</td><td>'+anPct(r.real)+'</td><td>'+(r.sd*100).toFixed(0)+'%</td><td>'+r.beta.toFixed(2)+'</td><td class="'+(r.alpha>=0?'pass':'fail')+'">'+anPct(r.alpha)+'</td><td class="'+(r.pass?'pass':'fail')+'">'+(r.pass?'Pass':'Fail')+'</td></tr>').join('');
+    const prow='<tr class="port"><td>YOUR PORTFOLIO</td><td>100%</td><td>'+anPct(pReal)+'</td><td>'+(pSd*100).toFixed(0)+'%</td><td>'+pBeta.toFixed(2)+'</td><td></td><td>Sharpe '+pSharpe.toFixed(2)+'</td></tr>';
+    const mrow='<tr class="mkt"><td>S&amp;P 500</td><td></td><td>'+anPct(mktReal)+'</td><td>'+(mSd*100).toFixed(0)+'%</td><td>1.00</td><td>0.0%</td><td>Sharpe '+mSharpe.toFixed(2)+'</td></tr>';
     tab.innerHTML=head+body+prow+mrow;
+    const dfmt=t=>new Date(t*1000).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    $('t_anlegend').innerHTML='<b>This is live:</b> every number above was computed seconds ago from '+common.length+' trading days of real closing prices, '+dfmt(common[0])+' to '+dfmt(common[common.length-1])+', pulled the moment you tapped the button. <b>How to read it:</b> '+gl('sigma','Risk')+' is how bumpy the ride was. '+gl('beta','Beta')+' is how hard a holding swings when the market swings. '+gl('alpha','Alpha')+' is the return earned beyond what that risk level demanded, computed against '+gl('capm','what CAPM asks')+'. The test passes a holding that beat its risk requirement without carrying more swing than the market itself. And the '+gl('sharpe','Sharpe ratio')+' is the final grade: how well you were paid for every unit of worry.';
     const best=[...rows].sort((a,b)=>b.alpha-a.alpha)[0];
     const worst=[...rows].sort((a,b)=>a.alpha-b.alpha)[0];
     let v='It sounds like the portfolio earned '+anPct(pReal)+' over the year the market returned '+anPct(mktReal)+'. But raw return is never the grade. ';
@@ -1019,10 +1042,23 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
     adv.innerHTML='<b>The machinery, straight from the Week 7 workbook of the advanced investment course:</b> daily log returns LN(P<sub>t</sub> / P<sub>t-1</sub>) over '+common.length+' aligned trading days; a sample covariance matrix across every pair; beta = COV(stock, market) / VAR(market); realized return = e<sup>sum of log returns</sup> - 1; CAPM required return = r<sub>f</sub> + beta (r<sub>market</sub> - r<sub>f</sub>) with the live 10 year Treasury at '+RTS.tenYear+' percent as the risk free rate; Jensen alpha = realized minus required; the pass test is the workbook conditional, alpha of at least zero AND beta no greater than the market. Portfolio variance is the double sum w<sub>i</sub>w<sub>j</sub>COV<sub>ij</sub>, annualized by 252 trading days; the Sharpe ratio divides excess return by that risk. Data: one year of daily closes per holding, fetched at your request, computed on this page, and never stored.';
     wrap.style.display='block';
   }catch(e){
-    $('t_anout').innerHTML='One of those tickers did not answer with enough history (check the symbol, foreign listings need their suffix, like MC.PA or 005930.KS). Nothing else on the page is affected.';
-    $('t_anwrap').style.display='block';$('t_antab').innerHTML='';$('t_anadv').innerHTML='';
+    $('t_anout').innerHTML='One of those tickers did not answer with enough history. Check the symbol spelling against your brokerage app (foreign listings need their suffix, like MC.PA or 005930.KS). Fix it and tap the button again; nothing else on the page is affected.';
+    $('t_anwrap').style.display='block';$('t_antab').innerHTML='';$('t_anadv').innerHTML='';$('t_anstats').innerHTML='';$('t_anlegend').innerHTML='';
   }
   runBtn.disabled=false;runBtn.textContent='Run the full analysis on these positions';
+});
+const sampleBtn=$('t_sample');
+if(sampleBtn)sampleBtn.addEventListener('click',()=>{
+  if(!posEl)return;
+  posEl.innerHTML='';
+  [['AAPL','10000'],['MSFT','10000'],['VTI','20000']].forEach(p=>{
+    addPos();
+    const r=posEl.lastChild;
+    r.querySelector('.p_tkr').value=p[0];
+    r.querySelector('.p_val').value=p[1];
+  });
+  tcalc();
+  if(runBtn){runBtn.style.display='';runBtn.click();}
 });
 
 /* the allocation lesson */
