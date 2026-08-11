@@ -1055,7 +1055,7 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
     v+=' <b>This is live:</b> computed seconds ago from '+common.length+' trading days of real closing prices, '+dfmt(common[0])+' to '+dfmt(common[common.length-1])+', fetched the moment you tapped the button and never stored. One year of history, illustrative only; past performance never guarantees future results. Flip <b>Advanced</b> (top right) and the full workbook table appears beside this season.';
     out.innerHTML=v;
     wrap.style.display='block';
-    requestAnimationFrame(syncAdv);
+    syncSoon();
   }catch(e){
     $('t_anout').innerHTML='One of those tickers did not answer with enough history. Check the symbol spelling against your brokerage app (foreign listings need their suffix, like MC.PA or 005930.KS). Fix it and tap the button again; nothing else on the page is affected.';
     $('t_anwrap').style.display='block';$('t_anstats').innerHTML='';
@@ -1105,7 +1105,9 @@ function syncAdv(){
     [...la.children].filter(el=>el.classList&&el.classList.contains('advline')).forEach(el=>{
       const anchorEl=el.id==='t_antech'?sec.querySelector('#t_anwrap'):sec.querySelector('.teeth');
       if(!anchorEl)return;
-      const aTop=anchorEl.getBoundingClientRect().top-la.getBoundingClientRect().top+la.scrollTop;
+      const aRect=anchorEl.getBoundingClientRect();
+      if(aRect.top===0&&aRect.height===0)return; /* anchor hidden right now: keep the last good position */
+      const aTop=aRect.top-la.getBoundingClientRect().top+la.scrollTop;
       let top=Math.max(0,Math.round(aTop));
       if(top<lastBottom+12)top=lastBottom+12;
       el.style.position='absolute';el.style.width='100%';el.style.top=top+'px';
@@ -1114,9 +1116,11 @@ function syncAdv(){
     });
   });
 }
-new MutationObserver(()=>requestAnimationFrame(syncAdv)).observe(document.body,{attributes:true,attributeFilter:['class']});
-window.addEventListener('resize',()=>requestAnimationFrame(syncAdv));
-setTimeout(syncAdv,600);
+function syncSoon(){syncAdv();setTimeout(syncAdv,350);}
+new MutationObserver(syncSoon).observe(document.body,{attributes:true,attributeFilter:['class']});
+window.addEventListener('resize',syncSoon);
+if(window.ResizeObserver){const rz=new ResizeObserver(syncSoon);document.querySelectorAll('.teeth').forEach(t=>rz.observe(t));const aw=document.getElementById('t_anwrap');if(aw)rz.observe(aw);}
+setTimeout(syncSoon,600);
 
 /* the allocation lesson */
 const allocEl=$('t_alloc');
@@ -1310,7 +1314,7 @@ function tcalc(){
     o4.innerHTML='<b>Your seasons so far:</b> '+parts.join(', ')+'.'+(T.docs<6?' The fastest way to change this picture is not a bigger portfolio, it is the missing documents in Winter.':' The documents are done, which puts you ahead of most millionaires.')+(tools.length?' <b>Based on what you have told the guide, the toolbox to read first:</b> '+tools.join('; ')+'. Every one of these is built out with live numbers in the <a href="capstone.html"><b>Capstone guide</b></a>.':'')+' Estate tax only enters the story above the federal exclusion, and the whiteboard in Harvest shows that math with your net worth. Everything below that line is about control, protection, and kindness, which cost almost nothing.';
     if(a4)a4.innerHTML='<b>Under the hood:</b> live inputs are the 10 year Treasury ('+RTS.tenYear+' percent, '+RTS.tenYearDate+'), the Section 7520 rate ('+RTS.rate7520+' percent for '+RTS.rate7520Month+')'+(RTS.sp500?', and the S&P 500 benchmark ('+RTS.sp500.toLocaleString()+', trailing year '+RTS.sp500Return1y+' percent)':'')+', refreshed weekly by an automated pipeline. The trust architecture above the exclusion, credit shelter, QTIP, QPRT, CRT, and ILIT, lives in the Capstone guide with the same engines.';
   }
-  requestAnimationFrame(syncAdv);
+  syncSoon();
 }
 tcalc();
 })();
