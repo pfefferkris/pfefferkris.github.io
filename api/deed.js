@@ -18,8 +18,13 @@ export default async function handler(req, res) {
 
   const raw = (req.query.address || "").toString().trim();
   const county = (req.query.county || "").toString().trim().toUpperCase().replace(/[^A-Z ]/g, "").slice(0, 30);
-  const street = raw.split(",")[0].toUpperCase().replace(/[^A-Z0-9 ]/g, "").replace(/\s+/g, " ").trim().slice(0, 60);
-  if (street.length < 6 || !/\d/.test(street)) {
+  const full = raw.split(",")[0].toUpperCase().replace(/[^A-Z0-9 ]/g, "").replace(/\s+/g, " ").trim().slice(0, 60);
+  // match on house number + street NAME only: parcel data abbreviates suffixes (DRIVE vs DR)
+  const toks = full.split(" ").filter(Boolean);
+  const SUFFIX = new Set(["ST","STREET","DR","DRIVE","RD","ROAD","AVE","AVENUE","LN","LANE","CT","COURT","CIR","CIRCLE","BLVD","BOULEVARD","WAY","PL","PLACE","TRL","TRAIL","PKWY","PARKWAY","HWY","HIGHWAY","TER","TERRACE","LOOP","RUN"]);
+  while (toks.length > 2 && SUFFIX.has(toks[toks.length - 1])) toks.pop();
+  const street = toks.join(" ");
+  if (street.length < 5 || !/^\d/.test(street)) {
     return res.status(400).json({ error: "send a street address" });
   }
 
