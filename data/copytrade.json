@@ -7,13 +7,98 @@
       "key": "pelosi",
       "label": "Grade the Pelosi style mix",
       "desc": "Inspired by Rep. Nancy Pelosi's publicly disclosed holdings per mid 2026 filings: AI heavy technology.",
-      "positions": [["NVDA", 30000], ["AVGO", 15000], ["GOOGL", 15000], ["AAPL", 10000], ["AMZN", 10000], ["PANW", 10000], ["VST", 5000], ["TEM", 5000]]
+      "positions": [
+        [
+          "NVDA",
+          30000
+        ],
+        [
+          "AVGO",
+          15000
+        ],
+        [
+          "GOOGL",
+          15000
+        ],
+        [
+          "AAPL",
+          10000
+        ],
+        [
+          "AMZN",
+          10000
+        ],
+        [
+          "PANW",
+          10000
+        ],
+        [
+          "VST",
+          5000
+        ],
+        [
+          "TEM",
+          5000
+        ]
+      ]
     },
     {
       "key": "top2025",
       "label": "Grade the 2025 top performers mix",
       "desc": "A blend echoing the highest returning 2025 congressional disclosures: GE and GE Vernova (Davidson, +78.8%), Goldman Sachs (Cruz), NVIDIA (Suozzi), Microsoft (Gottheimer).",
-      "positions": [["GE", 25000], ["GEV", 15000], ["GS", 20000], ["NVDA", 25000], ["MSFT", 15000]]
+      "positions": [
+        [
+          "GE",
+          25000
+        ],
+        [
+          "GEV",
+          15000
+        ],
+        [
+          "GS",
+          20000
+        ],
+        [
+          "NVDA",
+          25000
+        ],
+        [
+          "MSFT",
+          15000
+        ]
+      ]
+    },
+    {
+      "key": "aschenbrenner",
+      "label": "Grade the AI infrastructure mix (Aschenbrenner style)",
+      "desc": "Inspired by the disclosed long book of Situational Awareness LP, Leopold Aschenbrenner's fund, per its Q1 2026 13F: the bet that AI's second order beneficiaries, power, data centers, memory, are still underpriced. The real fund also carries large hedging put positions that no copy app can copy, which is itself a lesson.",
+      "positions": [
+        [
+          "BE",
+          27000
+        ],
+        [
+          "SNDK",
+          22000
+        ],
+        [
+          "CRWV",
+          17000
+        ],
+        [
+          "IREN",
+          12000
+        ],
+        [
+          "CORZ",
+          12000
+        ],
+        [
+          "APLD",
+          10000
+        ]
+      ]
     }
   ]
 }
