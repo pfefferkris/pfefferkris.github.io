@@ -823,6 +823,16 @@ const BLOCKS=[
    <label>Street address<input type="text" id="t_addr" placeholder="123 Main St, Raleigh, NC" autocomplete="off"></label>
    <label>&nbsp;<button class="tbtn" id="t_pull" type="button">Pull the record</button></label>
  </div><div class="tout" id="t_out2">The lookup reads the current value estimate AND the last recorded sale from public property records, then computes your basis and capital appreciation for you. The address goes only to the records provider and is never stored.</div>
+ <p class="tsub" style="margin-top:14px"><b>Now read the deed like a title examiner.</b> Look at the top of page one, right after the word TO: the names, and HOW they hold the property. Those few words decide whether this home ever sees a courtroom. Tap what your deed says.</p>
+ <div class="docck" id="t_title">
+  <span data-t="sole">One name alone</span>
+  <span data-t="jtwros">Joint tenants with right of survivorship</span>
+  <span data-t="tbe">A married couple together</span>
+  <span data-t="tic">Tenants in common, or no survivorship words</span>
+  <span data-t="trust">A trust or trustee</span>
+  <span data-t="life">A life estate deed</span>
+ </div>
+ <div class="tout" id="t_titleout" style="display:none"></div>
  <div class="advline" id="t_deedcard" data-anchor="#t_out2"></div>
  <div class="advline" id="t_adv2"></div>`},
 {q:'Help me understand what would need to happen for your family if you were not here tomorrow.',
@@ -920,6 +930,11 @@ function restoreSession(){try{
 ['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon','t_retage','t_rsal','t_wage'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',tcalc);});
 const docEl=$('t_docs');
 if(docEl)docEl.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{s.classList.toggle('on');tcalc();}));
+const titleEl=$('t_title');
+if(titleEl)titleEl.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{
+  titleEl.querySelectorAll('span').forEach(x=>{if(x!==s)x.classList.remove('on');});
+  s.classList.toggle('on');tcalc();
+}));
 const footWire=$('t_foot');
 if(footWire)footWire.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{s.classList.toggle('on');tcalc();}));
 const debtsEl=$('t_debts');
@@ -1270,7 +1285,7 @@ function syncAdv(){
       const aTop=aRect.top-la.getBoundingClientRect().top+la.scrollTop;
       let top=Math.max(0,Math.round(aTop));
       if(top<lastBottom+12)top=lastBottom+12;
-      el.style.position='absolute';el.style.width='100%';el.style.top=top+'px';
+      el.style.position='absolute';el.style.width=el.id==='t_deedcard'?'122%':'100%';el.style.top=top+'px';
       el.classList.add('synced');
       lastBottom=top+el.offsetHeight;
     });
@@ -1354,13 +1369,32 @@ if(pull)pull.addEventListener('click',async()=>{
           const pu=n=>'/api/deed-image?county='+encodeURIComponent(ck)+'&book='+encodeURIComponent(dd.book)+'&page='+encodeURIComponent(dd.page)+'&n='+n;
           const probe=await fetch(pu(1),{method:'GET'}).then(r4=>r4.ok).catch(()=>false);
           if(probe){
-            card.innerHTML+='<div id="t_deedpdf" style="margin-top:10px"><embed src="'+pu(1)+'" type="application/pdf" style="width:100%;height:460px;border-radius:10px;background:#fff"></embed>'+
-              '<div style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:.7rem"><button class="addrow" type="button" id="t_dpprev" style="margin-top:0">&#8592; Page</button><span id="t_dpn">Document page 1</span><button class="addrow" type="button" id="t_dpnext" style="margin-top:0">Page &#8594;</button><span style="margin-left:auto;color:var(--muted)">Served live from the '+(dd.county||'county')+' County Register of Deeds imaging system</span></div></div>';
-            let dpn=1;
-            const upd=()=>{const em=card.querySelector('#t_deedpdf embed');if(em)em.src=pu(dpn);const lb=card.querySelector('#t_dpn');if(lb)lb.textContent='Document page '+dpn;};
-            const pb=card.querySelector('#t_dpprev'),nb=card.querySelector('#t_dpnext');
+            const pun=(b,g,n)=>'/api/deed-image?county='+encodeURIComponent(ck)+'&book='+encodeURIComponent(b)+'&page='+encodeURIComponent(g)+'&n='+n;
+            card.innerHTML+='<div id="t_deedpdf" style="margin-top:10px">'+
+              '<div style="font-size:.72rem;margin-bottom:6px"><b>Chain of custody:</b> <span id="t_chain"></span></div>'+
+              '<embed src="'+pu(1)+'" type="application/pdf" style="width:100%;height:640px;border-radius:10px;background:#fff"></embed>'+
+              '<div style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:.7rem;flex-wrap:wrap"><button class="addrow" type="button" id="t_dpprev" style="margin-top:0">&#8592; Page</button><span id="t_dpn">Document page 1</span><button class="addrow" type="button" id="t_dpnext" style="margin-top:0">Page &#8594;</button><span style="margin-left:auto;color:var(--muted)">Served live from the '+(dd.county||'county')+' County Register of Deeds imaging system</span></div>'+
+              '<div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:.72rem;line-height:1.5"><b>Walk the chain backward.</b> Every deed cites its ancestor. Find the derivation clause, usually BEING THE SAME PROPERTY CONVEYED BY DEED RECORDED IN BOOK ___, PAGE ___, type it here, and the prior deed loads in this same viewer. Four or five hops is a real title search taking shape.'+
+              '<div style="display:flex;gap:6px;align-items:end;margin-top:6px"><label style="font-size:.62rem">Book<input type="text" id="t_cb" style="width:80px;padding:6px;border:1px solid var(--line);border-radius:8px"></label><label style="font-size:.62rem">Page<input type="text" id="t_cp" style="width:80px;padding:6px;border:1px solid var(--line);border-radius:8px"></label><button class="addrow" type="button" id="t_cgo" style="margin-top:0">Follow the chain &#8592;</button></div></div></div>';
+            let dpn=1,cur={b:dd.book,g:dd.page};
+            const chain=[{b:dd.book,g:dd.page}];
+            const drawChain=()=>{const el=card.querySelector('#t_chain');if(!el)return;
+              el.innerHTML=chain.map((c,i)=>'<a href="#" data-ci="'+i+'" style="'+(c.b===cur.b&&c.g===cur.g?'font-weight:800;color:var(--navy)':'')+'">'+c.b+'/'+c.g+'</a>').join(' &#8592; ');
+              el.querySelectorAll('a').forEach(a2=>a2.addEventListener('click',ev=>{ev.preventDefault();const c=chain[+a2.dataset.ci];cur=c;dpn=1;upd();drawChain();}));};
+            const upd=()=>{const em=card.querySelector('#t_deedpdf embed');if(em)em.src=pun(cur.b,cur.g,dpn);const lb=card.querySelector('#t_dpn');if(lb)lb.textContent='Document page '+dpn+' &#183; Book '+cur.b+' Page '+cur.g;};
+            const pb=card.querySelector('#t_dpprev'),nb=card.querySelector('#t_dpnext'),cg=card.querySelector('#t_cgo');
             if(pb)pb.addEventListener('click',()=>{if(dpn>1){dpn--;upd();}});
             if(nb)nb.addEventListener('click',()=>{dpn++;upd();});
+            if(cg)cg.addEventListener('click',async()=>{
+              const b=(card.querySelector('#t_cb').value||'').replace(/[^0-9]/g,''),g=(card.querySelector('#t_cp').value||'').replace(/[^0-9]/g,'');
+              if(!b||!g)return;
+              cg.textContent='Pulling...';
+              const ok2=await fetch(pun(b,g,1)).then(r5=>r5.ok).catch(()=>false);
+              cg.textContent='Follow the chain ←';
+              if(ok2){cur={b:b,g:g};if(!chain.some(c=>c.b===b&&c.g===g))chain.push({b:b,g:g});dpn=1;upd();drawChain();syncSoon();}
+              else{const lb=card.querySelector('#t_dpn');if(lb)lb.textContent='No image answered at Book '+b+' Page '+g+' (older books may live in a different image set at the county site).';}
+            });
+            drawChain();
           }
         }
         syncSoon();
@@ -1538,8 +1572,26 @@ function tcalc(){
     } else if(fee>0){fo.style.display='block';fo.innerHTML='Add your retirement balance and monthly savings above and the fee drag computes in dollars.';}
     else fo.style.display='none';
   }
+  const to2=$('t_titleout');
+  if(to2&&titleEl){
+    const sel=titleEl.querySelector('span.on');
+    if(sel){
+      const t=sel.dataset.t;
+      const M={
+        sole:'<b>One name alone.</b> This home rides through <b>probate</b>: at death it follows the will (or, with no will, the intestacy formula) through the public court process, months of it, before anyone can sell or refinance. The fixes are in this guide: a revocable trust holding title (no probate, incapacity covered), or checking whether your state offers a transfer on death deed. Winter&#8217;s documents decide how gentle this road is.',
+        jtwros:'<b>Joint tenants with right of survivorship.</b> Here is the part most people never realize: <b>this deed IS the estate plan for this house.</b> At the first death the survivor owns it all, automatically, OUTSIDE probate, no court, no will involved: the deed beats the will. Two cautions. The LAST survivor still needs a plan, because survivorship only works once. And in a blended family, survivorship can quietly disinherit one side&#8217;s children, because the survivor takes everything and their plan controls from there. In North Carolina the survivorship words must actually appear in the deed; without them, you are tenants in common.',
+        tbe:'<b>Tenants by the entirety</b>, the married couple form, and North Carolina&#8217;s quiet gift to spouses: survivorship (outside probate at the first death) PLUS creditor armor, because a creditor of only one spouse generally cannot touch the home at all. It only exists during the marriage, and it only works once: at the first death the survivor holds alone, back on the one-name road above.',
+        tic:'<b>Tenants in common.</b> Each owner holds a separate slice, and each slice goes through <b>probate under its own owner&#8217;s will</b>. No survivorship: a co-owner&#8217;s share passes to their heirs, who become your new co-owners whether anyone chose them or not. This is the form inherited property usually lands in, and it carries partition risk: any co-owner can force a court sale of the whole property. Family land deserves better containers; the toolbox below has them.',
+        trust:'<b>Titled in a trust.</b> The chassis is working: no probate, because the trust never dies; incapacity covered, because the successor trustee steps in; privacy kept, because no court file opens. One examiner&#8217;s check: the deed should name the trustee and the trust exactly (trustee name, trust name, and its date), and property bought AFTER the trust was signed must also be deeded IN, the classic miss that sends one asset through probate anyway.',
+        life:'<b>A life estate deed.</b> The owner kept the right to live there for life, and the remainder passes automatically at death, OUTSIDE probate, to the named remaindermen. The enhanced version (the Lady Bird deed, where the owner also reserves the power to sell, gift, mortgage, and keep the proceeds) keeps full control for life while still skipping probate. Read the reservation paragraph carefully: the difference between a plain and an enhanced life estate is exactly what powers the owner kept.'
+      };
+      let tm=M[t]||'';
+      tm+='<br><br><b>And one more examiner&#8217;s truth: a clean deed is not a clean title.</b> Liens, deeds of trust, judgments, and unpaid taxes do not live on the deed; they live in the county INDEX, recorded against each owner&#8217;s name. A real title search walks both directions: the chain of deeds backward in time (the walker sits beside this season under Advanced), and the index forward for anything recorded against each owner that was never cancelled. The uncancelled deed of trust from two owners ago is the classic cloud. Searching the index is free at the county site; a title attorney and title insurance are how closings make it safe.';
+      to2.style.display='block';to2.innerHTML=tm;
+    } else to2.style.display='none';
+  }
   const a2=$('t_adv2');
-  if(a2)a2.innerHTML='<b>The law:</b> inherited assets take a date of death basis under IRC Section 1014 (the step up); lifetime gifts carry the donor basis under Section 1015. Keep living in a home you gave away and Section 2036 can pull the full date of death value back into your estate. Titling controls before either: survivorship and beneficiary deeds move property outside the will entirely.';
+  if(a2)a2.innerHTML='<b>The law:</b> inherited assets take a date of death basis under IRC Section 1014 (the step up); lifetime gifts carry the donor basis under Section 1015. Keep living in a home you gave away and Section 2036 can pull the full date of death value back into your estate. Titling controls before either: survivorship and beneficiary deeds move property outside the will entirely. <b>Titling law, North Carolina:</b> survivorship between non spouses exists only if the deed expressly says so (NCGS 41-2 area); a conveyance to a married couple is presumed tenancy by the entirety; tenants in common face partition under Chapter 46A. <b>Reading a deed, the examiner&#8217;s pass:</b> the recording stamp and instrument number (top of page one); the granting words, WARRANT means the seller guarantees title, QUITCLAIM means whatever I have, if anything, common in family transfers; the parties and how they hold; the legal description (lot, block, plat book and page, which outranks the street address); the derivation clause citing the PRIOR book and page, which is the link in the chain; every SUBJECT TO line, where easements, restrictions, and reservations live; and the notary block that made it recordable.';
   const o3=$('t_out3'),m=$('t_meter'),a3=$('t_adv3');
   if(o3&&m){
     m.style.width=(T.docs/6*100)+'%';
