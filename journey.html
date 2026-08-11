@@ -674,6 +674,7 @@ body.adv .advline{display:block;animation:pop .5s ease both}
 .teeth .tcard .fitlb{display:inline-block;margin-top:6px;font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#2e6b4f}
 .teeth .tcard .whyln{display:none;font-size:.7rem;line-height:1.45;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);color:var(--ink)}
 body.adv .teeth .tcard .whyln{display:block}
+.teeth .tcard .num{display:block;margin-top:7px;padding-top:7px;border-top:1px dashed rgba(46,107,79,.4);font-size:.73rem;line-height:1.45;font-weight:700;color:#2e6b4f}
 @media(max-width:900px){.advline{max-width:100%}}
 </style>
 <script>
@@ -895,12 +896,41 @@ const TRUSTS=[
  ['Intentionally defective grantor trust','biz','Freeze + discount','You pay the trust’s income tax as an extra tax free gift, and can sell appreciating business interests to it with no gain recognized.','Why: the business owner’s freeze. Sell at today’s value, often discounted for lack of control and marketability, and every tax bill you pay for the trust is another invisible gift.']
 ];
 function nwRead(){const el=document.getElementById('nw');if(!el)return 0;return +((el.value||'').replace(/[^0-9.]/g,''))||0;}
-function renderTG(flags,exposed){
+
+/* the actuarial engine, same mortality table and rules as the case study */
+const LX={20:98500,25:98100,30:97600,35:97000,40:96200,45:95000,50:93200,55:90700,60:87100,65:81900,70:74500,75:64100,80:50700,85:34800,90:19100,95:7600,100:1900};
+function lx(a){a=Math.max(20,Math.min(100,a));const lo=Math.min(95,Math.floor(a/5)*5),hi=Math.min(100,lo+5);const f=(a-lo)/5;return LX[lo]+(LX[hi]-LX[lo])*f;}
+function pSurvive(age,term){return lx(age+term)/lx(age);}
+function lifeExp(age){let s=0;for(let t=1;t<=100-age;t++){s+=lx(age+t)/lx(age);}return s+0.5;}
+function qprtTermCap(age){return Math.max(2,Math.min(20,Math.floor(lifeExp(age))));}
+function qprtFactor(age,term){const r=(RTS.rate7520||5.2)/100;return Math.pow(1+r,-term)*pSurvive(age,term);}
+
+/* live dollar lines on the cards that fit, computed from what the guide already knows */
+function trustNum(name,ctx){
+  if(name==='Revocable living trust'&&ctx.nwv>0){
+    const fees=Math.min(6000,ctx.nwv*0.004),comm=ctx.nwv*0.05;
+    return 'With '+tfmt(ctx.nwv)+' riding through probate, up to '+tfmt(fees+comm)+' of court costs and commissions never leave the family, and the file stays private.';}
+  if(name==='Credit shelter trust'){
+    const gr=fv(15000000,20,rf())-15000000;
+    return 'Locking the $15M exclusion at the first death shelters about '+tfmt(gr)+' of growth over 20 years even at the risk free floor, roughly '+tfmt(gr*0.4)+' of tax that portability would have surrendered.';}
+  if(name==='QPRT'&&ctx.age&&ctx.homeVal){
+    const term=qprtTermCap(ctx.age),f=qprtFactor(ctx.age,term),gift=ctx.homeVal*f,mort=1-pSurvive(ctx.age,term);
+    return 'At age '+ctx.age+' the mortality table caps the term at '+term+' years: the '+tfmt(ctx.homeVal)+' home reports a gift of just '+tfmt(gift)+' ('+Math.round(f*100)+' percent of value), against a '+Math.round(mort*100)+' percent chance of not surviving the term and losing the freeze.';}
+  if(name==='GRAT'){
+    const spread=fv(1000000,10,LONGRUN/100)-fv(1000000,10,(RTS.rate7520||5.2)/100);
+    return 'Per $1M funded: growth beyond the '+(RTS.rate7520||5.2)+' percent hurdle moves about '+tfmt(spread)+' to family over 10 years at the long run average, sparing roughly '+tfmt(spread*0.4)+' from the 40 percent.';}
+  if(name==='ILIT'&&ctx.exposed){
+    return 'At '+tfmt(ctx.nwv)+', roughly '+tfmt((ctx.nwv-15000000)*0.4)+' of estate tax comes due in cash at month nine. The trust owned death benefit pays it from outside the estate, and is itself untaxed.';}
+  return '';
+}
+function renderTG(flags,exposed,nwv){
   const g=$('t_tgrid');if(!g)return;
+  const ctx={nwv:nwv||0,exposed:!!exposed,age:T.age,homeVal:T.homeVal};
   g.innerHTML=TRUSTS.map(t=>{
     const tag=t[1];
     const fit=tag==='base'||(tag==='exposed'&&exposed)||flags.indexOf(tag)>-1;
-    return '<div class="tcard'+(fit?' fit':'')+'"><span class="cat">'+t[2]+'</span><h4>'+t[0]+'</h4><p>'+t[3]+'</p><div class="whyln">'+t[4]+'</div>'+(fit?'<span class="fitlb">Fits your profile</span>':'')+'</div>';
+    const num=fit?trustNum(t[0],ctx):'';
+    return '<div class="tcard'+(fit?' fit':'')+'"><span class="cat">'+t[2]+'</span><h4>'+t[0]+'</h4><p>'+t[3]+'</p><div class="whyln">'+t[4]+'</div>'+(num?'<span class="num">'+num+'</span>':'')+(fit?'<span class="fitlb">Fits your profile</span>':'')+'</div>';
   }).join('');
 }
 const nwWatch=document.getElementById('nw');
@@ -1058,7 +1088,7 @@ function tcalc(){
     }
     if(T.homeVal&&T.homeBasis&&(T.homeVal-T.homeBasis)>250000)tools.push('a QPRT candidacy check, because the home is carrying '+tfmt(T.homeVal-T.homeBasis)+' of appreciation a residence trust can freeze');
     if(T.pos&&T.pos.length&&T.pos.some(p=>p.val/T.pos.reduce((s,x)=>s+x.val,0)>0.10))tools.push('a charitable remainder trust look at the concentrated stock position, diversification without the immediate gains bill');
-    renderTG(flags,exposed);
+    renderTG(flags,exposed,nwv);
     o4.innerHTML='<b>Your seasons so far:</b> '+parts.join(', ')+'.'+(T.docs<6?' The fastest way to change this picture is not a bigger portfolio, it is the missing documents in Winter.':' The documents are done, which puts you ahead of most millionaires.')+(tools.length?' <b>Based on what you have told the guide, the toolbox to read first:</b> '+tools.join('; ')+'. Every one of these is built out with live numbers in the <a href="capstone.html"><b>Capstone guide</b></a>.':'')+' Estate tax only enters the story above the federal exclusion, and the whiteboard in Harvest shows that math with your net worth. Everything below that line is about control, protection, and kindness, which cost almost nothing.';
     if(a4)a4.innerHTML='<b>Under the hood:</b> live inputs are the 10 year Treasury ('+RTS.tenYear+' percent, '+RTS.tenYearDate+'), the Section 7520 rate ('+RTS.rate7520+' percent for '+RTS.rate7520Month+')'+(RTS.sp500?', and the S&P 500 benchmark ('+RTS.sp500.toLocaleString()+', trailing year '+RTS.sp500Return1y+' percent)':'')+', refreshed weekly by an automated pipeline. The trust architecture above the exclusion, credit shelter, QTIP, QPRT, CRT, and ILIT, lives in the Capstone guide with the same engines.';
   }
