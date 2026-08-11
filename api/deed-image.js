@@ -27,11 +27,15 @@ async function tryDirect(url) {
 // Drive the county's public Logan/Blazor imaging viewer to make it generate the PDF.
 async function generateViaViewer(base, book, page) {
   // a container recycled from an older deployment can hold a half-extracted
-  // /tmp/chromium without its shared libraries; sweep it so the pack re-extracts
+  // /tmp/chromium without its shared libraries; sweep unless libnss3 is really there
   try {
     const fs = await import("fs");
-    const libsPresent = fs.existsSync("/tmp/al2023") || fs.existsSync("/tmp/lib") || fs.existsSync("/tmp/aws");
-    if (fs.existsSync("/tmp/chromium") && !libsPresent) fs.rmSync("/tmp/chromium", { force: true, recursive: true });
+    const hasNss = ["/tmp/al2023", "/tmp/lib", "/tmp/aws/lib"].some(d => {
+      try { return fs.readdirSync(d).some(f => f.indexOf("libnss3") === 0); } catch (e) { return false; }
+    });
+    if (!hasNss) ["/tmp/chromium", "/tmp/al2023", "/tmp/lib", "/tmp/swiftshader"].forEach(p => {
+      try { fs.rmSync(p, { force: true, recursive: true }); } catch (e) {}
+    });
   } catch (e) {}
   const chromium = (await import("@sparticuz/chromium-min")).default;
   const puppeteer = await import("puppeteer-core");
@@ -119,7 +123,12 @@ export default async function handler(req, res) {
       const buf = await generateViaViewer(c.base, book, page);
       if (buf) return send(buf);
     } catch (e) {
-      return res.status(404).json({ error: "no image at that book and page", detail: String(e && e.message || e).slice(0, 400) });
+      let diag = "";
+      try {
+        const fs = await import("fs");
+        diag = " tmp=" + fs.readdirSync("/tmp").join(",").slice(0, 200) + " ld=" + (process.env.LD_LIBRARY_PATH || "").slice(0, 200);
+      } catch (e2) {}
+      return res.status(404).json({ error: "no image at that book and page", detail: String(e && e.message || e).slice(0, 300) + diag });
     }
   }
   return res.status(404).json({ error: "no image at that book and page" });
