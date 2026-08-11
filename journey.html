@@ -734,7 +734,10 @@ const GLOSS={
  alpha:'Return beyond what the risk level demanded. Positive alpha means the holding earned MORE than its risk required. Negative alpha means you were not paid for the risk you carried.',
  sharpe:'Return earned per unit of risk taken, the single best one number grade for a portfolio. Compare yours to the market: higher means you are being paid better for your worry.',
  sigma:'Standard deviation: how wildly the value swings around its own average. Bigger sigma, bumpier ride.',
- capm:'The return the market DEMANDS for a given level of risk. A holding earning less than CAPM asks was not worth its risk.'
+ capm:'The return the market DEMANDS for a given level of risk. A holding earning less than CAPM asks was not worth its risk.',
+ replacement:'The percent of your final working year salary that keeps arriving after you retire. Planners aim for roughly 70 to 80 percent; Social Security typically covers about 40 for an average earner, and your savings must carry the rest.',
+ fourpct:'A rule of thumb: withdraw about 4 percent of the nest egg in year one of retirement, adjust for inflation after, and the money has historically outlived the retiree. Multiply the nest egg by 0.04 for a sustainable first year income.',
+ expratio:'The yearly fee a fund charges, quietly subtracted from returns. An index fund charges around 0.05 percent; many active funds charge ten times that for results that usually trail the benchmark.'
 };
 function gl(key,txt){return '<span class="gl" data-g="'+key+'">'+txt+'<span class="glpop">'+GLOSS[key]+'</span></span>';}
 document.addEventListener('click',e=>{
@@ -758,31 +761,39 @@ const BLOCKS=[
  <div class="tout" id="t_out0">Fill in what you know. Everything stays on this page and is never stored or sent anywhere.</div>
  <div class="advline" id="t_adv0"></div>`},
 {q:'Help me understand how your money is working, and what it is actually invested in.',
- sub:'The engine season. Wealth grows in layers of assets: cash for the near goals, funds and stocks for the long ones, retirement accounts with their own rules, the home (Harvest reads its public record below), sometimes a business. Start with the two numbers that show where the current road ends, then measure the market traded layer with real data.',
- body:`<div class="trow">
+ sub:'The engine season, run like a fund review. Wealth grows in layers of assets: cash for the near goals, funds and stocks for the long ones, retirement accounts with their own rules, the home (Harvest reads its public record below), sometimes a business. Three steps: project the road, grade what you own, then ask if it will be enough.',
+ body:`<p class="tsub" style="margin-top:4px"><b>STEP 1 · Where the current road ends.</b> Two numbers, one projection at the risk free floor and one near the long run market average.</p>
+ <div class="trow">
    <label>Retirement balance today<input type="number" id="t_bal" placeholder="60000"></label>
    <label>You save monthly<input type="number" id="t_mon" placeholder="800"></label>
  </div><div class="tout" id="t_out1">Add your balance and monthly savings to project the harvest.</div>
- <p class="tsub" style="margin-top:14px">Do you also hold individual stocks, your own picks, company shares, or something a parent handed down? List them and the guide runs the same analysis a portfolio manager would. Each holding goes in by its <b>ticker symbol</b>, the short code your brokerage app prints next to every position: Apple is AAPL, Microsoft is MSFT, a total market fund like Vanguard Total Stock Market is VTI. Then the rough dollar value you hold. Not sure yet? Tap the sample portfolio and watch it work first.</p>
+ <p class="tsub" style="margin-top:18px"><b>STEP 2 · Grade what you actually own.</b> Do you hold individual stocks, your own picks, company shares, or something a parent handed down? Each holding goes in by its <b>ticker symbol</b>, the short code your brokerage app prints next to every position: Apple is AAPL, Microsoft is MSFT, a total market fund like Vanguard Total Stock Market is VTI. Start typing and pick from the list. Then the rough dollar value you hold. Not sure yet? Tap a sample and watch it work first.</p>
  <datalist id="t_tkrlist">
-  <option value="AAPL">Apple</option><option value="MSFT">Microsoft</option><option value="GOOGL">Alphabet (Google)</option><option value="AMZN">Amazon</option><option value="NVDA">NVIDIA</option><option value="META">Meta (Facebook)</option><option value="TSLA">Tesla</option><option value="BRK-B">Berkshire Hathaway</option><option value="JPM">JPMorgan Chase</option><option value="V">Visa</option><option value="MA">Mastercard</option><option value="JNJ">Johnson &amp; Johnson</option><option value="UNH">UnitedHealth</option><option value="LLY">Eli Lilly</option><option value="XOM">Exxon Mobil</option><option value="WMT">Walmart</option><option value="COST">Costco</option><option value="PG">Procter &amp; Gamble</option><option value="KO">Coca-Cola</option><option value="PEP">PepsiCo</option><option value="HD">Home Depot</option><option value="MCD">McDonalds</option><option value="DIS">Disney</option><option value="NFLX">Netflix</option><option value="AMD">AMD</option><option value="INTC">Intel</option><option value="BA">Boeing</option><option value="CAT">Caterpillar</option><option value="F">Ford</option><option value="GM">General Motors</option><option value="T">AT&amp;T</option><option value="VZ">Verizon</option><option value="PFE">Pfizer</option><option value="NKE">Nike</option><option value="VTI">Vanguard Total Stock Market fund</option><option value="VOO">Vanguard S&amp;P 500 fund</option><option value="SPY">SPDR S&amp;P 500 fund</option><option value="QQQ">Invesco Nasdaq 100 fund</option><option value="SCHD">Schwab Dividend fund</option><option value="VXUS">Vanguard International fund</option><option value="BND">Vanguard Total Bond fund</option>
+  <option value="AAPL">Apple</option><option value="MSFT">Microsoft</option><option value="GOOGL">Alphabet (Google)</option><option value="AMZN">Amazon</option><option value="NVDA">NVIDIA</option><option value="META">Meta (Facebook)</option><option value="TSLA">Tesla</option><option value="BRK-B">Berkshire Hathaway</option><option value="JPM">JPMorgan Chase</option><option value="V">Visa</option><option value="MA">Mastercard</option><option value="JNJ">Johnson &amp; Johnson</option><option value="UNH">UnitedHealth</option><option value="LLY">Eli Lilly</option><option value="XOM">Exxon Mobil</option><option value="WMT">Walmart</option><option value="COST">Costco</option><option value="PG">Procter &amp; Gamble</option><option value="KO">Coca-Cola</option><option value="PEP">PepsiCo</option><option value="HD">Home Depot</option><option value="MCD">McDonalds</option><option value="DIS">Disney</option><option value="NFLX">Netflix</option><option value="AMD">AMD</option><option value="INTC">Intel</option><option value="BA">Boeing</option><option value="CAT">Caterpillar</option><option value="F">Ford</option><option value="GM">General Motors</option><option value="T">AT&amp;T</option><option value="VZ">Verizon</option><option value="PFE">Pfizer</option><option value="NKE">Nike</option><option value="GE">GE Aerospace</option><option value="GEV">GE Vernova</option><option value="GS">Goldman Sachs</option><option value="PANW">Palo Alto Networks</option><option value="AVGO">Broadcom</option><option value="VST">Vistra</option><option value="TEM">Tempus AI</option><option value="VTI">Vanguard Total Stock Market fund</option><option value="VOO">Vanguard S&amp;P 500 fund</option><option value="SPY">SPDR S&amp;P 500 fund</option><option value="QQQ">Invesco Nasdaq 100 fund</option><option value="SCHD">Schwab Dividend fund</option><option value="VXUS">Vanguard International fund</option><option value="BND">Vanguard Total Bond fund</option>
  </datalist>
  <div id="t_pos"></div>
  <button class="addrow" id="t_addpos" type="button">+ Add a position</button>
  <button class="addrow" id="t_sample" type="button">Show me with a sample portfolio</button>
- <button class="addrow" id="t_famous" type="button">Autopilot check: grade a famous copy trade mix</button>
- <p class="tsub" style="margin-top:6px;font-size:.68rem">The copy trade button loads a mix inspired by publicly disclosed congressional trading filings, the kind the copy trading apps follow. It is nobody&#8217;s actual portfolio, and the point is the grade: even a famous following gets judged by risk taken, not headlines.</p>
+ <span id="t_presets"></span>
+ <p class="tsub" style="margin-top:6px;font-size:.68rem">The copy trade buttons load mixes inspired by publicly disclosed congressional trading filings, the kind the copy trading apps follow, refreshed quarterly. Nobody&#8217;s actual portfolio. The point is the grade: in 2025 only about a third of congressional portfolios beat the S&amp;P 500.</p>
  <div class="tout" id="t_outp" style="display:none"></div>
  <button class="tbtn" id="t_run" type="button" style="display:none;margin-top:10px">Run the full analysis on these positions</button>
  <div id="t_anwrap" style="display:none">
   <div class="anstats" id="t_anstats"></div>
   <div class="tout" id="t_anout"></div>
  </div>
- <p class="tsub" style="margin-top:16px">Three lessons the curriculum teaches every future trust officer, live:</p>
+ <p class="tsub" style="margin-top:18px"><b>STEP 3 · Will it be enough to retire on?</b> The prospectus method: project the nest egg, turn it into income, and compare it to your final working year of pay. That percentage is your ${gl('replacement','replacement rate')}, and it is the number retirement planning actually optimizes.</p>
+ <div class="trow">
+   <label>Retire at age<input type="number" id="t_retage" value="65" min="45" max="80"></label>
+   <label>Salary today<input type="number" id="t_rsal" placeholder="from Spring, or type it"></label>
+   <label>Raises per year (%)<input type="number" id="t_wage" value="3" step="0.5"></label>
+ </div>
+ <div class="tout" id="t_ret">Add your age (Spring), salary, balance and monthly savings, and the replacement rate computes here.</div>
+ <p class="tsub" style="margin-top:18px"><b>The three ideas behind every grade above.</b></p>
  <div class="lesson"><b>1. The hedge lesson.</b> Start at 100 percent stocks, then slide a hedge asset into the mix and watch what happens to risk and efficiency. The classroom case happens to use gold, but this is NOT about buying gold: it is the reason balanced portfolios hold bonds, and why the classic mix is stocks plus something that zigs when stocks zag.
   <label style="margin-top:8px">Hedge asset in the portfolio: <span id="t_goldpct">0</span>%<input type="range" id="t_gold" min="0" max="40" step="5" value="0" style="width:100%;margin-top:4px"></label>
   <div class="tout" id="t_goldout"></div></div>
- <div class="lesson"><b>2. The fee lesson.</b> What does the expense ratio quietly cost over a working lifetime?
+ <div class="lesson"><b>2. The fee lesson.</b> What does the ${gl('expratio','expense ratio')} quietly cost over a working lifetime?
   <div class="trow"><label>Fund expense ratio (%)<input type="number" id="t_fee" step="0.05" min="0" max="3" placeholder="0.75"></label></div>
   <div class="tout" id="t_feeout" style="display:none"></div></div>
  <div class="lesson"><b>3. The allocation lesson.</b> Pop quiz: what explains over 90 percent of the difference in returns between portfolios?
@@ -866,7 +877,7 @@ const railIO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){c
 stages.forEach(s=>railIO.observe(s));
 
 const $=id=>document.getElementById(id);
-['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',tcalc);});
+['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon','t_retage','t_rsal','t_wage'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',tcalc);});
 const docEl=$('t_docs');
 if(docEl)docEl.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{s.classList.toggle('on');tcalc();}));
 
@@ -972,8 +983,9 @@ function renderTG(flags,exposed,nwv){
     return '<div class="tcard'+(fit?' fit':'')+'"><span class="cat">'+t[2]+'</span><h4>'+t[0]+'</h4><p>'+t[3]+'</p><div class="whyln">'+t[4]+'</div>'+(num?'<span class="num">'+num+'</span>':'')+(fit?'<span class="fitlb">Fits your profile</span>':'')+'</div>';
   }).join('');
 }
+let nwSelf=false;
 const nwWatch=document.getElementById('nw');
-if(nwWatch)nwWatch.addEventListener('input',()=>setTimeout(tcalc,0));
+if(nwWatch)nwWatch.addEventListener('input',()=>{if(!nwSelf)nwWatch.dataset.auto='0';setTimeout(tcalc,0);});
 
 /* ===== THE FULL ANALYSIS: the Week 7 advanced investment workbook, cloned and run live =====
    Pipeline, exactly as the spreadsheet: daily closes -> log returns -> covariance matrix ->
@@ -1035,13 +1047,15 @@ if(runBtn)runBtn.addEventListener('click',async()=>{
       '<div style="margin-top:8px"><b>The machinery, straight from the Week 7 workbook of the advanced investment course:</b> daily log returns LN(P<sub>t</sub> / P<sub>t-1</sub>) over '+common.length+' aligned trading days; a sample covariance matrix across every pair; beta = COV(stock, market) / VAR(market); realized return = e<sup>sum of log returns</sup> - 1; CAPM required return = r<sub>f</sub> + beta (r<sub>market</sub> - r<sub>f</sub>) with the live 10 year Treasury at '+RTS.tenYear+' percent; Jensen alpha = realized minus required; portfolio variance is the double sum w<sub>i</sub>w<sub>j</sub>COV<sub>ij</sub>, annualized by 252 trading days.</div>';
     const best=[...rows].sort((a,b)=>b.alpha-a.alpha)[0];
     const worst=[...rows].sort((a,b)=>a.alpha-b.alpha)[0];
-    let v='It sounds like the portfolio earned '+anPct(pReal)+' over the year the market returned '+anPct(mktReal)+'. But raw return is never the grade. ';
-    v+='The '+gl('benchmark','benchmark')+' Sharpe ratio, return earned per unit of risk taken, is '+mSharpe.toFixed(2)+', and yours is <b>'+pSharpe.toFixed(2)+'</b>: '+(pSharpe>=mSharpe?'you were paid MORE per unit of risk than the market paid, which is what skill, or good diversification, looks like.':'you carried more risk per unit of reward than the market required. The market would have paid you the same or better for less worry.')+' ';
-    if(rows.length>1)v+='<b>'+best.s+'</b> earned its keep with '+anPct(best.alpha)+' of alpha, return beyond what CAPM demands for its beta of '+best.beta.toFixed(2)+'.'+(worst.alpha<0?' <b>'+worst.s+'</b> fell '+anPct(worst.alpha)+' short of what its risk level required: the market rate for beta '+worst.beta.toFixed(2)+' was '+anPct(worst.capm)+', and it delivered '+anPct(worst.real)+'.':'');
-    else v+=(rows[0].alpha>=0?'A positive alpha means the return beat what CAPM demands for that level of market risk.':'A negative alpha means the risk taken was not paid for: the same market exposure via an index fund earned more.');
-    v+=' <b>This is live:</b> computed seconds ago from '+common.length+' trading days of real closing prices, '+dfmt(common[0])+' to '+dfmt(common[common.length-1])+', fetched the moment you tapped the button and never stored. Every figure is one year of history, illustrative only, and past performance never guarantees future results. Flip <b>Advanced</b> (top right) and the full workbook table appears beside this season, holding by holding.';
+    const heavy2=rows.filter(r=>r.w>0.10&&rows.length>1);
+    let v='<b>Performance.</b> It sounds like the portfolio earned '+anPct(pReal)+' over the year the market returned '+anPct(mktReal)+'. But raw return is never the grade: the '+gl('sharpe','Sharpe ratio')+' asks what you were PAID for the risk, and yours is <b>'+pSharpe.toFixed(2)+'</b> against the market at '+mSharpe.toFixed(2)+', '+(pSharpe>=mSharpe?'so this mix is earning its risk budget.':'so the market would have paid the same or better for less worry.')+' ';
+    if(rows.length>1)v+='<b>'+best.s+'</b> earned its keep with '+anPct(best.alpha)+' of '+gl('alpha','alpha')+(worst.alpha<0?'; <b>'+worst.s+'</b> fell '+anPct(worst.alpha)+' short of what its risk demanded.':'.')+' ';
+    v+='<b>Risk shape.</b> The whole rides at '+gl('beta','beta')+' '+pBeta.toFixed(2)+' with '+(pSd*100).toFixed(0)+' percent swings'+(heavy2.length?', and the weight is concentrated: '+heavy2.map(r=>'<span class="flagbad">'+r.s+' is '+Math.round(r.w*100)+' percent</span>').join(', ')+' of everything. Concentration is unsystematic risk, the kind the market pays nothing extra for, and diversification removes for free.':', with no single position dominating, which is the shape diversification is supposed to have.')+' ';
+    v+='<b>The recommendation, the way the prospectus writes one: budget the risk.</b> '+(pSharpe>=mSharpe&&!heavy2.length?'Hold the discipline: keep costs at index fund levels (lesson 2), keep the hedge seat filled (lesson 1), and let the allocation do the work (lesson 3).':heavy2.length?'The first move is not a better stock pick, it is spreading the concentrated weight so the same return costs less worry; the hedge lesson below shows the mechanism, and a low '+gl('basis','basis')+' position can diversify through a charitable remainder trust without the capital gains bill.':'Own the market before trying to beat it: broad index exposure at index fund costs, the hedge seat filled, and the allocation lesson below carrying the load.')+' Step 3 below turns this same engine into your retirement answer.';
+    v+=' <b>This is live:</b> computed seconds ago from '+common.length+' trading days of real closing prices, '+dfmt(common[0])+' to '+dfmt(common[common.length-1])+', fetched the moment you tapped the button and never stored. One year of history, illustrative only; past performance never guarantees future results. Flip <b>Advanced</b> (top right) and the full workbook table appears beside this season.';
     out.innerHTML=v;
     wrap.style.display='block';
+    requestAnimationFrame(syncAdv);
   }catch(e){
     $('t_anout').innerHTML='One of those tickers did not answer with enough history. Check the symbol spelling against your brokerage app (foreign listings need their suffix, like MC.PA or 005930.KS). Fix it and tap the button again; nothing else on the page is affected.';
     $('t_anwrap').style.display='block';$('t_anstats').innerHTML='';
@@ -1063,8 +1077,46 @@ function loadPreset(list){
 }
 const sampleBtn=$('t_sample');
 if(sampleBtn)sampleBtn.addEventListener('click',()=>loadPreset([['AAPL','10000'],['MSFT','10000'],['VTI','20000']]));
-const famousBtn=$('t_famous');
-if(famousBtn)famousBtn.addEventListener('click',()=>loadPreset([['NVDA','25000'],['AVGO','15000'],['MSFT','15000'],['GOOGL','15000'],['PANW','10000'],['VST','10000']]));
+/* copy trade presets load from data/copytrade.json, refreshed quarterly from public STOCK Act disclosures */
+fetch('data/copytrade.json').then(r=>r.json()).then(ct=>{
+  const holder=$('t_presets');if(!holder||!ct.presets)return;
+  ct.presets.forEach(ps=>{
+    const b=document.createElement('button');b.type='button';b.className='addrow';b.textContent=ps.label;b.title=ps.desc;
+    b.addEventListener('click',()=>loadPreset(ps.positions.map(x=>[String(x[0]),String(x[1])])));
+    holder.appendChild(b);
+  });
+}).catch(()=>{
+  const holder=$('t_presets');if(!holder)return;
+  const b=document.createElement('button');b.type='button';b.className='addrow';b.textContent='Autopilot check: grade a famous copy trade mix';
+  b.addEventListener('click',()=>loadPreset([['NVDA','25000'],['AVGO','15000'],['MSFT','15000'],['GOOGL','15000'],['PANW','10000'],['VST','10000']]));
+  holder.appendChild(b);
+});
+
+/* SITE RULE: advanced tiles stay laterally in sync with the simple block they explain */
+function syncAdv(){
+  if(window.innerWidth<=900){
+    document.querySelectorAll('.advline.synced').forEach(el=>{el.style.position='';el.style.top='';el.style.width='';el.classList.remove('synced');});
+    return;
+  }
+  document.querySelectorAll('.stage').forEach(sec=>{
+    const la=sec.querySelector('.lane-a');if(!la)return;
+    la.style.position='relative';
+    let lastBottom=0;
+    [...la.children].filter(el=>el.classList&&el.classList.contains('advline')).forEach(el=>{
+      const anchorEl=el.id==='t_antech'?sec.querySelector('#t_anwrap'):sec.querySelector('.teeth');
+      if(!anchorEl)return;
+      const aTop=anchorEl.getBoundingClientRect().top-la.getBoundingClientRect().top+la.scrollTop;
+      let top=Math.max(0,Math.round(aTop));
+      if(top<lastBottom+12)top=lastBottom+12;
+      el.style.position='absolute';el.style.width='100%';el.style.top=top+'px';
+      el.classList.add('synced');
+      lastBottom=top+el.offsetHeight;
+    });
+  });
+}
+new MutationObserver(()=>requestAnimationFrame(syncAdv)).observe(document.body,{attributes:true,attributeFilter:['class']});
+window.addEventListener('resize',()=>requestAnimationFrame(syncAdv));
+setTimeout(syncAdv,600);
 
 /* the allocation lesson */
 const allocEl=$('t_alloc');
@@ -1165,6 +1217,40 @@ function tcalc(){
   }
   const rb=$('t_run');
   if(rb)rb.style.display=(T.pos&&T.pos.some(p=>p.tkr&&p.val>0))?'':'none';
+  /* STEP 3: the prospectus method, replacement rate */
+  const ro=$('t_ret');
+  if(ro){
+    const rAge=+($('t_retage')&&$('t_retage').value)||65;
+    const rsal=+($('t_rsal')&&$('t_rsal').value)||T.salary||0;
+    if($('t_rsal')&&!$('t_rsal').value&&T.salary)$('t_rsal').placeholder=T.salary.toLocaleString()+' (from Spring)';
+    const wage=(+($('t_wage')&&$('t_wage').value)||3)/100;
+    if(T.age&&rsal&&(T.retBal!==null||T.monthly!==null)){
+      const y2=Math.max(1,rAge-T.age);
+      const nestF2=fv(T.retBal||0,y2,rf())+fvStream((T.monthly||0)*12,y2,rf());
+      const nestB2=fv(T.retBal||0,y2,LONGRUN/100)+fvStream((T.monthly||0)*12,y2,LONGRUN/100);
+      const finalSal=rsal*Math.pow(1+wage,y2);
+      const repF=nestF2*0.04/finalSal, repB=nestB2*0.04/finalSal;
+      let r='Retiring at '+rAge+', your final working year of pay projects to about <b>'+tfmt(finalSal)+'</b>. The nest egg turns into income by the '+gl('fourpct','four percent rule')+': at the floor that is '+tfmt(nestF2*0.04)+' a year, a '+gl('replacement','replacement rate')+' of <span class="big">'+Math.round(repF*100)+'%</span>; near the long run average, '+tfmt(nestB2*0.04)+' a year, or <span class="big">'+Math.round(repB*100)+'%</span>. Social Security typically adds roughly 40 points for an average earner. ';
+      const eff=repB+0.4;
+      if(eff>=0.8)r+='<b>It sounds like the road you are on arrives.</b> The plan now is protecting it: fees, concentration, and the Winter documents.';
+      else r+='<b>It sounds like the replacement rate comes up short of the 70 to 80 percent planners target.</b> The prospectus answer is one of two levers, and only two: a more aggressive savings strategy, or a later retirement age. Nudge the monthly savings in Step 1 or the age above and watch this number move.';
+      ro.innerHTML=r;
+    } else ro.innerHTML='Add your age (Spring), salary, balance and monthly savings, and the replacement rate computes here.';
+  }
+  /* the family net worth tile assembles from the seasons */
+  const nwT=document.getElementById('nw');
+  if(nwT){
+    const posTot=T.pos.reduce((s,p)=>s+p.val,0);
+    let sum=0;const layers=[];
+    if(T.homeVal){sum+=T.homeVal;layers.push('home '+tfmt(T.homeVal));}
+    if(T.retBal){sum+=T.retBal;layers.push('retirement '+tfmt(T.retBal));}
+    if(posTot){sum+=posTot;layers.push('brokerage '+tfmt(posTot));}
+    T.nwLayers=layers;T.nwSum=sum;
+    if(sum>0&&(nwT.value===''||nwT.dataset.auto==='1')){
+      const newV=Math.round(sum).toLocaleString();
+      if(nwT.value!==newV){nwT.dataset.auto='1';nwSelf=true;nwT.value=newV;nwT.dispatchEvent(new Event('input'));nwSelf=false;}
+    }
+  }
   const fo=$('t_feeout');
   if(fo){
     const fee=+($('t_fee')&&$('t_fee').value)||0;
@@ -1224,6 +1310,7 @@ function tcalc(){
     o4.innerHTML='<b>Your seasons so far:</b> '+parts.join(', ')+'.'+(T.docs<6?' The fastest way to change this picture is not a bigger portfolio, it is the missing documents in Winter.':' The documents are done, which puts you ahead of most millionaires.')+(tools.length?' <b>Based on what you have told the guide, the toolbox to read first:</b> '+tools.join('; ')+'. Every one of these is built out with live numbers in the <a href="capstone.html"><b>Capstone guide</b></a>.':'')+' Estate tax only enters the story above the federal exclusion, and the whiteboard in Harvest shows that math with your net worth. Everything below that line is about control, protection, and kindness, which cost almost nothing.';
     if(a4)a4.innerHTML='<b>Under the hood:</b> live inputs are the 10 year Treasury ('+RTS.tenYear+' percent, '+RTS.tenYearDate+'), the Section 7520 rate ('+RTS.rate7520+' percent for '+RTS.rate7520Month+')'+(RTS.sp500?', and the S&P 500 benchmark ('+RTS.sp500.toLocaleString()+', trailing year '+RTS.sp500Return1y+' percent)':'')+', refreshed weekly by an automated pipeline. The trust architecture above the exclusion, credit shelter, QTIP, QPRT, CRT, and ILIT, lives in the Capstone guide with the same engines.';
   }
+  requestAnimationFrame(syncAdv);
 }
 tcalc();
 })();

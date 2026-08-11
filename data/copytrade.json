@@ -1,0 +1,19 @@
+{
+  "updated": "2026-08-11",
+  "note": "Approximations assembled from public STOCK Act disclosure reporting. Illustrative mixes, not anyone's actual portfolio. Refreshed quarterly.",
+  "stat": "In 2025 only about a third of congressional portfolios beat the S&P 500.",
+  "presets": [
+    {
+      "key": "pelosi",
+      "label": "Grade the Pelosi style mix",
+      "desc": "Inspired by Rep. Nancy Pelosi's publicly disclosed holdings per mid 2026 filings: AI heavy technology.",
+      "positions": [["NVDA", 30000], ["AVGO", 15000], ["GOOGL", 15000], ["AAPL", 10000], ["AMZN", 10000], ["PANW", 10000], ["VST", 5000], ["TEM", 5000]]
+    },
+    {
+      "key": "top2025",
+      "label": "Grade the 2025 top performers mix",
+      "desc": "A blend echoing the highest returning 2025 congressional disclosures: GE and GE Vernova (Davidson, +78.8%), Goldman Sachs (Cruz), NVIDIA (Suozzi), Microsoft (Gottheimer).",
+      "positions": [["GE", 25000], ["GEV", 15000], ["GS", 20000], ["NVDA", 25000], ["MSFT", 15000]]
+    }
+  ]
+}
