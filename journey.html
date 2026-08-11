@@ -834,7 +834,6 @@ const BLOCKS=[
   <span data-t="life">A life estate deed</span>
  </div>
  <div class="tout" id="t_titleout" style="display:none"></div>
- <button class="tbtn" id="t_ocr" type="button" style="display:none;margin-top:10px">Read the deed FOR me (runs right here in your browser)</button>
  <div class="tout" id="t_ocrout" style="display:none"></div>
  <div class="advline wide" id="t_deedcard"></div>
  <div class="advline" id="t_adv2"></div>`},
@@ -860,9 +859,11 @@ document.querySelectorAll('.stage').forEach((sec,si)=>{
   const d=document.createElement('div');d.className='teeth glass';
   d.innerHTML='<p class="disc">'+BLOCKS[si].q+'</p><p class="tsub">'+BLOCKS[si].sub+'</p>'+BLOCKS[si].body;
   lane.appendChild(d);
-  /* the math and the law live in the LEFT lane with the other advanced tiles */
+  /* the math and the law live in the LEFT lane with the other advanced tiles;
+     in Harvest (si 2) the tile sits full width BELOW the whiteboard instead */
   const al=d.querySelector('#t_adv'+si),la=sec.querySelector('.lane-a');
-  if(al&&la)la.appendChild(al);
+  if(al&&si===2){al.classList.add('wide');sec.appendChild(al);}
+  else if(al&&la)la.appendChild(al);
   /* the full workbook table for the analysis also lives left, advanced only */
   if(si===1&&la){const td=document.createElement('div');td.className='advline';td.id='t_antech';td.style.maxWidth='100%';td.style.width='100%';la.appendChild(td);}
   if(la)d.querySelectorAll('.advline[data-anchor]').forEach(x=>la.appendChild(x));
@@ -1356,18 +1357,19 @@ function analyzeDeedText(txt){
   }
   return a;
 }
-const ocrBtn=$('t_ocr');
-if(ocrBtn)ocrBtn.addEventListener('click',async()=>{
-  if(OCRBUSY||!OCRCTX)return;
-  OCRBUSY=true;ocrBtn.disabled=true;
-  const oo=$('t_ocrout');oo.style.display='block';
+async function runTitleRead(){
+  const ctx=OCRCTX;
+  if(OCRBUSY||!ctx)return;
+  OCRBUSY=true;
+  const oo=$('t_ocrout');if(!oo){OCRBUSY=false;return;}
+  oo.style.display='block';
   let prog='';const say=m=>{prog+=(prog?'<br>':'')+m;oo.innerHTML=prog;syncSoon();};
   try{
-    say('Loading the reading engine (this runs entirely in your browser; the deed image never leaves your screen)...');
+    say('<b>Now reading your deed for you.</b> This happens entirely in your browser; the document never leaves your screen...');
     await loadOCR();
     const seen=new Set(),hops=[];
-    let cur={b:OCRCTX.book,g:OCRCTX.page};
-    const pu2=(b,g)=>'/api/deed-image?county='+encodeURIComponent(OCRCTX.ck)+'&book='+encodeURIComponent(b)+'&page='+encodeURIComponent(g)+'&n=1';
+    let cur={b:ctx.book,g:ctx.page};
+    const pu2=(b,g)=>'/api/deed-image?county='+encodeURIComponent(ctx.ck)+'&book='+encodeURIComponent(b)+'&page='+encodeURIComponent(g)+'&n=1';
     let nextRef=null;
     for(let hop=0;hop<5&&cur;hop++){
       const key=cur.b+'/'+cur.g;
@@ -1393,7 +1395,7 @@ if(ocrBtn)ocrBtn.addEventListener('click',async()=>{
     else if(a.form==='trust')be='<b>Does this behoove you? It already is working:</b> the chassis is on the road, no probate, incapacity covered, privacy kept. The examiner&#8217;s check is exact naming (trustee, trust, and its date) and remembering that anything bought AFTER the trust was signed must be deeded in too.';
     else if(a.form==='tic')be='<b>Attention:</b> tenants in common means each share probates separately under its own owner&#8217;s will, AND any co owner can force a partition sale of the whole property under Chapter 46A. If this is family land, the containers in the toolbox below are built for exactly this.';
     else if(a.form==='life')be='The remainder passes outside probate automatically at death. Read the reservation paragraph closely: if the owner kept the power to sell, gift, and mortgage, it is the enhanced (Lady Bird) version and they kept full control for life.';
-    else if(a.form==='entity')be=(chips.indexOf('biz')>=0?'<b>Does this behoove you? It matches your playbook:</b> you told me you own a business, and ':'')+'the examiner&#8217;s checks here: the operating agreement should say exactly where your membership interest goes at death, that interest should be coordinated with Winter&#8217;s documents (a will or trust can catch it), and know the trade: a home owned by your own company usually gives up the primary residence capital gain exclusion and can complicate homestead and insurance, so this container is built for rental and business property, not the house you live in.';
+    else if(a.form==='entity')be=(chips.indexOf('biz')>=0?'<b>Does this behoove you? It matches your playbook:</b> you told me you own a business, and this is exactly how business property gets titled. ':'')+'<b>The examiner&#8217;s checks:</b> the operating agreement should say exactly where your membership interest goes at death; that interest should be coordinated with Winter&#8217;s documents (a will or trust can catch it); and know the trade: a home owned by your own company usually gives up the primary residence capital gain exclusion and can complicate homestead and insurance, so this container is built for rental and business property, not the house you live in.';
     const ENTM='<b>Titled in a company.</b> The deed conveys this property to a business entity, an LLC or corporation, so the COMPANY owns it, not a person. That changes how it passes entirely: the real estate itself never probates, because a company never dies. What passes at your death is your MEMBERSHIP INTEREST in the company, and THAT follows your will, or your trust if the interest was assigned to it. Landlords and investors title this way on purpose, for liability separation: a lawsuit about the property stops at the company wall.';
     let v='<b>I read the deed for you.</b> Here is what the words on the recorded page actually mean:<br><br>'+(a.form==='entity'?ENTM:(TITLEM[a.form]||''));
     if(be)v+='<br><br>'+be;
@@ -1412,8 +1414,8 @@ if(ocrBtn)ocrBtn.addEventListener('click',async()=>{
   }catch(e){
     oo.innerHTML=prog+'<br>I could not finish reading this one, but the scanned deed sits under Advanced and the chip list above walks you through exactly what to look for at the top of page one.';
   }
-  ocrBtn.disabled=false;OCRBUSY=false;
-});
+  OCRBUSY=false;
+}
 
 /* the allocation lesson */
 const allocEl=$('t_alloc');
@@ -1431,7 +1433,7 @@ if(pull)pull.addEventListener('click',async()=>{
   const a=($('t_addr').value||'').trim();const out=$('t_out2');
   if(a.length<8){out.innerHTML='Type a full street address first, number, street, city.';return;}
   pull.disabled=true;pull.textContent='Reading the record...';
-  OCRCTX=null;const obr=$('t_ocr');if(obr)obr.style.display='none';const oor=$('t_ocrout');if(oor){oor.style.display='none';oor.innerHTML='';}
+  OCRCTX=null;const oor=$('t_ocrout');if(oor){oor.style.display='none';oor.innerHTML='';}
   try{
     const [v,p]=await Promise.all([
       fetch('/api/home-value?address='+encodeURIComponent(a)).then(r=>r.ok?r.json():null).catch(()=>null),
@@ -1487,37 +1489,40 @@ if(pull)pull.addEventListener('click',async()=>{
         card.innerHTML='<b>The recording itself, from the county GIS record:</b><br>'+(dd.book?'Book <span class="deedbig">'+dd.book+'</span> &nbsp;Page <span class="deedbig">'+dd.page+'</span>':dd.sourceRef)+(dd.recorded?'<br>Recorded '+dd.recorded:'')+(dd.legal?'<br><i>'+dd.legal+'</i>':'')+'<br>This is the exact book and page your home&#8217;s story lives under. '+link;
         /* the actual scanned deed, inline, when the county imaging system serves it */
         if(rod&&rod.pdf&&dd.book&&dd.page){
-          const pu=n=>'/api/deed-image?county='+encodeURIComponent(ck)+'&book='+encodeURIComponent(dd.book)+'&page='+encodeURIComponent(dd.page)+'&n='+n;
-          const probe=await fetch(pu(1),{method:'GET'}).then(r4=>r4.ok).catch(()=>false);
+          const pun=(b,g,n)=>'/api/deed-image?county='+encodeURIComponent(ck)+'&book='+encodeURIComponent(b)+'&page='+encodeURIComponent(g)+'&n='+n;
+          card.innerHTML+='<div id="t_deedwait" style="margin-top:10px;font-size:.72rem"><i>Pulling the scanned deed from the county imaging system... the first pull of a document can take up to a minute while the county generates it fresh.</i></div>';
+          syncSoon();
+          const probe=await fetch(pun(dd.book,dd.page,1),{method:'GET'}).then(r4=>r4.ok).catch(()=>false);
+          const dw=card.querySelector('#t_deedwait');if(dw)dw.remove();
           if(probe){
-            const pun=(b,g,n)=>'/api/deed-image?county='+encodeURIComponent(ck)+'&book='+encodeURIComponent(b)+'&page='+encodeURIComponent(g)+'&n='+n;
             OCRCTX={ck:ck,book:String(dd.book),page:String(dd.page),county:dd.county||'the'};
-            const ob=$('t_ocr');if(ob)ob.style.display='';
             card.innerHTML+='<div id="t_deedpdf" style="margin-top:10px">'+
-              '<div style="font-size:.72rem;margin-bottom:6px"><b>Chain of custody:</b> <span id="t_chain"></span></div>'+
-              '<embed src="'+pu(1)+'" type="application/pdf" style="width:100%;height:900px;border-radius:10px;background:#fff"></embed>'+
-              '<div style="display:flex;gap:8px;align-items:center;margin-top:6px;font-size:.7rem;flex-wrap:wrap"><button class="addrow" type="button" id="t_dpprev" style="margin-top:0">&#8592; Page</button><span id="t_dpn">Document page 1</span><button class="addrow" type="button" id="t_dpnext" style="margin-top:0">Page &#8594;</button><span style="margin-left:auto;color:var(--muted)">Served live from the '+(dd.county||'county')+' County Register of Deeds imaging system</span></div>'+
-              '<div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:.72rem;line-height:1.5"><b>Walk the chain backward.</b> Every deed cites its ancestor. Find the derivation clause, usually BEING THE SAME PROPERTY CONVEYED BY DEED RECORDED IN BOOK ___, PAGE ___, type it here, and the prior deed loads in this same viewer. Four or five hops is a real title search taking shape.'+
+              '<div style="font-size:.72rem;margin-bottom:6px"><b>Chain of custody:</b> <span id="t_chain"></span> <span id="t_dpn" style="color:var(--muted)"></span></div>'+
+              '<embed src="'+pun(dd.book,dd.page,1)+'" type="application/pdf" style="width:100%;height:900px;border-radius:10px;background:#fff"></embed>'+
+              '<div style="margin-top:6px;font-size:.7rem;color:var(--muted)">Served live from the '+(dd.county||'county')+' County Register of Deeds imaging system. Every recorded page of the document displays in this viewer; scroll inside it.</div>'+
+              '<div style="margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);font-size:.72rem;line-height:1.5"><b>Walk the chain backward.</b> Every deed cites its ancestor. Find the derivation clause, usually BEING THE SAME PROPERTY CONVEYED BY DEED RECORDED IN BOOK ___, PAGE ___, type it here, and the prior deed loads in this same viewer. Four or five hops is a real title search taking shape. (When the automatic reading below finds the citation, it fills these boxes for you.)'+
               '<div style="display:flex;gap:6px;align-items:end;margin-top:6px"><label style="font-size:.62rem">Book<input type="text" id="t_cb" style="width:80px;padding:6px;border:1px solid var(--line);border-radius:8px"></label><label style="font-size:.62rem">Page<input type="text" id="t_cp" style="width:80px;padding:6px;border:1px solid var(--line);border-radius:8px"></label><button class="addrow" type="button" id="t_cgo" style="margin-top:0">Follow the chain &#8592;</button></div></div></div>';
-            let dpn=1,cur={b:dd.book,g:dd.page};
-            const chain=[{b:dd.book,g:dd.page}];
+            let cur={b:String(dd.book),g:String(dd.page)};
+            const chain=[{b:String(dd.book),g:String(dd.page)}];
+            const upd=()=>{const em=card.querySelector('#t_deedpdf embed');if(em)em.src=pun(cur.b,cur.g,1);};
             const drawChain=()=>{const el=card.querySelector('#t_chain');if(!el)return;
               el.innerHTML=chain.map((c,i)=>'<a href="#" data-ci="'+i+'" style="'+(c.b===cur.b&&c.g===cur.g?'font-weight:800;color:var(--navy)':'')+'">'+c.b+'/'+c.g+'</a>').join(' &#8592; ');
-              el.querySelectorAll('a').forEach(a2=>a2.addEventListener('click',ev=>{ev.preventDefault();const c=chain[+a2.dataset.ci];cur=c;dpn=1;upd();drawChain();}));};
-            const upd=()=>{const em=card.querySelector('#t_deedpdf embed');if(em)em.src=pun(cur.b,cur.g,dpn);const lb=card.querySelector('#t_dpn');if(lb)lb.textContent='Document page '+dpn+' &#183; Book '+cur.b+' Page '+cur.g;};
-            const pb=card.querySelector('#t_dpprev'),nb=card.querySelector('#t_dpnext'),cg=card.querySelector('#t_cgo');
-            if(pb)pb.addEventListener('click',()=>{if(dpn>1){dpn--;upd();}});
-            if(nb)nb.addEventListener('click',()=>{dpn++;upd();});
+              el.querySelectorAll('a').forEach(a2=>a2.addEventListener('click',ev=>{ev.preventDefault();const c=chain[+a2.dataset.ci];cur=c;upd();drawChain();}));};
+            const cg=card.querySelector('#t_cgo');
             if(cg)cg.addEventListener('click',async()=>{
               const b=(card.querySelector('#t_cb').value||'').replace(/[^0-9]/g,''),g=(card.querySelector('#t_cp').value||'').replace(/[^0-9]/g,'');
               if(!b||!g)return;
               cg.textContent='Pulling...';
               const ok2=await fetch(pun(b,g,1)).then(r5=>r5.ok).catch(()=>false);
               cg.textContent='Follow the chain ←';
-              if(ok2){cur={b:b,g:g};if(!chain.some(c=>c.b===b&&c.g===g))chain.push({b:b,g:g});dpn=1;upd();drawChain();syncSoon();}
+              if(ok2){cur={b:b,g:g};if(!chain.some(c=>c.b===b&&c.g===g))chain.push({b:b,g:g});upd();drawChain();syncSoon();}
               else{const lb=card.querySelector('#t_dpn');if(lb)lb.textContent='No image answered at Book '+b+' Page '+g+' (older books may live in a different image set at the county site).';}
             });
             drawChain();
+            /* the whole point: the site now READS the deed automatically and tells the story */
+            runTitleRead();
+          } else {
+            card.innerHTML+='<div style="margin-top:10px;font-size:.72rem">The county imaging system did not answer for this document just now. The register link above still opens it the manual way, and the titling chips below the address tell you exactly what to look for on page one.</div>';
           }
         }
         syncSoon();

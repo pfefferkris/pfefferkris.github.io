@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/deed-image.js": {
+      "maxDuration": 60,
+      "memory": 1536
+    }
+  }
+}
