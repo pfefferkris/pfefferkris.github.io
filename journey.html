@@ -1395,14 +1395,15 @@ async function runTitleRead(){
     const seen=new Set(),hops=[];
     let cur={b:ctx.book,g:ctx.page};
     const pu2=(b,g)=>'/api/deed-image?county='+encodeURIComponent(ctx.ck)+'&book='+encodeURIComponent(b)+'&page='+encodeURIComponent(g)+'&n=1';
-    let nextRef=null;
+    let nextRef=null,unconfirmed=null;
     for(let hop=0;hop<5&&cur;hop++){
       const key=cur.b+'/'+cur.g;
       if(seen.has(key))break;
       seen.add(key);
       say((hop===0?'Reading the current deed':'Following the chain: reading the prior deed')+' at Book '+cur.b+', Page '+cur.g+'... (a scanned page takes a moment)');
       let text='';
-      try{text=await ocrPdf(pu2(cur.b,cur.g),hop===0?2:1);}catch(e){say('Could not read Book '+cur.b+' Page '+cur.g+' (older books can live in a different image set at the county).');break;}
+      try{text=await ocrPdf(pu2(cur.b,cur.g),hop===0?2:1);}
+      catch(e){if(hop>0)unconfirmed={b:cur.b,g:cur.g};say('I could not open Book '+cur.b+' Page '+cur.g+'. Scanned digits are the one thing this kind of reading gets wrong, so those numbers may be off by a character, and older books can live in a different image set at the county.');break;}
       const an=analyzeDeedText(text);
       hops.push({b:cur.b,g:cur.g,an:an});
       const prior=an.refs.find(r=>{
@@ -1460,10 +1461,11 @@ async function runTitleRead(){
     if(a.dot)notes.push('A <b>deed of trust</b> surfaced in the text, the mortgage security instrument. Every one must be cancelled of record at payoff; the uncancelled one from an owner ago is the classic cloud on title.');
     if(notes.length)v+='<br><br>'+notes.join('<br><br>');
     if(hops.length>1)v+='<br><br><b>The chain I walked:</b> '+hops.map(h=>'Book '+h.b+'/'+h.g).join(' &#8592; ')+'. Each deed cited the one before it, which is a real title search taking shape.';
-    if(nextRef)v+='<br><br>The oldest deed I read cites <b>Book '+nextRef.b+', Page '+nextRef.g+'</b> before it; I loaded those numbers into the chain walker under Advanced so you can keep going.';
+    if(unconfirmed)v+='<br><br>This deed cites an earlier recording, and I read it as <b>Book '+unconfirmed.b+', Page '+unconfirmed.g+'</b>, but the county had nothing there, which usually means I misread a digit off the scan. The derivation clause is the sentence beginning BEING THE SAME PROPERTY CONVEYED; read those two numbers off the document under Advanced and type them into the chain walker to keep going.';
+    else if(nextRef)v+='<br><br>The oldest deed I read cites <b>Book '+nextRef.b+', Page '+nextRef.g+'</b> before it; I loaded those numbers into the chain walker under Advanced so you can keep going.';
     v+='<br><br><b>One honest limit:</b> I read a scanned image with optical character recognition, so a faded stamp or an odd font can slip past me, and a clean deed is still not a clean title: liens and judgments live in the county INDEX, not on the deed. This is a reading lesson, not a legal opinion; closings use a title attorney and title insurance for a reason.';
     oo.innerHTML=v;
-    if(nextRef){const cb=document.querySelector('#t_cb'),cp=document.querySelector('#t_cp');if(cb)cb.value=nextRef.b;if(cp)cp.value=nextRef.g;}
+    if(nextRef&&!unconfirmed){const cb=document.querySelector('#t_cb'),cp=document.querySelector('#t_cp');if(cb)cb.value=nextRef.b;if(cp)cp.value=nextRef.g;}
     syncSoon();
   }catch(e){
     oo.innerHTML=prog+'<br>I could not finish reading this one, but the scanned deed sits under Advanced and the chip list above walks you through exactly what to look for at the top of page one.';
