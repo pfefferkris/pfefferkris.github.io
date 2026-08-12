@@ -32,10 +32,17 @@ export default async function handler(req, res) {
     const res0 = j.chart && j.chart.result && j.chart.result[0];
     if (!res0 || !res0.timestamp) return res.status(404).json({ error: "no data for symbol" });
     const ts = res0.timestamp;
-    const cl = (res0.indicators.quote[0] || {}).close || [];
+    const q = res0.indicators.quote[0] || {};
+    const cl = q.close || [];
     const points = ts.map((t, i) => [t, cl[i]]).filter(p => p[1] != null);
     if (points.length < 30) return res.status(404).json({ error: "not enough history" });
-    const out = { symbol: sym, currency: res0.meta.currency || null, points };
+    // Open/high/low/close for the candlestick pane. Same request, no extra call upstream.
+    // Rows where any leg is missing are dropped: a candle with a hole in it is worse than no candle.
+    const op = q.open || [], hi = q.high || [], lo = q.low || [];
+    const ohlc = ts
+      .map((t, i) => [t, op[i], hi[i], lo[i], cl[i]])
+      .filter(r => r[1] != null && r[2] != null && r[3] != null && r[4] != null);
+    const out = { symbol: sym, currency: res0.meta.currency || null, points, ohlc };
     cache.set(sym, { t: Date.now(), data: out });
     return res.status(200).json(out);
   } catch (e) {

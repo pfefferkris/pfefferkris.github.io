@@ -735,8 +735,44 @@ body.adv .teeth .tcard .whyln{display:block}
 .teeth .anstat i{display:block;font-style:normal;font-size:.68rem;color:var(--muted);margin-top:2px}
 .teeth .anlegend{font-size:.74rem;color:var(--ink);line-height:1.65;margin-top:10px;background:rgba(255,255,255,.5);border:1px dashed var(--line);border-radius:10px;padding:9px 13px}
 #t_anout .big{font-size:1em}
-.teeth .tvglass iframe{mix-blend-mode:multiply}
-.teeth .tvglass{margin-top:12px;height:380px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,rgba(255,255,255,.42),rgba(255,255,255,.18));backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.65);box-shadow:0 10px 30px rgba(18,41,63,.08)}
+/* ===== PORTFOLIO CHARTS =====
+   Two stacked panes, both canvases fully transparent so the page gradient is the
+   background. Companies are named ONCE, in the chip row, which is also the control:
+   the chips are the legend, and the only in-plot text is the direct label at the end
+   of each line. No boxed legend, no repeated axis symbols. */
+.teeth .tvglass{margin-top:12px;border-radius:14px;background:transparent;border:none;box-shadow:none;padding:0}
+.teeth .tvkey{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:10px 0 4px}
+.teeth .tvkey .kl{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.teeth .tvchip{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(18,41,63,.16);background:rgba(255,255,255,.55);border-radius:16px;padding:4px 11px 4px 8px;font-size:.76rem;font-weight:650;color:var(--ink);cursor:pointer;user-select:none;transition:background .2s,border-color .2s,box-shadow .2s}
+.teeth .tvchip .tvsw{width:12px;height:12px;border-radius:3px;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6)}
+.teeth .tvchip .tvsw.dash{border-radius:2px;height:4px;width:16px}
+.teeth .tvchip .pc{font-variant-numeric:tabular-nums;font-weight:700;font-size:.72rem}
+.teeth .tvchip.on{background:#fff;border-color:rgba(18,41,63,.42);box-shadow:0 3px 10px rgba(18,41,63,.13)}
+.teeth .tvchip.off{opacity:.42}
+.teeth .tvpane{position:relative;width:100%}
+.teeth #tv_p1{height:300px}
+.teeth #tv_p2{height:250px}
+@media(max-width:640px){.teeth #tv_p1{height:230px}.teeth #tv_p2{height:200px}}
+.teeth .tvpane .cv{width:100%;height:100%}
+.teeth .tvlabels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.teeth .tvlab{position:absolute;font-size:.68rem;font-weight:750;line-height:1.15;white-space:nowrap;padding:3px 6px;border-radius:5px;background:rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(18,41,63,.1);letter-spacing:.01em;transition:opacity .18s}
+.teeth .tvlab i{font-style:normal;font-variant-numeric:tabular-nums;opacity:.85;margin-left:4px}
+.teeth .tvtip{position:absolute;z-index:6;pointer-events:none;display:none;background:rgba(255,255,255,.96);border:1px solid rgba(18,41,63,.16);border-radius:9px;box-shadow:0 8px 22px rgba(18,41,63,.16);padding:8px 10px;font-size:.72rem;line-height:1.5;min-width:132px}
+.teeth .tvtip .dt{font-size:.6rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.teeth .tvtip .rw{display:flex;align-items:center;gap:6px;justify-content:space-between}
+.teeth .tvtip .rw span{display:flex;align-items:center;gap:5px}
+.teeth .tvtip .rw em{width:9px;height:9px;border-radius:2px;display:inline-block}
+.teeth .tvtip .rw b{font-variant-numeric:tabular-nums;font-weight:700}
+.teeth .tvhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin:16px 0 2px}
+.teeth .tvhead .ttl{font-family:Georgia,serif;font-size:.95rem;color:var(--navy);font-weight:700}
+.teeth .tvhead .sub{font-size:.7rem;color:var(--muted)}
+.teeth .tvhead .mv{font-size:.7rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.teeth .tvhead .mv b{color:var(--ink);font-variant-numeric:tabular-nums}
+.teeth .tvrange{display:inline-flex;gap:4px;margin-left:auto}
+.teeth .tvrange button{border:1px solid rgba(18,41,63,.16);background:rgba(255,255,255,.55);color:var(--muted);border-radius:14px;padding:3px 10px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit}
+.teeth .tvrange button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.teeth .tvnote{font-size:.66rem;color:var(--muted);margin-top:6px;line-height:1.5}
+@media(max-width:640px){.teeth .tvrange{margin-left:0;margin-top:4px}}
 .teeth .deedbig{font-family:Georgia,serif;font-size:1.5rem;color:var(--navy);font-weight:700}
 .advline.wide{max-width:none;width:auto;position:static;grid-column:1/-1;margin-top:22px}
 @media(max-width:900px){.advline{max-width:100%}}
@@ -1151,6 +1187,347 @@ async function anFetch(sym){
   return r.json();
 }
 const anPct=x=>(x>=0?'+':'')+(x*100).toFixed(1)+'%';
+/* ===== THE PORTFOLIO CHARTS =====
+   The old build was one TradingView embed carrying every holding as candles on a single
+   pane, with a white card behind it. Three things were wrong with that and all three are
+   fixed here.
+   1. Candle bodies OCCLUDE, they do not cross like lines do. Two companies at the same
+      date fight for the same pixel column and one of them simply loses. So the top pane
+      is lines and the bottom pane is candles for exactly ONE company at a time.
+   2. Raw price cannot be compared across companies. A $600 stock and a $30 stock on one
+      axis says nothing. The top pane is rebased so every line starts at 100, which is what
+      TradingView calls Indexed to 100 and what every professional platform defaults to for
+      a comparison.
+   3. The names were printed twice, once in the widget legend and again down the axis. Here
+      the companies are named ONCE in the chip row, which is also the control, plus a direct
+      label at the end of each line the way the FT and the Economist label a line chart.
+   Palette: Okabe Ito extended, validated all pairs for protanopia and deuteranopia against
+   both the cream and the tan stretch of the page gradient. Gray is reserved for the
+   benchmark and for muted lines and is never given to a holding. */
+const TVPAL=['#0072B2','#D55E00','#009E73','#CC79A7','#833250','#486304','#0132D9','#7960FB','#7900A7','#BF269E'];
+const TVBENCH='#5A6A78';
+const TVMUTE='rgba(90,106,120,.20)';
+const TVUP='#2E6B4F', TVDOWN='#8A3B2E';
+const TVGRID='rgba(18,41,63,.07)', TVAXIS='rgba(18,41,63,.16)';
+const TVSRC=['https://cdn.jsdelivr.net/npm/lightweight-charts@5.0.8/dist/lightweight-charts.standalone.production.js',
+             'https://unpkg.com/lightweight-charts@5.0.8/dist/lightweight-charts.standalone.production.js'];
+let TVLIB=null, TVSTATE=null;
+function tvLoad(){
+  if(TVLIB)return TVLIB;
+  TVLIB=new Promise((res,rej)=>{
+    if(window.LightweightCharts)return res(window.LightweightCharts);
+    let i=0;
+    const tryOne=()=>{
+      if(i>=TVSRC.length)return rej(new Error('chart library unreachable'));
+      const s=document.createElement('script');
+      s.src=TVSRC[i++]; s.async=true;
+      s.onload=()=>window.LightweightCharts?res(window.LightweightCharts):tryOne();
+      s.onerror=()=>tryOne();
+      document.head.appendChild(s);
+    };
+    tryOne();
+  });
+  return TVLIB;
+}
+const tvDay=t=>new Date(t*1000).toISOString().slice(0,10);
+const tvPct=v=>(v>=0?'+':'')+v.toFixed(1)+'%';
+const tvMoney=v=>'$'+v.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const tvNice=d=>new Date(d+'T00:00:00Z').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'});
+/* Weekly rollup. A candle needs about five pixels of width before the body and the wick are
+   two different things; below that the pane turns into a solid block and says nothing. When
+   the day count would cross that line for the pane we actually have, the days roll into
+   weeks: first open, highest high, lowest low, last close. */
+function tvWeekly(bars){
+  const out=[],by=new Map();
+  bars.forEach(b=>{
+    const d=new Date(b.time+'T00:00:00Z');
+    const dow=d.getUTCDay();
+    const mon=new Date(d); mon.setUTCDate(d.getUTCDate()-((dow+6)%7));
+    const k=mon.toISOString().slice(0,10);
+    if(!by.has(k)){by.set(k,{time:k,open:b.open,high:b.high,low:b.low,close:b.close});out.push(by.get(k));}
+    else{const a=by.get(k);a.high=Math.max(a.high,b.high);a.low=Math.min(a.low,b.low);a.close=b.close;}
+  });
+  return out;
+}
+function tvRender(rows,common,series,raw){
+  const host=document.getElementById('t_tv');
+  if(!host)return;
+  if(TVSTATE&&TVSTATE.destroy){try{TVSTATE.destroy();}catch(e){}}
+  TVSTATE=null;
+  /* One entry per holding, in the order he typed them, so a colour belongs to a company and
+     never moves when the weights change. The benchmark rides along in gray. */
+  const holds=rows.map((r,i)=>({
+    sym:r.s, w:r.w, color:TVPAL[i%TVPAL.length],
+    close:series[i],
+    ohlc:((raw[i]&&raw[i].ohlc)||[]).map(o=>({time:tvDay(o[0]),open:o[1],high:o[2],low:o[3],close:o[4]}))
+  }));
+  const bench={sym:'S&P 500',color:TVBENCH,close:series[series.length-1]};
+  const days=common.map(tvDay);
+  const start=days[0];
+  const rebase=arr=>days.map((d,k)=>({time:d,value:100*arr[k]/arr[0]}));
+  host.innerHTML=
+    '<div class="tvhead"><span class="ttl">How each holding actually travelled</span>'+
+      '<span class="sub">every line starts at 100 on '+tvNice(start)+', so the picture is percent gained or lost, not dollars of share price</span></div>'+
+    '<div class="tvkey" id="tv_key"><span class="kl">Tap a company to follow it</span></div>'+
+    '<div class="tvpane" id="tv_p1"><div class="cv" id="tv_c1"></div>'+
+      '<div class="tvlabels" id="tv_l1"></div><div class="tvtip" id="tv_t1"></div></div>'+
+    '<div class="tvhead"><span class="ttl" id="tv_ctitle">&#8212;</span><span class="mv" id="tv_cstat"></span>'+
+      '<span class="tvrange" id="tv_range"></span></div>'+
+    '<div class="tvpane" id="tv_p2"><div class="cv" id="tv_c2"></div><div class="tvtip" id="tv_t2"></div></div>'+
+    '<p class="tvnote">Top pane: the shape of the ride, all of them together. Bottom pane: one company at a time, '+
+      'as candlesticks, because candles cover each other up when you stack companies on one pane and you end up '+
+      'reading nothing. Each candle is one trading day (or one week once the window gets long enough that daily '+
+      'candles would be thinner than a hair): the body runs from the open to the close, green when the close '+
+      'finished above the open, and the thin wick above and below marks the highest and lowest the price traded '+
+      'that session. Hover anywhere for the numbers. Charts drawn with TradingView Lightweight Charts.</p>';
+  tvLoad().then(LWC=>{
+    const {createChart,LineSeries,CandlestickSeries,ColorType,LineStyle,CrosshairMode}=LWC;
+    const p1=document.getElementById('tv_p1'), p2=document.getElementById('tv_p2');
+    if(!p1||!p2)return;
+    const baseOpts=()=>({
+      layout:{background:{type:ColorType.Solid,color:'transparent'},textColor:'#4a5a68',fontSize:11,
+              fontFamily:'-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif'},
+      grid:{vertLines:{visible:false},horzLines:{color:TVGRID}},
+      rightPriceScale:{borderColor:TVAXIS,scaleMargins:{top:.12,bottom:.10}},
+      timeScale:{borderColor:TVAXIS,fixLeftEdge:true,fixRightEdge:true},
+      crosshair:{mode:CrosshairMode.Magnet,
+                 vertLine:{color:'rgba(18,41,63,.35)',width:1,style:LineStyle.Dotted,labelBackgroundColor:'#12293f'},
+                 horzLine:{color:'rgba(18,41,63,.28)',width:1,style:LineStyle.Dotted,labelBackgroundColor:'#12293f'}},
+      handleScroll:false,handleScale:false,autoSize:true
+    });
+    /* ---- PANE 1: the comparison ---- */
+    const o1=baseOpts();
+    o1.layout.attributionLogo=true;
+    o1.rightPriceScale.borderVisible=true;
+    o1.localization={priceFormatter:v=>tvPct(v-100)};
+    o1.timeScale.fixRightEdge=false;  /* the gutter below needs room past the last bar */
+    /* No horizontal crosshair line on the comparison pane: it would price only whichever line
+       the crosshair happened to snap to, and the tooltip already prints every one of them. */
+    o1.crosshair.horzLine={visible:false,labelVisible:false};
+    const c1=createChart(document.getElementById('tv_c1'),o1);
+    const sBench=c1.addSeries(LineSeries,{color:TVBENCH,lineWidth:2,lineStyle:LineStyle.Dashed,
+      priceLineVisible:false,lastValueVisible:false,crosshairMarkerRadius:3});
+    sBench.setData(rebase(bench.close));
+    sBench.createPriceLine({price:100,color:'rgba(18,41,63,.30)',lineWidth:1,lineStyle:LineStyle.Dotted,
+      axisLabelVisible:false,title:''});
+    const s1=holds.map(h=>{
+      const s=c1.addSeries(LineSeries,{color:h.color,lineWidth:2,priceLineVisible:false,
+        lastValueVisible:false,crosshairMarkerRadius:3});
+      s.setData(rebase(h.close));
+      return s;
+    });
+    /* A right gutter, sized in bars, so the direct labels land in clear space rather than
+       on top of the lines they are naming. This is how the FT and the Economist end a line chart. */
+    function gutter(){
+      const n=days.length;
+      const axis=c1.priceScale('right').width()||46;
+      const plot=Math.max(120,(p1.clientWidth||600)-axis);
+      const want=Math.min(0.22,Math.max(0.10,86/plot));
+      const bars=Math.round(n*want/(1-want));
+      c1.timeScale().setVisibleLogicalRange({from:-0.5,to:n-0.5+bars});
+    }
+    gutter();
+    /* ---- PANE 2: one company, candles ---- */
+    const o2=baseOpts();
+    o2.layout.attributionLogo=false;
+    o2.handleScroll=true; o2.handleScale=true;
+    o2.timeScale.fixLeftEdge=false; o2.timeScale.fixRightEdge=false;
+    const c2=createChart(document.getElementById('tv_c2'),o2);
+    const s2=c2.addSeries(CandlestickSeries,{upColor:TVUP,downColor:TVDOWN,borderUpColor:TVUP,
+      borderDownColor:TVDOWN,wickUpColor:TVUP,wickDownColor:TVDOWN,priceLineVisible:false,lastValueVisible:false});
+    /* The pale line is a 20 period moving average: the average close of the last 20 candles,
+       redrawn at every candle. It is the plainest way to see the trend under the daily noise. */
+    const sMA=c2.addSeries(LineSeries,{color:'rgba(18,41,63,.42)',lineWidth:1,priceLineVisible:false,
+      lastValueVisible:false,crosshairMarkerVisible:false});
+    /* ---- focus: colour the one you are following, mute the rest to gray ---- */
+    let focus=null, pick=holds.reduce((a,b)=>b.w>a.w?b:a,holds[0]).sym, rangeM=3;
+    const labWrap=document.getElementById('tv_l1');
+    function paint(){
+      holds.forEach((h,i)=>{
+        const dim=focus&&focus!==h.sym;
+        s1[i].applyOptions({color:dim?TVMUTE:h.color,lineWidth:(focus===h.sym?3:2)});
+      });
+      sBench.applyOptions({color:focus?TVMUTE:TVBENCH});
+      labWrap.querySelectorAll('.tvlab').forEach(el=>{
+        el.style.opacity=(focus&&el.dataset.sym!==focus)?'.25':'1';
+      });
+      document.querySelectorAll('#tv_key .tvchip').forEach(el=>{
+        el.classList.toggle('on',el.dataset.sym===pick);
+        el.classList.toggle('off',!!focus&&el.dataset.sym!==focus&&el.dataset.sym!=='');
+      });
+    }
+    /* ---- direct labels at the end of each line, the FT pattern, nudged apart so they never stack ---- */
+    function layoutLabels(){
+      gutter();
+      const h=p1.clientHeight;
+      const axis=c1.priceScale('right').width()||46;
+      const tight=((p1.clientWidth||600)-axis)<430;
+      const items=[];
+      holds.forEach((hd,i)=>{
+        const v=100*hd.close[hd.close.length-1]/hd.close[0];
+        const y=s1[i].priceToCoordinate(v);
+        if(y===null||y===undefined)return;
+        items.push({y:y,sym:hd.sym,color:hd.color,txt:tight?'':tvPct(v-100)});
+      });
+      const bv=100*bench.close[bench.close.length-1]/bench.close[0];
+      const by=sBench.priceToCoordinate(bv);
+      if(by!==null&&by!==undefined)items.push({y:by,sym:'',color:TVBENCH,txt:tight?'':tvPct(bv-100),name:tight?'S&P':'S&P 500'});
+      items.sort((a,b)=>a.y-b.y);
+      const GAP=21, top=2, bot=h-22;
+      for(let i=0;i<items.length;i++){
+        items[i].ly=Math.max(top,items[i].y-8);
+        if(i>0&&items[i].ly<items[i-1].ly+GAP)items[i].ly=items[i-1].ly+GAP;
+      }
+      for(let i=items.length-1;i>=0;i--){
+        if(items[i].ly>bot){items[i].ly=bot; if(i>0&&items[i-1].ly>items[i].ly-GAP)items[i-1].ly=items[i].ly-GAP;}
+      }
+      labWrap.innerHTML=items.map(it=>
+        '<div class="tvlab" data-sym="'+it.sym+'" style="right:'+(axis+6)+'px;top:'+it.ly+'px;color:'+it.color+'">'+
+        (it.name||it.sym)+(it.txt?'<i>'+it.txt+'</i>':'')+'</div>').join('');
+      paint();
+    }
+    /* ---- the chip row: the only place the companies are named, and the control ---- */
+    const key=document.getElementById('tv_key');
+    holds.forEach(h=>{
+      const v=100*h.close[h.close.length-1]/h.close[0]-100;
+      const b=document.createElement('button');
+      b.type='button'; b.className='tvchip'; b.dataset.sym=h.sym;
+      b.innerHTML='<span class="tvsw" style="background:'+h.color+'"></span>'+h.sym+
+                  '<span class="pc" style="color:'+(v>=0?TVUP:TVDOWN)+'">'+tvPct(v)+'</span>';
+      b.addEventListener('mouseenter',()=>{focus=h.sym;paint();});
+      b.addEventListener('mouseleave',()=>{focus=null;paint();});
+      b.addEventListener('click',()=>{pick=h.sym;drawCandles();paint();});
+      b.addEventListener('focus',()=>{focus=h.sym;paint();});
+      b.addEventListener('blur',()=>{focus=null;paint();});
+      key.appendChild(b);
+    });
+    const bchip=document.createElement('span');
+    bchip.className='tvchip'; bchip.dataset.sym=''; bchip.style.cursor='default';
+    const bv0=100*bench.close[bench.close.length-1]/bench.close[0]-100;
+    bchip.innerHTML='<span class="tvsw dash" style="background:'+TVBENCH+'"></span>S&amp;P 500'+
+                    '<span class="pc" style="color:'+(bv0>=0?TVUP:TVDOWN)+'">'+tvPct(bv0)+'</span>';
+    key.appendChild(bchip);
+    /* ---- range buttons for the candle pane ---- */
+    const rng=document.getElementById('tv_range');
+    [['1M',1],['3M',3],['6M',6],['1Y',12]].forEach(([lb,m])=>{
+      const b=document.createElement('button');
+      b.type='button'; b.textContent=lb; b.dataset.m=m;
+      b.addEventListener('click',()=>{rangeM=m;drawCandles();});
+      rng.appendChild(b);
+    });
+    function drawCandles(){
+      const h=holds.find(x=>x.sym===pick)||holds[0];
+      let bars=h.ohlc.slice();
+      if(!bars.length){
+        document.getElementById('tv_ctitle').textContent=h.sym;
+        document.getElementById('tv_cstat').textContent='No daily open and close data came back for this one.';
+        s2.setData([]); return;
+      }
+      const cut=new Date(); cut.setMonth(cut.getMonth()-rangeM);
+      const cutS=cut.toISOString().slice(0,10);
+      let win=bars.filter(b=>b.time>=cutS);
+      if(win.length<8)win=bars.slice(-8);
+      /* five pixels per candle is the floor. Past it, roll to weeks rather than draw mush. */
+      const wpx=p2.clientWidth-(c2.priceScale('right').width()||46);
+      let weekly=false;
+      if(win.length>Math.floor(wpx/5)){win=tvWeekly(win);weekly=true;}
+      s2.setData(win);
+      const P=20, ma=[];
+      for(let i=P-1;i<win.length;i++){
+        let t=0; for(let k=i-P+1;k<=i;k++)t+=win[k].close;
+        ma.push({time:win[i].time,value:t/P});
+      }
+      sMA.setData(ma.length>3?ma:[]);
+      c2.timeScale().fitContent();
+      const first=win[0], last=win[win.length-1];
+      const chg=100*(last.close-first.open)/first.open;
+      let peak=-Infinity, dd=0;
+      win.forEach(b=>{peak=Math.max(peak,b.high); dd=Math.min(dd,100*(b.low-peak)/peak);});
+      const t=document.getElementById('tv_ctitle');
+      t.textContent=h.sym+', day by day';
+      t.style.color=h.color;
+      document.getElementById('tv_cstat').innerHTML=
+        'last close <b>'+tvMoney(last.close)+'</b> &#183; over this window <b style="color:'+(chg>=0?TVUP:TVDOWN)+'">'+
+        tvPct(chg)+'</b> &#183; deepest drop from a high inside it <b style="color:'+TVDOWN+'">'+dd.toFixed(1)+
+        '%</b> &#183; '+(weekly?'one candle per week':'one candle per trading day')+
+        (ma.length>3?' &#183; the pale line is the 20 candle average':'');
+      rng.querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.m===rangeM));
+    }
+    /* ---- tooltips, and a crosshair that follows you from one pane to the other ---- */
+    const tip1=document.getElementById('tv_t1'), tip2=document.getElementById('tv_t2');
+    let syncing=false;
+    function place(tip,pane,x,y){
+      const w=tip.offsetWidth||140,h=tip.offsetHeight||60;
+      let L=x+16; if(L+w>pane.clientWidth-4)L=x-w-16; if(L<4)L=4;
+      let T=y-h-14; if(T<4)T=y+18; if(T+h>pane.clientHeight-4)T=pane.clientHeight-h-4;
+      tip.style.left=L+'px'; tip.style.top=T+'px';
+    }
+    c1.subscribeCrosshairMove(param=>{
+      if(!param.time||!param.point||param.point.x<0){tip1.style.display='none';return;}
+      const items=[];
+      holds.forEach((hd,i)=>{
+        const d=param.seriesData.get(s1[i]);
+        if(d)items.push({sym:hd.sym,color:hd.color,v:d.value-100});
+      });
+      const bd=param.seriesData.get(sBench);
+      items.sort((a,b)=>b.v-a.v);
+      if(bd)items.push({sym:'S&P 500',color:TVBENCH,v:bd.value-100});
+      tip1.innerHTML='<div class="dt">'+tvNice(param.time)+'</div>'+items.map(it=>
+        '<div class="rw"><span><em style="background:'+it.color+'"></em>'+it.sym+'</span>'+
+        '<b style="color:'+(it.v>=0?TVUP:TVDOWN)+'">'+tvPct(it.v)+'</b></div>').join('');
+      tip1.style.display='block';
+      place(tip1,p1,param.point.x,param.point.y);
+      if(!syncing){
+        syncing=true;
+        try{
+          const bar=(s2.data()||[]).find(r=>r.time===param.time);
+          if(bar)c2.setCrosshairPosition(bar.close,param.time,s2); else c2.clearCrosshairPosition();
+        }catch(e){}
+        syncing=false;
+      }
+    });
+    c2.subscribeCrosshairMove(param=>{
+      if(!param.time||!param.point||param.point.x<0){tip2.style.display='none';return;}
+      const d=param.seriesData.get(s2);
+      if(!d){tip2.style.display='none';return;}
+      const up=d.close>=d.open;
+      tip2.innerHTML='<div class="dt">'+tvNice(param.time)+'</div>'+
+        '<div class="rw"><span>Open</span><b>'+tvMoney(d.open)+'</b></div>'+
+        '<div class="rw"><span>High</span><b>'+tvMoney(d.high)+'</b></div>'+
+        '<div class="rw"><span>Low</span><b>'+tvMoney(d.low)+'</b></div>'+
+        '<div class="rw"><span>Close</span><b style="color:'+(up?TVUP:TVDOWN)+'">'+tvMoney(d.close)+'</b></div>';
+      tip2.style.display='block';
+      place(tip2,p2,param.point.x,param.point.y);
+      if(!syncing){
+        syncing=true;
+        try{
+          const i=holds.findIndex(x=>x.sym===pick);
+          const k=days.indexOf(param.time);
+          if(i>=0&&k>=0)c1.setCrosshairPosition(100*holds[i].close[k]/holds[i].close[0],param.time,s1[i]);
+          else c1.clearCrosshairPosition();
+        }catch(e){}
+        syncing=false;
+      }
+    });
+    p1.addEventListener('mouseleave',()=>{tip1.style.display='none';try{c2.clearCrosshairPosition();}catch(e){}});
+    p2.addEventListener('mouseleave',()=>{tip2.style.display='none';try{c1.clearCrosshairPosition();}catch(e){}});
+    /* ---- responsive ---- */
+    const fit=()=>{ drawCandles(); layoutLabels(); };
+    let ro=null;
+    if(window.ResizeObserver){
+      let raf=0;
+      ro=new ResizeObserver(()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(fit);});
+      ro.observe(host);
+    }else window.addEventListener('resize',fit);
+    drawCandles();
+    requestAnimationFrame(()=>{layoutLabels();paint();});
+    TVSTATE={destroy(){try{if(ro)ro.disconnect();}catch(e){} try{c1.remove();}catch(e){} try{c2.remove();}catch(e){}}};
+  }).catch(()=>{
+    host.innerHTML='<p class="tvnote">The charting library did not load, so the picture is sitting this one out. '+
+      'Every number in the table and the write up below is computed here in your browser and is unaffected.</p>';
+  });
+}
+
 const runBtn=$('t_run');
 let LASTRUN=null;
 async function runAnalysis(held,src){
@@ -1229,24 +1606,9 @@ async function runAnalysis(held,src){
     out.innerHTML=v;
     wrap.style.display='block';
     LASTRUN={pSharpe:pSharpe,mSharpe:mSharpe,src:src||'user'};
-    /* TradingView overlay chart of the actual holdings, simple side, glass over the gradient, 3 month default */
-    try{
-      const tv=document.getElementById('t_tv');
-      if(tv){
-        tv.innerHTML='<div class="tradingview-widget-container" style="height:100%"><div class="tradingview-widget-container__widget" style="height:100%"></div></div>';
-        const sc=document.createElement('script');
-        sc.src='https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';
-        sc.async=true;
-        sc.innerHTML=JSON.stringify({
-          autosize:true,symbol:rows[0].s,interval:'D',range:'3M',theme:'light',style:'2',locale:'en',
-          backgroundColor:'rgba(0,0,0,0)',gridColor:'rgba(18,41,63,0.05)',
-          hide_top_toolbar:true,hide_legend:false,hide_side_toolbar:true,allow_symbol_change:false,save_image:false,
-          compareSymbols:rows.slice(1).map(r2=>({symbol:r2.s,position:'SameScale'})).concat([{symbol:'AMEX:SPY',position:'SameScale'}]),
-          withdateranges:false,details:false,calendar:false
-        });
-        tv.firstChild.appendChild(sc);
-      }
-    }catch(e){}
+    /* Two panes, drawn from the same data this analysis already pulled: the shape on top,
+       one company's candles below. See tvRender. */
+    tvRender(rows,common,series,data);
     syncSoon();
   }catch(e){
     $('t_anout').innerHTML='One of those tickers did not answer with enough history. Check the symbol spelling against your brokerage app (foreign listings need their suffix, like MC.PA or 005930.KS). Fix it and tap the button again; nothing else on the page is affected.';
