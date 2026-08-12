@@ -4,5 +4,17 @@
       "maxDuration": 60,
       "memory": 1536
     }
-  }
+  },
+  "redirects": [
+    {
+      "source": "/journey.html",
+      "destination": "/wealth-guide.html",
+      "permanent": true
+    },
+    {
+      "source": "/succession.html",
+      "destination": "/estate-guide.html",
+      "permanent": true
+    }
+  ]
 }
