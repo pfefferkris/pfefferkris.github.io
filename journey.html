@@ -1501,7 +1501,15 @@ let GEO=null;
   const geoEl=$('t_geo');
   if(geoEl){
     geoEl.style.display='block';
-    geoEl.innerHTML='<b>This is live.</b> Your connection places you in <b>'+g.city+(g.state?', '+g.state:'')+'</b>, so I filled that in already'+(g.county?' and I know '+g.county+' County keeps the records':'')+'. Type your house number and street in front, and press Enter. Your location is never stored, and no other company was asked where you are.';
+    geoEl.innerHTML='<b>This is live.</b> Your connection places you in <b>'+g.city+(g.state?', '+g.state:'')+'</b>, so I filled that in already'+(g.county?', and '+g.county+' County keeps the records there':'')+'. Type your house number and street in front, then press Enter. Nothing about your location is stored, and no other company was asked where you are. A connection only knows a city, never a street, and it guesses wrong on a VPN or a phone: <a href="#" id="t_geoclear"><b>not your city?</b></a>';
+    const gc=$('t_geoclear');
+    if(gc)gc.addEventListener('click',ev=>{
+      ev.preventDefault();
+      GEO=null;
+      addrIn.value='';addrIn.placeholder='123 Main St, Raleigh, NC';
+      geoEl.innerHTML='Cleared. Type the whole address, house number through city and state.';
+      addrIn.focus();
+    });
   }
   /* only prefill an untouched field, so a restored session or a typed address wins */
   if(addrIn.value.trim())return;
@@ -1618,7 +1626,10 @@ if(pull)pull.addEventListener('click',async()=>{
     }catch(e){}
     const nw=document.getElementById('nw');
     if(nw&&T.homeVal&&!nw.value){nw.value=T.homeVal.toLocaleString();nw.dispatchEvent(new Event('input'));}
-  }catch(e){out.innerHTML='No public record answered for that address. The seasons work fine without it.';}
+  }catch(e){
+    out.innerHTML='No public record answered for that address. The seasons work fine without it.'+
+      (GEO&&GEO.city&&a.toUpperCase().indexOf(GEO.city.toUpperCase())>=0?' <b>One likely reason:</b> I filled in <b>'+GEO.city+'</b> from your connection, and that is a guess a VPN or a phone gets wrong all the time. Replace it with your real city and press Enter.':'');
+  }
   pull.disabled=false;pull.textContent='Pull the record';
   tcalc();
 });
