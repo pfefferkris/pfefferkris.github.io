@@ -58,49 +58,79 @@ function gapTerms(q) {
   return out.slice(0, 8);
 }
 
-const STOP = new Set(("a an and are as at be but by for from how i if in into is it its of on or that the their then there these they this to was what when where which who will with you your my me do does can could should would about" ).split(" "));
+// "will" is deliberately NOT a stop word here. In this corpus it is a noun.
+const STOP = new Set(("a an and are as at be but by for from how i if in into is it its of on or that the their then there these they this to was what when where which who with you your my me do does can could should would about" ).split(" "));
+
+// Terms too generic to prove a question is about estate planning. They still score,
+// they just cannot by themselves let a question through the door: "food truck
+// business" and "family photos" are not estate questions.
+const WEAK = new Set(("business family money income care benefit plan plans document documents health insurance policy interests control legal estate attorney advice account accounts").split(" "));
 
 function terms(s) {
-  return (s || "").toLowerCase()
+  const raw = (s || "").toLowerCase();
+  // Statute and form citations are single tokens, not word plus number.
+  const cites = raw.match(/\baoc-e-\d{3}\b|\b\d{2,3}[a-z]?-\d{1,4}(?:\.\d+)?\b/g) || [];
+  return cites.concat(raw
     .replace(/[^a-z0-9 ]/g, " ")
     // split letter/digit boundaries so "401k" and "401(k)" both yield 401
     .replace(/([a-z])(\d)/g, "$1 $2").replace(/(\d)([a-z])/g, "$1 $2")
     .split(/\s+/)
-    .filter(w => w.length > 2 && !STOP.has(w));
+    .filter(w => w.length > 2 && !STOP.has(w)));
+}
+
+// Built once: what this library declares itself to be about, and what it says so
+// often that the words carry no information.
+function index() {
+  if (CORE) return CORE;
+  const docs = corpus().docs, N = docs.length, df = {};
+  const topic = new Set();
+  docs.forEach(d => {
+    new Set(terms(d.title + " " + d.headings.join(" ") + " " + d.body))
+      .forEach(t => { df[t] = (df[t] || 0) + 1; });
+    terms(d.title + " " + String(d.id || "").replace(/-/g, " ")).forEach(t => topic.add(t));
+  });
+  // Boilerplate: a term in EVERY document that no document is titled after. "north",
+  // "carolina", "attorney", the disclaimer words. They match everything, so they rank
+  // nothing, and left in they let a stray word outvote the actual subject.
+  const boiler = new Set();
+  Object.keys(df).forEach(t => {
+    if (df[t] >= N && !topic.has(t) && !vocab().has(t)) boiler.add(t);
+  });
+  // The door: a question is about this library if it uses a word the library is
+  // titled after, or a real estate law term. Union of both, minus the generic ones.
+  const gate = new Set();
+  topic.forEach(t => { if (!WEAK.has(t)) gate.add(t); });
+  vocab().forEach(t => { if (!WEAK.has(t)) gate.add(t); });
+  CORE = { topic, boiler, gate };
+  return CORE;
 }
 
 // Small corpus, so plain term scoring beats the complexity of a vector store.
+//
+// No inverse document frequency anywhere. That is the lesson this file was built on:
+// in a corpus about one subject the MOST topical word appears in EVERY document, so
+// IDF drives the score toward zero exactly where it should be highest. "Probate"
+// ranked the probate explainer fourth. Topicality is a gate, not a weight.
 function retrieve(q, chips, k) {
   const docs = corpus().docs;
-  const qt = terms(q);
+  const ix = index();
+  let qt = terms(q);
   if (!qt.length) return [];
-  const df = {};
-  docs.forEach(d => {
-    const seen = new Set(terms(d.title + " " + d.headings.join(" ") + " " + d.body));
-    seen.forEach(t => { df[t] = (df[t] || 0) + 1; });
-  });
-  const N = docs.length;
-  // Core vocabulary: terms this library actually talks about. In a single subject
-  // corpus the most topical words appear in MOST documents, which is the opposite
-  // of what inverse document frequency rewards, so topicality is gated separately.
-  if (!CORE) {
-    CORE = new Set();
-    Object.keys(df).forEach(t => { if (df[t] >= 3) CORE.add(t); });
-  }
-  if (!qt.some(t => CORE.has(t))) return [];
+  if (!qt.some(t => ix.gate.has(t))) return [];
+  qt = qt.filter(t => !ix.boiler.has(t));
+  if (!qt.length) return [];
   const scored = docs.map(d => {
     const hay = {
-      title: terms(d.title).join(" "),
-      heads: terms(d.headings.join(" ")).join(" "),
+      title: new Set(terms(d.title + " " + String(d.id || "").replace(/-/g, " "))),
+      heads: new Set(terms(d.headings.join(" ") + " " + (d.authority || []).join(" "))),
       body: terms(d.body).join(" ")
     };
     let score = 0;
     qt.forEach(t => {
-      const idf = Math.log(1 + N / (1 + (df[t] || 0)));
-      if (hay.title.indexOf(t) >= 0) score += 6 * idf;
-      if (hay.heads.indexOf(t) >= 0) score += 3 * idf;
-      const c = (hay.body.match(new RegExp("\\b" + t, "g")) || []).length;
-      score += Math.min(c, 6) * idf;
+      if (hay.title.has(t)) score += 8;
+      if (hay.heads.has(t)) score += 4;
+      const c = (hay.body.match(new RegExp("\\b" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "g")) || []).length;
+      if (c) score += 1.5 * Math.min(Math.sqrt(c), 3);
     });
     // the persona chips the visitor already set are a real relevance signal
     if (chips && chips.length && d.chips) {
@@ -113,7 +143,7 @@ function retrieve(q, chips, k) {
   // An off topic question should return nothing rather than the least bad guess,
   // so the model can say honestly that the library does not reach it.
   const top = scored[0].score;
-  return scored.filter(x => x.score >= top * 0.30).slice(0, k || 3).map(x => x.d);
+  return scored.filter(x => x.score >= top * 0.32).slice(0, k || 3).map(x => x.d);
 }
 
 const VOICE = `You are Kristian Pfeffer answering a question on his own website, in his voice.
@@ -145,6 +175,11 @@ You MAY NOT, under any circumstances:
 When a question crosses that line, do not refuse coldly. Answer the general half genuinely and fully, then name the specific half as the part that needs a lawyer, and say why. Give them the questions to take in. Being useful right up to the line is the point.
 
 Each source below carries a WHERE THIS STOPS field. That field is the boundary for that topic. Honor it exactly.
+
+GROUNDING, AND THIS OUTRANKS BEING HELPFUL.
+The SOURCES below are the only North Carolina material you have. Every NC specific you state must come from them: every court, office, deadline, dollar amount, statute, form number and procedure. If the sources do not say it, you do not say it. Do not fill a gap from general knowledge about how probate works elsewhere, because the details differ by state and a confident wrong answer here is worse than an incomplete one. When you notice yourself about to supply a number or a deadline the sources did not give you, describe the step without it and say the specific figure is worth confirming with the Clerk or an attorney.
+
+FORMAT. Plain paragraphs. No tables. No headings. No bold. No numbered procedure lists unless the sources are themselves a sequence, and even then keep it to short lines. Use ordinary keyboard characters only, never a fancy dash, quote or ellipsis.
 
 CITE. When you rely on a statute or form, name it the way the sources do (for example NCGS 29-14, or form AOC-E-505). Never invent a citation. If you are not certain of a number, describe the rule without the number.
 
