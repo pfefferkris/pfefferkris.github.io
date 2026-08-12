@@ -37,7 +37,8 @@
       "vendor": "BIS",
       "url": "https://rdlxweb.guilfordcountync.gov/guilfordNameSearch.php?Accept=Accept",
       "deep": null,
-      "note": "Accept the disclaimer, then use the Book-Page search. The state map stores only the deed BOOK for Guilford, so have the owner name or page handy."
+      "note": "The scanned deed serves straight into the guide's viewer from the county imaging system.",
+      "pdf": true
     },
     "FORSYTH": {
       "name": "Forsyth County Register of Deeds deed search",

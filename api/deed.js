@@ -60,7 +60,46 @@ export default async function handler(req, res) {
     };
   }
 
+  // Guilford's statewide record carries the deed BOOK but no page, and no site
+  // address at all. The county's own property system has book, page and date.
+  async function guilfordCounty() {
+    const H = { "X-Tenant": "guilford", "User-Agent": "kpfeffer.com education proxy; contact mail@kpfeffer.com" };
+    const s = await fetch("https://lrcpwa.ncptscloud.com/api/SimpleParcelSearch?query=" +
+      encodeURIComponent(street) + "&pageIndex=0&pageSize=5", { headers: H });
+    if (!s.ok) return null;
+    const sj = await s.json();
+    const hit = (sj.results || [])[0];
+    if (!hit || !hit.formattedPin) return null;
+    const pin = hit.formattedPin.replace(/[^0-9]/g, "");
+    const d = await fetch("https://lrcpwa.ncptscloud.com/api/GetParcelDetailsByQueryParam", {
+      method: "POST", headers: { ...H, "Content-Type": "application/json" },
+      body: JSON.stringify({ searchKey: "pin", searchValue: pin })
+    });
+    if (!d.ok) return null;
+    const j = await d.json();
+    const bk = (j.deedBook || "").toString().replace(/^0+(?=\d)/, "");
+    const pg = (j.deedPage || "").toString().replace(/^0+(?=\d)/, "");
+    if (!bk || !pg) return null;
+    // owner names are deliberately not carried through
+    return {
+      county: "Guilford",
+      siteAddress: hit.propertyAddress1 || null,
+      sourceRef: "Deed Book/Page " + j.deedBook + "/" + j.deedPage,
+      book: bk, page: pg,
+      legal: hit.propertyDescription || null,
+      recorded: j.deedDate ? String(j.deedDate).slice(0, 10) : null,
+      use: null,
+      source: "Guilford County property record (the county's own system)"
+    };
+  }
+
   try {
+    if (county.indexOf("GUILFORD") === 0) {
+      try {
+        const g = await guilfordCounty();
+        if (g) { cache.set(key, { t: Date.now(), data: g }); return res.status(200).json(g); }
+      } catch (e) {}
+    }
     if (!county || county.indexOf("WAKE") === 0) {
       try {
         const wk = await wakeCounty();

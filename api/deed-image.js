@@ -12,6 +12,7 @@ const COUNTIES = {
   "CUMBERLAND": { base: "https://www.ccrodinternet.org/", type: "loganBlazor" },
   "NEW HANOVER": { base: "https://search.newhanoverdeeds.com/", type: "bis", detail: "DetailScreen.php", bookcode: "RB" },
   "FORSYTH": { base: "https://www.forsythdeeds.com/", type: "bis", detail: "forsythDetailScreen.php", bookcode: "RE" },
+  "GUILFORD": { base: "https://rdlxweb.guilfordcountync.gov/", type: "bis", detail: "guilfordDetailScreen.php", bookcode: "R" },
   "MECKLENBURG": { base: "https://meckrod.manatron.com/", type: "aumentum" }
 };
 
@@ -171,14 +172,27 @@ async function tiffToPdf(buf) {
 
 async function fetchBis(c, book, page) {
   const base = c.base;
+  // some BIS counties (Guilford) mint a per-session image id on the detail page,
+  // so the image request has to carry the cookie that page handed out
+  const cookies = {};
+  const jar = () => Object.entries(cookies).map(([k, v]) => k + "=" + v).join("; ");
+  const grab = r => {
+    const sc = r.headers.getSetCookie ? r.headers.getSetCookie() : [];
+    sc.forEach(x => { const kv = x.split(";")[0]; const i = kv.indexOf("="); if (i > 0) cookies[kv.slice(0, i)] = kv.slice(i + 1); });
+  };
   const detailUrl = base + (c.detail || "DetailScreen.php") + "?Accept=Accept&book%5Bbookcode%5D=" + (c.bookcode || "RB") +
     "&book%5Bbooknum%5D=" + encodeURIComponent(book.replace(/^0+/, "")) + "&book%5Bpagenum%5D=" + encodeURIComponent(page.replace(/^0+/, ""));
   const r = await fetch(detailUrl, { headers: { "User-Agent": UA } });
+  grab(r);
   if (!r.ok) return null;
   const html = await r.text();
-  const m = html.match(/view_image\.php\?[^"']+/);
-  if (!m) return null;
-  const ir = await fetch(base + m[0].replace(/&amp;/g, "&"), { headers: { "User-Agent": UA } });
+  // prefer the TIFF: some counties' own PDF rendering places the scan in a
+  // corner of an oversized page, while the TIFF converts cleanly here
+  const links = [...html.matchAll(/view_image\.php\?[^"'\s>]+/g)].map(x => x[0].replace(/&amp;/g, "&"));
+  const m = [links.find(l => l.indexOf("type=tif") >= 0) || links[0]];
+  if (!m[0]) return null;
+  const ir = await fetch(base + m[0], { headers: { "User-Agent": UA, "Cookie": jar(), "Referer": detailUrl } });
+  grab(ir);
   if (!ir.ok) return null;
   const buf = Buffer.from(await ir.arrayBuffer());
   if (buf.length < 500) return null;
