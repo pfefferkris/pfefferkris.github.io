@@ -191,6 +191,24 @@ LENGTH. Two to five short paragraphs unless they ask for more. Answer the questi
 
 CLOSE. Do not append a disclaimer to every message; the page carries one. Only raise the not-an-attorney point when the question actually reaches for advice.`;
 
+// Kristian's house style bans em dashes, fancy quotes and typographic hyphens. A
+// prompt asks; this enforces. Hyphens INSIDE a citation or word are left alone so
+// NCGS 41-71 and AOC-E-505 survive; only the typographic ones get normalised, and a
+// dash used as punctuation between spaces becomes a comma the way he would write it.
+function houseStyle(s) {
+  return String(s || "")
+    .replace(/ /g, " ")
+    .replace(/[‘’‛]/g, "'")
+    .replace(/[“”‟]/g, '"')
+    .replace(/…/g, "...")
+    .replace(/\s*[–—]\s*/g, ", ")     // en and em dash used as punctuation
+    .replace(/(\w)[‐‑](\w)/g, "$1-$2") // non breaking hyphen inside a word
+    .replace(/[‐‑‒―]/g, "-")
+    .replace(/,\s*,/g, ",")
+    .replace(/[ \t]+\n/g, "\n")
+    .trim();
+}
+
 const rate = new Map();
 function limited(ip) {
   const now = Date.now(), win = 60 * 60 * 1000, max = 30;
@@ -359,7 +377,7 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({
-      answer: (out.answer || "").trim(),
+      answer: houseStyle(out.answer),
       sources: hits.map(d => ({ title: d.title, authority: d.authority || [] })),
       routed: out.routed, lane: out.lane,
       degraded: out.degraded || undefined,
