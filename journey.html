@@ -823,7 +823,7 @@ const BLOCKS=[
  body:`<div class="trow" style="grid-template-columns:2fr 1fr;align-items:end">
    <label>Street address<input type="text" id="t_addr" placeholder="123 Main St, Raleigh, NC" autocomplete="off"></label>
    <button class="tbtn" id="t_pull" type="button" style="margin-top:0;padding:9px 14px;width:100%">Pull the record</button>
- </div><div class="tout" id="t_out2">The lookup reads the current value estimate AND the last recorded sale from public property records, then computes your basis and capital appreciation for you. The address goes only to the records provider and is never stored.</div>
+ </div><div id="t_geo" style="display:none;font-size:.72rem;color:var(--muted);margin-top:6px"></div><div class="tout" id="t_out2">The lookup reads the current value estimate AND the last recorded sale from public property records, then computes your basis and capital appreciation for you. The address goes only to the records provider and is never stored.</div>
  <p class="tsub" style="margin-top:14px"><b>Now read the deed like a title examiner.</b> Look at the top of page one, right after the word TO: the names, and HOW they hold the property. Those few words decide whether this home ever sees a courtroom. Tap what your deed says.</p>
  <div class="docck" id="t_title">
   <span data-t="sole">One name alone</span>
@@ -1485,9 +1485,38 @@ if(allocEl)allocEl.querySelectorAll('span').forEach(s=>s.addEventListener('click
 const pull=$('t_pull');
 const addrIn=$('t_addr');
 if(addrIn)addrIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();if(pull)pull.click();}});
+
+/* Your city, filled in for you. A network connection can place you in a town;
+   it can never know your street, so the guide fills in everything it honestly
+   can and leaves you the one line only you know. */
+let GEO=null;
+(async function fillCity(){
+  if(!addrIn)return;
+  let g=null;
+  try{g=await fetch('/api/whereami').then(r=>r.ok?r.json():null);}catch(e){g=null;}
+  if(!g||!g.known||!g.city)return;
+  GEO=g;
+  const tail=', '+g.city+(g.state?', '+g.state:'');
+  addrIn.placeholder='123 Main St'+tail;
+  const geoEl=$('t_geo');
+  if(geoEl){
+    geoEl.style.display='block';
+    geoEl.innerHTML='<b>This is live.</b> Your connection places you in <b>'+g.city+(g.state?', '+g.state:'')+'</b>, so I filled that in already'+(g.county?' and I know '+g.county+' County keeps the records':'')+'. Type your house number and street in front, and press Enter. Your location is never stored, and no other company was asked where you are.';
+  }
+  /* only prefill an untouched field, so a restored session or a typed address wins */
+  if(addrIn.value.trim())return;
+  addrIn.value=tail;
+  const park=()=>{try{addrIn.setSelectionRange(0,0);}catch(e){}};
+  addrIn.addEventListener('focus',function once(){park();addrIn.removeEventListener('focus',once);});
+  park();
+})();
 if(pull)pull.addEventListener('click',async()=>{
-  const a=($('t_addr').value||'').trim();const out=$('t_out2');
+  let a=($('t_addr').value||'').trim().replace(/^,\s*/,'');const out=$('t_out2');
+  /* the city may already be filled in; the house number and street are yours */
+  if(GEO&&GEO.city&&a&&a.toUpperCase().indexOf(GEO.city.toUpperCase())<0)a+=', '+GEO.city+(GEO.state?', '+GEO.state:'');
+  if(!/^\d/.test(a)){out.innerHTML='Add your house number and street in front'+(GEO&&GEO.city?' of '+GEO.city:'')+', then press Enter.';return;}
   if(a.length<8){out.innerHTML='Type a full street address first, number, street, city.';return;}
+  $('t_addr').value=a;
   pull.disabled=true;pull.textContent='Reading the record...';
   OCRCTX=null;const oor=$('t_ocrout');if(oor){oor.style.display='none';oor.innerHTML='';}
   try{
@@ -1507,7 +1536,8 @@ if(pull)pull.addEventListener('click',async()=>{
     out.innerHTML=h;
     /* the actual recording: book and page from the statewide parcel record, advanced side */
     try{
-      const dd=await fetch('/api/deed?address='+encodeURIComponent(a)+(p&&p.county?'&county='+encodeURIComponent(p.county):'')).then(r2=>r2.ok?r2.json():null).catch(()=>null);
+      const cty=(p&&p.county)||(GEO&&GEO.county)||'';
+      const dd=await fetch('/api/deed?address='+encodeURIComponent(a)+(cty?'&county='+encodeURIComponent(cty):'')).then(r2=>r2.ok?r2.json():null).catch(()=>null);
       const card=document.getElementById('t_deedcard');
       if(dd&&(dd.book||dd.sourceRef)){
         /* the payoff goes on the SIMPLE side, right in the result */
