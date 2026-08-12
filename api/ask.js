@@ -204,13 +204,21 @@ async function callBrain(messages, ms, telemetry) {
       })
     });
     const text = await r.text();
-    if (!r.ok) return { error: "brain " + r.status, detail: text.slice(0, 200) };
-    const j = JSON.parse(text);
-    return {
-      answer: (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || "",
-      routed: r.headers.get("x-cerebellum-model") || null,
-      lane: r.headers.get("x-cerebellum-lane") || null
+    const routed = r.headers.get("x-cerebellum-model") || null;
+    const lane = r.headers.get("x-cerebellum-lane") || null;
+    if (!r.ok) return { error: "brain " + r.status, detail: text.slice(0, 200), routed, lane };
+    let j = null;
+    try { j = JSON.parse(text); } catch (e) {
+      return { error: "brain sent non json", detail: text.slice(0, 200), routed, lane };
+    }
+    const answer = (j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content) || "";
+    // An empty 200 is the failure mode that hides. Say which model produced it.
+    if (!answer) return {
+      error: "brain empty", routed, lane,
+      detail: ("finish=" + ((j.choices && j.choices[0] && j.choices[0].finish_reason) || "?") +
+               " keys=" + Object.keys(j).join("|") + " " + text.slice(0, 160))
     };
+    return { answer, routed, lane };
   } catch (e) {
     return { error: "brain unreachable", detail: String(e && e.message || e).slice(0, 150) };
   } finally { clearTimeout(timer); }
@@ -299,15 +307,19 @@ export default async function handler(req, res) {
       gap: hits.length ? [] : gapTerms(q)
     };
 
-    // Home first. Standby only if the house did not answer.
-    let out = await callBrain(messages, 25000, telemetry);
+    // Home first. A cold local model can take a while to load, so give the house
+    // real time before deciding it is quiet. Standby only if it truly did not answer.
+    let out = await callBrain(messages, 45000, telemetry);
     if (!out.answer) {
       const first = out;
       out = await callOpenRouter(messages);
       if (out.answer) out.degraded = first.error || first.skip || "brain quiet";
       else return res.status(200).json({
         answer: "Something on my end did not answer just now. Try again in a moment.",
-        sources: [], brain: first.error || first.skip, standby: out.error || out.skip
+        sources: [],
+        brain: first.error || first.skip, brain_detail: first.detail,
+        routed: first.routed, lane: first.lane,
+        standby: out.error || out.skip
       });
     }
 
