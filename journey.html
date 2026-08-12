@@ -1334,16 +1334,27 @@ async function ocrPdf(url,maxPages){
   return txt;
 }
 function analyzeDeedText(txt){
-  const t=(txt||'').toUpperCase().replace(/\s+/g,' ').replace(/\bP\.?L\.?L\.?C\b/g,'PLC'); /* law firm PLLCs must not read as LLC titling */
+  let t=(txt||'').toUpperCase().replace(/\s+/g,' ').replace(/\bP\.?L\.?L\.?C\b/g,'PLC'); /* law firm PLLCs must not read as LLC titling */
+  /* Every NC Bar Association form carries a printed footer naming the Bar
+     Association and the NC Association of REALTORS, Inc. Those are the FORM's
+     publishers, not parties to the deed, so they must not read as an entity
+     owner. (OCR mangles REALTORS freely, hence the loose spelling.) */
+  t=t.replace(/(?:NORTH CAROLINA|N\.?\s?C\.?)?\s*(?:BAR )?ASSOCIATION OF RE[A-Z]{3,9}S?,?\s*INC\.?/g,' ')
+     .replace(/(?:NORTH CAROLINA|N\.?\s?C\.?)\s*BAR ASSOCIATION[^.]{0,70}/g,' ')
+     .replace(/PRINTED BY AGREEMENT WITH[^.]{0,70}/g,' ');
   const a={form:'sole',refs:[],quit:false,warranty:false,easement:false,subjectTo:false,dot:false,doc:'deed',span:null};
   /* WHAT is this instrument? the county parcel record sometimes points at
      something that is not a conveyance deed at all, and calling a condominium
-     declaration a titling form would be plainly wrong */
+     declaration a titling form would be plainly wrong. A deed's own TITLE wins
+     over anything its legal description merely REFERS to: a warranty deed for a
+     condo unit cites the condominium declaration, and is still a deed. */
   const head=t.slice(0,2600);
-  if(/DECLARATION OF (UNIT OWNERSHIP|CONDOMINIUM)|CONDOMINIUM DECLARATION/.test(head))a.doc='condo';
+  const isDeed=/(?:GENERAL |SPECIAL |LIMITED )?WARRANTY DEED|QUIT\s?-?\s?CLAIM DEED|TRUSTEE.?S DEED|EXECUTOR.?S DEED|ADMINISTRATOR.?S DEED|DEED OF GIFT|CORRECTIVE DEED|SUBSTITUTE TRUSTEE.?S DEED|\bTHIS DEED\b/.test(head);
+  if(isDeed)a.doc='deed';
+  else if(/DECLARATION OF (UNIT OWNERSHIP|CONDOMINIUM)|CONDOMINIUM DECLARATION/.test(head))a.doc='condo';
   else if(/EASEMENT AGREEMENT|GRANT OF EASEMENT|RIGHT[- ]OF[- ]WAY AGREEMENT/.test(head))a.doc='easement';
   else if(/DECLARATION OF (RESTRICTIVE COVENANTS|RESTRICTIONS|PROTECTIVE COVENANTS)|RESTRICTIVE COVENANTS/.test(head))a.doc='covenants';
-  else if(/\bDEED OF TRUST\b/.test(head)&&!/(WARRANTY|QUITCLAIM|QUIT CLAIM|TRUSTEE.S) DEED/.test(head))a.doc='dot';
+  else if(/\bDEED OF TRUST\b/.test(head))a.doc='dot';
   else if(/SATISFACTION|CANCELLATION OF/.test(head))a.doc='satisfaction';
   else if(/POWER OF ATTORNEY/.test(head))a.doc='poa';
   else if(/\bPLAT\b.{0,30}\bMAP\b|MAP OF SURVEY/.test(head))a.doc='plat';
@@ -1356,7 +1367,7 @@ function analyzeDeedText(txt){
   else if(/TENAN\w*\s+IN\s+COMMON/.test(t))a.form='tic';
   else if(/\bTRUSTEES?\b|REVOCABLE\s+TRUST|LIVING\s+TRUST|\bU\/?A\/?D\b/.test(t))a.form='trust';
   else if(/LIFE\s+ESTATE|REMAINDERM[AE]N|RESERV\w*[^.]{0,80}(LIFE|LIFETIME)/.test(t))a.form='life';
-  else if(!severed&&/HUSBAND\s+AND\s+WIFE|WIFE\s+AND\s+HUSBAND/.test(t))a.form='tbe';
+  else if(!severed&&/HUSBAND\s+AND\s+WIFE|WIFE\s+AND\s+HUSBAND|A\s+MARRIED\s+COUPLE|MARRIED\s+COUPLE|,\s*(?:HIS|HER)\s+(?:WIFE|HUSBAND)|AND\s+SPOUSE\b/.test(t))a.form='tbe';
   else if(/\bL\.?L\.?C\b|LIMITED\s+LIABILITY\s+COMPAN|\bINCORPORATED\b|,\s?INC\b/.test(t))a.form='entity';
   a.quit=/QUIT\s?-?\s?CLAIM|REMISE,?\s+RELEASE/.test(t);
   a.warranty=/\bWARRANT(S|Y|ED)?\b/.test(t)&&!a.quit;

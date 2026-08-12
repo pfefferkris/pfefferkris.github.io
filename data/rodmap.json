@@ -14,7 +14,8 @@
       "vendor": "Manatron/Aumentum",
       "url": "https://meckrod.manatron.com/",
       "deep": "https://meckrod.manatron.com/RealEstate/SearchDetail.aspx?bk={book}&pg={page}&type=BkPg",
-      "note": "The direct link opens this exact record. Mecklenburg asks you to acknowledge its disclaimer once per visit; if you land on the welcome page, click the link again and the record opens."
+      "note": "The scanned deed serves straight into the guide's viewer from the county imaging system. The direct link opens the same record at the county site; Mecklenburg asks you to acknowledge its disclaimer once per visit, so if you land on the welcome page, click again.",
+      "pdf": true
     },
     "CUMBERLAND": {
       "name": "Cumberland County Register of Deeds public records",

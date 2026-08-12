@@ -11,7 +11,8 @@
 const COUNTIES = {
   "CUMBERLAND": { base: "https://www.ccrodinternet.org/", type: "loganBlazor" },
   "NEW HANOVER": { base: "https://search.newhanoverdeeds.com/", type: "bis", detail: "DetailScreen.php", bookcode: "RB" },
-  "FORSYTH": { base: "https://www.forsythdeeds.com/", type: "bis", detail: "forsythDetailScreen.php", bookcode: "RE" }
+  "FORSYTH": { base: "https://www.forsythdeeds.com/", type: "bis", detail: "forsythDetailScreen.php", bookcode: "RE" },
+  "MECKLENBURG": { base: "https://meckrod.manatron.com/", type: "aumentum" }
 };
 
 const UA = "Mozilla/5.0 (kpfeffer.com education viewer; contact mail@kpfeffer.com)";
@@ -191,6 +192,64 @@ async function fetchBis(c, book, page) {
   return null;
 }
 
+// Mecklenburg (Charlotte) runs Aumentum/Manatron: an ASP.NET app whose imaging
+// viewer is stateful, so the document only becomes reachable after walking the
+// same path a citizen walks. All plain HTTP, no browser needed:
+//   deep link (opens a session) -> acknowledge the disclaimer -> the record ->
+//   the image page -> the viewer, which reveals the internal image id ->
+//   the page image itself.
+async function fetchAumentum(base, book, page) {
+  const cookies = {};
+  const jar = () => Object.entries(cookies).map(([k, v]) => k + "=" + v).join("; ");
+  const grab = r => {
+    const sc = r.headers.getSetCookie ? r.headers.getSetCookie() : [];
+    sc.forEach(c => { const kv = c.split(";")[0]; const i = kv.indexOf("="); if (i > 0) cookies[kv.slice(0, i)] = kv.slice(i + 1); });
+  };
+  const F = (u, o = {}) => fetch(u, { ...o, redirect: "manual", headers: { "User-Agent": UA, "Cookie": jar(), ...(o.headers || {}) } });
+  const DL = "RealEstate/SearchDetail.aspx?bk=" + encodeURIComponent(book.replace(/^0+(?=\d)/, "")) +
+    "&pg=" + encodeURIComponent(page.replace(/^0+(?=\d)/, "")) + "&type=BkPg";
+
+  let r = await F(base + DL); grab(r);              // opens a session
+  r = await F(base); grab(r);
+  const home = await r.text();
+  const fld = n => { const m = home.match(new RegExp('id="' + n + '"[^>]*value="([^"]*)"')); return m ? m[1] : ""; };
+  r = await F(base, {                                // acknowledge the disclaimer
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      "__EVENTTARGET": "ctl00$cph1$lnkAccept", "__EVENTARGUMENT": "",
+      "__VIEWSTATE": fld("__VIEWSTATE"), "__VIEWSTATEGENERATOR": fld("__VIEWSTATEGENERATOR"),
+      "__EVENTVALIDATION": fld("__EVENTVALIDATION")
+    })
+  });
+  grab(r);
+  r = await F(base + DL); grab(r);                   // now the record itself
+  const detail = await r.text();
+  const gm = detail.match(/SearchImage\.aspx\?global_id=([A-Za-z0-9]+)/);
+  if (!gm) return null;
+  r = await F(base + "RealEstate/SearchImage.aspx?global_id=" + gm[1] + "&type=img", { headers: { Referer: base + DL } });
+  grab(r);
+  await r.text();
+  r = await F(base + "Controls/LTViewer.aspx", { headers: { Referer: base + "RealEstate/SearchImage.aspx" } });
+  grab(r);
+  const viewer = await r.text();
+  // the viewer carries the app's own internal image URL; its query is what the
+  // image handler actually answers to (IMAGE_ID here is not the one in the markup)
+  const um = viewer.match(/name="WIV1_url"[^>]*value="([^"]*)"/);
+  if (!um) return null;
+  const q = um[1].replace(/&amp;/g, "&").split("?")[1];
+  if (!q || q.indexOf("IMAGE_ID") < 0) return null;
+  r = await F(base + "Controls/GetImage.aspx?" + q.replace(/(^|&)pg=\d+/, "$1pg=0"), { headers: { Referer: base + "Controls/LTViewer.aspx" } });
+  const buf = Buffer.from(await r.arrayBuffer());
+  if (!r.ok || buf.length < 2000) return null;
+  const magic = buf.slice(0, 2).toString("hex");
+  if (buf.slice(0, 5).toString() === "%PDF-") return buf;
+  if (magic !== "4949" && magic !== "4d4d") return null;
+  const UTIF = (await import("utif2")).default;
+  try { return g4TiffToPdf(UTIF, buf, 40); }
+  catch (e) { return await tiffToPdf(buf); }
+}
+
 export default async function handler(req, res) {
   const county = (req.query.county || "").toString().trim().toUpperCase();
   const book = (req.query.book || "").toString().replace(/[^0-9]/g, "").slice(0, 6);
@@ -212,6 +271,17 @@ export default async function handler(req, res) {
     res.setHeader("Content-Disposition", "inline; filename=deed-" + book + "-" + page + ".pdf");
     return res.status(200).send(buf);
   };
+
+  if (c.type === "aumentum") {
+    if (n > 1) return res.status(404).json({ error: "no image at that book and page" });
+    try {
+      const buf = await fetchAumentum(c.base, book, page);
+      if (buf) return send(buf);
+    } catch (e) {
+      return res.status(404).json({ error: "no image at that book and page", detail: String(e && e.message || e).slice(0, 200) });
+    }
+    return res.status(404).json({ error: "no image at that book and page" });
+  }
 
   if (c.type === "bis") {
     if (n > 1) return res.status(404).json({ error: "no image at that book and page" });
