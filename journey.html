@@ -1552,7 +1552,15 @@ if(pull)pull.addEventListener('click',async()=>{
         if(!window.RODMAP){try{window.RODMAP=await fetch('data/rodmap.json').then(r3=>r3.ok?r3.json():null);}catch(e2){window.RODMAP=null;}}
         const ck0=(dd.county||'').toUpperCase();
         const rod0=window.RODMAP&&window.RODMAP.counties?window.RODMAP.counties[ck0]:null;
-        let s='<br><br><b>And here is the recording itself.</b> Your home&#8217;s legal story lives at the '+(dd.county||'county')+' County Register of Deeds under '+(dd.book?'<span class="big">Book '+dd.book+', Page '+dd.page+'</span>':'<b>'+dd.sourceRef+'</b>')+'. ';
+        /* say WHICH property answered. A guessed city can quietly match a real
+           house that is not yours, and a silent wrong answer is worse than none. */
+        let s='';
+        if(dd.siteAddress){
+          const geoUsed=GEO&&GEO.city&&a.toUpperCase().indexOf(GEO.city.toUpperCase())>=0;
+          s+='<br><br><b>The record I matched:</b> '+dd.siteAddress+(dd.county?', '+dd.county+' County':'')+'.'+
+             (geoUsed?' If that is not your home, the city I filled in from your connection ('+GEO.city+') is the likely reason: clear it above and type your real city.':'');
+        }
+        s+='<br><br><b>And here is the recording itself.</b> Your home&#8217;s legal story lives at the '+(dd.county||'county')+' County Register of Deeds under '+(dd.book?'<span class="big">Book '+dd.book+', Page '+dd.page+'</span>':'<b>'+dd.sourceRef+'</b>')+'. ';
         if(rod0&&rod0.pdf&&dd.book&&dd.page){
           s+='Flip <b>Advanced</b> and the scanned deed itself displays beside this season, served live from the county, and the guide reads it for you below. Or <a href="'+rod0.url+'" target="_blank" rel="noopener"><b>open the county register</b></a> directly.';
         } else if(rod0&&rod0.deep&&dd.book&&dd.page){
