@@ -2,7 +2,7 @@
 layout: post
 title: "The Trust Exception Congress Deleted"
 description: "The old Section 68 had a subsection that said the limitation on itemized deductions does not apply to estates and trusts. The One Big Beautiful Bill Act rewrote the section and that subsection did not come back. Section 641(b) does the rest."
-date: 2026-08-12 09:30:00 -0400
+date: 2026-08-12 08:15:00 -0400
 ---
 
 What happens to a family trust when the safe harbor written into the statute simply stops being in the statute?
