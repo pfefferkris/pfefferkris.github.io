@@ -197,6 +197,12 @@ CLOSE. Do not append a disclaimer to every message; the page carries one. Only r
 // dash used as punctuation between spaces becomes a comma the way he would write it.
 function houseStyle(s) {
   return String(s || "")
+    // Markdown furniture. The prompt forbids it and the models produce it anyway,
+    // in roughly one answer out of four. He writes prose, so prose is what ships.
+    .replace(/^\s{0,3}#{1,6}\s+(.*)$/gm, "$1")
+    .replace(/\*\*([\s\S]+?)\*\*/g, "$1")
+    .replace(/(^|[\s(])\*(\S[^*\n]*?)\*(?=[\s).,;:!?]|$)/g, "$1$2")
+    .replace(/^\s{0,3}([-*_])(?:\s*\1){2,}\s*$/gm, "")
     .replace(/ /g, " ")
     .replace(/[‘’‛]/g, "'")
     .replace(/[“”‟]/g, '"')
