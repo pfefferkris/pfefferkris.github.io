@@ -34,8 +34,8 @@
   panel.innerHTML =
     '<div class="akhead"><b>Ask Kristian</b>' +
       '<button class="aktog" id="akspk" aria-pressed="true" title="Kristian speaks his answers">&#128266; Voice</button>' +
-      '<button class="aktog" id="akear" aria-pressed="false" title="Say hey Kristian to ask without typing" style="display:none">' +
-        '<span class="akbars"><i></i><i></i><i></i><i></i><i></i></span> Hey Kristian</button>' +
+      '<button class="aktog akmic" id="akear" aria-pressed="false" title="Talk instead of typing">' +
+        '<span class="akbars"><i></i><i></i><i></i><i></i><i></i></span><span id="akearlbl">Talk</span></button>' +
       '<button class="akx" id="akx" aria-label="Close">&#215;</button></div>' +
     '<div class="akdisc">I am not an attorney and not a registered investment adviser. This is education, not legal, tax, or investment advice, and I cannot answer questions about your own situation. Nothing you type is stored.</div>' +
     '<div id="akbody"></div>' +
@@ -118,7 +118,7 @@
       history.push({ role: "user", content: q });
       history.push({ role: "assistant", content: r.answer || "" });
       if (history.length > 8) history = history.slice(-8);
-      if (ear.style.display === "none" && micSupported()) { ear.style.display = ""; }
+
     }).catch(function () {
       thinking.remove();
       say("k", "Something on my end did not answer. Try again in a moment.");
@@ -348,6 +348,13 @@
   function pauseCapture() { capturing = false; frames = []; spoke = false; quiet = 0; elapsed = 0; }
   function resumeCapture() { if (listening) capturing = true; }
 
+  var earLbl = panel.querySelector("#akearlbl");
+  function setMicUI(state) {          // listening | opening | off
+    ear.setAttribute("aria-pressed", String(state === "listening"));
+    ear.classList.toggle("live", state === "listening");
+    glow.classList.toggle("on", state === "listening");
+    if (earLbl) earLbl.textContent = state === "listening" ? "Listening" : state === "opening" ? "Opening" : "Talk";
+  }
   function setListening(on) {
     if (on === listening) return;
     if (on) {
@@ -355,10 +362,12 @@
         say("k", "This browser cannot open a microphone on a page like this. Typing works the same.");
         return;
       }
+      setMicUI("opening");
       navigator.mediaDevices.getUserMedia({ audio: true }).then(function (st) {
         micStream = st; listening = true;
-        ear.setAttribute("aria-pressed", "true"); ear.classList.add("live");
+        setMicUI("listening");
         startCapture();
+        say("k", "Listening. Say what you want to ask, then pause. You can also just say hey Kristian first.");
       }).catch(function (err) {
         // An honest message, naming the actual cause, beats a widget that just does nothing.
         var why = (err && err.name === "NotAllowedError")
@@ -369,11 +378,11 @@
               ? "A microphone only works over a secure connection."
               : "I could not open the microphone.";
         say("k", why);
-        ear.setAttribute("aria-pressed", "false"); ear.classList.remove("live");
+        setMicUI("off");
       });
     } else {
       listening = false; capturing = false; waiting = false; frames = [];
-      ear.setAttribute("aria-pressed", "false"); ear.classList.remove("live");
+      setMicUI("off");
       try { proc && proc.disconnect(); micSrc && micSrc.disconnect(); } catch (e) {}
       proc = micSrc = null;
       try { micStream && micStream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
@@ -383,10 +392,13 @@
   function heard(t) {
     t = (t || "").trim();
     if (!t) return;
+    // The wake word is stripped when it is there, and not required when it is not. He
+    // pressed the button; that IS the intent. Making him also say a name would be a hoop.
     var m = t.match(/\bhey,?\s+(kristian|christian|cristian|kristen|christy)\b[\s,.:!?-]*/i);
-    if (m) { t = t.slice(m.index + m[0].length).trim(); waiting = true; }
-    if (!waiting) return;                    // no wake word, so it was not meant for him
-    if (t) { waiting = false; input.value = t; ask(); }
+    if (m) t = t.slice(m.index + m[0].length).trim();
+    if (t.length < 2) return;
+    input.value = t;
+    ask();
   }
   ear.onclick = function () { unlockAudio(); setListening(!listening); };
 
@@ -399,6 +411,7 @@
     input.style.height = "auto";
     input.style.height = Math.min(input.scrollHeight, 96) + "px";
   });
+  if (!micSupported()) ear.style.display = "none";
   function shut() { panel.classList.remove("on"); stopSpeak(); setListening(false); }
   panel.querySelector("#akx").onclick = shut;
   opener.onclick = function () {

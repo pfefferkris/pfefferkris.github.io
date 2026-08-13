@@ -78,6 +78,10 @@
 .aktog+.aktog{margin-left:0}
 .aktog[aria-pressed="true"]{background:rgba(58,122,186,.16);border-color:rgba(58,122,186,.5);color:var(--navy,#12293f)}
 .aktog.live{animation:akpulse 1.6s ease-in-out infinite}
+/* The microphone reads as a control rather than a label: it is the one thing in the
+   header a visitor is meant to press, so it carries the bars and its own state. */
+.akmic{display:inline-flex;align-items:center;gap:6px;margin-left:0}
+.akmic[aria-pressed="true"]{background:rgba(58,122,186,.2);border-color:rgba(58,122,186,.65);color:var(--navy,#12293f)}
 
 /* The lines, from Cortex. Thin bars that ride the microphone while he is listening and
    ride his own voice while he is speaking, so the widget is visibly alive rather than a
