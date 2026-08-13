@@ -56,6 +56,18 @@
 .akmsg{font-size:.79rem;line-height:1.62;padding:10px 13px;border-radius:13px;max-width:92%;white-space:pre-wrap}
 .akmsg.me{align-self:flex-end;background:var(--navy,#12293f);color:#fff;border-bottom-right-radius:4px}
 .akmsg.k{align-self:flex-start;background:rgba(255,255,255,.92);border:1px solid rgba(28,61,92,.16);color:var(--ink,#1e2b36);border-bottom-left-radius:4px}
+/* Each answer is its own unit with its own control, the way every branch of the guide can
+   be opened and closed on its own. Replay it, stop it, without touching the panel switch. */
+.akmsg.k{position:relative;padding-right:34px}
+.akplay{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;cursor:pointer;
+  border:1px solid rgba(28,61,92,.22);background:rgba(255,255,255,.9);color:var(--muted,#5a6a78);
+  font-size:.6rem;line-height:1;display:flex;align-items:center;justify-content:center;
+  padding:0;opacity:.5;transition:opacity .16s,border-color .16s,color .16s}
+.akmsg.k:hover .akplay{opacity:1}
+.akplay:hover{border-color:var(--gold,#a9884f);color:var(--gold-ink,#7c5f2e)}
+.akmsg.k.speaking{border-color:rgba(169,136,79,.55);box-shadow:0 0 0 2px rgba(169,136,79,.14)}
+.akmsg.k.speaking .akplay{opacity:1;border-color:var(--gold,#a9884f);color:var(--gold-ink,#7c5f2e);
+  background:rgba(169,136,79,.14)}
 .aksrc{font-size:.62rem;color:var(--muted,#5a6a78);margin-top:7px;padding-top:6px;border-top:1px dashed rgba(28,61,92,.20)}
 .akseed{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
 .akseed span{font-size:.68rem;padding:6px 10px;border-radius:14px;background:rgba(255,255,255,.85);

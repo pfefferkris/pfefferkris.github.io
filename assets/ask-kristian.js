@@ -61,6 +61,24 @@
     var d = document.createElement("div");
     d.className = "akmsg " + who;
     d.textContent = text;
+    if (who === "k" && text && text.length > 40) {
+      // Each answer carries its own speaker, so any bubble can be replayed or stopped on
+      // its own rather than the whole panel having one switch for all of it.
+      var pb = document.createElement("button");
+      pb.type = "button"; pb.className = "akplay";
+      pb.setAttribute("aria-label", "Read this aloud");
+      pb.textContent = "\u25B6";
+      pb.addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        if (current && current.el === d && speaking) { pauseSpeech(); return; }
+        if (current && current.el === d && current.url) { resumeSpeech(); return; }
+        voiceOn = true; spk.setAttribute("aria-pressed", "true");
+        unlockAudio();
+        speak(d.__akText || text, d);
+      });
+      d.__akText = text;
+      d.appendChild(pb);
+    }
     if (sources && sources.length) {
       var s = document.createElement("div");
       s.className = "aksrc";
@@ -81,8 +99,8 @@
   function greet() {
     var hello = CFG.greeting ||
       "Ask me anything about wills, trusts, probate, or how property passes. I will explain how it works and where it stops being something I can answer.";
-    say("k", hello);
-    setTimeout(function () { speak(hello); }, 120);
+    var helloEl = say("k", hello);
+    setTimeout(function () { speak(hello, helloEl); }, 120);
     var wrap = document.createElement("div");
     wrap.className = "akseed";
     SEEDS.forEach(function (s) {
@@ -118,8 +136,8 @@
       body: JSON.stringify({ q: q, chips: chips(), history: history, context: ctx, surface: SURFACE })
     }).then(function (x) { return x.json(); }).then(function (r) {
       thinking.remove();
-      say("k", r.answer || "I could not answer that one.", r.sources);
-      speak(r.answer);
+      var bubble = say("k", r.answer || "I could not answer that one.", r.sources);
+      speak(r.answer, bubble);
       history.push({ role: "user", content: q });
       history.push({ role: "assistant", content: r.answer || "" });
       if (history.length > 8) history = history.slice(-8);
@@ -161,6 +179,11 @@
   function unlockAudio() {
     audioCtx();
     if (unlocked) return;
+    // Never while he is mid sentence. This earns playback permission by pointing the
+    // player at a silent clip, which halfway through an answer is a stop button wearing a
+    // microphone icon: tapping the mic wiped what he was saying. If audio is already
+    // running there is nothing left to earn anyway.
+    if (speaking || !player.paused) { unlocked = true; return; }
     try {
       player.src = SILENCE;
       var p = player.play();
@@ -183,15 +206,47 @@
     } catch (e) { srcNode = null; spkAnalyser = null; }
   }
 
+  /* Mute is a pause, not a stop. Whichever control the visitor reaches for, the other one
+     keeps doing its job and whatever was interrupted can be picked back up. The bubble he
+     was reading is remembered with its audio, so turning the voice back on starts that
+     bubble again from the top rather than dropping it on the floor. */
+  var speaking = false, utterance = 0, current = null;
+
+  function markSpeaking(on) {
+    if (current && current.el) current.el.classList.toggle("speaking", !!on);
+  }
   function stopSpeak() {
     utterance++;                       // anything already on the wire is now stale
     try { player.pause(); } catch (e) {}
     if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
+    markSpeaking(false);
     glow.classList.remove("speak");
     speaking = false;
+    current = null;
   }
-  var speaking = false, utterance = 0;
-  function speak(text) {
+  function pauseSpeech() {
+    // Holds the place. The clip and the bubble stay on the books.
+    try { player.pause(); } catch (e) {}
+    markSpeaking(false);
+    glow.classList.remove("speak");
+    speaking = false; LEVEL = 0;
+    if (listening) resumeCapture();
+  }
+  function resumeSpeech() {
+    if (!current || !current.url) return false;
+    player.src = current.url;
+    try { player.currentTime = 0; } catch (e) {}   // the top of that bubble, not mid word
+    attachSpeakAnalyser();
+    glow.classList.add("speak");
+    speaking = true;
+    markSpeaking(true);
+    if (listening) pauseCapture();
+    var p = player.play();
+    if (p && p.catch) p.catch(function () {});
+    return true;
+  }
+
+  function speak(text, el) {
     if (!voiceOn || !text) return Promise.resolve();
     stopSpeak();
     // Every utterance takes a ticket. Two answers close together means two fetches in
@@ -210,13 +265,16 @@
     }).then(function (b) {
       if (!b || mine !== utterance) return;
       audioUrl = URL.createObjectURL(b);
+      current = { text: text, el: el || null, url: audioUrl };
       player.src = audioUrl;
       attachSpeakAnalyser();
       glow.classList.add("speak");
       speaking = true;
+      markSpeaking(true);
       if (listening) pauseCapture();          // he must not hear himself
       var done = function () {
         if (mine !== utterance) return;
+        markSpeaking(false);
         glow.classList.remove("speak"); speaking = false; LEVEL = 0;
         if (listening) resumeCapture();
       };
@@ -242,7 +300,10 @@
   spk.onclick = function () {
     voiceOn = !voiceOn;
     spk.setAttribute("aria-pressed", String(voiceOn));
-    if (!voiceOn) stopSpeak();
+    if (!voiceOn) { pauseSpeech(); return; }
+    // Back on: pick up the bubble that was interrupted, from its first word. If nothing
+    // was interrupted this is simply a quiet switch, not a reason to start talking.
+    resumeSpeech();
   };
 
   /* ---------------------------------------------------------------- the lines
@@ -278,7 +339,11 @@
      second file and buys nothing here. */
   var micStream = null, proc = null, micSrc = null, listening = false, waiting = false;
   var capturing = false, frames = [], spoke = false, quiet = 0, elapsed = 0;
-  var THRESH = 0.02, SIL_MS = 850, MAX_MS = 15000, MIN_MS = 400;
+  // A shade less eager. At 0.02 a keyboard, a sigh or a room fan opened an utterance and
+  // shipped a clip of nothing. The two frame confirm is the other half of it: one loud
+  // sample is a door closing, two in a row is a person starting a sentence.
+  var THRESH = 0.035, SIL_MS = 900, MAX_MS = 15000, MIN_MS = 450, HOT_FRAMES = 2;
+  var hot = 0;
 
   function micSupported() {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && AC);
@@ -338,9 +403,13 @@
       for (var i = 0; i < buf.length; i++) s += buf[i] * buf[i];
       var rms = Math.sqrt(s / buf.length), fms = buf.length / c.sampleRate * 1000;
       if (!speaking) LEVEL = Math.max(LEVEL, Math.min(1, rms * 9));
-      if (rms > THRESH) { spoke = true; quiet = 0; frames.push(new Float32Array(buf)); elapsed += fms; }
-      else if (spoke) { frames.push(new Float32Array(buf)); quiet += fms; elapsed += fms;
+      if (rms > THRESH) {
+        hot++;
+        if (spoke || hot >= HOT_FRAMES) { spoke = true; quiet = 0; frames.push(new Float32Array(buf)); elapsed += fms; }
+      }
+      else if (spoke) { hot = 0; frames.push(new Float32Array(buf)); quiet += fms; elapsed += fms;
                         if (quiet >= SIL_MS) flush(); }
+      else { hot = 0; }
       if (spoke && elapsed > MAX_MS) flush();
     };
     micSrc.connect(proc);
@@ -350,7 +419,7 @@
     proc.connect(mute); mute.connect(c.destination);
     capturing = true;
   }
-  function pauseCapture() { capturing = false; frames = []; spoke = false; quiet = 0; elapsed = 0; }
+  function pauseCapture() { capturing = false; frames = []; spoke = false; quiet = 0; elapsed = 0; hot = 0; }
   function resumeCapture() { if (listening) capturing = true; }
 
   var earLbl = panel.querySelector("#akearlbl");
@@ -405,7 +474,13 @@
     input.value = t;
     ask();
   }
-  ear.onclick = function () { unlockAudio(); setListening(!listening); };
+  ear.onclick = function () {
+    // The microphone opens and closes the microphone. It does not touch what he is saying.
+    // Unlocking playback is only worth doing when nothing is playing, and unlockAudio now
+    // refuses mid sentence, but the intent is stated here too so nobody re-adds it.
+    if (!speaking) unlockAudio();
+    setListening(!listening);
+  };
 
   /* ---------------------------------------------------------------- wiring */
   send.onclick = ask;
