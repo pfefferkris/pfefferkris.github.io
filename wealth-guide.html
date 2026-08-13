@@ -267,6 +267,16 @@ footer a:hover{color:var(--navy)}
   background:rgba(169,136,79,.10);border:1px solid rgba(169,136,79,.32);font-size:.72rem;line-height:1.4}
 .akctx b{color:var(--gold-text,#8a6d3b);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:2px}
 .akctx button{margin-left:auto;border:0;background:none;cursor:pointer;color:var(--muted);font-size:.95rem;line-height:1;padding:0 2px}
+.aktog{margin-left:auto;margin-right:6px;cursor:pointer;border-radius:999px;padding:3px 9px;
+  border:1px solid rgba(28,61,92,.28);background:rgba(255,255,255,.5);color:var(--muted);
+  font:inherit;font-size:.6rem;font-weight:800;letter-spacing:.04em;white-space:nowrap;transition:all .18s}
+.aktog+.aktog{margin-left:0}
+.aktog[aria-pressed="true"]{background:rgba(58,122,186,.16);border-color:rgba(58,122,186,.5);color:var(--navy)}
+.aktog.live{animation:akpulse 1.6s ease-in-out infinite}
+@keyframes akpulse{0%,100%{box-shadow:0 0 0 0 rgba(58,122,186,.45)}50%{box-shadow:0 0 0 5px rgba(58,122,186,0)}}
+/* The edges breathe while he is speaking, the way Cortex does in the living room. */
+#akglow.speak{opacity:1;animation:akbreath 2.1s ease-in-out infinite;
+  box-shadow:inset 0 0 90px 12px rgba(169,136,79,.5), inset 0 0 220px 46px rgba(169,136,79,.2)}
 #akglow{position:fixed;inset:0;pointer-events:none;z-index:80;opacity:0;transition:opacity .5s;
   box-shadow:inset 0 0 90px 12px rgba(58,122,186,.55), inset 0 0 200px 40px rgba(58,122,186,.22)}
 #akglow.on{opacity:1;animation:akbreath 3.2s ease-in-out infinite}
@@ -2320,7 +2330,10 @@ tcalc();
   const glow=document.createElement('div');glow.id='akglow';document.body.appendChild(glow);
   const panel=document.createElement('div');panel.id='akpanel';
   panel.innerHTML=
-    '<div class="akhead"><b>Ask Kristian</b><button class="akx" id="akx" aria-label="Close">&#215;</button></div>'+
+    '<div class="akhead"><b>Ask Kristian</b>'+
+      '<button class="aktog" id="akspk" aria-pressed="true" title="Kristian speaks his answers">&#128266; Voice</button>'+
+      '<button class="aktog" id="akear" aria-pressed="false" title="Say hey Kristian to ask without typing" style="display:none">&#127908; Hey Kristian</button>'+
+      '<button class="akx" id="akx" aria-label="Close">&#215;</button></div>'+
     '<div class="akdisc">I am not an attorney and not a registered investment adviser. This is education, not legal, tax, or investment advice, and I cannot answer questions about your own situation. Nothing you type is stored.</div>'+
     '<div id="akbody"></div>'+
     '<div id="akctx" class="akctx" style="display:none"><span><b>Looking at</b><span id="akctxt"></span></span><button id="akctxx" aria-label="Drop this context">&#215;</button></div>'+
@@ -2353,7 +2366,9 @@ tcalc();
 
   const seeds=['What happens if I die without a will?','Should I add my child to my deed?','My mother died. Where do I start?','What is a special needs trust?'];
   function greet(){
-    say('k','Hey. I am most of the way through a master’s in trust and wealth management, and this guide is what I have been building along the way.\n\nAsk me anything about wills, trusts, probate, or how property passes. I will explain how it works and where it stops being something I can answer.');
+    const hello='Hey. I am most of the way through a master’s in trust and wealth management, and this guide is what I have been building along the way.\n\nAsk me anything about wills, trusts, probate, or how property passes. I will explain how it works and where it stops being something I can answer.';
+    say('k',hello);
+    setTimeout(()=>speak(hello),120);
     const wrap=document.createElement('div');wrap.className='akseed';
     seeds.forEach(s=>{const b=document.createElement('span');b.textContent=s;b.onclick=()=>{input.value=s;ask();};wrap.appendChild(b);});
     body.appendChild(wrap);
@@ -2375,9 +2390,12 @@ tcalc();
         body:JSON.stringify({q:q,chips:chips(),history:history,context:ctx})}).then(x=>x.json());
       thinking.remove();
       say('k',r.answer||'I could not answer that one.',r.sources);
+      speak(r.answer);
       history.push({role:'user',content:q});
       history.push({role:'assistant',content:r.answer||''});
       if(history.length>8)history=history.slice(-8);
+      // A conversation has actually started, so offer the wake word from here on.
+      if(SR&&ear.style.display==='none'){ ear.style.display=''; setListening(true); }
     }catch(e){
       thinking.remove();
       say('k','Something on my end did not answer. Try again in a moment.');
@@ -2386,13 +2404,82 @@ tcalc();
     busy=false;send.disabled=false;input.focus();
   }
 
+  /* ---------------- voice ----------------
+     The page is silent on load. Nothing speaks and nothing listens until the
+     visitor opens this panel. That is the deliberate difference from Cortex in the
+     living room, where the AI greets you the moment you walk in: a stranger landing
+     on a public page has not agreed to be talked to. Once they open it, he speaks.  */
+  const spk=panel.querySelector('#akspk'), ear=panel.querySelector('#akear');
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  let voiceOn=true, audio=null, audioUrl=null, listening=false, rec=null, waiting=false;
+
+  function stopSpeak(){
+    if(audio){try{audio.pause();}catch(e){}audio=null;}
+    if(audioUrl){URL.revokeObjectURL(audioUrl);audioUrl=null;}
+    glow.classList.remove('speak');
+  }
+  async function speak(text){
+    if(!voiceOn||!text)return;
+    stopSpeak();
+    try{
+      const r=await fetch('/api/tts',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({text:text})});
+      if(!r.ok)return;
+      if((r.headers.get('content-type')||'').indexOf('audio')<0)return; // not configured, or rate limited
+      audioUrl=URL.createObjectURL(await r.blob());
+      audio=new Audio(audioUrl);
+      glow.classList.add('speak');
+      if(listening&&rec){try{rec.stop();}catch(e){}}   // he must not hear himself
+      const done=()=>{glow.classList.remove('speak');if(listening)armRec();};
+      audio.onended=done;audio.onerror=done;
+      await audio.play();
+    }catch(e){glow.classList.remove('speak');}
+  }
+  spk.onclick=()=>{voiceOn=!voiceOn;spk.setAttribute('aria-pressed',String(voiceOn));if(!voiceOn)stopSpeak();};
+
+  /* wake word. Recognition runs in the browser, so the audio itself never leaves the
+     visitor's machine unless a wake phrase actually matches and a question is sent. */
+  function armRec(){
+    if(!SR||!listening)return;
+    try{
+      rec=new SR();rec.continuous=true;rec.interimResults=false;rec.lang='en-US';
+      rec.onresult=e=>{
+        for(let i=e.resultIndex;i<e.results.length;i++){
+          if(!e.results[i].isFinal)continue;
+          let t=(e.results[i][0].transcript||'').trim();
+          const m=t.match(/\bhey,?\s+(kristian|christian|cristian|kristen)\b[\s,.:-]*/i);
+          if(m){ t=t.slice(m.index+m[0].length).trim(); waiting=true; }
+          if(!waiting)continue;
+          if(t){ waiting=false; input.value=t; ask(); }
+          else { say('k','I am listening.'); }
+        }
+      };
+      rec.onend=()=>{ if(listening&&!audio)setTimeout(armRec,350); };
+      rec.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed')setListening(false); };
+      rec.start();
+    }catch(e){}
+  }
+  function setListening(on){
+    listening=on;
+    ear.setAttribute('aria-pressed',String(on));
+    ear.classList.toggle('live',on);
+    if(on)armRec();
+    else if(rec){try{rec.stop();}catch(e){}rec=null;waiting=false;}
+  }
+  ear.onclick=()=>setListening(!listening);
+
   send.onclick=ask;
   input.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask();}});
   input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,96)+'px';});
-  panel.querySelector('#akx').onclick=()=>panel.classList.remove('on');
+  // Closing the panel ends everything: he stops talking and the mic stops listening.
+  // Nothing stays live behind a closed panel.
+  function shut(){ panel.classList.remove('on'); stopSpeak(); setListening(false); }
+  panel.querySelector('#akx').onclick=shut;
   btn.onclick=()=>{
-    panel.classList.toggle('on');
-    if(panel.classList.contains('on')){ if(!opened){opened=true;greet();} input.focus(); }
+    if(panel.classList.contains('on')){ shut(); return; }
+    panel.classList.add('on');
+    if(!opened){opened=true;greet();}
+    input.focus();
   };
 
   // The handoff. Any block on the page can send the visitor here already holding the

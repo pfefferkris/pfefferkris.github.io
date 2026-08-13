@@ -349,9 +349,11 @@ export default async function handler(req, res) {
     } : null;
     const hasCtx = !!(ctx && (ctx.title || ctx.text));
 
-    // The block's own title steers retrieval too, so "explain this" reaches the right
-    // explainer even when the question itself carries almost no vocabulary.
-    const hits = retrieve(hasCtx ? (q + " " + ctx.title) : q, chips, 3);
+    // The block itself steers retrieval, because the question often carries no
+    // vocabulary at all. "Why does this matter" asked from the retirement tile has
+    // nothing in it to match on; the block's own words are what reach the right
+    // explainer. Title alone is not enough, so a slice of the body goes in too.
+    const hits = retrieve(hasCtx ? (q + " " + ctx.title + " " + ctx.text.slice(0, 300)) : q, chips, 3);
     const sourceBlock = hits.length
       ? hits.map((d, i) =>
           `=== SOURCE ${i + 1}: ${d.title}\n` +
