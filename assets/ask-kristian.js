@@ -179,36 +179,49 @@
   }
 
   function stopSpeak() {
+    utterance++;                       // anything already on the wire is now stale
     try { player.pause(); } catch (e) {}
     if (audioUrl) { URL.revokeObjectURL(audioUrl); audioUrl = null; }
     glow.classList.remove("speak");
     speaking = false;
   }
-  var speaking = false;
+  var speaking = false, utterance = 0;
   function speak(text) {
     if (!voiceOn || !text) return Promise.resolve();
     stopSpeak();
+    // Every utterance takes a ticket. Two answers close together means two fetches in
+    // flight, and stopping playback does not cancel a request already on the wire: the
+    // older, slower one comes back last, re paints the glow and plays over the newer
+    // answer. That left the page breathing gold with nothing making a sound.
+    var mine = ++utterance;
     return fetch("/api/tts", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: text })
     }).then(function (r) {
+      if (mine !== utterance) return null;
       if (!r.ok) return null;
       if ((r.headers.get("content-type") || "").indexOf("audio") < 0) return null;
       return r.blob();
     }).then(function (b) {
-      if (!b) return;
+      if (!b || mine !== utterance) return;
       audioUrl = URL.createObjectURL(b);
       player.src = audioUrl;
       attachSpeakAnalyser();
       glow.classList.add("speak");
       speaking = true;
       if (listening) pauseCapture();          // he must not hear himself
-      player.onended = player.onerror = function () {
+      var done = function () {
+        if (mine !== utterance) return;
         glow.classList.remove("speak"); speaking = false; LEVEL = 0;
         if (listening) resumeCapture();
       };
+      player.onended = player.onerror = done;
+      // A belt for the case where playback is refused in a way that fires neither event.
+      // A glow that never goes out is worse than one that goes out early.
+      setTimeout(function () { if (mine === utterance && player.paused) done(); }, 4000);
       return player.play();
     }).catch(function () {
+      if (mine !== utterance) return;
       glow.classList.remove("speak"); speaking = false;
       if (!warned) {
         warned = true;
