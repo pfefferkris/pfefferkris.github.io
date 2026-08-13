@@ -515,7 +515,13 @@ async function callBrain(messages, ms, telemetry) {
       body: JSON.stringify({
         model: process.env.ASK_MODEL || "cerebellum",
         messages,
-        max_tokens: 900,
+        // 1400, not 900. The 2026-08-13 dream caught the first four questions of the
+        // night truncating on gpt-oss:20b, twice returning nothing at all: a deliberative
+        // estate answer that cites a statute and then draws the education/advice line does
+        // not fit in 900 tokens, and a reply cut off mid-sentence is worse than a short
+        // one. Sonnet's answers run 300 to 800 so this ceiling never binds on the paid
+        // lane; it only matters when the house is serving the surface itself.
+        max_tokens: 1400,
         temperature: 0.4
       })
     });
