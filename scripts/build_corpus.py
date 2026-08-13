@@ -17,8 +17,8 @@ Reads  _posts/*.md
 Writes data/corpus.json
 
 Hand written explainers in data/corpus.json are preserved exactly. Only documents whose
-id begins with "nl-" are owned by this script, so a rebuild can never eat work that was
-authored rather than generated. --check exits nonzero if the file would change, which is
+id begins with "nl-" or "pos-" are owned by this script, so a rebuild can never eat work
+that was authored rather than generated. --check exits nonzero if the file would change, which is
 what lets the workflow decide whether there is anything to commit.
 
 The brain reads the same file. data/corpus.json is served publicly, so the household
@@ -30,6 +30,7 @@ import json, os, re, sys, datetime, pathlib
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 POSTS = ROOT / "_posts"
 OUT = ROOT / "data" / "corpus.json"
+POSITIONS = ROOT / "data" / "positions"
 SITE = "https://kpfeffer.com"
 
 # The newsletter comments on published law. It is not advice about anybody's trust, and
@@ -270,6 +271,46 @@ def build_issue(path):
     }
 
 
+def read_positions():
+    """Standing positions the house wrote and cleared for publication.
+
+    These are not sources. A source is something he wrote about one question at one time;
+    a position is what he thinks across all of them, and it exists because at four issues a
+    week the top three documents stop being a fair sample of what he knows. Retrieval hands
+    an answer the two issues that match the words. The position hands it the through line
+    across twenty.
+
+    They carry no figures. The generator strips any that slipped in and leaves a marker, so
+    the answering surface has to know never to read that marker out loud.
+    """
+    out = []
+    if not POSITIONS.is_dir():
+        return out
+    for p in sorted(POSITIONS.glob("*.md")):
+        text = p.read_text(encoding="utf-8")
+        fm, body = front_matter(text)
+        if not str(fm.get("publishable", "")).lower().startswith("yes"):
+            continue
+        theme = fm.get("theme") or p.stem.replace("domain-", "")
+        name = fm.get("name") or theme
+        out.append({
+            "id": "pos-" + str(theme),
+            "kind": "position",
+            "domain": str(theme),
+            "title": "What Kristian thinks about " + name,
+            "chips": [],
+            "authority": [],
+            "where_this_stops": STOPS,
+            "headings": re.findall(r"^\s{0,3}##\s+(.+?)\s*$", body, re.M),
+            "body": body.strip(),
+            "words": len(re.findall(r"[A-Za-z0-9']+", body)),
+            "built": fm.get("built", ""),
+            "sources_read": fm.get("sources", ""),
+            "summary": "His standing position across everything he has published on " + name + ".",
+        })
+    return out
+
+
 def main():
     check = "--check" in sys.argv
     try:
@@ -277,7 +318,8 @@ def main():
     except Exception:
         existing = {"docs": []}
     # Everything not generated is authored, and authored work is never touched here.
-    kept = [d for d in existing.get("docs", []) if not str(d.get("id", "")).startswith("nl-")]
+    kept = [d for d in existing.get("docs", [])
+            if not str(d.get("id", "")).startswith(("nl-", "pos-"))]
 
     issues = []
     for p in sorted(POSTS.glob("*.md")):
@@ -291,20 +333,24 @@ def main():
     # Newest first, so a reader scanning the file sees the current position first.
     issues.sort(key=lambda d: d["date"], reverse=True)
 
-    docs = kept + issues
+    positions = read_positions()
+    docs = kept + positions + issues
     out = {"built": datetime.date.today().isoformat(), "count": len(docs),
-           "explainers": len(kept), "issues": len(issues), "docs": docs}
+           "explainers": len(kept), "issues": len(issues), "positions": len(positions),
+           "docs": docs}
 
     prior_docs = json.dumps(existing.get("docs", []), sort_keys=True)
     if prior_docs == json.dumps(docs, sort_keys=True):
-        print("no change: " + str(len(kept)) + " explainers, " + str(len(issues)) + " issues")
+        print("no change: " + str(len(kept)) + " explainers, " + str(len(issues)) + " issues, " +
+              str(len(positions)) + " positions")
         return 0
     if check:
         print("would change")
         return 1
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
-    print("wrote " + str(OUT) + ": " + str(len(kept)) + " explainers + " + str(len(issues)) + " issues")
+    print("wrote " + str(OUT) + ": " + str(len(kept)) + " explainers + " + str(len(issues)) +
+          " issues + " + str(len(positions)) + " standing positions")
     for d in issues[:3]:
         print("  newest: " + d["date"] + " " + d["title"] + "  [" + ", ".join(d["authority"][:4]) + "]")
     return 0

@@ -142,7 +142,10 @@ function terms(s) {
 // often that the words carry no information.
 function index() {
   if (CORE) return CORE;
-  const docs = corpus().docs, N = docs.length, df = {};
+  // Built from what he WROTE, never from what the house synthesised about it. A position
+  // restates its theme in every paragraph, so letting it vote here would inflate the gate
+  // with its own summary vocabulary and quietly widen the door.
+  const docs = corpus().docs.filter(d => d.kind !== "position"), N = docs.length, df = {};
   const topic = new Set();
   docs.forEach(d => {
     new Set(terms(d.title + " " + d.headings.join(" ") + " " + d.body))
@@ -196,8 +199,19 @@ function index() {
 // in a corpus about one subject the MOST topical word appears in EVERY document, so
 // IDF drives the score toward zero exactly where it should be highest. "Probate"
 // ranked the probate explainer fourth. Topicality is a gate, not a weight.
+// A standing position is never scored against a question. It is long, it touches every
+// word in its theme, and left in the pool it would win every race and crowd out the
+// primary documents that carry the citations. It is chosen by theme AFTER the sources
+// are, which is the whole point: the sources decide what the question is about, the
+// position supplies what he thinks about that.
+const FIG_MARK = "[figure withheld: see the cited source and the live register]";
+function positionFor(hits) {
+  if (!hits.length) return null;
+  const dom = String(hits[0].domain || "");
+  return corpus().docs.find(d => d.kind === "position" && String(d.domain) === dom) || null;
+}
 function retrieve(q, chips, k) {
-  const docs = corpus().docs;
+  const docs = corpus().docs.filter(d => d.kind !== "position");
   const ix = index();
   let qt = terms(q);
   if (!qt.length) return [];
@@ -289,6 +303,10 @@ CLOSE. Do not append a disclaimer to every message; the page carries one. Only r
 // dash used as punctuation between spaces becomes a comma the way he would write it.
 function houseStyle(s) {
   return String(s || "")
+    // The standing position's own placeholder, in case a model reads it out loud. The
+    // prompt tells it not to; this is the guarantee. A visitor seeing the machinery is
+    // worse than a visitor seeing one fewer sentence, so the sentence goes.
+    .replace(/[^.!?\n]*\[figure withheld[^\]]*\][^.!?\n]*[.!?]?/gi, "")
     // Markdown furniture. The prompt forbids it and the models produce it anyway,
     // in roughly one answer out of four. He writes prose, so prose is what ships.
     .replace(/^\s{0,3}#{1,6}\s+(.*)$/gm, "$1")
@@ -445,9 +463,25 @@ export default async function handler(req, res) {
     // vocabulary at all. "Why does this matter" asked from the retirement tile has
     // nothing in it to match on; the block's own words are what reach the right
     // explainer. Title alone is not enough, so a slice of the body goes in too.
-    const hits = retrieve(hasCtx ? (q + " " + ctx.title + " " + ctx.text.slice(0, 300)) : q, chips, 3);
+    // Two primary documents, plus what he thinks across the whole theme. Retrieval alone
+    // stops being a fair sample of what he knows once the library outgrows the top three:
+    // the honest fix is not a bigger k, which makes a model average thirty essays instead
+    // of reasoning from the two that matter, but a synthesis written ahead of the question.
+    const hits = retrieve(hasCtx ? (q + " " + ctx.title + " " + ctx.text.slice(0, 300)) : q, chips, 2);
+    const position = positionFor(hits);
+    const posBlock = position
+      ? `=== HIS STANDING POSITION ON THIS THEME\n` +
+        `This is not a source document and it is not a citation. It is what he has worked out ` +
+        `across everything he has published on this theme, and it is here so the answer reflects ` +
+        `the whole body rather than only the documents that matched the question's words. Take ` +
+        `the shape of the argument and the reasoning from it, and take every specific, every ` +
+        `citation and every number from the SOURCE documents below. It deliberately states no ` +
+        `figures: where it reads "${FIG_MARK}" the number lives in the cited source and in the ` +
+        `live figures above. Never repeat that bracketed phrase to the visitor, and never ` +
+        `describe this document or the fact that it exists.\n\n${position.body}\n\n`
+      : "";
     const sourceBlock = hits.length
-      ? hits.map((d, i) =>
+      ? posBlock + hits.map((d, i) =>
           `=== SOURCE ${i + 1}: ${d.title}\n` +
           (d.authority && d.authority.length ? `AUTHORITY: ${d.authority.join("; ")}\n` : "") +
           `WHERE THIS STOPS: ${d.where_this_stops}\n\n${d.body}`
@@ -479,7 +513,7 @@ export default async function handler(req, res) {
     // allowlisted domain vocabulary the visitor reached for, recorded only when the
     // library came back empty, because that is the case worth writing an explainer for.
     const telemetry = {
-      topics: hits.map(d => d.id).filter(Boolean),
+      topics: (position ? [position.id] : []).concat(hits.map(d => d.id)).filter(Boolean),
       gap: hits.length ? [] : gapTerms(q)
     };
 
