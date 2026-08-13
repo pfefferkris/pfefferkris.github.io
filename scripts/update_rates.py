@@ -87,7 +87,8 @@ def fetch_transfer_tax(existing):
     costs more than being silent would have. Ask Kristian reads these and is forbidden
     from stating any figure it did not get from here or from a sourced explainer."""
     keys = ("giftAnnualExclusion", "giftAnnualExclusionYear", "basicExclusion",
-            "basicExclusionYear", "transferTaxSource", "transferTaxChecked")
+            "basicExclusionYear", "basicExclusionBasis", "transferTaxSource",
+            "transferTaxChecked")
     try:
         flat = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", get(
             "https://www.irs.gov/businesses/small-businesses-self-employed/"
@@ -115,8 +116,18 @@ def fetch_transfer_tax(existing):
         if not 5000000 <= be <= 50000000:
             raise ValueError(f"basic exclusion out of plausible range: {be}")
 
+        # The story around a figure goes stale the same way the figure does. A model
+        # trained before July 2025 still believes the exclusion sunsets, because for
+        # years it did. Capture what actually set it so the narrative travels with it.
+        basis = ""
+        if re.search(r"Public Law 119-21", flat):
+            basis = ("Set by Public Law 119-21, signed 4 July 2025, amending IRC 2010(c)(3). "
+                     "This replaced the earlier scheduled sunset, so it does NOT drop back at the "
+                     "end of 2025. Do not repeat the old sunset story.")
+
         return {"giftAnnualExclusion": ae, "giftAnnualExclusionYear": ye,
                 "basicExclusion": be, "basicExclusionYear": yb,
+                "basicExclusionBasis": basis,
                 "transferTaxSource": "IRS frequently asked questions on gift taxes",
                 "transferTaxChecked": datetime.date.today().isoformat()}
     except Exception as e:

@@ -59,7 +59,8 @@ function figureBlock() {
       (f.transferTaxSource || "IRS"));
   if (f.basicExclusion)
     L.push("- Federal basic exclusion amount, the lifetime estate and gift exemption: " + money(f.basicExclusion) +
-      " per person for " + (f.basicExclusionYear || "") + ". Source: " + (f.transferTaxSource || "IRS"));
+      " per person for " + (f.basicExclusionYear || "") + ". " + (f.basicExclusionBasis || "") +
+      " Source: " + (f.transferTaxSource || "IRS"));
   if (f.rate7520)
     L.push("- IRC section 7520 rate: " + f.rate7520 + " percent for " + (f.rate7520Month || "the current month") +
       ". It changes monthly, so name the month whenever you quote it.");
@@ -73,7 +74,10 @@ function figureBlock() {
   return "\n\n--- CURRENT FIGURES (refreshed " + (f.updated || "recently") + "; today is " +
     new Date().toISOString().slice(0, 10) + ") ---\n" + L.join("\n") +
     "\n\nTHE FIGURE RULE, and it is absolute. The only numbers you may state are the ones above and " +
-    "the ones written inside a retrieved source. You may NEVER produce a dollar amount, threshold, " +
+    "the ones written inside a retrieved source. THE STORY AROUND A FIGURE GOES STALE THE SAME WAY " +
+    "THE FIGURE DOES, so never repeat a scheduled change, sunset, expiry or 'set to drop back' " +
+    "narrative about any of these unless it is written above: a law that was true when you were " +
+    "trained may have been replaced since. You may NEVER produce a dollar amount, threshold, " +
     "exemption, rate, bracket or dated limit from your own memory, because your memory is as old as " +
     "your training and this is not that year. If an answer needs a figure you were not given, explain " +
     "the mechanism without it and say precisely where the current number lives, for example the IRS " +

@@ -17,5 +17,6 @@
   "basicExclusion": 15000000,
   "basicExclusionYear": 2026,
   "transferTaxSource": "IRS frequently asked questions on gift taxes",
-  "transferTaxChecked": "2026-08-12"
+  "transferTaxChecked": "2026-08-12",
+  "basicExclusionBasis": "Set by Public Law 119-21, signed 4 July 2025, amending IRC 2010(c)(3). This replaced the earlier scheduled sunset, so it does NOT drop back at the end of 2025. Do not repeat the old sunset story."
 }
