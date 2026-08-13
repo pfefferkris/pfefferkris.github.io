@@ -25,6 +25,62 @@ import path from "path";
 let CORPUS = null;
 let CORE = null;
 let VOCAB = null;
+let FIGURES = null;
+
+// The live figure register. This is the SAME data/rates.json the guide itself runs
+// on, refreshed weekly by scripts/update_rates.py in GitHub Actions straight from the
+// IRS, Treasury and market sources. One file, one truth, one refresh job.
+//
+// A model's numbers are as old as its training. Left to itself it will confidently
+// state the exclusion amount from whatever year it was trained in, and on a page
+// about money a stale figure is how a reader works out that nobody is minding the
+// site. So the model is not permitted to supply a figure at all: it either uses one
+// from here, or one from a retrieved explainer, or it says where to look.
+function figures() {
+  if (FIGURES !== null) return FIGURES;
+  try {
+    FIGURES = JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "rates.json"), "utf8"));
+  } catch (e) { FIGURES = false; }
+  return FIGURES;
+}
+
+function money(n) {
+  if (n >= 1000000) return "$" + (n / 1000000).toFixed(n % 1000000 ? 2 : 0).replace(/\.00$/, "") + " million";
+  return "$" + Number(n).toLocaleString("en-US");
+}
+
+function figureBlock() {
+  const f = figures();
+  if (!f) return "";
+  const L = [];
+  if (f.giftAnnualExclusion)
+    L.push("- Federal gift tax annual exclusion: " + money(f.giftAnnualExclusion) + " per recipient for " +
+      (f.giftAnnualExclusionYear || "") + " (double it for a married couple splitting gifts). Source: " +
+      (f.transferTaxSource || "IRS"));
+  if (f.basicExclusion)
+    L.push("- Federal basic exclusion amount, the lifetime estate and gift exemption: " + money(f.basicExclusion) +
+      " per person for " + (f.basicExclusionYear || "") + ". Source: " + (f.transferTaxSource || "IRS"));
+  if (f.rate7520)
+    L.push("- IRC section 7520 rate: " + f.rate7520 + " percent for " + (f.rate7520Month || "the current month") +
+      ". It changes monthly, so name the month whenever you quote it.");
+  if (f.tenYear)
+    L.push("- Ten year Treasury yield: " + f.tenYear + " percent as of " + (f.tenYearDate || "recently"));
+  if (f.sp500)
+    L.push("- " + (f.benchmark || "S&P 500") + ": " + f.sp500 + " as of " + (f.sp500Date || "recently") +
+      (f.sp500Return1y != null ? ", trailing twelve months " + f.sp500Return1y + " percent" : ""));
+  if (!L.length) return "";
+
+  return "\n\n--- CURRENT FIGURES (refreshed " + (f.updated || "recently") + "; today is " +
+    new Date().toISOString().slice(0, 10) + ") ---\n" + L.join("\n") +
+    "\n\nTHE FIGURE RULE, and it is absolute. The only numbers you may state are the ones above and " +
+    "the ones written inside a retrieved source. You may NEVER produce a dollar amount, threshold, " +
+    "exemption, rate, bracket or dated limit from your own memory, because your memory is as old as " +
+    "your training and this is not that year. If an answer needs a figure you were not given, explain " +
+    "the mechanism without it and say precisely where the current number lives, for example the IRS " +
+    "instructions for that form, the Clerk of Superior Court, or the statute. Never attach a year to a " +
+    "figure unless that year is shown above. A missing number reads as careful. A stale one reads as " +
+    "abandoned, and it is the fastest way to lose a reader who came here for accuracy.";
+}
 function corpus() {
   if (CORPUS) return CORPUS;
   const p = path.join(process.cwd(), "data", "corpus.json");
@@ -379,7 +435,7 @@ export default async function handler(req, res) {
       : "";
 
     const messages = [
-      { role: "system", content: VOICE + ctxBlock + "\n\n--- SOURCES ---\n\n" + sourceBlock },
+      { role: "system", content: VOICE + figureBlock() + ctxBlock + "\n\n--- SOURCES ---\n\n" + sourceBlock },
       ...history.filter(m => m && m.role && m.content).map(m => ({
         role: m.role === "assistant" ? "assistant" : "user",
         content: String(m.content).slice(0, 2000)

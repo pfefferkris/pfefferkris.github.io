@@ -78,12 +78,59 @@ def fetch_sp500(existing):
         print(f"sp500 fetch failed, keeping existing: {e}", file=sys.stderr)
         return keep(existing, ("sp500","sp500Date","sp500Return1y","benchmark","benchmarkSource"))
 
+def fetch_transfer_tax(existing):
+    """Federal transfer tax figures straight from the IRS gift tax FAQ.
+
+    These move once a year, in the autumn Revenue Procedure, but a stale one is the
+    most damaging error this site can make. Quoting last year's exclusion is how a
+    reader works out that nobody is minding the page, and on a page about money that
+    costs more than being silent would have. Ask Kristian reads these and is forbidden
+    from stating any figure it did not get from here or from a sourced explainer."""
+    keys = ("giftAnnualExclusion", "giftAnnualExclusionYear", "basicExclusion",
+            "basicExclusionYear", "transferTaxSource", "transferTaxChecked")
+    try:
+        flat = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", get(
+            "https://www.irs.gov/businesses/small-businesses-self-employed/"
+            "frequently-asked-questions-on-gift-taxes")))
+        now = datetime.date.today().year
+
+        # The IRS publishes a year to amount table: "2025 $19,000 2026 $19,000"
+        pairs = [(int(y), int(a.replace("$", "").replace(",", ""))) for y, a in
+                 re.findall(r"(20[0-9]{2})(?:\s*through\s*20[0-9]{2})?\s*(\$[0-9]{2},000)\b", flat)]
+        pairs = [p for p in pairs if 10000 <= p[1] <= 100000]
+        usable = [p for p in pairs if p[0] <= now] or pairs
+        if not usable:
+            raise ValueError("no annual exclusion rows found")
+        ye, ae = max(usable, key=lambda p: p[0])
+
+        bx = re.findall(r"basic exclusion amount to \$([0-9,]{7,14}) for gifts for calendar year (20[0-9]{2})", flat)
+        if bx:
+            be, yb = int(bx[-1][0].replace(",", "")), int(bx[-1][1])
+        else:
+            cands = [int(x.replace("$", "").replace(",", "")) for x in re.findall(r"\$[0-9]{1,2},[0-9]{3},000\b", flat)]
+            cands = [c for c in cands if 5000000 <= c <= 50000000]
+            if not cands:
+                raise ValueError("no basic exclusion found")
+            be, yb = max(cands), now
+        if not 5000000 <= be <= 50000000:
+            raise ValueError(f"basic exclusion out of plausible range: {be}")
+
+        return {"giftAnnualExclusion": ae, "giftAnnualExclusionYear": ye,
+                "basicExclusion": be, "basicExclusionYear": yb,
+                "transferTaxSource": "IRS frequently asked questions on gift taxes",
+                "transferTaxChecked": datetime.date.today().isoformat()}
+    except Exception as e:
+        print(f"transfer tax fetch failed, keeping existing: {e}", file=sys.stderr)
+        return keep(existing, keys)
+
+
 def main():
     existing = load_existing()
     data = dict(existing)
     data.update(fetch_7520(existing))
     data.update(fetch_tenyear(existing))
     data.update(fetch_sp500(existing))
+    data.update(fetch_transfer_tax(existing))
     data["updated"] = datetime.date.today().isoformat()
     if {k: v for k, v in data.items() if k != "updated"} == {k: v for k, v in existing.items() if k != "updated"}:
         print("no change")

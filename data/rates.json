@@ -1,15 +1,21 @@
 {
-  "updated": "2026-08-10",
+  "updated": "2026-08-12",
   "rate7520": 5.2,
   "rate7520Month": "August 2026",
   "rate7520Source": "IRS Section 7520 interest rates page",
   "midTermAFR": 4.35,
-  "tenYear": 4.65,
-  "tenYearDate": "August 7, 2026",
+  "tenYear": 4.68,
+  "tenYearDate": "August 12, 2026",
   "tenYearSource": "U.S. Treasury daily par yield curve",
-  "sp500": 7755.02,
-  "sp500Date": "August 10, 2026",
-  "sp500Return1y": 15.9,
+  "sp500": 7748.5,
+  "sp500Date": "August 12, 2026",
+  "sp500Return1y": 15.8,
   "benchmark": "S&P 500",
-  "benchmarkSource": "Yahoo Finance chart data"
+  "benchmarkSource": "Yahoo Finance chart data",
+  "giftAnnualExclusion": 19000,
+  "giftAnnualExclusionYear": 2026,
+  "basicExclusion": 15000000,
+  "basicExclusionYear": 2026,
+  "transferTaxSource": "IRS frequently asked questions on gift taxes",
+  "transferTaxChecked": "2026-08-12"
 }
