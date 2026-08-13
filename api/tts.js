@@ -5,7 +5,11 @@
 //
 // Text in, mp3 out. Nothing is stored, and the text is never logged.
 
-const VOICE_ID = process.env.ASK_VOICE_ID || "TxGEqnHWrfWFTfGW9XjX";
+// Brian. Deep American narration that stays conversational instead of announcing.
+// The deeper options in the audition list read as a documentary about estate tax
+// rather than a person answering a question, and on a personal site that gap
+// between the voice and the man costs more than the gravitas buys.
+const VOICE_ID = process.env.ASK_VOICE_ID || "nPczCjzI2devNBz1zQrb";
 const MODEL = process.env.ASK_TTS_MODEL || "eleven_flash_v2_5";
 
 // Speed is a real fix, not a preference. The default read is too slow for someone
