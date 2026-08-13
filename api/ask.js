@@ -26,6 +26,63 @@ let CORPUS = null;
 let CORE = null;
 let VOCAB = null;
 let FIGURES = null;
+let SAFE = null;
+let DOMAIN = new Set();
+
+// The word gate for miss telemetry (Kris's direction 2026-08-13: log the sanitized
+// question text, no PII).
+//
+// Until now a miss logged only allowlisted domain terms, which fails closed but goes
+// blank on exactly the questions worth writing an explainer for: the dream could see
+// that a visitor was failed and not what they wanted. This gate keeps the fail-closed
+// property and still yields readable text, because it is a WHITELIST, not a PII
+// blocklist. A blocklist only catches what somebody thought of; a whitelist cannot
+// emit a token that was never on it.
+//
+// data/asksafe.json is common English minus every personal name, built by
+// scripts/build_safelist.py. A proper noun, a place, a misspelling, a street, a
+// surname, a token carrying a digit: none of them are in the list, so none of them
+// can be written. See also: nothing here is ever attached to a session or an IP.
+function safeWords() {
+  if (SAFE !== null) return SAFE;
+  try {
+    const j = JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "asksafe.json"), "utf8"));
+    SAFE = new Set(j.words || []);
+    DOMAIN = new Set(j.domain || []);
+  } catch (e) { SAFE = new Set(); DOMAIN = new Set(); }
+  return SAFE;
+}
+
+const SANITIZE_MAX_WORDS = 24;
+
+function sanitizeQuestion(q) {
+  const safe = safeWords();
+  if (!safe.size) return "";           // no gate loaded, so nothing is logged
+  // Case is evidence, so read it BEFORE lowercasing. A capitalised word in the middle
+  // of a sentence is a proper noun — a person, a street, a town, a bank — and that is
+  // true of names no list will ever contain. "Kensington" is a dictionary word and a
+  // common one; the only thing marking it as a place is the capital letter, and the
+  // first build of this gate leaked it precisely because it lowercased first.
+  const tokens = String(q || "").split(/[^A-Za-z]+/).filter(Boolean);
+  const words = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const tok = tokens[i];
+    const raw = tok.toLowerCase();
+    // His own published legal language survives the proper-noun rule: "Roth",
+    // "Medicaid" and "IRA" are capitalised in real questions and are exactly the
+    // words that make a miss worth reading. They are his vocabulary, never a person.
+    const capitalised = i > 0 && tok[0] === tok[0].toUpperCase() && tok[0] !== tok[0].toLowerCase();
+    if (capitalised && !DOMAIN.has(raw)) continue;
+    // Anything glued to a digit or a symbol is already gone: the split keeps only runs
+    // of pure letters, so "919-555-0134", "$40,000" and an email address leave nothing
+    // behind that could be reassembled.
+    if (raw.length < 2 || raw.length > 20) continue;
+    if (!safe.has(raw)) continue;
+    words.push(raw);
+    if (words.length >= SANITIZE_MAX_WORDS) break;
+  }
+  return words.join(" ");
+}
 
 // The live figure register. This is the SAME data/rates.json the guide itself runs
 // on, refreshed weekly by scripts/update_rates.py in GitHub Actions straight from the
@@ -441,13 +498,19 @@ async function callBrain(messages, ms, telemetry) {
         // consolidation skips and the dream reads as a gap radar.
         //
         // X-Topics: which explainers the retriever actually reached.
-        // X-Gap: allowlisted estate law terms the question reached for. Nothing
-        // else from the question leaves this function. Not the sentence, not a
-        // paraphrase, not a name, not a number.
+        // X-Gap: allowlisted estate law terms the question reached for.
+        // X-Qsan: on a MISS only, the question reduced to common English words that
+        //   are not personal names. It is sent for the same reason the gap list is —
+        //   so the dream can rank what to write next — and it is the only thing
+        //   resembling the visitor's own words that ever leaves this function. It
+        //   carries no digit, no name, no place and no address, because none of those
+        //   are on the word gate. On a hit it is empty: a question the library already
+        //   answered needs no breadcrumb.
         "X-Surface": "wealthguide",
         "X-Anon": "1",
         "X-Topics": (t.topics || []).join(","),
-        "X-Gap": (t.gap || []).join(",")
+        "X-Gap": (t.gap || []).join(","),
+        "X-Qsan": t.question || ""
       },
       body: JSON.stringify({
         model: process.env.ASK_MODEL || "cerebellum",
@@ -599,7 +662,10 @@ export default async function handler(req, res) {
     // library came back empty, because that is the case worth writing an explainer for.
     const telemetry = {
       topics: (position ? [position.id] : []).concat(hits.map(d => d.id)).filter(Boolean),
-      gap: hits.length ? [] : gapTerms(q)
+      gap: hits.length ? [] : gapTerms(q),
+      // Only on a miss, and only the visitor's own question — never the page context
+      // they arrived from and never the answer.
+      question: hits.length ? "" : sanitizeQuestion(q)
     };
 
     // Home first. A cold local model can take a while to load, so give the house
