@@ -1,0 +1,94 @@
+{
+  "built": "2026-08-13",
+  "note": "Comparative trust law across the four job campaign states plus Nevada as benchmark. Every row names the statute it rests on, because the point is to be able to say WHICH provision does the work rather than which state has the better reputation. Sourced from Kristian's own primary law library, compiled from official state legislature sites, and it carries the corrections he verified. Where the library does not hold a statute, the row says so rather than guessing.",
+  "states": {"DE": "Delaware", "SD": "South Dakota", "TN": "Tennessee", "NC": "North Carolina", "NV": "Nevada"},
+  "home": "NC",
+  "benchmark": "NV",
+  "features": [
+    {
+      "key": "self_settled_protection",
+      "name": "putting your own assets in a trust your future creditors cannot reach",
+      "plain": "a self settled asset protection trust, sometimes called a DAPT",
+      "why_it_comes_up": "Someone in a profession that gets sued, or someone about to sell a business, asks whether they can put their own money in a trust and still benefit from it.",
+      "states": {
+        "DE": {"has": true, "cite": "12 Del. C. 3570 to 3576, Qualified Dispositions in Trust Act", "note": "The Delaware DAPT."},
+        "SD": {"has": true, "cite": "SDCL 55-16, Qualified Dispositions in Trust", "note": "The South Dakota DAPT."},
+        "TN": {"has": true, "cite": "Tenn. Code Ann. 35-16-101 through 112, Tennessee Investment Services Act of 2007", "note": "The Tennessee DAPT."},
+        "NV": {"has": true, "cite": "NRS 166, Spendthrift Trust Act of Nevada", "note": "166.040 permits the settlor as a beneficiary; 166.170 sets the limitations period."},
+        "NC": {"has": false, "cite": "NCGS 36C-5-505", "note": "North Carolina has no DAPT statute, and this section runs the other way: a creditor reaches the maximum that could be distributed to the settlor, spendthrift language notwithstanding."}
+      }
+    },
+    {
+      "key": "dynasty_perpetuities",
+      "name": "how many generations a trust can run before it has to end",
+      "plain": "a dynasty trust, and the rule against perpetuities that limits one",
+      "why_it_comes_up": "Someone wants the trust to hold for grandchildren and beyond, usually alongside a generation skipping exemption allocation.",
+      "states": {
+        "DE": {"has": true, "cite": "25 Del. C. 503", "note": "Perpetual for personal property; 110 years for real property held directly in trust."},
+        "SD": {"has": true, "cite": "SDCL 43-5-8", "note": "Abolishes the common law rule against perpetuities outright."},
+        "TN": {"has": true, "cite": "Tenn. Code Ann. 66-1-202, USRAP", "note": "The 360 year rule is subsection (f)."},
+        "NV": {"has": true, "cite": "NRS 111.1031", "note": "Sets a 365 year rule."},
+        "NC": {"has": true, "cite": "NCGS 41-23", "note": "Perpetuities and suspension of the power of alienation. The chapter is on file; read it directly rather than relying on a chart."}
+      }
+    },
+    {
+      "key": "directed_trust",
+      "name": "splitting the trustee's job so someone else directs the investments",
+      "plain": "a directed trust, with a trust protector or an investment adviser",
+      "why_it_comes_up": "A family wants a corporate trustee for administration but wants to keep their own investment adviser, or wants concentrated stock or a family business held without the trustee forced to diversify it.",
+      "states": {
+        "DE": {"has": true, "cite": "12 Del. C. 3313 and 3313A", "note": "Advisers, and the excluded cotrustee."},
+        "SD": {"has": true, "cite": "SDCL 55-1B", "note": "Excluded fiduciary, trust protector, and the investment, distribution and tax advisers."},
+        "TN": {"has": true, "cite": "Tenn. Code Ann. 35-15-1201 through 1206", "note": "Trust protectors and trust advisors."},
+        "NC": {"has": true, "cite": "NCGS 36C Article 8A", "note": "North Carolina's own 2012 power holder framework. This is NOT the Uniform Directed Trust Act, so do not reason from UDTA commentary."},
+        "NV": {"has": null, "cite": "", "note": "The library does not hold Nevada's directed trust statute."}
+      }
+    },
+    {
+      "key": "decanting",
+      "name": "pouring an irrevocable trust into a better one without going to court",
+      "plain": "decanting",
+      "why_it_comes_up": "An old irrevocable trust has terms that no longer fit: a beneficiary on public benefits, a bad trustee succession clause, or a distribution standard that will hurt someone.",
+      "states": {
+        "DE": {"has": true, "cite": "12 Del. C. 3528", "note": "Trustee authority to invade principal. Nonuniform."},
+        "SD": {"has": true, "cite": "SDCL 55-2-15 through 55-2-21", "note": ""},
+        "TN": {"has": true, "cite": "Tenn. Code Ann. 35-15-818, Trustee's power to appoint in trust", "note": "CORRECTION he verified: nearly every chart still cites 35-15-816(b)(27), which now reads deleted by 2021 amendment. The operative authority is 35-15-818, added by 2023 Tenn. Acts ch. 166 s 17, effective April 17, 2023. Section 35-15-1201(a)(14) still carries the dead cross reference, which is how the error keeps spreading."},
+        "NC": {"has": true, "cite": "NCGS 36C Article 8B, North Carolina Uniform Trust Decanting Act, S.L. 2017-121", "note": "CORRECTION he verified: do not cite 36C-8-816.1, repealed by that same session law effective July 18, 2017. North Carolina can decant, so this is not a gap."},
+        "NV": {"has": null, "cite": "", "note": "Not in the library."}
+      }
+    },
+    {
+      "key": "state_income_tax",
+      "name": "whether the state taxes income the trust accumulates",
+      "plain": "state fiduciary income tax on a nongrantor trust",
+      "why_it_comes_up": "A trust accumulates income rather than distributing it, and the state where it is administered wants a share.",
+      "states": {
+        "NC": {"has": true, "cite": "NCGS 105-160.2", "note": "North Carolina is the only one of these five that taxes trust income. Its application narrowed after Kaestner, 588 U.S. 262 (2019), and he flagged the current wording as not yet run to ground. Read the section on file rather than restating the old rule."},
+        "DE": {"has": false, "cite": "30 Del. C. ch. 16 subch. III, including the 1636 deduction", "note": "Delaware allows a deduction for income set aside for nonresident beneficiaries. He flagged 30 Del. C. 1601, the resident trust definition, as only partly verified, so do not state the residency rule as settled."},
+        "SD": {"has": false, "cite": "", "note": "No state income tax on trust income."},
+        "TN": {"has": false, "cite": "", "note": "No state income tax on trust income."},
+        "NV": {"has": false, "cite": "Nev. Const. art. X, sec. 9", "note": "CORRECTION he verified: the income tax prohibition is section 9, not section 1. A widely circulated link says section 1 and is wrong."}
+      }
+    },
+    {
+      "key": "privacy",
+      "name": "keeping the trust and its terms out of view",
+      "plain": "quiet trusts, sealing a trust file, and limiting what beneficiaries must be told",
+      "why_it_comes_up": "A family does not want the children to know the size of the trust, or does not want the instrument sitting in a public court file.",
+      "library_gap": true,
+      "states": {
+        "NC": {"has": true, "cite": "NCGS 36C-8-813", "note": "North Carolina runs the other way on this: the duty to inform qualified beneficiaries is affirmative, and he has written about it."},
+        "DE": {"has": null, "cite": "", "note": "The library does not hold Delaware's quiet trust provision."},
+        "SD": {"has": null, "cite": "", "note": "The library does not hold South Dakota's sealing statute."},
+        "TN": {"has": null, "cite": "", "note": "Not in the library."},
+        "NV": {"has": null, "cite": "", "note": "Not in the library."}
+      }
+    }
+  ],
+  "open_items": [
+    "30 Del. C. 1601, the resident trust definition. Only 1636 was verified.",
+    "NCGS 105-160.2 current wording after Kaestner. The amendment history was not run to ground.",
+    "Nevada's income tax prohibition is Nev. Const. art. X sec. 9, not sec. 1."
+  ],
+  "framing": "Situs is a live practice question and it is also the fastest way for a non lawyer to give advice by accident. Name the statute that does the work, name what North Carolina does instead, and stop. The choice belongs to a lawyer licensed in the state being considered, working with a tax adviser, because settlor residency, trustee location and where the beneficiaries live all change the answer."
+}

@@ -85,6 +85,90 @@ function figureBlock() {
     "figure unless that year is shown above. A missing number reads as careful. A stale one reads as " +
     "abandoned, and it is the fastest way to lose a reader who came here for accuracy.";
 }
+// The jurisdiction layer. He carries primary law for the four job campaign states plus
+// Nevada, which means this site can do something a general explainer cannot: notice that
+// a goal North Carolina law does not reach is a goal another state's statute was written
+// for, and name the provision.
+//
+// It is also the fastest way for a non lawyer to give advice by accident, so the trigger
+// is a word list rather than the model's judgement, and the framing rules below are not
+// suggestions. Name the statute, name what North Carolina does instead, stop.
+let JUR = null;
+function jurisdictions() {
+  if (JUR) return JUR;
+  try {
+    JUR = JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "jurisdictions.json"), "utf8"));
+  } catch (e) { JUR = { features: [] }; }
+  return JUR;
+}
+
+// A goal, in the words a person actually uses for it. Deliberately narrow: a question has
+// to be reaching for the THING before the comparison is worth raising, because volunteering
+// Delaware at someone asking how probate works is noise wearing a suit.
+const SITUS_TRIGGERS = {
+  self_settled_protection: ["asset protection", "protect my assets", "protect assets", "creditor",
+    "creditors", "judgment", "malpractice", "get sued", "getting sued", "lawsuit", "liability",
+    "self settled", "self-settled", "dapt", "spendthrift", "shield", "bankruptcy"],
+  dynasty_perpetuities: ["dynasty", "perpetual", "perpetuity", "perpetuities", "generations",
+    "grandchildren and beyond", "forever", "how long can a trust last", "great grandchildren",
+    "multigenerational", "multi generational"],
+  directed_trust: ["directed trust", "trust protector", "investment adviser", "investment advisor",
+    "excluded fiduciary", "keep my adviser", "keep my advisor", "concentrated stock",
+    "family business in trust", "direct the investments", "corporate trustee"],
+  decanting: ["decant", "decanting", "fix a broken trust", "fix an irrevocable", "change an irrevocable",
+    "modify an irrevocable", "amend an irrevocable", "outdated trust", "old trust terms"],
+  state_income_tax: ["state income tax", "state tax on the trust", "trust income tax", "ning",
+    "accumulate income", "accumulated income", "nongrantor", "non grantor", "avoid state tax",
+    "situs", "situs the trust", "where to situs"],
+  privacy: ["quiet trust", "privacy", "private trust", "keep it private", "seal the", "sealed",
+    "confidential", "beneficiaries do not know", "without them knowing", "keep them from knowing"]
+};
+
+function situsBlock(q) {
+  const j = jurisdictions();
+  if (!j.features || !j.features.length) return "";
+  const low = " " + String(q || "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ") + " ";
+  const hit = j.features.filter(f =>
+    (SITUS_TRIGGERS[f.key] || []).some(t => low.indexOf(" " + t + " ") >= 0 || low.indexOf(t) >= 0));
+  if (!hit.length) return "";
+
+  const names = j.states || {};
+  const rows = hit.map(f => {
+    const lines = Object.keys(f.states).map(k => {
+      const v = f.states[k];
+      const verdict = v.has === true ? "YES" : v.has === false ? "NO" : "NOT IN THE LIBRARY";
+      return "  " + (names[k] || k) + ": " + verdict +
+             (v.cite ? " (" + v.cite + ")" : "") + (v.note ? " " + v.note : "");
+    }).join("\n");
+    return "GOAL: " + f.name + "\nCalled: " + f.plain +
+           (f.library_gap ? "\nTHE LIBRARY IS THIN HERE. Say so rather than filling the gap." : "") +
+           "\n" + lines;
+  }).join("\n\n");
+
+  return "\n\n--- WHERE THIS TOOL ACTUALLY LIVES ---\n\n" +
+    "The question reaches for something whose answer depends on which state's law governs the trust. " +
+    "He carries the primary statutes for Delaware, South Dakota, Tennessee, North Carolina and Nevada, " +
+    "so name the provision rather than the reputation.\n\n" + rows +
+    "\n\nHOW TO USE THIS, and these are rules, not preferences.\n" +
+    "Say what the statute does and name it the way it is written above. If North Carolina reaches the " +
+    "goal, say so plainly and do not raise another state at all: North Carolina can decant and it has a " +
+    "power holder statute, and implying otherwise would be wrong.\n" +
+    "If North Carolina does not reach it, say that, name the state whose statute does and what that " +
+    "provision is, and say why practitioners situs there. That is the useful part and he should not " +
+    "withhold it.\n" +
+    "NEVER tell anyone to form, move or situs a trust anywhere. Not 'you should', not 'consider', not " +
+    "'the right move is'. He is not an attorney and situs turns on settlor residency, trustee location, " +
+    "where the beneficiaries live and the tax result, none of which he knows.\n" +
+    "ALWAYS close a situs answer by saying this belongs to an attorney licensed in that state, with a " +
+    "tax adviser, and that his own license is a North Carolina real estate broker license, not a law " +
+    "license in any state.\n" +
+    "Never rank the states or call one best. Where a row says NOT IN THE LIBRARY, say the library does " +
+    "not reach it. Do not supply the provision from memory, and do not describe what you think that " +
+    "state's law says.\n" +
+    "Carry the corrections. Where a note says a widely cited section is repealed or deleted, that is the " +
+    "point of the answer, not a footnote.\n";
+}
+
 function corpus() {
   if (CORPUS) return CORPUS;
   const p = path.join(process.cwd(), "data", "corpus.json");
@@ -501,7 +585,8 @@ export default async function handler(req, res) {
       : "";
 
     const messages = [
-      { role: "system", content: VOICE + figureBlock() + ctxBlock + "\n\n--- SOURCES ---\n\n" + sourceBlock },
+      { role: "system", content: VOICE + figureBlock() + situsBlock(q) + ctxBlock +
+          "\n\n--- SOURCES ---\n\n" + sourceBlock },
       ...history.filter(m => m && m.role && m.content).map(m => ({
         role: m.role === "assistant" ? "assistant" : "user",
         content: String(m.content).slice(0, 2000)
