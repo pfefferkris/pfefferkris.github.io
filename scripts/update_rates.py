@@ -135,6 +135,73 @@ def fetch_transfer_tax(existing):
         return keep(existing, keys)
 
 
+def fetch_retirement_limits(existing):
+    """The figures the retirement math actually runs on, from the two agencies that set them.
+
+    These were hardcoded in the guide, which is the exact failure the figure law names: a
+    page that states $24,500 with confidence and no idea what year it is. Worse, the
+    replacement rate credited every reader with Social Security worth 40 percent of their
+    final salary, with nothing capping it, so a reader projecting a million dollar final
+    year was handed a Social Security benefit of nearly four hundred thousand a year. The
+    taxable maximum is what makes that impossible, so the taxable maximum has to be here.
+
+    Both sources are plain HTML tables and both are picky about being scraped, so each is
+    tried on its own and a failure keeps the previous answer rather than blanking it.
+    """
+    out = {}
+    # Social Security: the contribution and benefit base, which is the ceiling on covered
+    # earnings and therefore the ceiling on what a benefit can ever be built from.
+    try:
+        text = re.sub(r"<[^>]+>", " ", get("https://www.ssa.gov/oact/cola/cbb.html"))
+        text = re.sub(r"\s+", " ", text)
+        rows = re.findall(r"\b(20[2-9]\d)\s+\$?([\d,]{6,12})", text)
+        rows = [(int(y), int(v.replace(",", ""))) for y, v in rows]
+        rows = [r for r in rows if 100000 < r[1] < 1000000]
+        if not rows:
+            raise ValueError("no contribution and benefit base found")
+        year, base = max(rows, key=lambda r: r[0])
+        out.update({"ssTaxableMax": base, "ssTaxableMaxYear": year,
+                    "ssSource": "Social Security Administration, contribution and benefit base"})
+    except Exception as e:
+        print(f"ssa base fetch failed, keeping existing: {e}", file=sys.stderr)
+        out.update(keep(existing, ("ssTaxableMax", "ssTaxableMaxYear", "ssSource")))
+
+    # IRS: the elective deferral limit, and the compensation limit that caps a match.
+    try:
+        text = re.sub(r"<[^>]+>", " ", get("https://www.irs.gov/retirement-plans/plan-participant-employee/"
+                                           "retirement-topics-401k-and-profit-sharing-plan-contribution-limits"))
+        text = re.sub(r"\s+", " ", text)
+        yr = None
+        m = re.search(r"\$([\d,]{5,9})\s+in\s+(20\d\d)", text)
+        if m:
+            out["deferral402g"] = int(m.group(1).replace(",", ""))
+            yr = int(m.group(2))
+        c = re.search(r"limited to \$([\d,]{5,9}) for (20\d\d)", text)
+        if c:
+            out["comp401a17"] = int(c.group(1).replace(",", ""))
+            yr = yr or int(c.group(2))
+        if not out.get("deferral402g") and not out.get("comp401a17"):
+            raise ValueError("no retirement limits parsed")
+        if yr:
+            out["retirementLimitsYear"] = yr
+        out["retirementLimitsSource"] = "IRS 401(k) and profit sharing plan contribution limits"
+    except Exception as e:
+        print(f"irs limits fetch failed, keeping existing: {e}", file=sys.stderr)
+        out.update(keep(existing, ("deferral402g", "comp401a17", "retirementLimitsYear",
+                                   "retirementLimitsSource")))
+
+    # Plausibility, the same way the transfer tax figures are guarded. A parse that comes
+    # back with something absurd is worse than one that fails, because it ships.
+    if out.get("ssTaxableMax") and not (100000 < out["ssTaxableMax"] < 1000000):
+        out.pop("ssTaxableMax", None)
+    if out.get("deferral402g") and not (10000 < out["deferral402g"] < 100000):
+        out.pop("deferral402g", None)
+    if out.get("comp401a17") and not (100000 < out["comp401a17"] < 2000000):
+        out.pop("comp401a17", None)
+    out["retirementChecked"] = datetime.date.today().isoformat()
+    return out
+
+
 def main():
     existing = load_existing()
     data = dict(existing)
@@ -142,6 +209,7 @@ def main():
     data.update(fetch_tenyear(existing))
     data.update(fetch_sp500(existing))
     data.update(fetch_transfer_tax(existing))
+    data.update(fetch_retirement_limits(existing))
     data["updated"] = datetime.date.today().isoformat()
     if {k: v for k, v in data.items() if k != "updated"} == {k: v for k, v in existing.items() if k != "updated"}:
         print("no change")

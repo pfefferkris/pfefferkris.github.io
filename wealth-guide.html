@@ -952,7 +952,7 @@ const BLOCKS=[
  </div>
  <div class="anstats"><div class="anstat" id="t_numcard" style="display:none;flex:none;min-width:220px;border-color:var(--gold)"><span>Your number</span><b id="t_numval">&#8212;</b><i id="t_numsub"></i></div></div>
  <div class="tout" id="t_ret">Add your age (Spring), salary, balance and monthly savings, and the replacement rate computes here.</div>
- <div class="advline" id="t_advret" data-anchor="#t_ret"><b>The law of the nest egg:</b> workplace plans live under ERISA, which does three quiet favors most savers never notice: a fiduciary duty on whoever runs the plan, federal protection from creditors (the anti alienation rule), and automatic spousal rights on the money. For 2026 the IRS elective deferral limit is <b>$24,500</b> (IRC Section 402(g)); an IRA adds up to <b>$7,500</b> more (Section 219), each with extra catch up room after age 50. Traditional dollars are taxed on the way out, Roth dollars on the way in, and the employer match is always traditional. IRAs carry their own armor: protected in bankruptcy, and in North Carolina shielded from general creditors as well. The hedge lesson grows up here too: as retirement nears, the hedge seat in the portfolio is supposed to expand, and that gradual shift is the entire idea inside a target date fund.</div>
+ <div class="advline" id="t_advret" data-anchor="#t_ret"><b>The law of the nest egg:</b> workplace plans live under ERISA, which does three quiet favors most savers never notice: a fiduciary duty on whoever runs the plan, federal protection from creditors (the anti alienation rule), and automatic spousal rights on the money. The elective deferral limit under IRC Section 402(g) and the compensation limit under Section 401(a)(17) are read from the live IRS figures the rest of this page uses, rather than quoted here from memory, because a limit typed into a page is a limit that is wrong the year after it is typed. Traditional dollars are taxed on the way out, Roth dollars on the way in, and the employer match is always traditional. IRAs carry their own armor: protected in bankruptcy, and in North Carolina shielded from general creditors as well. The hedge lesson grows up here too: as retirement nears, the hedge seat in the portfolio is supposed to expand, and that gradual shift is the entire idea inside a target date fund.</div>
  <p class="tsub" style="margin-top:18px"><b>Two lessons I give everyone.</b></p>
  <div class="lesson"><b>1. The fee lesson.</b> What does the ${gl('expratio','expense ratio')} quietly cost over a working lifetime?
   <div class="trow"><label>Fund expense ratio (%)<input type="number" id="t_fee" step="0.05" min="0" max="3" placeholder="0.75"></label></div>
@@ -2348,7 +2348,9 @@ function tcalc(){
   const o1=$('t_out1'),a1=$('t_adv1');
   if(o1){
     if(T.retBal!==null||T.monthly!==null){
-      const matchA=(T.salary&&T.cap)?T.salary*Math.min(T.defer,T.cap)/100:0;
+      const compCap1=RTS.comp401a17||0;
+        const matchBase1=compCap1?Math.min(T.salary,compCap1):T.salary;
+        const matchA=(T.salary&&T.cap)?matchBase1*Math.min(T.defer,T.cap)/100:0;
       const contrib=(T.monthly||0)*12+matchA;
       const nestF=fv(T.retBal||0,yrs,rf())+fvStream(contrib,yrs,rf());
       const nestB=fv(T.retBal||0,yrs,LONGRUN/100)+fvStream(contrib,yrs,LONGRUN/100);
@@ -2398,20 +2400,38 @@ function tcalc(){
     const wage=(+($('t_wage')&&$('t_wage').value)||3)/100;
     if(T.age&&rsal&&(T.retBal!==null||T.monthly!==null)){
       const y2=Math.max(1,rAge-T.age);
-      const matchA2=(rsal&&T.cap)?rsal*Math.min(T.defer,T.cap)/100:0;
+      // A plan may not count compensation above the 401(a)(17) limit, so a match computed on
+      // the whole of a large salary is a match no plan would actually pay.
+      const compCap=RTS.comp401a17||0;
+      const matchBase=compCap?Math.min(rsal,compCap):rsal;
+      const matchA2=(rsal&&T.cap)?matchBase*Math.min(T.defer,T.cap)/100:0;
       const contrib2=(T.monthly||0)*12+matchA2;
       const nestF2=fv(T.retBal||0,y2,rf())+fvStream(contrib2,y2,rf());
       const nestB2=fv(T.retBal||0,y2,LONGRUN/100)+fvStream(contrib2,y2,LONGRUN/100);
       const finalSal=rsal*Math.pow(1+wage,y2);
       const repF=nestF2*0.04/finalSal, repB=nestB2*0.04/finalSal;
-      const eff=repB+0.4;
-      const cls=eff>=0.8?'big':'flagbad';
-      let r='Retiring at '+rAge+', your final working year of pay projects to about <b>'+tfmt(finalSal)+'</b>. The nest egg turns into income by the '+gl('fourpct','four percent rule')+': at the floor that is '+tfmt(nestF2*0.04)+' a year, a '+gl('replacement','replacement rate')+' of <span class="'+cls+'">'+Math.round(repF*100)+'%</span>; near the long run average, '+tfmt(nestB2*0.04)+' a year, or <span class="'+cls+'">'+Math.round(repB*100)+'%</span>. Social Security typically adds roughly 40 points for an average earner. ';
-      if(eff>=0.8)r+='<b>It sounds like the road you are on arrives.</b> The plan now is protecting it: fees, concentration, and the Winter documents.';
-      else r+='<b>It sounds like the replacement rate comes up short of the 70 to 80 percent planners target.</b> My answer is one of two levers, and only two: a more aggressive savings strategy, or a later retirement age. Nudge the monthly savings in Step 1 or the age above and watch this number move.';
-      /* THE NUMBER: solve backward for the monthly contribution that reaches the target */
-      const targetRep=0.75, ssRep=0.40;
+/* Social Security replaces about 40 percent for a MEDIUM earner, which is the figure the
+         copy already cited and the math already ignored. Benefits are built only on covered
+         earnings, and covered earnings stop at the contribution and benefit base, so a flat
+         40 percent of any salary credited a reader projecting a million dollar final year
+         with a Social Security benefit near four hundred thousand a year. It is not
+         possible, and it told a high earner to save LESS than a mid earner.
+         The cap is indexed to wage growth, which is the rate the reader just gave, so it
+         travels forward the same way the salary does. A cap older than last year is not
+         used at all: a stale ceiling is worse than an honest 40. */
+      const ssFresh=RTS.ssTaxableMax&&RTS.ssTaxableMaxYear&&
+                    (new Date().getFullYear()-RTS.ssTaxableMaxYear)<=1;
+      const ssCapNow=ssFresh?RTS.ssTaxableMax:0;
+      const covered=ssCapNow?Math.min(finalSal,ssCapNow*Math.pow(1+wage,y2)):finalSal;
+      const targetRep=0.75;
+      const ssRep=finalSal>0?Math.min(0.40,0.40*covered/finalSal):0.40;
       const needRep=Math.max(0,targetRep-ssRep);
+      const eff=repB+ssRep;
+      const cls=eff>=targetRep?'big':'flagbad';
+      let r='Retiring at '+rAge+', your final working year of pay projects to about <b>'+tfmt(finalSal)+'</b>. The nest egg turns into income by the '+gl('fourpct','four percent rule')+': at the floor that is '+tfmt(nestF2*0.04)+' a year, a '+gl('replacement','replacement rate')+' of <span class="'+cls+'">'+Math.round(repF*100)+'%</span>; near the long run average, '+tfmt(nestB2*0.04)+' a year, or <span class="'+cls+'">'+Math.round(repB*100)+'%</span>. '+(ssCapNow?'Social Security is credited here at 40 percent of COVERED earnings, and covered earnings stop at the contribution and benefit base ('+tfmt(ssCapNow)+' for '+RTS.ssTaxableMaxYear+', indexed forward at the same raise rate), so this reader gets about '+Math.round(ssRep*100)+' points from it rather than a flat 40. Forty points is the figure for a medium earner and it falls as pay rises above the base.':'Social Security typically adds roughly 40 points for a medium earner.')+' ';
+      if(eff>=targetRep)r+='<b>It sounds like the road you are on arrives.</b> The plan now is protecting it: fees, concentration, and the Winter documents.';
+      else r+='<b>It sounds like the replacement rate comes up short of the 75 percent midpoint of the 70 to 80 percent range planners target.</b> My answer is one of two levers, and only two: a more aggressive savings strategy, or a later retirement age. Nudge the monthly savings in Step 1 or the age above and watch this number move.';
+      /* THE NUMBER: solve backward for the monthly contribution that reaches the target */
       const nestNeed=needRep*finalSal/0.04;
       const haveFV=fv(T.retBal||0,y2,LONGRUN/100);
       const annuityF=fvStream(1,y2,LONGRUN/100);
@@ -2428,7 +2448,8 @@ function tcalc(){
       if(nc&&nv&&ns){nc.style.display='block';
         nv.textContent=needMonthly<1?'Covered':tfmt(needMonthly)+' / mo';
         nv.style.color=needMonthly<1||( T.monthly&&T.monthly>=needMonthly)?'#2e6b4f':'';
-        ns.textContent='to reach 75% replacement at '+rAge+(T.monthly?' (now: '+tfmt(T.monthly)+'/mo)':'');}
+        ns.textContent='to reach '+Math.round(targetRep*100)+'% replacement at '+rAge+
+           ', assuming the long run average'+(T.monthly?' (now: '+tfmt(T.monthly)+'/mo)':'');}
     } else {
       // Naming what is missing is not enough when the missing box is a season away. Each
       // one is a button that scrolls to the box and puts the cursor in it, because the

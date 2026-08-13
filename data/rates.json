@@ -1,5 +1,5 @@
 {
-  "updated": "2026-08-12",
+  "updated": "2026-08-13",
   "rate7520": 5.2,
   "rate7520Month": "August 2026",
   "rate7520Source": "IRS Section 7520 interest rates page",
@@ -17,6 +17,18 @@
   "basicExclusion": 15000000,
   "basicExclusionYear": 2026,
   "transferTaxSource": "IRS frequently asked questions on gift taxes",
-  "transferTaxChecked": "2026-08-12",
-  "basicExclusionBasis": "Set by Public Law 119-21, signed 4 July 2025, amending IRC 2010(c)(3). This replaced the earlier scheduled sunset, so it does NOT drop back at the end of 2025. Do not repeat the old sunset story."
+  "transferTaxChecked": "2026-08-13",
+  "basicExclusionBasis": "Set by Public Law 119-21, signed 4 July 2025, amending IRC 2010(c)(3). This replaced the earlier scheduled sunset, so it does NOT drop back at the end of 2025. Do not repeat the old sunset story.",
+  "deferral402g": 24500,
+  "comp401a17": 360000,
+  "retirementLimitsYear": 2026,
+  "retirementLimitsSource": "IRS 401(k) and profit sharing plan contribution limits",
+  "retirementChecked": "2026-08-13",
+  "ssTaxableMax": 184500,
+  "ssTaxableMaxYear": 2026,
+  "ssSource": "Social Security Administration, contribution and benefit base",
+  "ssMaxBenefitFRA": 4207,
+  "ssMaxBenefitFRAAge": 67,
+  "ssMaxBenefitFRAYear": 2026,
+  "ssMaxBenefitSource": "Social Security Administration, benefits for workers with maximum-taxable earnings"
 }
