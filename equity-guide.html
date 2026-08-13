@@ -625,7 +625,7 @@ body.adv .teeth .tcard .whyln{display:block}
 <!-- ============================ 2 · THE INCOME ============================ -->
 <section class="stage">
   <div class="lane-a">
-    <div class="advline" id="q_adv2" data-anchor="#q_noi_out"><b>Net operating income is a defined term, and the definition is the whole fight.</b> NOI is effective gross income less operating expenses, and it deliberately excludes four things: debt service, income taxes, depreciation, and capital expenditures. That is not an accounting nicety. It exists so a property can be valued independently of who buys it and how they finance it &mdash; the same building has one NOI and a thousand different cash flows. <b>Which is exactly why a seller's pro forma is not evidence.</b> The three line items a seller quietly leaves out are vacancy, management, and reserves, and leaving out all three can lift a stated NOI by a fifth. A fifth of NOI, divided by a nine percent cap rate, is roughly two years of your money. Vacancy and credit loss, management whether or not you hire it, and a reserve for the roof you will replace are underwriting requirements, not pessimism.</div>
+    <div class="advline" id="q_adv2" data-anchor="#q_noi_out"><b>Net operating income is a defined term, and the definition is the whole fight.</b> NOI is effective gross income less operating expenses, and it deliberately excludes four things: debt service, income taxes, depreciation, and capital expenditures. That is not an accounting nicety. It exists so a property can be valued independently of who buys it and how they finance it &mdash; the same building has one NOI and a thousand different cash flows. <b>Which is exactly why a seller's pro forma is not evidence.</b> The three line items a seller quietly leaves out are vacancy, management, and reserves, and leaving out all three can lift a stated NOI by a fifth. A fifth of NOI, divided by a nine percent cap rate, is roughly two years of your money. Vacancy and credit loss, management whether or not you hire it, and a reserve for the roof you will replace are underwriting requirements, not pessimism. <br><br><b>One distinction the definition above hides, and this worksheet takes a side on.</b> A capital expenditure is the roof you actually put on in the year you put it on; a replacement reserve is the annual accrual toward it. NOI excludes the first and appraisal practice includes the second, which is why the reserve percentage below is deducted here and a lender computing debt coverage may well add it back. The deduction is deliberate: an eight unit building consumes roofs, water heaters and HVAC on a schedule, and a model that pretends otherwise is not measuring the same asset you own.</div>
   </div>
   <div class="lane-c">
     <span class="era">Two &middot; The Income</span>
@@ -669,7 +669,7 @@ body.adv .teeth .tcard .whyln{display:block}
 <!-- ============================ 3 · THE DEBT ============================ -->
 <section class="stage">
   <div class="lane-a">
-    <div class="advline" id="q_adv3" data-anchor="#q_debt_out"><b>The payment is a formula, not a quote.</b> Level payment amortization solves for the single payment that retires the balance in exactly n periods: <b>PMT = L &times; i / (1 &minus; (1 + i)<sup>&minus;n</sup>)</b>, where i is the monthly rate and n is the number of months. Twelve of those over the loan amount is the <b>mortgage constant</b>, or annual loan factor, and it is the number Stage Four runs on. <b>Debt service coverage</b> is net operating income over annual debt service; below 1.00 the property does not pay for itself, and most portfolio lenders on small multifamily will not write below about 1.20 &mdash; that spread is their margin for the year you have a vacancy and a furnace at once. Note what the payment does <em>not</em> include here: taxes and insurance were already taken out in Stage Two as operating expenses, so counting them again in the payment would double charge you. This is the single most common error in a homemade spreadsheet.</div>
+    <div class="advline" id="q_adv3" data-anchor="#q_debt_out"><b>The payment is a formula, not a quote.</b> Level payment amortization solves for the single payment that retires the balance in exactly n periods: <b>PMT = L &times; i / (1 &minus; (1 + i)<sup>&minus;n</sup>)</b>, where i is the monthly rate and n is the number of months. Twelve of those over the loan amount is the <b>mortgage constant</b>, or annual loan factor, and it is the number Stage Four runs on. <b>Debt service coverage</b> is net operating income over annual debt service; below 1.00 the property does not pay for itself, and most portfolio lenders on small multifamily will not write below about 1.20 &mdash; that spread is their margin for the year you have a vacancy and a furnace at once. Note what the payment does <em>not</em> include here: taxes and insurance were already taken out in Stage Two as operating expenses, so counting them again in the payment would double charge you. This is the single most common error in a homemade spreadsheet. <b>Two more things the payment does not include.</b> Mortgage insurance, which a conventional borrower under twenty percent equity pays until the loan reaches the cancellation point and an FHA borrower who put less than ten percent down pays for the life of the loan; it belongs in your cash flow and it is not in this box. And an escrow shortage, which is not a new cost but a timing one, and which is why the payment your servicer takes almost never matches the payment a calculator produces.</div>
   </div>
   <div class="lane-c">
     <span class="era">Three &middot; The Debt</span>
@@ -679,11 +679,34 @@ body.adv .teeth .tcard .whyln{display:block}
     </div>
     <div class="teeth glass">
       <p class="disc">Help me understand the loan, honestly, including the part that is not really mine yet.</p>
-      <p class="tsub">The rate box starts at this week&rsquo;s national average from the Freddie Mac survey, stamped below with the week it was published. If you already have a mortgage, type your own rate and the balance you owe today &mdash; that is what makes Stage Five real rather than hypothetical.</p>
+      <p class="tsub">The rate box starts at this week&rsquo;s national average from the Freddie Mac survey, stamped below with the week it was published. If you already have a mortgage, type your own rate and the balance you owe today &mdash; that is what makes Stage Five real rather than hypothetical. And if you do not know either number, do not guess: the county knows the day your deed was recorded, and the block below knows what a mortgage cost that week.</p>
+
+      <div class="lesson" id="q_recon">
+        <b>Reconstruct the loan instead of guessing at it.</b> Nobody has their interest rate to hand. But your deed was recorded on a particular day, and the Freddie Mac survey has published the market rate every single week since April 1971, so the two together get closer than memory does. The order of precision, best first: <b>the balance you type wins outright</b>; failing that, <b>your actual principal and interest payment</b> pins the original loan exactly; failing that, the recorded price and a down payment assumption. Whichever rung it lands on, it shows its work.
+        <div class="trow">
+          <label>Deed recorded / purchased<input type="date" id="q_pdate"></label>
+          <label>Down payment (%)<input type="number" id="q_dppct" value="20" min="0" max="100" step="0.5"></label>
+          <label>Original term (years)<input type="number" id="q_oterm" value="30" min="5" max="40"></label>
+          <label>Your payment, P&amp;I only<input type="number" id="q_pi" placeholder="if you know it"></label>
+        </div>
+        <div class="modeck" id="q_dp">
+          <span data-d="3.5">3.5% &middot; FHA</span><span data-d="5">5%</span><span data-d="10">10%</span>
+          <span data-d="20" class="on">20% &middot; no PMI</span><span data-d="25">25% &middot; investor</span><span data-d="100">Paid cash</span>
+        </div>
+        <div class="docck" id="q_refick" style="margin-top:8px"><span data-r="1">I refinanced after I bought it</span></div>
+        <div class="trow" id="q_refirow" style="display:none">
+          <label>Refinanced in year<input type="number" id="q_refiyr" min="1971" max="2100"></label>
+          <label>Cash taken out then<input type="number" id="q_refiout" placeholder="0"></label>
+          <label>New term (years)<input type="number" id="q_refiterm" value="30" min="5" max="40"></label>
+        </div>
+        <button class="tbtn" id="q_recalc" type="button">Reconstruct the mortgage</button>
+        <div class="tout" id="q_recon_out" style="display:none"></div>
+      </div>
+
       <div class="trow">
         <label>Loan balance today<input type="number" id="q_loan" placeholder="from your statement"></label>
         <label>Interest rate (%)<input type="number" id="q_rate" step="0.01" placeholder="live rate"></label>
-        <label>Years remaining<input type="number" id="q_term" value="30" min="1" max="40"></label>
+        <label>Years remaining<input type="number" id="q_term" value="30" min="0.1" max="40" step="0.1"></label>
         <label>Extra principal monthly<input type="number" id="q_extra" placeholder="0"></label>
       </div>
       <div class="needrow" id="q_debt_need"></div>
@@ -697,7 +720,7 @@ body.adv .teeth .tcard .whyln{display:block}
 <!-- ============================ 4 · THE VALUE ============================ -->
 <section class="stage">
   <div class="lane-a">
-    <div class="advline" id="q_adv4" data-anchor="#q_biv_out"><b>Band of investment, also called the mortgage equity technique.</b> A capitalization rate is not a market opinion here; it is built from the two parties who have to be paid. The lender needs its mortgage constant on its share of the money, the equity investor needs its cash on cash return on the rest, and the weighted sum of those two demands is the rate the property has to earn: <b>R = (LF &times; M) + (Y<sub>E</sub> &times; E)</b>, with M the loan to value share and E the equity share. Divide net operating income by that rate and you have <b>value by the income approach</b> &mdash; what the building is worth to somebody who has to finance it and wants a return, which is a different question from what a buyer might pay. Appraisal recognises three approaches, sales comparison, cost, and income, and reconciles them; income is the one that governs anything bought to produce money. The uncomfortable part is that the rate moves with the debt market, so the same building is worth less on the week rates rise, having changed in no way at all.</div>
+    <div class="advline" id="q_adv4" data-anchor="#q_biv_out"><b>Band of investment, also called the mortgage equity technique.</b> A capitalization rate is not a market opinion here; it is built from the two parties who have to be paid. The lender needs its mortgage constant on its share of the money, the equity investor needs its cash on cash return on the rest, and the weighted sum of those two demands is the rate the property has to earn: <b>R = (LF &times; M) + (Y<sub>E</sub> &times; E)</b>, with M the loan to value share and E the equity share. Divide net operating income by that rate and you have <b>value by the income approach</b> &mdash; what the building is worth to somebody who has to finance it and wants a return, which is a different question from what a buyer might pay. Appraisal recognizes three approaches, sales comparison, cost, and income, and reconciles them; income is the one that governs anything bought to produce money. The uncomfortable part is that the rate moves with the debt market, so the same building is worth less on the week rates rise, having changed in no way at all. <br><br><b>And the rate has to be the market&rsquo;s, not yours.</b> The band of investment asks what the property must earn to satisfy a lender and an investor who are financing it <em>today</em>. An owner carrying a legacy loan at three percent who feeds that rate in here gets a cap rate that no buyer could obtain and a value nobody could pay: at a seventy five percent loan, dropping the rate from seven to three lifts the implied value by roughly half. Your legacy rate is a real asset, but it is an asset attached to you, not to the building, and it does not transfer with the deed.</div>
     <div class="advline" id="q_adv4b" data-anchor="#q_biv_kpi"><b>Where the numbers came from.</b> The loan factor is not typed in here. It is computed from the rate and term in Stage Three, which is the correction to the way this is usually done in a spreadsheet: a hardcoded constant like 0.0922696 is right for one rate on one day and silently wrong forever after. <b>Cash on cash</b> is the equity investor&rsquo;s demanded first year return on the money actually put in, not the total return &mdash; appreciation and paydown are deliberately excluded, because a cap rate is a snapshot of a single year and pretending otherwise is how people talk themselves into overpaying.</div>
   </div>
   <div class="lane-c">
@@ -708,7 +731,9 @@ body.adv .teeth .tcard .whyln{display:block}
     </div>
     <div class="teeth glass">
       <p class="disc">Help me understand what this property is worth as an investment, not as a listing.</p>
+      <p class="tsub" style="margin-top:2px"><b>Read the rate box carefully, because it is not your rate.</b> A capitalization rate is built from what the <em>next</em> buyer would have to pay, not from the loan you happen to be carrying. If you locked three percent in 2021 and this worksheet used it, it would tell you the building is worth roughly half again what anyone could actually pay for it. So this box starts at today&rsquo;s market rate and stays independent of Stage Three.</p>
       <div class="trow">
+        <label>Market rate for a new loan (%)<input type="number" id="q_mktrate" step="0.01" placeholder="live rate"></label>
         <label>Loan to value (%)<input type="number" id="q_ltv" value="75" min="0" max="100" step="1"></label>
         <label>Cash on cash you require (%)<input type="number" id="q_coc" value="10" min="0" max="40" step="0.5"></label>
         <label>Asking price<input type="number" id="q_ask" placeholder="the listing, or your offer"></label>
@@ -721,8 +746,8 @@ body.adv .teeth .tcard .whyln{display:block}
 <!-- ============================ 5 · THE DECAY ============================ -->
 <section class="stage">
   <div class="lane-a">
-    <div class="advline" id="q_adv5" data-anchor="#q_roe_kpi"><b>Return on equity, and why it has to fall.</b> The numerator is the three ways a property pays: <b>cash flow</b> after debt service, <b>principal reduction</b> (the part of each payment that is savings wearing a bill&rsquo;s clothing), and <b>appreciation</b>. The denominator is your equity at the start of the year &mdash; value less what you owe, and if you check the box, less what it would cost to get the money out. Return on <em>cost</em> is a museum piece: it measures a decision you already made and can never make differently. Return on equity measures the decision you are making again every morning you do not sell. <br><br>It falls for a structural reason, not a market one. Appreciation grows with value; equity grows with value <em>plus</em> every dollar of principal you retire, so the denominator outruns the numerator by construction. Leverage is the whole engine: the same five percent appreciation on a house is a fifty percent return on a ten percent down payment and a five percent return once the mortgage is gone. Paying a rental off does not increase your return. It converts a levered asset into an unlevered one and quietly cuts your return by most of what leverage was giving you.</div>
-    <div class="advline" id="q_adv5b" data-anchor="#q_roe_chart"><b>What the crossing line means, and what it does not.</b> The comparison line is a real alternative: the ten year Treasury is the risk free rate live from the U.S. Treasury par yield curve, and the market line is the long run average return on U.S. large company stocks, which is an average and not a promise. The honest caveats, in order. Selling is not free, so the comparison only becomes real if you check the net of costs box. A mortgage below the current market rate is itself an asset &mdash; giving up a three percent loan to chase a higher return elsewhere is a trade with a hidden price on the other side. Property is illiquid and undiversified; a Treasury is neither. And these lines are stripped of tax: Stage Six is where the tax arrives, and it changes the answer more than anything on this chart.</div>
+    <div class="advline" id="q_adv5" data-anchor="#q_roe_kpi"><b>Return on equity, and why it has to fall.</b> The numerator is the three ways a property pays: <b>cash flow</b> after debt service, <b>principal reduction</b> (the part of each payment that is savings wearing a bill&rsquo;s clothing), and <b>appreciation</b>. The denominator is your equity at the start of the year &mdash; value less what you owe, and if you check the box, less what it would cost to get the money out. Return on <em>cost</em> is a museum piece: it measures a decision you already made and can never make differently. Return on equity measures the decision you are making again every morning you do not sell. <br><br>It falls for a structural reason, not a market one. Appreciation grows with value; equity grows with value <em>plus</em> every dollar of principal you retire, so the denominator outruns the numerator by construction. Leverage is the whole engine: the same five percent appreciation on a house is a fifty percent return on a ten percent down payment and a five percent return once the mortgage is gone. Paying a rental off does not increase your return. It converts a levered asset into an unlevered one and quietly cuts your return by most of what leverage was giving you. <br><br><b>Two honest qualifications on the numerator.</b> Principal reduction is counted as return because it is money that has genuinely moved from the lender&rsquo;s column to yours, but it is not spendable and it is not optional the way a market return is; a reader comparing this to a liquid alternative should know that some of what they are looking at is forced saving. And when equity is measured net of selling costs, the appreciation in the numerator is netted the same way, because a dollar of paper gain you would have to pay a commission to collect is not a whole dollar.</div>
+    <div class="advline" id="q_adv5b" data-anchor="#q_roe_chart"><b>What the crossing line means, and what it does not.</b> Both comparison lines are computed, not remembered. The risk free line is the ten year Treasury live from the U.S. par yield curve. The alternative line starts at the long run compound price return of the S&amp;P 500, measured from the index itself over its whole available history &mdash; a <em>price</em> return, because dividends are not in an index level, which means a total return investor did better and this line is a floor rather than a forecast. Raise it if you would actually reinvest dividends; the box is yours and the assumption is then yours too. <br><br>The honest caveats, in order. Selling is not free, so the comparison only becomes real if you check the net of costs box. A mortgage below the current market rate is itself an asset &mdash; giving up a three percent loan to chase a higher return elsewhere is a trade with a hidden price on the other side. Property is illiquid, undiversified and concentrated in one street; a Treasury is none of those. Appreciation here is a constant, and no actual housing market has ever moved in a straight line. And unless you check the shelter box these lines are stripped of tax on both sides: Stage Six is where the tax on the way out arrives, and it changes the answer more than anything on this chart.</div>
   </div>
   <div class="lane-c">
     <span class="era">Five &middot; The Decay</span>
@@ -736,12 +761,19 @@ body.adv .teeth .tcard .whyln{display:block}
       <div class="trow">
         <label>Appreciation per year (%)<input type="number" id="q_appr" step="0.1" placeholder="live index"></label>
         <label>Rent growth per year (%)<input type="number" id="q_rentg" value="3" step="0.1"></label>
+        <label>Expense growth per year (%)<input type="number" id="q_expg" value="4" step="0.1"></label>
         <label>Years to project<input type="number" id="q_years" value="30" min="5" max="40"></label>
+      </div>
+      <p class="tsub" style="margin-top:2px"><b>Expenses get their own box because they do not move with the rents.</b> Insurance and property tax on small residential have been outrunning rent growth for years, and a model that grows both at the same rate quietly manufactures cash flow that never shows up. Set them equal if you disagree; the point is that it is now a choice you made rather than one the page made for you.</p>
+      <div class="trow">
         <label>Cost to sell (%)<input type="number" id="q_sellc" value="7" step="0.5" min="0" max="15"></label>
+        <label>What money earns elsewhere (%)<input type="number" id="q_alt" step="0.1" placeholder="live"></label>
+        <label>Your marginal tax rate (%)<input type="number" id="q_marg" step="0.5" placeholder="fed + state"></label>
       </div>
       <div class="docck" id="q_roeopt">
         <span data-o="net">Measure equity net of selling costs</span>
         <span data-o="actual">Use this property&rsquo;s actual appreciation</span>
+        <span data-o="shelter">Count the depreciation tax shelter</span>
       </div>
       <div class="needrow" id="q_roe_need"></div>
       <div class="kpi" id="q_roe_kpi"></div>
@@ -756,7 +788,7 @@ body.adv .teeth .tcard .whyln{display:block}
 <!-- ============================ 6 · THE EXIT ============================ -->
 <section class="stage">
   <div class="lane-a">
-    <div class="advline" id="q_adv6" data-anchor="#q_exit_doors"><b>Four doors, and the tax code behind each one.</b> <b>Refinance</b> is borrowing, and borrowed money is not income &mdash; there is no tax event at all, which is why a cash out refinance is the only door that moves money without a return. <b>Section 1031</b> defers gain on an exchange of real property held for productive use or investment for like kind property, on a schedule with no mercy in it: forty five days to identify, one hundred eighty days to close, a qualified intermediary holding the money the entire time because touching it ends the exchange. Personal residences do not qualify. <b>Selling</b> triggers gain under Section 1001, and gain on a rental arrives in two flavors: unrecaptured Section 1250 gain, the part attributable to depreciation you took, taxed at a maximum rate of twenty five percent under Section 1(h)(1)(D), and the rest at long term capital gain rates under Section 1(h), plus the net investment income tax of three point eight percent under Section 1411 if you are above the threshold. Depreciation is not optional: the basis is reduced by the amount <em>allowed or allowable</em>, so an owner who never claimed it still owes the recapture. <b>Dying</b> is the door nobody puts on a spreadsheet, and under Section 1014 the basis of property in a decedent&rsquo;s estate becomes its fair market value at death &mdash; the entire gain, and the entire depreciation recapture, evaporates. That is the sentence that connects this page to the Estate Guide.</div>
+    <div class="advline" id="q_adv6" data-anchor="#q_exit_doors"><b>Four doors, and the tax code behind each one.</b> <b>Refinance</b> is borrowing, and borrowed money is not income &mdash; there is no tax event at all, which is why a cash out refinance is the only door that moves money without a return. <b>Section 1031</b> defers gain on an exchange of real property held for productive use or investment for like kind property, on a schedule with no mercy in it: forty five days to identify, one hundred eighty days to close, a qualified intermediary holding the money the entire time because touching it ends the exchange. Personal residences do not qualify. <b>Selling</b> triggers gain under Section 1001, and gain on a rental arrives in two flavors: unrecaptured Section 1250 gain, the part attributable to depreciation you took, taxed at a maximum rate of twenty five percent under Section 1(h)(1)(D), and the rest at long term capital gain rates under Section 1(h), plus the net investment income tax of three point eight percent under Section 1411 if you are above the threshold. Depreciation is not optional: the basis is reduced by the amount <em>allowed or allowable</em>, so an owner who never claimed it still owes the recapture. <b>Dying</b> is the door nobody puts on a spreadsheet, and under Section 1014 the basis of property in a decedent&rsquo;s estate becomes its fair market value at death &mdash; the entire gain, and the entire depreciation recapture, evaporates. That is the sentence that connects this page to the Estate Guide. <br><br><b>Three things the four boxes below cannot know about you.</b> A 1031 defers the whole gain only if you reinvest all of the equity <em>and</em> replace the debt you were carrying; take cash out, or trade into a smaller loan, and the difference is boot and it is taxable now. Passive losses you were not allowed to deduct while you held it are generally released in the year of a fully taxable disposition, which can turn a frightening tax figure into a much smaller one and is the single most common thing missing from a homemade exit calculation. And the land share below is an allocation, not a fact: where the county publishes its own assessed split it is read from the record and shown, because a third party&rsquo;s allocation on the public record is worth more under examination than the taxpayer&rsquo;s round number.</div>
     <div class="advline" id="q_adv6b" data-anchor="#q_exit_out"><b>The figure law applies hardest right here.</b> The rates above are written into the Code and do not move with the calendar: twenty five percent, three point eight percent, the zero, fifteen and twenty percent brackets. The <em>income thresholds</em> that decide which of those applies to you are indexed every single year, and this page therefore does not state one. It asks which bracket you are in rather than guessing from a number it half remembers, because a threshold typed into a web page is a threshold that is wrong the following January. The North Carolina rate is likewise on a statutory schedule that steps down over several years under N.C. Gen. Stat. Section 105-153.7, so it is a box you fill, not a number I supply. Check the current year with the Department of Revenue or your preparer and type it in.</div>
   </div>
   <div class="lane-c">
@@ -770,10 +802,15 @@ body.adv .teeth .tcard .whyln{display:block}
       <p class="tsub"><b>Depreciation first, because it drives the bill.</b> Residential rental property is written off straight line over 27.5 years under IRC Section 168(c); commercial over 39. Land is never depreciated, so only the building share counts. If you have owned it as a rental, the years below are the years it was in service &mdash; and remember, allowed <em>or allowable</em>: not claiming it does not avoid the recapture.</p>
       <div class="trow">
         <label>Years held as a rental<input type="number" id="q_dyrs" placeholder="0" min="0" max="40"></label>
-        <label>Land share of value (%)<input type="number" id="q_land" value="20" min="0" max="60"></label>
+        <label>Land share of value (%)<input type="number" id="q_land" value="20" min="0" max="80"></label>
         <label>Your state rate (%)<input type="number" id="q_state" placeholder="type yours"></label>
         <label>Refinance to (% LTV)<input type="number" id="q_refi" value="75" min="0" max="90"></label>
       </div>
+      <div class="modeck" id="q_life">
+        <span data-l="27.5" class="on">Residential &middot; 27.5 years</span>
+        <span data-l="39">Commercial &middot; 39 years</span>
+      </div>
+      <div class="srcline" id="q_land_src" style="display:none"></div>
       <p class="tsub" style="margin-top:10px"><b>Which long term capital gain rate applies to you?</b> Not a dollar threshold &mdash; those are indexed annually and this page will not state one. Pick the bracket your preparer puts you in.</p>
       <div class="docck" id="q_ltcg">
         <span data-c="0">0 percent</span><span data-c="15" class="on">15 percent</span><span data-c="20">20 percent</span>
@@ -812,9 +849,14 @@ body.adv .teeth .tcard .whyln{display:block}
       <div class="trow" style="margin-top:8px">
         <label>Hard money rate (%)<input type="number" id="q_hmrate" value="11" step="0.25"></label>
         <label>Points (%)<input type="number" id="q_pts" value="2" step="0.5"></label>
-        <label>Selling commission (%)<input type="number" id="q_comm" value="5" step="0.5"></label>
+        <label>Commission, both agents (%)<input type="number" id="q_comm" value="5" step="0.5"></label>
         <label>Closing costs, both sides (%)<input type="number" id="q_cc" value="2.5" step="0.5"></label>
       </div>
+      <div class="trow">
+        <label>Holding cost per month<input type="number" id="q_hold" placeholder="taxes, insurance, utilities"></label>
+        <label>Interest is charged on<select id="q_draw" style="width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:9px;font:inherit;font-size:.9rem;margin-top:3px;background:#fff"><option value="all">the whole loan from day one</option><option value="draw" selected>the purchase, plus rehab drawn evenly</option></select></label>
+      </div>
+      <p class="tsub" style="margin-top:6px;font-size:.7rem">An empty house still costs money every month, and a homemade sheet almost never carries it. Rehab money is normally drawn in stages rather than handed over at closing, so charging interest on the whole budget from day one overstates the carry; the second box lets you model it either way.</p>
       <div class="kpi" id="q_flip_kpi"></div>
       <div class="roll-wrap"><table class="grid7" id="q_flip_grid" style="display:none"></table></div>
       <div class="tout" id="q_flip_out">Add an after repair value, a purchase price and a rehab budget and the whole grid runs.</div>
@@ -853,16 +895,25 @@ function money(n){if(!isFinite(n))return '—';var s=Math.abs(Math.round(n)).toL
 function pc(n,d){if(!isFinite(n))return '—';return (n*100).toFixed(d===undefined?1:d)+'%';}
 function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
 
-/* ---------- live figures ---------- */
+/* ---------- live figures ----------
+   There is no teaching constant on this page any more. The first draft compared return on
+   equity against a hardcoded ten percent "long run market average", which is precisely the
+   shape the figure law forbids: a number typed once and never dated again. The comparison
+   is now the compound price return of the index itself, computed from its own history by
+   the nightly pipeline, and the reader can raise it and own the assumption. */
 var RTS={};
-var LONGRUN=10;               /* long run U.S. large cap average, teaching constant */
-function autoset(id,val){var e=$(id);if(!e||!val)return;if(String(e.value).trim()==='' ){e.value=val;e.dataset.auto='1';}}
+var RECORD={};                /* whatever the public record gave up, kept for later stages */
+function autoset(id,val){var e=$(id);if(!e||val===undefined||val===null||val==='')return;
+  if(String(e.value).trim()===''){e.value=val;e.dataset.auto='1';}}
 fetch('data/rates.json').then(function(r){return r.json();}).then(function(d){
   RTS=d||{};
   autoset('q_rate',RTS.mortgage30);
+  autoset('q_mktrate',RTS.mortgage30);
   autoset('q_appr',RTS.hpiLongRun);
+  autoset('q_alt',RTS.sp500LongRun);
   paintSources();calc();
 }).catch(function(){paintSources();calc();});
+function altRate(){return (has('q_alt')?num('q_alt'):(RTS.sp500LongRun||0))/100;}
 
 function paintSources(){
   var rs=$('q_rate_src');
@@ -881,7 +932,10 @@ function paintSources(){
       (RTS.hpi1y!==undefined?', and '+RTS.hpi1y+' percent over the last four quarters':'')+
       ', per the '+esc(RTS.hpiSource||'')+'. The risk free line is the 10 year Treasury at '+
       (RTS.tenYear!==undefined?RTS.tenYear+' percent ('+esc(RTS.tenYearDate||'')+')':'the live par yield curve')+
-      '. Neither is a forecast.';
+      '. The alternative line starts at '+(RTS.sp500LongRun!==undefined?RTS.sp500LongRun+' percent':'the index history')+
+      ', the compound price return of the S&amp;P 500 over '+(RTS.sp500LongRunYears||'')+' years since '+
+      esc(RTS.sp500LongRunFrom||'')+' &mdash; '+esc(RTS.sp500LongRunBasis||'price return only')+
+      '. None of the three is a forecast.';
   }
 }
 
@@ -1047,12 +1101,221 @@ $('q_hill').addEventListener('click',function(){
   var R=[[900,150,20],[900,150,20],[775,125,0],[700,120,0],[900,150,0],[750,135,0],[750,135,0],[650,100,0]];
   $('q_units').innerHTML='';unitSeq=0;R.forEach(function(r){addUnit(r[0],r[1],r[2]);});
   $('q_tax').value=5592;$('q_ins').value=4800;$('q_ask').value=760000;$('q_val').value=760000;
-  $('q_rate').value=8.5;$('q_term').value=30;$('q_ltv').value=75;$('q_coc').value=10;
+  /* 8.5 is both his rate and the market's in that example, because he was the buyer.
+     Both boxes get it: Stage Three prices his note, Stage Four prices the next buyer's. */
+  $('q_rate').value=8.5;$('q_mktrate').value=8.5;$('q_term').value=30;
+  $('q_ltv').value=75;$('q_coc').value=10;
   $('q_loan').value=570000;$('q_noiOver').value=57120;
+  ['q_rate','q_mktrate','q_term','q_ltv','q_coc','q_loan','q_noiOver','q_tax','q_ins','q_ask','q_val']
+    .forEach(function(id){var e=$(id);if(e){delete e.dataset.auto;e.dataset.touched='1';}});
   document.querySelectorAll('#q_mode span').forEach(function(x){x.classList.remove('on');});
   var rm=document.querySelector('#q_mode [data-m="rental"]');if(rm)rm.classList.add('on');MODE='rental';
   syncSoon();calc();
 });
+
+/* =====================================================================
+   THE SURVEY, ALL OF IT
+   Freddie Mac has published the market mortgage rate every week since April 1971. An owner
+   almost never knows their rate; the county always knows the day the deed was recorded.
+   Between the two the loan can be reconstructed rather than guessed at, and every step of
+   the reconstruction is shown so a reader can throw out any part of it they know better.
+   The history is fetched only when somebody asks for it, so it never costs a page load.
+   ===================================================================== */
+var PMMS=null,pmmsWait=null;
+function loadPmms(){
+  if(PMMS)return Promise.resolve(PMMS);
+  if(!pmmsWait)pmmsWait=fetch('data/pmms.json').then(function(r){
+    if(!r.ok)throw new Error('no history');return r.json();}).then(function(d){
+    d.baseMs=Date.parse(d.base+'T00:00:00Z');PMMS=d;return d;});
+  return pmmsWait;
+}
+function dayIso(n){return new Date(PMMS.baseMs+n*86400000).toISOString().slice(0,10);}
+function isoDays(iso){var t=Date.parse(String(iso).slice(0,10)+'T00:00:00Z');
+  return isNaN(t)?null:Math.round((t-PMMS.baseMs)/86400000);}
+/* the published week at or before a date: a loan closes on the market of its own week */
+function pmmsAt(iso){
+  if(!PMMS)return null;
+  var target=isoDays(iso);if(target===null)return null;
+  var d=PMMS.day;
+  if(target<d[0])return null;
+  var lo=0,hi=d.length-1,best=-1;
+  while(lo<=hi){var m=(lo+hi)>>1;if(d[m]<=target){best=m;lo=m+1;}else hi=m-1;}
+  if(best<0)return null;
+  return {i:best,date:dayIso(d[best]),r30:PMMS.rate30[best],r15:PMMS.rate15[best]};
+}
+function pmmsYearAvg(year){
+  if(!PMMS)return null;
+  var s=0,n=0,s15=0,n15=0;
+  for(var i=0;i<PMMS.day.length;i++){
+    if(+dayIso(PMMS.day[i]).slice(0,4)!==year)continue;
+    s+=PMMS.rate30[i];n++;
+    if(PMMS.rate15[i]!=null){s15+=PMMS.rate15[i];n15++;}
+  }
+  return n?{r30:s/n,r15:n15?s15/n15:null,weeks:n}:null;
+}
+function pmmsMinSince(iso){
+  var a=pmmsAt(iso);if(!a)return null;
+  var lo=null,at=null;
+  for(var i=a.i;i<PMMS.rate30.length;i++){
+    if(lo===null||PMMS.rate30[i]<lo){lo=PMMS.rate30[i];at=dayIso(PMMS.day[i]);}
+  }
+  return lo===null?null:{rate:lo,date:at};
+}
+function monthsBetween(isoA,isoB){
+  var a=new Date(isoA+'T00:00:00Z'),b=new Date(isoB+'T00:00:00Z');
+  if(isNaN(a)||isNaN(b))return 0;
+  var m=(b.getUTCFullYear()-a.getUTCFullYear())*12+(b.getUTCMonth()-a.getUTCMonth());
+  if(b.getUTCDate()<a.getUTCDate())m--;
+  return Math.max(0,m);
+}
+function todayIso(){return new Date().toISOString().slice(0,10);}
+/* run a loan forward n months and report where it stands */
+function runMonths(bal,ratePct,pay,n){
+  var i=ratePct/100/12,prin=0,intr=0,k;
+  for(k=0;k<n&&bal>0.005;k++){
+    var it=bal*i,p=pay-it;
+    if(p<=0)p=0;
+    if(p>bal)p=bal;
+    bal-=p;prin+=p;intr+=it;
+  }
+  return {bal:Math.max(0,bal),principal:prin,interest:intr,months:k};
+}
+/* the original loan implied by a payment: the one number an owner reliably knows */
+function loanFromPayment(pay,ratePct,years){
+  var i=ratePct/100/12,n=Math.round(years*12);
+  if(!(pay>0)||n<=0)return 0;
+  if(i<=0)return pay*n;
+  return pay*(1-Math.pow(1+i,-n))/i;
+}
+
+var RECON=null;
+function reconstruct(auto){
+  var out=$('q_recon_out');
+  var d=$('q_pdate').value||RECORD.saleDate||(num('q_year')>1900?num('q_year')+'-07-01':'');
+  var price=num('q_cost')||num('q_val');
+  if(!d||!(price>0)){
+    if(auto)return;
+    out.style.display='';
+    out.innerHTML='I need two things: the day the deed was recorded (or the month you bought) and what you paid. '+
+      'Both come back from the address lookup in Stage One; either can be typed instead.';
+    return;
+  }
+  if(!$('q_pdate').value)$('q_pdate').value=d;
+  out.style.display='';out.innerHTML='Reading the survey…';
+  loadPmms().then(function(){
+    var w=pmmsAt(d);
+    if(!w){out.innerHTML='The survey starts in April 1971 and that date is before it. Type the loan and the rate yourself.';return;}
+    var oterm=Math.max(5,Math.min(40,num('q_oterm')||30));
+    var wantShort=oterm<=20&&w.r15!=null;
+    var rate0=wantShort?w.r15:w.r30;
+    var dp=Math.max(0,Math.min(100,num('q_dppct')));
+    var pi=num('q_pi');
+    var tier,L0;
+    if(pi>0){ L0=loanFromPayment(pi,rate0,oterm); tier='payment'; }
+    else if(dp>=100){ L0=0; tier='cash'; }
+    else { L0=price*(1-dp/100); tier='down'; }
+
+    var today=todayIso(),steps=[],rateNow=rate0,termLeft=oterm,bal=L0,startIso=d,pay0=pmt(L0,rate0,oterm);
+    steps.push('The deed is dated <b>'+esc(d)+'</b>. Freddie Mac&rsquo;s survey for the week of <b>'+esc(w.date)+
+      '</b> put the '+(wantShort?'15':'30')+' year fixed at <b>'+rate0.toFixed(2)+' percent</b>.');
+    if(tier==='payment'){
+      steps.push('You told me you pay <b>'+money(pi)+'</b> a month in principal and interest. At that rate over '+
+        oterm+' years that is an original loan of <b>'+money(L0)+'</b>, which is '+
+        (price>0?pc(1-L0/price,0)+' down on '+money(price):'the figure the payment implies')+
+        '. This rung needs no assumption about your down payment at all.');
+    }else if(tier==='cash'){
+      steps.push('You bought it for cash, so there is no loan to reconstruct.');
+    }else{
+      steps.push(pc(dp/100,1)+' down on <b>'+money(price)+'</b> is an original loan of <b>'+money(L0)+
+        '</b>, and the payment that retires it over '+oterm+' years is <b>'+money(pay0)+'</b> a month.');
+    }
+
+    var refi=$('q_refick').querySelector('span').classList.contains('on');
+    var refiYr=num('q_refiyr');
+    if(refi&&refiYr>1970&&L0>0){
+      var rIso=refiYr+'-07-01';
+      var avg=pmmsYearAvg(refiYr);
+      var rterm=Math.max(5,Math.min(40,num('q_refiterm')||30));
+      if(!avg){steps.push('No survey weeks for '+refiYr+', so the refinance could not be priced.');}
+      else{
+        var rRate=(rterm<=20&&avg.r15!=null)?avg.r15:avg.r30;
+        var m1=monthsBetween(d,rIso);
+        var st1=runMonths(L0,rate0,pay0,m1);
+        var cashOut=num('q_refiout');
+        var L1=st1.bal+cashOut;
+        steps.push('By '+refiYr+' you had made <b>'+st1.months+' payments</b> and owed <b>'+money(st1.bal)+
+          '</b>. The '+refiYr+' average was <b>'+rRate.toFixed(2)+' percent</b> across '+avg.weeks+' published weeks'+
+          (cashOut>0?', and taking <b>'+money(cashOut)+'</b> out makes the new loan <b>'+money(L1)+'</b>':'')+'.');
+        bal=L1;rateNow=rRate;startIso=rIso;termLeft=rterm;pay0=pmt(L1,rRate,rterm);
+      }
+    }
+
+    var mEl=monthsBetween(startIso,today);
+    var st=L0>0?runMonths(bal,rateNow,pay0,mEl):{bal:0,principal:0,interest:0,months:0};
+    var yearsLeft=Math.max(0,termLeft-mEl/12);
+    if(L0>0){
+      steps.push('Since then you have made about <b>'+st.months+' payments</b>, retiring <b>'+money(st.principal)+
+        '</b> of principal and paying <b>'+money(st.interest)+'</b> in interest. That leaves a balance of about <b>'+
+        money(st.bal)+'</b> with <b>'+yearsLeft.toFixed(1)+' years</b> to run.');
+    }
+
+    /* did the market hand them a refinance they may already have taken */
+    var nudge='';
+    if(!refi&&L0>0){
+      var lo=pmmsMinSince(d);
+      if(lo&&lo.rate<=rate0-0.75){
+        nudge='<br><br><b>One thing this cannot see.</b> Rates reached <b>'+lo.rate.toFixed(2)+
+          ' percent</b> in the week of '+esc(lo.date)+', which is '+(rate0-lo.rate).toFixed(2)+
+          ' points below where you started. A great many owners refinanced into that, and a refinance resets both '+
+          'the rate and the clock. Tick the box above if you did and this runs again from that year.';
+      }
+    }
+
+    RECON={date:d,week:w.date,rate0:rate0,tier:tier,orig:L0,balance:st.bal,rate:rateNow,
+           yearsLeft:yearsLeft,payment:pay0,months:st.months};
+    var lf=$('q_loan'),rf=$('q_rate'),tf=$('q_term');
+    /* The term is carried to a tenth of a year on purpose. Rounding 22.7 up to 23 makes the
+       payment recompute to $1,218 when the payment they actually make is $1,229, and that
+       eleven dollar lie then rides all the way through the cash flow for thirty years. */
+    lf.value=Math.round(st.bal);rf.value=rateNow.toFixed(2);
+    tf.value=Math.max(0.1,Math.round(yearsLeft*10)/10);
+    [lf,rf,tf].forEach(function(e){delete e.dataset.auto;e.classList.add('needflash');
+      setTimeout(function(){e.classList.remove('needflash');},1600);});
+
+    out.innerHTML='<b>Reconstructed from the public record and the survey.</b><br>'+steps.join('<br>')+
+      '<br><br>The three boxes below have been filled in and everything downstream now runs on them. '+
+      '<b>Any number you type beats any number I derived</b> &mdash; overwrite the balance, the rate or the term and '+
+      'the reconstruction stands aside.'+nudge+
+      '<br><br><span style="font-size:.72rem;color:var(--muted)">What this is not: your actual note. The survey is a '+
+      'national average of what lenders offered that week, and your rate moved with your credit, your points, your '+
+      'occupancy and your loan size. The exact figure is on the public record too &mdash; the deed of trust is recorded '+
+      'with the register of deeds, usually within a page or two of the deed itself, and its face amount is your '+
+      'original loan. That document is behind a human search, so this page will not pretend to have read it.</span>';
+    calc();syncSoon();
+  }).catch(function(){
+    out.innerHTML='The rate history did not load. Type the balance and the rate in the boxes below and nothing else changes.';
+  });
+}
+$('q_recalc').addEventListener('click',function(){reconstruct(false);});
+document.querySelectorAll('#q_dp span').forEach(function(s){
+  s.addEventListener('click',function(){
+    document.querySelectorAll('#q_dp span').forEach(function(x){x.classList.remove('on');});
+    s.classList.add('on');$('q_dppct').value=s.dataset.d;live();});
+});
+$('q_refick').querySelector('span').addEventListener('click',function(){
+  this.classList.toggle('on');
+  $('q_refirow').style.display=this.classList.contains('on')?'':'none';
+  if(this.classList.contains('on')&&!has('q_refiyr')&&RECON){
+    $('q_refiyr').value=Math.min(new Date().getFullYear(),(+String(RECON.date).slice(0,4))+3);
+  }
+  syncSoon();
+});
+document.querySelectorAll('#q_life span').forEach(function(s){
+  s.addEventListener('click',function(){
+    document.querySelectorAll('#q_life span').forEach(function(x){x.classList.remove('on');});
+    s.classList.add('on');LIFE=parseFloat(s.dataset.l);calc();});
+});
+var LIFE=27.5;
 
 /* ================= THE ENGINES ================= */
 function pmt(L,ratePct,years){
@@ -1062,13 +1325,13 @@ function pmt(L,ratePct,years){
   return L*i/(1-Math.pow(1+i,-n));
 }
 function loanFactor(ratePct,years){var L=100000;return pmt(L,ratePct,years)*12/L;}
-/* one year of amortisation, month by month, so an extra payment and an early payoff
+/* one year of amortization, month by month, so an extra payment and an early payoff
    are both handled honestly instead of by a closed form that assumes neither */
 function stepYear(bal,ratePct,pay,extra){
   var i=ratePct/100/12,prin=0,intr=0,m,int1,p1;
   for(m=0;m<12&&bal>0.005;m++){
     int1=bal*i;p1=pay-int1+extra;
-    if(p1<=0)p1=0;                       /* negative amortisation: the payment does not cover interest */
+    if(p1<=0)p1=0;                       /* negative amortization: the payment does not cover interest */
     if(p1>bal)p1=bal;
     bal-=p1;prin+=p1;intr+=int1;
   }
@@ -1095,15 +1358,23 @@ function calc(){
   var thisYear=new Date().getFullYear();
   var held=(yr0>1900&&yr0<=thisYear)?Math.max(0,thisYear-yr0):0;
   var basis=cost+imp;
+  /* Appreciation is what the MARKET did, not what a contractor did. The first draft
+     divided today's value by the purchase price, which quietly credited every dollar of
+     kitchen as capital growth and then projected it forward for thirty years. Improvements
+     come out of the numerator before the rate is taken. */
   var apprActual=null;
-  if(cost>0&&val>0&&held>=1)apprActual=(Math.pow(val/cost,1/held)-1)*100;
+  if(cost>0&&val>0&&held>=1)apprActual=(Math.pow(Math.max(1,val-imp)/cost,1/held)-1)*100;
+  /* A recorded price far under the value is usually not a bargain, it is a transfer that
+     was never a sale: an inheritance, a gift, a deed between spouses, a dollar-and-love
+     conveyance. Basis follows a different rule for each and none of them is this number. */
+  var oddSale=(cost>0&&val>0&&cost<val*0.25);
   var kpi=[];
   if(val>0){
     kpi.push(['Value today',money(val),'']);
     if(cost>0)kpi.push(['Adjusted basis',money(basis),'cost '+money(cost)+(imp?' + '+money(imp)+' improvements':'')]);
     if(cost>0)kpi.push([held?'Gain, unrealised':'Gain',money(val-basis),held?'over '+held+' year'+(held===1?'':'s'):'']);
-    if(apprActual!==null)kpi.push(['Its actual rate',apprActual.toFixed(1)+'%','compounded, this property'+
-      (RTS.hpiLongRun?' · national '+RTS.hpiLongRun+'%':'')]);
+    if(apprActual!==null)kpi.push(['Its actual rate',apprActual.toFixed(1)+'%','compounded, market only'+
+      (imp?', improvements removed':'')+(RTS.hpiLongRun?' · national '+RTS.hpiLongRun+'%':'')]);
   }
   paintKpi('q_rec_kpi',kpi);
   out=$('q_rec_out');
@@ -1113,7 +1384,12 @@ function calc(){
       (apprActual!==null?'That is <b>'+apprActual.toFixed(1)+' percent a year</b>, '+
         (RTS.hpiLongRun?(apprActual>RTS.hpiLongRun?'ahead of':'behind')+' the national long run rate of '+RTS.hpiLongRun+' percent. ':'')
         :'')+
-      'None of it is income and none of it is taxed yet. From here down, that number is the denominator.';
+      'None of it is income and none of it is taxed yet. From here down, that number is the denominator.'+
+      (imp?' The '+money(imp)+' of improvements is taken out before the rate is computed, because a new kitchen is not the market appreciating.':'')+
+      (oddSale?' <b>But read that price again.</b> '+money(cost)+' against a value of '+money(val)+
+        ' is usually not a purchase at all: it is an inheritance, a gift, or a transfer between family, and basis works '+
+        'differently for each &mdash; stepped up at a death under Section 1014, carried over on a gift under Section 1015. '+
+        'If that is what happened here, the number to type in the cost box is the one that rule gives you, not what the deed says.':'');
   }else if(val>0){
     out.innerHTML='Value is in. Add what you paid and the year, and this page can tell you what the property has actually done rather than what the market has done on average.';
   }else{
@@ -1183,15 +1459,20 @@ function calc(){
   }else{out.innerHTML='Add the balance you still owe and the payment, the coverage ratio and the cash flow all compute here.';}
 
   /* ---- 4 · band of investment ---- */
+  /* The rate here is the MARKET's, deliberately not the owner's. A legacy loan belongs to
+     the borrower, not to the building, and does not transfer with the deed. Feeding a 3
+     percent note into a band of investment produces a value no buyer on earth could pay. */
   var ltv=num('q_ltv')/100,coc=num('q_coc')/100,ask=num('q_ask');
-  var lf=rate>0?loanFactor(rate,term):0;
+  var mkt=has('q_mktrate')?num('q_mktrate'):(RTS.mortgage30||0);
+  var boiTerm=30;
+  var lf=mkt>0?loanFactor(mkt,boiTerm):0;
   var capR=lf*ltv+(1-ltv)*coc;
   var ivalue=(capR>0&&noi>0)?noi/capR:0;
   var kp4=[];
   if(capR>0&&noi>0){
-    kp4.push(['Lender&rsquo;s share',(lf*ltv).toFixed(6),'loan factor '+lf.toFixed(6)+' × '+pc(ltv,0)+' LTV']);
+    kp4.push(['Lender&rsquo;s share',(lf*ltv).toFixed(6),'loan factor '+lf.toFixed(6)+' at '+mkt+'% × '+pc(ltv,0)+' LTV']);
     kp4.push(['Your share',((1-ltv)*coc).toFixed(6),pc(1-ltv,0)+' down × '+pc(coc,0)+' cash on cash']);
-    kp4.push(['Capitalisation rate',pc(capR,2),'the two demands, added']);
+    kp4.push(['Capitalization rate',pc(capR,2),'the two demands, added']);
     if(ivalue>0)kp4.push(['Investment value',money(ivalue),'NOI '+money(noi)+' ÷ '+pc(capR,2),'hero']);
   }
   paintKpi('q_biv_kpi',kp4);
@@ -1199,11 +1480,15 @@ function calc(){
   if(ivalue>0){
     var gap=ask>0?ivalue-ask:null;
     out.innerHTML='At '+pc(ltv,0)+' leverage and a '+pc(coc,0)+' cash on cash requirement, this property has to earn <b>'+pc(capR,2)+
-      '</b> to pay everyone who is owed. Capitalising '+money(noi)+' at that rate values it at <b>'+money(ivalue)+'</b>.'+
+      '</b> to pay everyone who is owed. Capitalizing '+money(noi)+' at that rate values it at <b>'+money(ivalue)+'</b>.'+
       (gap!==null?(gap<0?' The asking price of '+money(ask)+' is <b>'+money(-gap)+' above</b> that — '+
           (Math.abs(gap/ask)*100).toFixed(0)+' percent above. Either the income has to be higher than the rent roll says, or your required return has to be lower than you said it was, or it is not a deal at that number.'
         :' The asking price of '+money(ask)+' is <b>'+money(gap)+' below</b> the value the income supports.'):'')+
-      ' Notice what moves this: raise the rate in Stage Three and the value falls, though the building has not changed in any way.';
+      ' Notice what moves this: raise the market rate box and the value falls, though the building has not changed in any way.'+
+      (rate>0&&Math.abs(rate-mkt)>=0.5?' <b>Your own loan is at '+rate+' percent and the market is at '+mkt+
+        ' percent.</b> That gap is worth real money to you and nothing at all to a buyer, so it stays out of this calculation on purpose: '+
+        'at '+pc(ltv,0)+' leverage, running this at your rate instead of the market&rsquo;s would move the answer to '+
+        money(noi/(loanFactor(rate,30)*ltv+(1-ltv)*coc))+', which is a number nobody could act on.':'');
   }else{out.innerHTML='Fill in the income above and the value builds here.';}
 
   /* ---- 5 · return on equity ---- */
@@ -1216,22 +1501,48 @@ function calc(){
   if(!(noi!==0))need5.push(['q_units',MODE==='home'?'Add what it would rent for':'Add the rents']);
   if(!(loan>0))need5.push(['q_loan','Add the loan balance']);
   needRow('q_roe_need',need5);
+  /* Income and expenses grow on their own clocks. Growing NOI as a lump at the rent rate
+     assumes insurance and property tax rise exactly as fast as rents, which for small
+     residential has not been true for years, and the error compounds for thirty of them. */
+  var eg=num('q_expg')/100;
+  var incBase=egi,expBase=opex;
+  if(has('q_noiOver')){
+    if(egi>0&&egi>noi){expBase=egi-noi;}      /* your NOI, wearing my expense structure */
+    else{incBase=noi;expBase=0;}
+  }
+  /* The depreciation shelter is real cash and the first draft ignored it entirely. It is
+     credited only against income the property actually produced: beyond that it becomes a
+     passive loss, and whether that loss is usable this year turns on facts a web page
+     cannot see. A home gets none of it. */
+  var marg=num('q_marg')/100;
+  var landPct5=num('q_land')/100;
+  var deprBase=Math.max(0,(cost>0?cost:val)*(1-landPct5))+imp;
+  var deprYr=deprBase>0?deprBase/LIFE:0;
+  var deprLeft=Math.max(0,LIFE-num('q_dyrs'));
+  var shelterOn=!!ROEOPT.shelter&&marg>0&&MODE!=='home'&&deprYr>0;
   var proj=[],ok=(val>0);
   if(ok){
-    var V=val,B=loan,NOIt=noi,pay5=pmt(loan,rate,term);
+    var V=val,B=loan,pay5=pmt(loan,rate,term);
     for(var t=1;t<=years;t++){
       var E0=netMode?(V*(1-sc)-B):(V-B);
       var st=B>0?stepYear(B,rate,pay5,extra):{bal:0,principal:0,interest:0,paid:0};
       var V1=V*(1+g);
+      var NOIt=incBase*Math.pow(1+rg,t-1)-expBase*Math.pow(1+eg,t-1);
       var cf=NOIt-st.paid;
-      var appr=V1-V;
-      var total=cf+st.principal+appr;
+      /* if equity is measured after the cost of getting out, so is the gain */
+      var appr=netMode?(V1-V)*(1-sc):(V1-V);
+      var shelter=0;
+      if(shelterOn&&t<=deprLeft){
+        var taxable=NOIt-st.interest;
+        shelter=marg*Math.max(0,Math.min(deprYr,taxable));
+      }
+      var total=cf+st.principal+appr+shelter;
       proj.push({y:t,E0:E0,V0:V,V1:V1,B0:B,B1:st.bal,cf:cf,prin:st.principal,appr:appr,
-                 total:total,roe:E0>0?total/E0:NaN});
-      V=V1;B=st.bal;NOIt=NOIt*(1+rg);
+                 shelter:shelter,total:total,roe:E0>0?total/E0:NaN});
+      V=V1;B=st.bal;
     }
   }
-  var altT=(RTS.tenYear||0)/100, altM=LONGRUN/100;
+  var altT=(RTS.tenYear||0)/100, altM=altRate();
   var kp5=[],cross=null,crossT=null;
   if(proj.length){
     proj.forEach(function(p){
@@ -1244,7 +1555,9 @@ function calc(){
       MODE==='home'?(noi?'imputed rent less what you pay to live here':'add what it would rent for above'):'rents less the whole payment',
       p1.cf>=0?'':'bad']);
     kp5.push(['Principal you retire',money(p1.prin),'savings inside a bill']);
-    kp5.push(['Appreciation',money(p1.appr),(g*100).toFixed(1)+'% on '+money(p1.V0)]);
+    kp5.push(['Appreciation',money(p1.appr),(g*100).toFixed(1)+'% on '+money(p1.V0)+(netMode?', net of selling':'')]);
+    if(shelterOn)kp5.push(['Depreciation shelter',money(p1.shelter),
+      money(deprYr)+' written off at '+pc(marg,0)+', capped at the income it offsets']);
     var last=proj[proj.length-1];
     kp5.push(['In year '+last.y,pc(last.roe),'on '+money(last.E0)+' of equity by then',
       isFinite(last.roe)&&last.roe<altM?'bad':'']);
@@ -1259,13 +1572,14 @@ function calc(){
       ' in principal you retire, and '+money(p1b.appr)+' in appreciation. '+
       (MODE==='home'&&!noi?'<b>That first number is missing its income.</b> A home you live in pays you the rent you would otherwise be handing a landlord, so until you put that figure in the rent roll above, this is the mortgage with nothing on the other side of it. ':'')+
       'That is a return on equity of <b>'+pc(p1b.roe)+'</b>.'+
-      (cross?' It falls below the long run market average of '+LONGRUN+' percent in <b>year '+cross+'</b>'+
+      (shelterOn?' Plus '+money(p1b.shelter)+' the depreciation saves you in tax. ':'')+
+      (cross?' It falls below the '+(altM*100).toFixed(1)+' percent you could earn elsewhere in <b>year '+cross+'</b>'+
         (crossT?', and below the risk free '+(RTS.tenYear||0)+' percent Treasury in year '+crossT:'')+
         '. That is not a sell signal, it is a question: from that year on, the money inside these walls is being paid less than money parked elsewhere, and doing nothing is a decision.'
-      :' It never drops below the long run market average inside '+years+' years — the leverage and the cash flow are carrying it, which is exactly what leverage is for.')+
+      :' It never drops below the '+(altM*100).toFixed(1)+' percent alternative inside '+years+' years — the leverage and the cash flow are carrying it, which is exactly what leverage is for.')+
       (loan<=0?' <b>And note what the paid off loan did:</b> with no mortgage there is no principal to retire and no leverage on the appreciation, so this is the floor, not the peak. That is the part nobody believes until they see it.':'');
     drawRoe(proj,altM,altT,cross);
-    tableRoe(proj);
+    tableRoe(proj,altM,shelterOn);
   }else{
     out.innerHTML='Finish the record, the income and the debt above and the whole curve appears here.';
     $('q_roe_chart').innerHTML='';var rt=$('q_roe_tab');if(rt)rt.style.display='none';
@@ -1277,7 +1591,7 @@ function calc(){
   /* Land is never depreciated, so only the building share of the purchase counts. Capital
      improvements are all building by definition: you cannot improve dirt. */
   var bldg=Math.max(0,(cost>0?cost:val)*(1-landPct))+imp;
-  var deprAnnual=bldg>0?bldg/27.5:0;
+  var deprAnnual=bldg>0?bldg/LIFE:0;
   var depr=Math.min(bldg,deprAnnual*Math.max(0,dyrs));
   var adjBasis=Math.max(0,basis-depr);
   var netSale=val*(1-sc);
@@ -1336,6 +1650,8 @@ function calc(){
   /* ---- 7 · the flip ---- */
   var arv=num('q_arv'),fpur=num('q_fpur'),rehab=num('q_rehab'),sf=num('q_sf');
   var hm=num('q_hmrate')/100,pts=num('q_pts')/100,comm=num('q_comm')/100,cc=num('q_cc')/100;
+  var hold=num('q_hold');
+  var drawEven=($('q_draw')&&$('q_draw').value==='draw');
   var mao70=arv*0.70-rehab, mao80=arv*0.80-rehab;
   var kp7=[];
   if(arv>0){
@@ -1357,9 +1673,12 @@ function calc(){
       var sp=arv+dl;
       h+='<tr><td>'+money(sp)+(dl?' ('+money(dl)+')':'')+'</td>';
       for(var m=1;m<=6;m++){
-        var interest=base*hm*m/12;
+        /* Rehab money is drawn as the work is inspected, not handed over at closing, so
+           the average balance over the job is the purchase plus about half the rehab. */
+        var carried=drawEven?(fpur+rehab/2):base;
+        var interest=carried*hm*m/12;
         var points=base*pts;
-        var be=base+points+interest+sp*comm+sp*cc;
+        var be=base+points+interest+hold*m+sp*comm+sp*cc;
         var profit=sp-be;
         if(profit>bestCell)bestCell=profit;
         var cls=profit>20000?'d':profit>5000?'':'n';
@@ -1369,8 +1688,9 @@ function calc(){
     });
     h+='</tbody>';
     gt.innerHTML=h;gt.style.display='';
-    var worst=(function(){var sp=arv-30000,interest=base*hm*6/12,points=base*pts;
-      return sp-(base+points+interest+sp*comm+sp*cc);})();
+    var worst=(function(){var sp=arv-30000,carried=drawEven?(fpur+rehab/2):base,
+      interest=carried*hm*6/12,points=base*pts;
+      return sp-(base+points+interest+hold*6+sp*comm+sp*cc);})();
     $('q_flip_out').innerHTML='At the asking numbers the best corner of this grid is <b>'+money(bestCell)+
       '</b> and the corner you should underwrite to — thirty thousand under value, six months on the market — is <b>'+money(worst)+'</b>. '+
       (worst>20000?'That clears a twenty thousand dollar target even when everything goes wrong, which is the only version of this that is a deal.':
@@ -1378,7 +1698,9 @@ function calc(){
        'That corner loses money. A flip that only works in the top left of this grid is a bet on a forecast.')+
       ' Maximum allowable offer at the seventy percent rule is <b>'+money(mao70)+'</b>'+
       (fpur>mao70?', and you are being asked '+money(fpur)+' — '+money(fpur-mao70)+' over.':'.')+
-      ' Note the profit shrinking left to right: that is the hard money loan doing what it was designed to do.';
+      ' Note the profit shrinking left to right: that is the hard money loan'+(hold?' and '+money(hold)+' a month of holding cost':'')+
+      ' doing what it was designed to do.'+
+      (hold?'':' <b>You have not entered a holding cost.</b> An empty house still owes property tax, insurance and utilities every month it sits, and leaving that out is how a grid like this flatters a deal.');
   }else{
     gt.style.display='none';
     $('q_flip_out').innerHTML='Add an after repair value, a purchase price and a rehab budget and the whole grid runs.';
@@ -1455,20 +1777,22 @@ function drawRoe(proj,altM,altT,cross){
   box.innerHTML=s+
     '<div class="ckey">'+
       '<span><i style="background:#a9884f"></i>Return on your equity</span>'+
-      '<span><i style="background:#12293f"></i>Long run market average, '+(LONGRUN)+'%</span>'+
+      '<span><i style="background:#12293f"></i>What money earns elsewhere, '+(altM*100).toFixed(1)+'%</span>'+
       '<span><i style="background:#8a6d3b"></i>Risk free, 10 year Treasury '+(RTS.tenYear!==undefined?RTS.tenYear+'%':'')+'</span>'+
       '<span style="color:#8a3d3a">Vertical: the year it crosses</span>'+
     '</div>';
 }
 
-function tableRoe(proj){
+function tableRoe(proj,altM,shelterOn){
   var t=$('q_roe_tab');if(!t)return;
   var picks=proj.filter(function(p){return p.y<=3||p.y%5===0||p.y===proj.length;});
-  var h='<thead><tr><th>Year</th><th>Equity, start</th><th>Cash flow</th><th>Principal</th><th>Appreciation</th><th>Total</th><th>Return on equity</th></tr></thead><tbody>';
+  var h='<thead><tr><th>Year</th><th>Equity, start</th><th>Cash flow</th><th>Principal</th><th>Appreciation</th>'+
+        (shelterOn?'<th>Tax shelter</th>':'')+'<th>Total</th><th>Return on equity</th></tr></thead><tbody>';
   picks.forEach(function(p){
     h+='<tr><td>'+p.y+'</td><td>'+money(p.E0)+'</td><td>'+money(p.cf)+'</td><td>'+money(p.prin)+
-       '</td><td>'+money(p.appr)+'</td><td>'+money(p.total)+'</td><td class="'+
-       (isFinite(p.roe)&&p.roe>=LONGRUN/100?'pass':'fail')+'">'+pc(p.roe)+'</td></tr>';
+       '</td><td>'+money(p.appr)+'</td>'+(shelterOn?'<td>'+money(p.shelter)+'</td>':'')+
+       '<td>'+money(p.total)+'</td><td class="'+
+       (isFinite(p.roe)&&p.roe>=altM?'pass':'fail')+'">'+pc(p.roe)+'</td></tr>';
   });
   t.innerHTML=h+'</tbody>';t.style.display='';
 }
@@ -1476,8 +1800,12 @@ function tableRoe(proj){
 /* ---------- live recompute, debounced ---------- */
 var tmr=null;
 function live(){clearTimeout(tmr);tmr=setTimeout(calc,220);}
-document.querySelectorAll('.teeth input').forEach(function(i){
-  i.addEventListener('input',function(){if(i.dataset.auto)delete i.dataset.auto;live();});
+document.querySelectorAll('.teeth input,.teeth select').forEach(function(i){
+  i.addEventListener('input',function(){
+    if(i.dataset.auto)delete i.dataset.auto;
+    i.dataset.touched='1';                  /* a typed number is never overwritten later */
+    live();});
+  if(i.tagName==='SELECT')i.addEventListener('change',live);
 });
 
 /* ---------- the record lookup ---------- */
@@ -1490,10 +1818,11 @@ $('q_pull').addEventListener('click',function(){
   Promise.all([
     fetch('/api/home-value?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
     fetch('/api/property-record?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
-    fetch('/api/rent-estimate?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+    fetch('/api/rent-estimate?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('/api/deed?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
   ]).then(function(res){
     btn.disabled=false;btn.textContent='Pull the record';
-    var v=res[0],p=res[1],rent=res[2];
+    var v=res[0],p=res[1],rent=res[2],dd=res[3];
     var said=[];
     if(v&&v.price){$('q_val').value=Math.round(v.price);
       said.push('valued at <b>'+money(v.price)+'</b>'+(v.low&&v.high?' (band '+money(v.low)+' to '+money(v.high)+')':''));}
@@ -1505,6 +1834,27 @@ $('q_pull').addEventListener('click',function(){
       if(first&&!String(first.value).trim()){first.value=Math.round(rent.rent);}
       said.push('market rent about <b>'+money(rent.rent)+' a month</b>');
     }
+    /* The parcel record carries three things the valuation feed does not: the day the
+       deed was recorded, the assessor's own split of land from building, and often a sale
+       of its own. The first drives the mortgage reconstruction, the second replaces a
+       guess at the land share with a third party's allocation on the public record. */
+    var asd=dd&&dd.assessed;
+    RECORD={saleDate:(asd&&asd.saleDate)||(dd&&dd.recorded)||(p&&p.lastSaleDate)||null,
+            landShare:asd?asd.landShare:null,assessed:asd||null,deed:dd||null};
+    if(RECORD.saleDate&&!$('q_pdate').value)$('q_pdate').value=String(RECORD.saleDate).slice(0,10);
+    if(asd&&asd.salePrice&&!has('q_cost')){$('q_cost').value=asd.salePrice;
+      said.push('the county records a sale at <b>'+money(asd.salePrice)+'</b>');}
+    var lsrc=$('q_land_src');
+    if(RECORD.landShare&&RECORD.landShare>0&&RECORD.landShare<80){
+      var le=$('q_land');
+      if(!le.dataset.touched){le.value=RECORD.landShare;le.dataset.auto='1';}
+      lsrc.style.display='';
+      lsrc.innerHTML='<b>From the record:</b> the '+esc(asd.source||'county assessor')+' values the land at '+
+        money(asd.land)+' and the building at '+money(asd.building)+', which puts land at <b>'+RECORD.landShare+
+        ' percent</b> of the assessment. That ratio has been carried into the box above. It is an assessment, not '+
+        'market value, but the ratio is what the depreciation turns on, and a third party&rsquo;s allocation on the '+
+        'public record stands up better than a round number of your own. Your appraisal or your CPA&rsquo;s allocation beats both.';
+    }else{lsrc.style.display='none';}
     var src=$('q_rec_src');
     if(said.length){
       src.style.display='';
@@ -1515,11 +1865,21 @@ $('q_pull').addEventListener('click',function(){
           (p.county?', '+esc(p.county)+' County':'')+'. ':'')+
         'Overwrite anything that is wrong; your numbers always win.';
       if(p&&p.squareFootage&&!has('q_sf'))$('q_sf').value=p.squareFootage;
+      else if(asd&&asd.heatedArea&&!has('q_sf'))$('q_sf').value=asd.heatedArea;
+      if(dd&&dd.book&&dd.page){
+        src.innerHTML+='<br><b>The deed itself:</b> Book '+esc(dd.book)+', Page '+esc(dd.page)+
+          (dd.recorded?', recorded '+esc(dd.recorded):'')+', per '+esc(dd.source||'the county')+
+          '. The mortgage was recorded in the same office, usually within a page or two of that deed, and its face '+
+          'amount is your original loan to the dollar. Stage Three reconstructs it from the week&rsquo;s market rate '+
+          'because that document is behind a human search rather than an open one.';
+      }
     }else{
       src.style.display='';
       src.innerHTML='<b>No record came back for that address.</b> The provider covers most of the country but not all of it, and a new subdivision or a rural parcel often has nothing on file. Type the numbers in and everything below still works.';
     }
     calc();syncSoon();
+    /* the moment worth building this for: it now knows enough to price the loan */
+    if(RECORD.saleDate&&(has('q_cost')||has('q_val'))&&!has('q_loan'))reconstruct(true);
   }).catch(function(){
     btn.disabled=false;btn.textContent='Pull the record';
     o.innerHTML='The lookup did not answer. Type the numbers in yourself and the rest of the page works exactly the same.';

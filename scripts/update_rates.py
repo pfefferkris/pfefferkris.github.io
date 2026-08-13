@@ -2,7 +2,8 @@
 """Refresh data/rates.json from public sources. Runs inside GitHub Actions, no PC required.
 Sources: IRS Section 7520 page, U.S. Treasury daily par yield curve XML, Yahoo Finance S&P 500 chart.
 Fails soft: if a source cannot be parsed, the existing value is kept."""
-import json, re, sys, urllib.request, datetime, pathlib
+import json
+import pathlib, re, sys, urllib.request, datetime
 
 UA = {"User-Agent": "Mozilla/5.0 (rates updater for kpfeffer.com; contact mail@kpfeffer.com)"}
 OUT = pathlib.Path("data/rates.json")
@@ -77,6 +78,47 @@ def fetch_sp500(existing):
     except Exception as e:
         print(f"sp500 fetch failed, keeping existing: {e}", file=sys.stderr)
         return keep(existing, ("sp500","sp500Date","sp500Return1y","benchmark","benchmarkSource"))
+
+def fetch_sp500_longrun(existing):
+    """The long run stock return, computed rather than remembered.
+
+    The comparison line on the equity page used to be a hardcoded ten percent, described
+    in the code as a teaching constant, which is exactly the shape of thing the figure law
+    exists to stop: a number typed once, carried forever, and never dated. So it is
+    computed here from the index itself over its whole available history, the same way the
+    house price rate is.
+
+    It is a PRICE return. Dividends are not in an index level, so this understates what an
+    investor holding the index actually earned, and the page says so rather than quietly
+    grossing it up. A floor a reader can check beats a total anyone could have made up.
+    """
+    try:
+        data = json.loads(get("https://query1.finance.yahoo.com/v8/finance/chart/"
+                              "%5EGSPC?range=max&interval=1mo"))
+        res = data["chart"]["result"][0]
+        stamps = res["timestamp"]
+        closes = res["indicators"]["quote"][0]["close"]
+        pts = [(t, c) for t, c in zip(stamps, closes) if c]
+        if len(pts) < 100:
+            raise ValueError("not enough history for a long run rate")
+        t0, c0 = pts[0]
+        t1, c1 = pts[-1]
+        years = (t1 - t0) / (365.2425 * 86400)
+        if years < 30 or c0 <= 0:
+            raise ValueError("span too short")
+        cagr = ((c1 / c0) ** (1.0 / years) - 1) * 100
+        if not (2 < cagr < 20):
+            raise ValueError("long run rate implausible: %.2f" % cagr)
+        return {"sp500LongRun": round(cagr, 1),
+                "sp500LongRunYears": int(round(years)),
+                "sp500LongRunFrom": datetime.date.fromtimestamp(t0).strftime("%B %Y"),
+                "sp500LongRunBasis": ("price return only; dividends are not in an index "
+                                      "level, so a total return investor earned more"),
+                "sp500LongRunSource": "S&P 500 index history, Yahoo Finance chart data"}
+    except Exception as e:
+        print(f"sp500 long run fetch failed, keeping existing: {e}", file=sys.stderr)
+        return keep(existing, ("sp500LongRun", "sp500LongRunYears", "sp500LongRunFrom",
+                               "sp500LongRunBasis", "sp500LongRunSource"))
 
 def fetch_transfer_tax(existing):
     """Federal transfer tax figures straight from the IRS gift tax FAQ.
@@ -202,6 +244,57 @@ def fetch_retirement_limits(existing):
     return out
 
 
+def write_pmms_history(csv_text):
+    """The whole survey, every week since 1971, so a page can ask what a mortgage cost on
+    the day a particular deed was recorded.
+
+    A property page that asks an owner for their interest rate is asking the one number
+    they are least likely to have to hand and most likely to guess. But the county knows
+    the day the deed was recorded, and Freddie Mac knows what the market charged that
+    week, and between the two the loan can be reconstructed instead of guessed. So the
+    history is published alongside the current figure rather than thrown away after the
+    last row is read.
+
+    Stored as day offsets from the first week rather than date strings: same data, forty
+    percent of the bytes, and the file is only fetched when somebody actually asks for a
+    reconstruction.
+    """
+    weeks, r30, r15 = [], [], []
+    for line in csv_text.splitlines():
+        if not line or not line[0].isdigit():
+            continue
+        p = line.split(",")
+        try:
+            d = datetime.datetime.strptime(p[0].strip(), "%m/%d/%Y").date()
+        except ValueError:
+            continue
+        a = p[1].strip()
+        if not a:
+            continue
+        b = p[3].strip() if len(p) > 3 else ""
+        weeks.append(d)
+        r30.append(float(a))
+        r15.append(float(b) if b else None)
+    if len(weeks) < 500:
+        raise ValueError("PMMS history too short to publish")
+    base = weeks[0]
+    doc = {
+        "source": "Freddie Mac Primary Mortgage Market Survey, weekly history",
+        "url": "https://www.freddiemac.com/pmms/docs/PMMS_history.csv",
+        "note": "day is the number of days after base; rate30 and rate15 are percent",
+        "base": base.isoformat(),
+        "from": base.isoformat(),
+        "to": weeks[-1].isoformat(),
+        "n": len(weeks),
+        "day": [(w - base).days for w in weeks],
+        "rate30": r30,
+        "rate15": r15,
+    }
+    path = pathlib.Path("data/pmms.json")
+    path.write_text(json.dumps(doc, separators=(",", ":")) + "\n")
+    print("pmms history: %d weeks, %s to %s, %d bytes"
+          % (len(weeks), doc["from"], doc["to"], path.stat().st_size), file=sys.stderr)
+
 def fetch_mortgage(existing):
     """The two numbers a property page cannot be honest without: what a mortgage costs
     this week, and what houses have actually done.
@@ -220,10 +313,14 @@ def fetch_mortgage(existing):
     """
     out = {}
     try:
-        rows = [r for r in get("https://www.freddiemac.com/pmms/docs/PMMS_history.csv").splitlines()
-                if r and r[0].isdigit()]
+        csv_text = get("https://www.freddiemac.com/pmms/docs/PMMS_history.csv")
+        rows = [r for r in csv_text.splitlines() if r and r[0].isdigit()]
         if not rows:
             raise ValueError("no PMMS rows")
+        try:
+            write_pmms_history(csv_text)
+        except Exception as e:            # the history is a bonus; never lose the rate over it
+            print("pmms history not written: %s" % e, file=sys.stderr)
         last = rows[-1].split(",")
         d = datetime.datetime.strptime(last[0].strip(), "%m/%d/%Y").date()
         r30 = float(last[1]) if last[1].strip() else None
@@ -283,6 +380,7 @@ def main():
     data.update(fetch_7520(existing))
     data.update(fetch_tenyear(existing))
     data.update(fetch_sp500(existing))
+    data.update(fetch_sp500_longrun(existing))
     data.update(fetch_transfer_tax(existing))
     data.update(fetch_retirement_limits(existing))
     data.update(fetch_mortgage(existing))
