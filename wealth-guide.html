@@ -1055,6 +1055,27 @@ const railIO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){c
 stages.forEach(s=>railIO.observe(s));
 
 const $=id=>document.getElementById(id);
+/* Every place the guide is waiting on a number uses the same prompt: a button that goes
+   to the box and puts the cursor in it. Naming a missing input is not enough when the
+   input is somewhere the reader has already scrolled past, and an output that simply
+   stays quiet reads as broken rather than as waiting.
+   Bound once by delegation, because these prompts are rewritten on every keystroke. */
+function needRow(list){
+  return '<div class="needrow">'+list.map(x=>'<button type="button" class="needchip" data-need="'+
+    x[1]+'">'+x[0]+'</button>').join('')+'</div>';
+}
+document.addEventListener('click',ev=>{
+  const b=ev.target&&ev.target.closest&&ev.target.closest('.needchip');
+  if(!b)return;
+  const el=$(b.dataset.need);
+  if(!el)return;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(()=>{
+    try{el.focus({preventScroll:true});}catch(e){el.focus();}
+    el.classList.add('needflash');
+    setTimeout(()=>el.classList.remove('needflash'),1600);
+  },420);
+});
 /* Which sample mixes were loaded when the tab was last touched, read back on restore. */
 let RESTOREPK=[];
 /* Every row a visitor adds carries the control that removes it. Same click, other direction. */
@@ -2300,7 +2321,11 @@ function tcalc(){
   T.goals=goalsEl?[...goalsEl.querySelectorAll('.goalrow')].map(r=>({name:(r.querySelector('.g_name').value||'').trim(),cost:+r.querySelector('.g_cost').value||0,yrs:+r.querySelector('.g_yrs').value||0})).filter(g=>g.cost>0&&g.yrs>0):[];
   T.pos=posEl?[...posEl.querySelectorAll('.posrow')].map(r=>({tkr:(r.querySelector('.p_tkr').value||'').trim().toUpperCase(),val:+r.querySelector('.p_val').value||0})).filter(p=>p.val>0):[];
   T.docs=docEl?docEl.querySelectorAll('span.on').length:0;
-  const yrs=T.age?Math.max(1,65-T.age):35;
+  // Step 3 has a retirement age box; using 65 up here regardless was a leftover from
+  // before that box existed. And with no age at all this assumed thirty five years of
+  // runway without saying so, which is a confident number resting on nothing.
+  const retAge=Math.min(80,Math.max(45,+($('t_retage')&&$('t_retage').value)||65));
+  const yrs=T.age?Math.max(1,retAge-T.age):35;
   const bench=RTS.sp500Return1y!==null&&RTS.sp500Return1y!==undefined?RTS.sp500Return1y:null;
 
   const o0=$('t_out0'),a0=$('t_adv0');
@@ -2327,8 +2352,12 @@ function tcalc(){
       const contrib=(T.monthly||0)*12+matchA;
       const nestF=fv(T.retBal||0,yrs,rf())+fvStream(contrib,yrs,rf());
       const nestB=fv(T.retBal||0,yrs,LONGRUN/100)+fvStream(contrib,yrs,LONGRUN/100);
-      o1.innerHTML=(matchA?'Spring carries down here: counting the employer match it found ('+tfmt(matchA)+' a year of free money on top of your own savings), by':'By')+' 65 this road reaches about <span class="big">'+tfmt(nestF)+'</span> at the risk free floor, and about <span class="big">'+tfmt(nestB)+'</span> near the long run market average. The gap between those two numbers is the reward the market has historically paid for staying invested through its storms.'+(bench!==null?' For context, the '+gl('benchmark','benchmark')+' ('+RTS.benchmark+') returned '+bench+' percent over the last twelve months.':'')+(nestB>1e6?' And past the first million you are worth suing, which is what the umbrella bubble above is for.':'');
-    } else o1.innerHTML='Add your balance and monthly savings to project the harvest.';
+      o1.innerHTML=(matchA?'Spring carries down here: counting the employer match it found ('+tfmt(matchA)+' a year of free money on top of your own savings), by':'By')+' '+retAge+' this road reaches about <span class="big">'+tfmt(nestF)+'</span> at the risk free floor, and about <span class="big">'+tfmt(nestB)+'</span> near the long run market average. The gap between those two numbers is the reward the market has historically paid for staying invested through its storms.'+(bench!==null?' For context, the '+gl('benchmark','benchmark')+' ('+RTS.benchmark+') returned '+bench+' percent over the last twelve months.':'')+(nestB>1e6?' And past the first million you are worth suing, which is what the umbrella bubble above is for.':'')
+        +(T.age?'':' <b>One caveat, and it matters.</b> I do not have your age, so this assumed '+yrs+
+          ' years of runway. That is a guess, and every number above moves with it.'+
+          needRow([['Your age today','t_rage']]));
+    } else o1.innerHTML='Give me either of these and the projection runs.'+
+      needRow([['Retirement balance today','t_bal'],['What you save monthly','t_mon']]);
     if(a1)a1.innerHTML='<b>The math:</b> lump sum grows as PV times (1+r)^n; contributions grow as the annuity stream formula. The floor uses the live 10 year Treasury ('+RTS.tenYear+' percent); the market track uses the long run average of about '+LONGRUN+' percent'+(RTS.sp500?'; the S&P 500 stands at '+RTS.sp500.toLocaleString()+' as of '+RTS.sp500Date:'')+'. <b>The doctrine:</b> a diversified portfolio is judged against its benchmark by beta and the Sharpe ratio, (portfolio return minus the risk free rate) over standard deviation, not by raw return, because diversification removes only unsystematic risk. Two asset portfolio variance is w1²σ1² + w2²σ2² + 2·w1·w2·ρ·σ1·σ2, and the negative correlation term is where the hedge lesson lives. Brinson, Hood and Beebower is the allocation study; fee drag compounds at the same exponent returns do. Past performance never guarantees future results.';
   }
   if(typeof syncRunBtn==='function')syncRunBtn();
@@ -2410,16 +2439,7 @@ function tcalc(){
       if(T.retBal===null)miss.push(['Retirement balance today (Step 1)','t_bal']);
       if(T.monthly===null)miss.push(['What you save monthly (Step 1)','t_mon']);
       ro.innerHTML='<b>One or two boxes to go.</b> Tap any of these and I will take you to it. '+
-        'The balance and the monthly savings are in Step 1, just above.<div class="needrow">'+
-        miss.map(m=>'<button type="button" class="needchip" data-need="'+m[1]+'">'+m[0]+'</button>').join('')+
-        '</div>';
-      ro.querySelectorAll('.needchip').forEach(btn=>btn.addEventListener('click',()=>{
-        const el=$(btn.dataset.need);
-        if(!el)return;
-        el.scrollIntoView({behavior:'smooth',block:'center'});
-        setTimeout(()=>{try{el.focus({preventScroll:true});}catch(e){el.focus();}
-          el.classList.add('needflash');setTimeout(()=>el.classList.remove('needflash'),1600);},420);
-      }));
+        'The balance and the monthly savings are in Step 1, just above.'+needRow(miss);
       const nc=$('t_numcard');if(nc)nc.style.display='none';
     }
   }
@@ -2454,7 +2474,8 @@ function tcalc(){
       const idx=fv(T.retBal||0,yrs,(LONGRUN-0.05)/100)+fvStream((T.monthly||0)*12,yrs,(LONGRUN-0.05)/100);
       fo.style.display='block';
       fo.innerHTML='Over '+yrs+' years near the long run average, a '+fee+' percent expense ratio consumes <span class="flagbad">'+tfmt(gross-net)+'</span> of the ending balance. The same money in a 0.05 percent index fund gives up only '+tfmt(gross-idx)+'. Research finds just 5 to 15 percent of active funds beat their benchmark net of fees, so the fee is usually paid for nothing. If we fast forward and nothing changes, the expense ratio quietly becomes one of the largest single payments of an investing lifetime.';
-    } else if(fee>0){fo.style.display='block';fo.innerHTML='Add your retirement balance and monthly savings above and the fee drag computes in dollars.';}
+    } else if(fee>0){fo.style.display='block';fo.innerHTML='Give me a balance or a monthly savings figure and the fee drag computes in dollars.'+
+        needRow([['Retirement balance today','t_bal'],['What you save monthly','t_mon']]);}
     else fo.style.display='none';
   }
   const to2=$('t_titleout');
