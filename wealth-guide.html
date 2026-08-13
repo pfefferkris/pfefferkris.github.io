@@ -2367,7 +2367,15 @@ tcalc();
     body.appendChild(d);body.scrollTop=body.scrollHeight;return d;
   };
 
-  const seeds=['What happens if I die without a will?','Should I add my child to my deed?','My mother died. Where do I start?','What is a special needs trust?'];
+  // These are the door. Generic questions make this look like a chatbot bolted onto a
+  // resume; questions a practitioner would ask show there is a library behind it.
+  // Each one still lands on a real explainer, so the depth is answered, not implied.
+  const seeds=[
+    'Can my power of attorney agent make gifts, or does that have to be spelled out?',
+    'I refinanced my house. Is it still in my trust?',
+    'My spouse left me out of the will. What is the elective share worth?',
+    'If my son inherits, does he lose his SSI?'
+  ];
   function greet(){
     const hello='Ask me anything about wills, trusts, probate, or how property passes. I will explain how it works and where it stops being something I can answer.\n\nInvestment management and financial planning too. My written library is deepest on the law, so on those I am working from what I was taught rather than from a page I can hand you.';
     say('k',hello);
@@ -2398,7 +2406,9 @@ tcalc();
       history.push({role:'assistant',content:r.answer||''});
       if(history.length>8)history=history.slice(-8);
       // A conversation has actually started, so offer the wake word from here on.
-      if(SR&&ear.style.display==='none'){ ear.style.display=''; setListening(true); }
+      if(ear.style.display==='none'&&navigator.mediaDevices&&window.MediaRecorder){
+        ear.style.display=''; setListening(true);
+      }
     }catch(e){
       thinking.remove();
       say('k','Something on my end did not answer. Try again in a moment.');
@@ -2413,11 +2423,27 @@ tcalc();
      living room, where the AI greets you the moment you walk in: a stranger landing
      on a public page has not agreed to be talked to. Once they open it, he speaks.  */
   const spk=panel.querySelector('#akspk'), ear=panel.querySelector('#akear');
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  let voiceOn=true, audio=null, audioUrl=null, listening=false, rec=null, waiting=false;
+  let voiceOn=true, audioUrl=null, listening=false, waiting=false, warned=false;
+
+  /* THE AUTOPLAY UNLOCK, and this is why nothing spoke the first time.
+     A browser only allows audio that starts inside a user gesture. Fetching the
+     speech takes a second or two, by which point the gesture is over and play() is
+     refused silently. So one <audio> element is created and unlocked the instant the
+     button is pressed, and every later answer just swaps its source. */
+  const player=new Audio();
+  player.preload='auto';
+  const SILENCE='data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA'+
+    'gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAAAAA8LAVEQQAAgAAAAnGT'+
+    'HGUAAAAAAAAAAAAAAAAAAAA//sQxAADwAABpAAAACAAADSAAAAETEFNRTMuOTkuNVVVVVVVVVVVVVVVVVVVVVVVVVVV';
+  let unlocked=false;
+  function unlockAudio(){
+    if(unlocked)return;
+    try{ player.src=SILENCE; const p=player.play(); if(p&&p.then)p.then(()=>{unlocked=true;}).catch(()=>{}); }
+    catch(e){}
+  }
 
   function stopSpeak(){
-    if(audio){try{audio.pause();}catch(e){}audio=null;}
+    try{player.pause();}catch(e){}
     if(audioUrl){URL.revokeObjectURL(audioUrl);audioUrl=null;}
     glow.classList.remove('speak');
   }
@@ -2430,44 +2456,96 @@ tcalc();
       if(!r.ok)return;
       if((r.headers.get('content-type')||'').indexOf('audio')<0)return; // not configured, or rate limited
       audioUrl=URL.createObjectURL(await r.blob());
-      audio=new Audio(audioUrl);
+      player.src=audioUrl;
       glow.classList.add('speak');
-      if(listening&&rec){try{rec.stop();}catch(e){}}   // he must not hear himself
-      const done=()=>{glow.classList.remove('speak');if(listening)armRec();};
-      audio.onended=done;audio.onerror=done;
-      await audio.play();
-    }catch(e){glow.classList.remove('speak');}
+      if(listening)stopMic();               // he must not hear himself
+      player.onended=player.onerror=()=>{glow.classList.remove('speak');if(listening)startMic();};
+      await player.play();
+    }catch(e){
+      // Failing quietly is what made this look broken. Say so, once, and offer the tap.
+      glow.classList.remove('speak');
+      if(!warned){
+        warned=true;
+        const d=say('k','Your browser blocked the audio. Tap here once and I will speak from now on.');
+        d.style.cursor='pointer';
+        d.onclick=()=>{unlocked=true;if(audioUrl){player.src=audioUrl;player.play().catch(()=>{});}};
+      }
+    }
   }
   spk.onclick=()=>{voiceOn=!voiceOn;spk.setAttribute('aria-pressed',String(voiceOn));if(!voiceOn)stopSpeak();};
 
-  /* wake word. Recognition runs in the browser, so the audio itself never leaves the
-     visitor's machine unless a wake phrase actually matches and a question is sent. */
-  function armRec(){
-    if(!SR||!listening)return;
+  /* THE WAKE WORD, rebuilt. The browser's own SpeechRecognition object exists in Brave
+     and then fails, because Brave strips out the Google endpoint it quietly relies on,
+     and Brave is the browser actually in use here. So this records locally, watches the
+     level for a pause, and sends the clip to /api/stt. One path, same behaviour
+     everywhere. The microphone is only ever opened after a real conversation has begun,
+     and it closes the moment the panel does. */
+  let micStream=null, recorder=null, vad=null, ctx=null;
+
+  async function startMic(){
+    if(!listening||recorder)return;
     try{
-      rec=new SR();rec.continuous=true;rec.interimResults=false;rec.lang='en-US';
-      rec.onresult=e=>{
-        for(let i=e.resultIndex;i<e.results.length;i++){
-          if(!e.results[i].isFinal)continue;
-          let t=(e.results[i][0].transcript||'').trim();
-          const m=t.match(/\bhey,?\s+(kristian|christian|cristian|kristen)\b[\s,.:-]*/i);
-          if(m){ t=t.slice(m.index+m[0].length).trim(); waiting=true; }
-          if(!waiting)continue;
-          if(t){ waiting=false; input.value=t; ask(); }
-          else { say('k','I am listening.'); }
+      if(!micStream) micStream=await navigator.mediaDevices.getUserMedia({audio:true});
+      if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)();
+      const src=ctx.createMediaStreamSource(micStream);
+      const an=ctx.createAnalyser();an.fftSize=1024;src.connect(an);
+      const buf=new Uint8Array(an.fftSize);
+      recorder=new MediaRecorder(micStream);
+      let chunks=[],speaking=false,quiet=0,started=0;
+      recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data);};
+      recorder.onstop=async()=>{
+        const blob=new Blob(chunks,{type:recorder.mimeType||'audio/webm'});chunks=[];
+        recorder=null;
+        if(vad){clearInterval(vad);vad=null;}
+        if(blob.size>1200&&listening){
+          try{
+            const r=await fetch('/api/stt',{method:'POST',headers:{'Content-Type':blob.type},body:blob}).then(x=>x.json());
+            handleHeard(r.text||'');
+          }catch(e){}
         }
+        if(listening)setTimeout(startMic,120);
       };
-      rec.onend=()=>{ if(listening&&!audio)setTimeout(armRec,350); };
-      rec.onerror=ev=>{ if(ev.error==='not-allowed'||ev.error==='service-not-allowed')setListening(false); };
-      rec.start();
-    }catch(e){}
+      recorder.start();
+      started=Date.now();
+      vad=setInterval(()=>{
+        an.getByteTimeDomainData(buf);
+        let sum=0;for(let i=0;i<buf.length;i++){const v=(buf[i]-128)/128;sum+=v*v;}
+        const rms=Math.sqrt(sum/buf.length);
+        if(rms>0.035){speaking=true;quiet=0;}
+        else if(speaking){quiet+=120;}
+        // stop on a pause after speech, or cut a long silence short so we are not
+        // uploading a minute of a quiet room
+        if((speaking&&quiet>=850)||(!speaking&&Date.now()-started>6000)){
+          try{recorder&&recorder.state==='recording'&&recorder.stop();}catch(e){}
+        }
+      },120);
+    }catch(e){
+      setListening(false);
+      say('k','I could not open the microphone. Your browser may have blocked it.');
+    }
+  }
+  function stopMic(){
+    if(vad){clearInterval(vad);vad=null;}
+    try{ if(recorder&&recorder.state==='recording')recorder.stop(); }catch(e){}
+    recorder=null;
+  }
+  function handleHeard(t){
+    t=(t||'').trim();
+    if(!t)return;
+    const m=t.match(/\bhey,?\s+(kristian|christian|cristian|kristen|christy)\b[\s,.:!?-]*/i);
+    if(m){ t=t.slice(m.index+m[0].length).trim(); waiting=true; }
+    if(!waiting)return;                     // no wake word, so it was not meant for him
+    if(t){ waiting=false; input.value=t; ask(); }
   }
   function setListening(on){
     listening=on;
     ear.setAttribute('aria-pressed',String(on));
     ear.classList.toggle('live',on);
-    if(on)armRec();
-    else if(rec){try{rec.stop();}catch(e){}rec=null;waiting=false;}
+    if(on)startMic();
+    else{
+      stopMic();waiting=false;
+      if(micStream){micStream.getTracks().forEach(t=>t.stop());micStream=null;}
+    }
   }
   ear.onclick=()=>setListening(!listening);
 
@@ -2480,10 +2558,14 @@ tcalc();
   panel.querySelector('#akx').onclick=shut;
   btn.onclick=()=>{
     if(panel.classList.contains('on')){ shut(); return; }
+    unlockAudio();                 // must happen inside the click, not after the fetch
     panel.classList.add('on');
     if(!opened){opened=true;greet();}
     input.focus();
   };
+  // Any deliberate press is also a chance to earn playback permission.
+  send.addEventListener('pointerdown',unlockAudio);
+  spk.addEventListener('pointerdown',unlockAudio);
 
   // The handoff. Any block on the page can send the visitor here already holding the
   // thing they were reading, so the first question does not have to describe it.
