@@ -750,6 +750,18 @@ body.adv .advline{display:block;animation:pop .5s ease both}
 .steprail b{display:block;font-size:.76rem;color:var(--navy);letter-spacing:.04em}
 @media(max-width:900px){.steprail{display:none}}
 .teeth .addrow{border:1px dashed var(--gold);background:transparent;color:var(--gold-ink);border-radius:10px;padding:6px 12px;font-size:.76rem;cursor:pointer;margin-top:6px}
+/* Folder-hierarchy rule: whatever this page opens, the same page can close.
+   A control that only expands leaves the reader stuck inside their own click. */
+.teeth .addrow.on{background:var(--gold);color:#fff;border-style:solid}
+.teeth .trow.rmv{position:relative;padding-right:26px}
+.teeth .rowx{position:absolute;right:0;top:50%;transform:translateY(-50%);width:20px;height:20px;line-height:1;
+  border:1px solid var(--line);background:rgba(255,255,255,.7);color:var(--muted);border-radius:50%;
+  font-size:.8rem;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.teeth .rowx:hover{border-color:var(--gold);color:var(--gold-ink);background:#fff}
+@media(max-width:640px){.teeth .trow.rmv{padding-right:0}.teeth .rowx{position:static;transform:none;margin-top:4px}}
+.teeth .panelx{float:right;margin:8px 0 0 10px;border:1px solid var(--line);background:rgba(255,255,255,.7);
+  color:var(--muted);border-radius:10px;padding:5px 11px;font-size:.72rem;cursor:pointer;transition:all .15s}
+.teeth .panelx:hover{border-color:var(--gold);color:var(--gold-ink);background:#fff}
 .teeth .flagbad{color:#8a3b2e;font-weight:700}
 .teeth .lesson{margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.5);font-size:.84rem;line-height:1.5}
 .teeth .lesson b{color:var(--navy)}
@@ -913,6 +925,7 @@ const BLOCKS=[
  <p class="tsub" style="margin-top:6px;font-size:.68rem">The copy trade buttons load mixes inspired by publicly disclosed congressional trading filings, the kind the copy trading apps follow, refreshed quarterly. Nobody&#8217;s actual portfolio. The point is the grade: in 2025 only about a third of congressional portfolios beat the S&amp;P 500.</p>
  <button class="tbtn" id="t_run" type="button" style="display:none;margin-top:10px">Run the full analysis on these positions</button>
  <div id="t_anwrap" style="display:none">
+  <button class="panelx" id="t_anhide" type="button">Collapse this analysis</button>
   <p class="tsub" id="t_anlabel" style="margin-top:10px"></p>
   <div class="anstats" id="t_anstats"></div>
   <div class="tvglass" id="t_tv"></div>
@@ -1030,6 +1043,16 @@ const railIO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){c
 stages.forEach(s=>railIO.observe(s));
 
 const $=id=>document.getElementById(id);
+/* Every row a visitor adds carries the control that removes it. Same click, other direction. */
+function rowX(r,after){
+  r.classList.add('rmv');
+  const x=document.createElement('button');
+  x.type='button';x.className='rowx';x.title='Remove this row';
+  x.setAttribute('aria-label','Remove this row');x.innerHTML='&#215;';
+  x.addEventListener('click',()=>{r.remove();if(typeof after==='function')after();});
+  r.appendChild(x);
+  return r;
+}
 /* Session memory: entries live ONLY in this browser tab (sessionStorage) and vanish when it closes. Nothing is ever sent or saved anywhere. */
 function saveSession(){try{
   const F={f:{},chips:[],docs:[],foot:[],goals:[],pos:[]};
@@ -1040,6 +1063,9 @@ function saveSession(){try{
   F.goals=(T.goals||[]).map(g=>({n:g.name,c:g.cost,y:g.yrs}));
   F.debts=(T.debts||[]).map(d=>({n:d.name,b:d.bal,r:d.rate}));
   F.pos=(T.pos||[]).map(x=>({t:x.tkr,v:x.val}));
+  /* Whether the analysis is open travels with the entries, so a refresh restores the
+     view a visitor left, and collapsing it stays collapsed. */
+  F.an=(typeof ANOPEN!=='undefined'&&ANOPEN)?1:0;
   sessionStorage.setItem('unshakable',JSON.stringify(F));
 }catch(e){}}
 function restoreSession(){try{
@@ -1051,6 +1077,12 @@ function restoreSession(){try{
   (F.goals||[]).forEach((g,i)=>{if(i>0&&typeof addGoal==='function')addGoal();const r=goalsEl?goalsEl.children[i]:null;if(r){r.querySelector('.g_name').value=g.n||'';r.querySelector('.g_cost').value=g.c||'';r.querySelector('.g_yrs').value=g.y||'';}});
   (F.pos||[]).forEach(x=>{if(typeof addPos==='function'&&posEl){addPos();const r=posEl.lastChild;r.querySelector('.p_tkr').value=x.t||'';r.querySelector('.p_val').value=x.v||'';}});
   (F.debts||[]).forEach((d,i)=>{if(i>0&&typeof addDebt==='function')addDebt();const r=debtsEl?debtsEl.children[i]:null;if(r){r.querySelector('.d_name').value=d.n==='that debt'?'':(d.n||'');r.querySelector('.d_bal').value=d.b||'';r.querySelector('.d_rate').value=d.r||'';}});
+  if(F.an&&(F.pos||[]).length){
+    setTimeout(()=>{try{
+      const held=(T.pos||[]).filter(x=>x.tkr&&x.val>0);
+      if(held.length&&typeof runAnalysis==='function')runAnalysis(held,'user');
+    }catch(e){}},300);
+  }
 }catch(e){}}
 ['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon','t_retage','t_rsal','t_wage'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',tcalc);});
 const docEl=$('t_docs');
@@ -1067,6 +1099,7 @@ function addDebt(){if(!debtsEl)return;
   const r=document.createElement('div');r.className='trow debtrow';
   r.innerHTML='<label>What it is<input type="text" class="d_name" placeholder="Visa card"></label><label>Balance<input type="number" class="d_bal" placeholder="4200"></label><label>Interest rate (%)<input type="number" class="d_rate" step="0.1" placeholder="24.9"></label>';
   r.querySelectorAll('input').forEach(i=>i.addEventListener('input',tcalc));
+  rowX(r,()=>{if(!debtsEl.children.length)addDebt();tcalc();});
   debtsEl.appendChild(r);}
 if(debtsEl)addDebt();
 const adbt=$('t_adddebt');if(adbt)adbt.addEventListener('click',addDebt);
@@ -1077,6 +1110,7 @@ function addGoal(){if(!goalsEl)return;
   const r=document.createElement('div');r.className='trow goalrow';
   r.innerHTML='<label>Goal<input type="text" class="g_name" placeholder="Down payment"></label><label>What it costs<input type="number" class="g_cost" placeholder="60000"></label><label>Years away<input type="number" class="g_yrs" placeholder="5"></label>';
   r.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>{i.dataset.auto='0';tcalc();}));
+  rowX(r,()=>{if(!goalsEl.children.length)addGoal();tcalc();});
   goalsEl.appendChild(r);}
 addGoal();addGoal();addGoal();
 (function(){if(!goalsEl)return;
@@ -1114,6 +1148,10 @@ function addPos(){if(!posEl)return;
   r.innerHTML='<label>Ticker or company name, type to search every U.S. listing<input type="text" class="p_tkr" list="t_tkrlist" placeholder="AAPL, or type Apple" style="text-transform:uppercase" autocomplete="off"></label><label>Value held<input type="number" class="p_val" placeholder="15000"></label>';
   r.querySelectorAll('input').forEach(i=>i.addEventListener('input',tcalc));
   wireSearch(r.querySelector('.p_tkr'));
+  /* Removing the last position collapses the analysis with it: an empty table
+     grading nothing is worse than no table. */
+  rowX(r,()=>{tcalc();if(typeof clearPreset==='function')clearPreset();
+    if(!posEl.querySelector('.posrow')&&typeof closeAnalysis==='function')closeAnalysis();});
   posEl.appendChild(r);}
 const ap=$('t_addpos');if(ap)ap.addEventListener('click',()=>{addPos();});
 
@@ -1574,12 +1612,31 @@ function tvRender(rows,common,series,raw){
 }
 
 const runBtn=$('t_run');
-let LASTRUN=null;
+let LASTRUN=null,ANOPEN=false,ACTIVEPRESET=null;
+/* The same control, the other direction. Nothing here expands without a way back in. */
+function closeAnalysis(){
+  const wrap=$('t_anwrap');if(!wrap)return;
+  wrap.style.display='none';
+  if(TVSTATE&&TVSTATE.destroy){try{TVSTATE.destroy();}catch(e){}}
+  TVSTATE=null;
+  ['t_anstats','t_tv','t_anout','t_antech','t_anlabel'].forEach(id=>{const e=$(id);if(e)e.innerHTML='';});
+  ANOPEN=false;LASTRUN=null;
+  /* The sample button goes back to unlit, so the next tap opens rather than clears.
+     Whatever rows were loaded stay put: those are the visitor's to keep or delete. */
+  clearPreset();
+  if(typeof saveSession==='function')saveSession();
+  if(typeof syncSoon==='function')syncSoon();
+}
+function clearPreset(){
+  ACTIVEPRESET=null;
+  const h=$('t_presets');
+  if(h)[...h.querySelectorAll('button')].forEach(b=>b.classList.remove('on'));
+}
 async function runAnalysis(held,src){
   const wrap=$('t_anwrap'),out=$('t_anout'),tech=$('t_antech');
   if(!held||!held.length)return;
   const lbl=$('t_anlabel');
-  if(lbl)lbl.innerHTML=src==='default'?'Showing my default example, <b>the 2025 top performers mix</b>, graded live so you can see how this works. Add your own positions above and run them to replace it.':'<b>Your positions, graded live.</b>';
+  if(lbl)lbl.innerHTML=src==='preset'?'Showing the sample mix you tapped, graded live so you can see how this works. Type your own positions above and run them to replace it, or tap that sample again to put it away.':'<b>Your positions, graded live.</b>';
   if(runBtn){runBtn.disabled=true;runBtn.textContent='Reading a year of market data...';}
   try{
     const syms=held.map(p=>p.tkr);
@@ -1650,6 +1707,8 @@ async function runAnalysis(held,src){
     v+='<br><br>One year of history, illustrative only; past performance never guarantees future results. Flip <b>Advanced</b> (top right) and the full workbook table appears beside this season.';
     out.innerHTML=v;
     wrap.style.display='block';
+    ANOPEN=true;
+    if(typeof saveSession==='function')saveSession();
     LASTRUN={pSharpe:pSharpe,mSharpe:mSharpe,src:src||'user'};
     /* Two panes, drawn from the same data this analysis already pulled: the shape on top,
        one company's candles below. See tvRender. */
@@ -1659,12 +1718,24 @@ async function runAnalysis(held,src){
     $('t_anout').innerHTML='One of those tickers did not answer with enough history. Check the symbol spelling against your brokerage app (foreign listings need their suffix, like MC.PA or 005930.KS). Fix it and tap the button again; nothing else on the page is affected.';
     $('t_anwrap').style.display='block';$('t_anstats').innerHTML='';
     if(tech)tech.innerHTML='';
+    ANOPEN=true;
+    if(typeof saveSession==='function')saveSession();
   }
   if(runBtn){runBtn.disabled=false;runBtn.textContent='Run the full analysis on these positions';}
 }
 if(runBtn)runBtn.addEventListener('click',()=>{const held=T.pos.filter(p=>p.tkr&&p.val>0);if(held.length)runAnalysis(held,'user');});
-function loadPreset(list){
+const anHide=$('t_anhide');if(anHide)anHide.addEventListener('click',closeAnalysis);
+function loadPreset(list,key,btn){
   if(!posEl)return;
+  /* Tapping the sample a second time puts it away. The button that opened it closes it,
+     which is the only arrangement a reader can undo without guessing. */
+  if(key&&ACTIVEPRESET===key){
+    posEl.innerHTML='';
+    clearPreset();
+    tcalc();
+    closeAnalysis();
+    return;
+  }
   posEl.innerHTML='';
   list.forEach(p=>{
     addPos();
@@ -1672,48 +1743,29 @@ function loadPreset(list){
     r.querySelector('.p_tkr').value=p[0];
     r.querySelector('.p_val').value=p[1];
   });
+  clearPreset();
+  if(key){ACTIVEPRESET=key;if(btn)btn.classList.add('on');}
   tcalc();
   if(runBtn)runBtn.style.display='';
-  runAnalysis(T.pos.filter(p2=>p2.tkr&&p2.val>0),'user');
+  runAnalysis(T.pos.filter(p2=>p2.tkr&&p2.val>0),key?'preset':'user');
 }
 /* copy trade presets load from data/copytrade.json, refreshed quarterly from public STOCK Act disclosures */
-let CTDATA=null,defaultRan=false;
+let CTDATA=null;
 fetch('data/copytrade.json').then(r=>r.json()).then(ct=>{
   CTDATA=ct;
   const holder=$('t_presets');if(!holder||!ct.presets)return;
   ct.presets.forEach(ps=>{
     const b=document.createElement('button');b.type='button';b.className='addrow';b.textContent=ps.label;b.title=ps.desc;
-    b.addEventListener('click',()=>loadPreset(ps.positions.map(x=>[String(x[0]),String(x[1])])));
+    b.addEventListener('click',()=>loadPreset(ps.positions.map(x=>[String(x[0]),String(x[1])]),ps.key||ps.label,b));
     holder.appendChild(b);
   });
-  /* default view: the AI infrastructure mix grades itself when the season first comes into sight.
-     Belt and suspenders: IntersectionObserver plus a plain scroll check, so it fires everywhere. */
-  const stage1=document.querySelectorAll('.stage')[1];
-  function tryDefault(){
-    if(defaultRan||!stage1)return;
-    const rc=stage1.getBoundingClientRect();
-    if(rc.top<window.innerHeight&&rc.bottom>0){
-      defaultRan=true;
-      window.removeEventListener('scroll',tryDefault);
-      const userHas=T.pos&&T.pos.some(p2=>p2.tkr&&p2.val>0);
-      if(!userHas){
-        const dft=(ct.presets||[]).find(x=>x.key==='top2025')||(ct.presets||[])[0];
-        if(dft)runAnalysis(dft.positions.map(x=>({tkr:String(x[0]),val:+x[1]})),'default');
-      }
-    }
-  }
-  if(stage1){
-    if('IntersectionObserver' in window){
-      const io2=new IntersectionObserver(()=>tryDefault(),{threshold:0.02});
-      io2.observe(stage1);
-    }
-    window.addEventListener('scroll',tryDefault,{passive:true});
-    setTimeout(tryDefault,800);
-  }
+  /* No analysis runs on its own. Step 2 stays closed until a visitor either taps a
+     sample or types positions and presses the button, because a panel that opens by
+     itself is a panel the reader never learns how to close. */
 }).catch(()=>{
   const holder=$('t_presets');if(!holder)return;
   const b=document.createElement('button');b.type='button';b.className='addrow';b.textContent='Autopilot check: grade a famous copy trade mix';
-  b.addEventListener('click',()=>loadPreset([['NVDA','25000'],['AVGO','15000'],['MSFT','15000'],['GOOGL','15000'],['PANW','10000'],['VST','10000']]));
+  b.addEventListener('click',()=>loadPreset([['NVDA','25000'],['AVGO','15000'],['MSFT','15000'],['GOOGL','15000'],['PANW','10000'],['VST','10000']],'fallback',b));
   holder.appendChild(b);
 });
 
