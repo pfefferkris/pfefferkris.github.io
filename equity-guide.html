@@ -618,6 +618,14 @@ body.adv .teeth .tcard .whyln{display:block}
       <div class="tout" id="q_rec_out">Type an address and press the button, or fill the boxes yourself. Everything below builds on these four numbers.</div>
       <div class="kpi" id="q_rec_kpi"></div>
       <div class="srcline" id="q_rec_src" style="display:none"></div>
+      <div class="srcline" id="q_rod" style="display:none"></div>
+
+      <p class="tsub" style="margin-top:16px"><b>What the neighbors actually sold for.</b> This is the row of properties an appraiser lines up before any of the work starts &mdash; the same street where possible, the same rough size, the characteristics the county has on file, and what each one is recorded as having sold for. Nothing on it is from a multiple listing service, and that is a decision rather than a limitation: the county record is public, statewide, free, and nobody can take it away.</p>
+      <button class="tbtn" id="q_comps" type="button">Pull the comparable sales</button>
+      <div class="roll-wrap"><table class="grid7" id="q_comp_tab" style="display:none"></table></div>
+      <div class="tout" id="q_comp_out" style="display:none"></div>
+      <div class="srcline" id="q_comp_src" style="display:none"></div>
+      <div class="advline" id="q_adv1b" data-anchor="#q_comp_tab"><b>Why this grid stops where it stops.</b> An appraiser&rsquo;s sales comparison approach has two halves. The first is selecting comparables and laying out their characteristics; the second is <b>adjusting</b> each one &mdash; for condition, for a renovated kitchen, for a corner lot, for a view, for the market having moved since the sale, for seller concessions that never appear in the recorded price. The adjustments are the craft, and they are why the work is licensed. This page does the first half and stops, visibly, at the line where the second half begins. <br><br>That line is also a legal one. Under N.C. Gen. Stat. Section 93A-83(f) a broker&rsquo;s comparison &ldquo;shall not under any circumstances be referred to as a valuation or appraisal,&rdquo; and one that estimates value rather than price &ldquo;shall be deemed to be an appraisal,&rdquo; which only a licensed appraiser may prepare under Chapter 93E. So there is deliberately no conclusion of value here, no adjustment, and no average presented as an answer &mdash; a range and the rows behind it, which is what an honest half of the work looks like. Handing you an unadjusted grid dressed up as a finished one would not be neutral, it would be misleading, and that is its own problem under Section 93A-6(a)(1).</div>
     </div>
   </div>
 </section>
@@ -1808,6 +1816,107 @@ function tableRoe(proj,altM,shelterOn){
   t.innerHTML=h+'</tbody>';t.style.display='';
 }
 
+/* ================= THE COMPARABLE SALES GRID =================
+   Public records only, and the reasons are in the endpoint. What matters here is that the
+   page never crosses from laying rows out to concluding anything: no adjustments, no
+   average presented as an answer, and the disclosure prints whether or not anyone reads it. */
+var ROD=null;
+function rodLink(county){
+  var box=$('q_rod');if(!box)return;
+  if(!county){box.style.display='none';return;}
+  function paint(){
+    var url=ROD&&ROD.rod&&ROD.rod[county];
+    var d=RECORD.parcel&&RECORD.parcel.deed;
+    var bp=(d&&d.book)?('Book <b>'+esc(d.book)+'</b>, Page <b>'+esc(d.page||'')+'</b>'):null;
+    if(!url&&!bp){box.style.display='none';return;}
+    box.style.display='';
+    box.innerHTML='<b>Go read the mortgage yourself.</b> '+
+      (bp?'Your deed is '+bp+'. The deed of trust &mdash; the mortgage &mdash; was recorded in the same office, '+
+          'almost always within a page or two of it, and <b>its face amount is your original loan to the dollar</b>. ':
+          'The deed of trust is recorded with the county register of deeds and its face amount is your original loan. ')+
+      (url?'<a href="'+esc(url)+'" target="_blank" rel="noopener"><b>Open the '+esc(county)+
+           ' County Register of Deeds &rarr;</b></a> '+
+           'Search by book and page, clear whatever check the site puts in front of you &mdash; that check is the reason '+
+           'this page cannot read it for you &mdash; and type the face amount into the balance box in Stage Three. '+
+           'That replaces every estimate below with a fact.'
+          :'Search '+esc(county)+' County register of deeds for the book and page above.');
+  }
+  if(ROD)return paint();
+  fetch('data/nc-rod.json').then(function(r){return r.json();}).then(function(d){ROD=d;paint();})
+    .catch(function(){ROD={rod:{}};paint();});
+}
+
+function compCell(v){return (v===null||v===undefined||v==='')?'&mdash;':v;}
+$('q_comps').addEventListener('click',function(){
+  var a=($('q_addr').value||'').trim();
+  var out=$('q_comp_out'),tab=$('q_comp_tab'),src=$('q_comp_src');
+  if(a.length<8||!/\d/.test(a)){out.style.display='';out.innerHTML='Put the address in the box above first.';return;}
+  var btn=this;btn.disabled=true;btn.textContent='Reading the record…';
+  out.style.display='';out.innerHTML='Finding what sold nearby…';
+  var cty=(RECORD.parcel&&RECORD.parcel.county)||'';
+  fetch('/api/comps?address='+encodeURIComponent(a)+(cty?'&county='+encodeURIComponent(cty):''))
+    .then(function(r){return r.ok?r.json():r.json().then(function(j){throw new Error(j.error||'no');});})
+    .then(function(d){
+      btn.disabled=false;btn.textContent='Pull the comparable sales';
+      var rows=d.comps||[],s=d.subject||{};
+      if(!rows.length){
+        tab.style.display='none';
+        out.innerHTML='<b>Nothing nearby came back.</b> '+((d.limits||[]).join(' ')||
+          'Either the county publishes no sales, or nothing comparable has changed hands close enough to be worth showing.');
+        return;
+      }
+      var h='<thead><tr><th>Property</th><th>Miles</th><th>Heated sf</th><th>Beds</th><th>Built</th>'+
+            '<th>Grade &amp; condition</th><th>Sold for</th><th>When</th><th>Per foot</th></tr></thead><tbody>';
+      h+='<tr style="background:rgba(169,136,79,.16)"><td><b>'+esc(s.address||'This property')+
+         '</b><br><span style="font-size:.62rem;color:var(--muted);font-weight:400">the subject</span></td>'+
+         '<td>&mdash;</td><td>'+compCell(s.heatedArea&&s.heatedArea.toLocaleString())+'</td>'+
+         '<td>'+compCell(s.bedrooms)+'</td><td>'+compCell(s.yearBuilt)+'</td>'+
+         '<td>'+compCell([s.grade,s.condition].filter(Boolean).join(' &middot; '))+'</td>'+
+         '<td>'+(s.salePrice?money(s.salePrice):'&mdash;')+'</td><td>'+compCell(s.saleDate)+'</td>'+
+         '<td>'+(s.assessedPerFoot?'$'+s.assessedPerFoot+' assessed':'&mdash;')+'</td></tr>';
+      rows.forEach(function(c){
+        h+='<tr><td>'+esc(c.address||'—')+(c.deedType?'<br><span style="font-size:.62rem;color:var(--muted);font-weight:400">'+
+             esc(String(c.deedType).toLowerCase())+'</span>':'')+'</td>'+
+           '<td>'+compCell(c.miles)+'</td><td>'+compCell(c.heatedArea&&c.heatedArea.toLocaleString())+'</td>'+
+           '<td>'+compCell(c.bedrooms)+'</td><td>'+compCell(c.yearBuilt)+'</td>'+
+           '<td>'+compCell([c.grade,c.condition].filter(Boolean).join(' &middot; '))+'</td>'+
+           '<td>'+(c.salePrice?money(c.salePrice):'&mdash;')+'</td><td>'+compCell(c.saleDate)+'</td>'+
+           '<td>'+(c.pricePerFoot?'<b>$'+c.pricePerFoot+'</b>':'&mdash;')+'</td></tr>';
+      });
+      tab.innerHTML=h+'</tbody>';tab.style.display='';
+      var msg='<b>'+rows.length+' properties within '+
+        (rows[rows.length-1].miles!==null?rows[rows.length-1].miles+' miles':'the neighborhood')+'</b>, '+
+        d.soldCount+' of them with a recorded sale price. ';
+      if(d.perFoot){
+        msg+='They sold between <b>$'+d.perFoot.low+'</b> and <b>$'+d.perFoot.high+
+             '</b> a heated square foot, with the middle one at $'+d.perFoot.middle+'. '+
+             (s.heatedArea?'On '+s.heatedArea.toLocaleString()+' heated feet that whole range is '+
+               money(d.perFoot.low*s.heatedArea)+' to '+money(d.perFoot.high*s.heatedArea)+
+               ', which is a spread of '+money((d.perFoot.high-d.perFoot.low)*s.heatedArea)+
+               ' and is exactly why nobody should hand you one number. ':'');
+      }
+      msg+='<br><br>'+esc(d.disclosure)+'<br><br><b>Left out on purpose:</b> '+esc(d.excluded);
+      if((d.limits||[]).length)msg+='<br><br><b>What is weak about this set:</b> '+d.limits.map(esc).join(' ');
+      out.innerHTML=msg;
+      src.style.display='';
+      src.innerHTML='<b>Source:</b> '+esc(d.source||'county records')+'. No listing service data appears '+
+        'anywhere on this page. An IDX feed may not be used for anything but display of listings, and every '+
+        'North Carolina multiple listing service forbids a closed-sale display from being presented as a '+
+        'comparative market analysis. County records carry no such restriction: under N.C. Gen. Stat. '+
+        'Section 132-1 public records are the property of the people, and Section 132-10 expressly excludes '+
+        'a licensed professional&rsquo;s own use from the commercial-purpose limit a county may impose.';
+      syncSoon();
+    })
+    .catch(function(e){
+      btn.disabled=false;btn.textContent='Pull the comparable sales';
+      tab.style.display='none';
+      out.innerHTML='<b>The comparable lookup did not answer.</b> '+
+        'Deep coverage runs where a county publishes its own records: Wake, Mecklenburg, and the eleven '+
+        'counties on the shared assessor platform. Everywhere else the statewide layer carries assessments '+
+        'but not prices, and this stops rather than inventing a number.';
+    });
+});
+
 /* ---------- live recompute, debounced ---------- */
 var tmr=null;
 function live(){clearTimeout(tmr);tmr=setTimeout(calc,220);}
@@ -1930,6 +2039,7 @@ $('q_pull').addEventListener('click',function(){
     }else{
       src.innerHTML='<b>No record came back for that address.</b> The provider covers most of the country but not all of it, and a new subdivision or a rural parcel often has nothing on file. Type the numbers in and everything below still works.';
     }
+    rodLink(pc0&&pc0.county);
     calc();syncSoon();
     if(RECORD.saleDate&&(has('q_cost')||has('q_val'))&&!has('q_loan'))reconstruct(true);
   }).catch(function(){

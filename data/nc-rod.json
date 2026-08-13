@@ -1,0 +1,15 @@
+{
+ "counties": 9,
+ "note": "Where to go to read the deed of trust yourself. Every one of these answered a request on the day this file was written; none of them can be searched by a machine, which is the whole point of publishing the link rather than pretending to have read the document. Take the book and page the guide gives you, open the county's index, clear whatever check it puts in front of you, and the face amount of the instrument recorded right after your deed is your original loan.",
+ "rod": {
+  "Buncombe": "https://registerofdeeds.buncombecounty.org/",
+  "Forsyth": "https://www.forsyth.cc/ROD/",
+  "Guilford": "https://www.guilforddeeds.com/",
+  "Mecklenburg": "https://meckrod.manatron.com/",
+  "New Hanover": "https://www.nhcgov.com/168/Register-of-Deeds",
+  "Orange": "https://www.orangecountync.gov/168/Register-of-Deeds",
+  "Pitt": "https://www.pittcountync.gov/163/Register-of-Deeds",
+  "Rutherford": "https://www.rutherfordcountync.gov/departments/register_of_deeds/index.php",
+  "Wake": "https://www.wake.gov/departments-government/register-deeds"
+ }
+}
