@@ -202,6 +202,81 @@ def fetch_retirement_limits(existing):
     return out
 
 
+def fetch_mortgage(existing):
+    """The two numbers a property page cannot be honest without: what a mortgage costs
+    this week, and what houses have actually done.
+
+    Freddie Mac's Primary Mortgage Market Survey is the rate every lender quote is
+    measured against, and Freddie publishes the whole history as a CSV, so this is the
+    primary source rather than somebody's summary of it. The FHFA House Price Index is
+    the same idea for appreciation: a repeat sales index built from actual conforming
+    transactions, which is the only kind of house price average that compares a house to
+    itself instead of to a different house.
+
+    Appreciation is the figure people guess worst. A page that assumes a number for it
+    is a page that manufactures equity out of nothing, so the long run rate is computed
+    here from the index itself, start to latest, and carries the span it was measured
+    over so a reader can see it is fifty years and not a good decade.
+    """
+    out = {}
+    try:
+        rows = [r for r in get("https://www.freddiemac.com/pmms/docs/PMMS_history.csv").splitlines()
+                if r and r[0].isdigit()]
+        if not rows:
+            raise ValueError("no PMMS rows")
+        last = rows[-1].split(",")
+        d = datetime.datetime.strptime(last[0].strip(), "%m/%d/%Y").date()
+        r30 = float(last[1]) if last[1].strip() else None
+        r15 = float(last[3]) if len(last) > 3 and last[3].strip() else None
+        if not r30 or not (1 < r30 < 20):
+            raise ValueError("30 year rate out of range")
+        out.update({"mortgage30": r30,
+                    "mortgageDate": d.strftime("%B %d, %Y").replace(" 0", " "),
+                    "mortgageWeek": d.isoformat(),
+                    "mortgageSource": "Freddie Mac Primary Mortgage Market Survey"})
+        if r15 and 1 < r15 < 20:
+            out["mortgage15"] = r15
+    except Exception as e:
+        print(f"PMMS fetch failed, keeping existing: {e}", file=sys.stderr)
+        out.update(keep(existing, ("mortgage30", "mortgage15", "mortgageDate",
+                                   "mortgageWeek", "mortgageSource")))
+
+    try:
+        pts = []
+        for line in get("https://www.fhfa.gov/hpi/download/quarterly_datasets/"
+                        "hpi_at_us_and_census.csv").splitlines():
+            p = line.split(",")
+            if len(p) >= 4 and p[0].strip() == "USA":
+                try:
+                    pts.append((int(p[1]), int(p[2]), float(p[3])))
+                except ValueError:
+                    continue
+        pts.sort()
+        if len(pts) < 8:
+            raise ValueError("not enough FHFA quarters")
+        first, last = pts[0], pts[-1]
+        prior = next((p for p in reversed(pts) if (p[0], p[1]) == (last[0] - 1, last[1])), None)
+        years = (last[0] - first[0]) + (last[1] - first[1]) / 4.0
+        if years < 10 or first[2] <= 0:
+            raise ValueError("FHFA span implausible")
+        longrun = ((last[2] / first[2]) ** (1.0 / years) - 1) * 100
+        if not (0 < longrun < 15):
+            raise ValueError("FHFA long run rate implausible")
+        out.update({"hpiLongRun": round(longrun, 1),
+                    "hpiSpanYears": int(round(years)),
+                    "hpiFrom": "%dQ%d" % (first[0], first[1]),
+                    "hpiAsOf": "%dQ%d" % (last[0], last[1]),
+                    "hpiSource": "FHFA House Price Index, purchase only, U.S. quarterly"})
+        if prior and prior[2] > 0:
+            out["hpi1y"] = round((last[2] / prior[2] - 1) * 100, 1)
+    except Exception as e:
+        print(f"FHFA fetch failed, keeping existing: {e}", file=sys.stderr)
+        out.update(keep(existing, ("hpiLongRun", "hpiSpanYears", "hpiFrom", "hpiAsOf",
+                                   "hpiSource", "hpi1y")))
+
+    out["propertyChecked"] = datetime.date.today().isoformat()
+    return out
+
 def main():
     existing = load_existing()
     data = dict(existing)
@@ -210,6 +285,7 @@ def main():
     data.update(fetch_sp500(existing))
     data.update(fetch_transfer_tax(existing))
     data.update(fetch_retirement_limits(existing))
+    data.update(fetch_mortgage(existing))
     data["updated"] = datetime.date.today().isoformat()
     if {k: v for k, v in data.items() if k != "updated"} == {k: v for k, v in existing.items() if k != "updated"}:
         print("no change")

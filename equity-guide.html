@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Equity Guide: Return on Equity for a House or a Rental — Kristian R. Pfeffer</title>
+<!-- PRIVATE DRAFT. Not indexed, not linked from the site navigation, not in the sitemap.
+     Anyone who has this URL has it because I sent it to them. -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Private draft.">
+<style>
+
+:root{
+  --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e; --gold-text:#8a6d3b;
+  --ink:#1e2b36; --muted:#5a6a78; --line:#e4ddd0; --bg:#faf8f3; --card:#ffffff;
+  --brick:#8a3d3a; --gold-ink:#7c5f2e;
+  --r:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+.ic{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;vertical-align:-.14em;display:inline-block;flex:none}
+.skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--navy);color:#fff;
+  padding:10px 16px;border-radius:0 0 4px 0}
+.skip:focus{left:0}
+a:focus-visible,button:focus-visible,[tabindex]:focus-visible,summary:focus-visible,
+.chip:focus-visible,.bub:focus-visible,.abub:focus-visible,.sw:focus-visible{
+  outline:2px solid var(--gold);outline-offset:2px;border-radius:2px}
+.nwrow .field:focus-within{outline:2px solid var(--gold);outline-offset:2px}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,
+    #faf8f3 0%, #f7f2e7 10%,
+    #f3ecd8 22%, #efe3c4 32%,
+    #e9d9b8 44%, #ddc59c 54%, #cdae86 62%,
+    #dde3e6 74%, #ccd6dc 84%,
+    #f0ede3 94%, #faf8f3 100%);
+  min-height:100vh;overflow-x:hidden;
+}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif}
+a{color:var(--navy-2); text-decoration:none}
+a:hover{color:var(--gold)}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.22;pointer-events:none;z-index:0}
+.orb.o1{width:500px;height:500px;background:#e8dcc0;top:-130px;left:-120px}
+.orb.o2{width:480px;height:480px;background:#cdae86;top:40%;right:-160px;opacity:.2}
+.orb.o3{width:500px;height:500px;background:#b9c3cc;bottom:-150px;left:-120px;opacity:.18}
+
+.glass{
+  background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(255,255,255,.34));
+  backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.7);border-radius:var(--r);
+  box-shadow:0 12px 40px rgba(18,41,63,.12), inset 0 1px 0 rgba(255,255,255,.75);
+}
+
+/* ---------- site nav (matches index.html) ---------- */
+nav.site{position:sticky; top:0; z-index:60; background:rgba(250,248,243,.92);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--line)}
+nav.site .navwrap{max-width:1080px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:58px}
+.brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); letter-spacing:.3px; font-size:1.02rem}
+.navlinks a{margin-left:24px; font-size:.85rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em}
+.navlinks a:hover{color:var(--navy)}
+.navmenu{display:none}
+@media(max-width:640px){
+  .navlinks{display:none}
+  .navmenu{display:block; position:relative}
+  .navmenu summary{list-style:none; cursor:pointer; display:flex; align-items:center; gap:6px;
+    color:var(--navy); font-size:.8rem; text-transform:uppercase; letter-spacing:.08em; padding:8px 6px; min-height:44px}
+  .navmenu summary::-webkit-details-marker{display:none}
+  .navmenu[open] summary .ic{transform:rotate(180deg)}
+  .navmenu summary .ic{transition:transform .2s ease; width:1.15em; height:1.15em}
+  .navmenu .panel{position:absolute; right:0; top:100%; background:var(--bg);
+    border:1px solid var(--line); border-radius:4px; box-shadow:0 12px 30px rgba(18,41,63,.14);
+    min-width:200px; padding:6px 0; z-index:61}
+  .navmenu .panel a{display:block; padding:11px 18px; font-size:.82rem; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.08em; margin:0}
+  .navmenu .panel a:hover{color:var(--navy); background:#fff}
+}
+
+/* ---------- header ---------- */
+header{position:relative;z-index:2;text-align:center;padding:64px 22px 26px;max-width:840px;margin:0 auto}
+header .eyebrow{color:var(--gold-text); text-transform:uppercase; letter-spacing:.22em; font-size:.76rem; margin-bottom:14px}
+header h1{font-size:clamp(1.9rem,4.6vw,2.9rem);font-weight:700;letter-spacing:-.01em;line-height:1.14;color:var(--navy)}
+header .sub{margin:18px auto 0;max-width:620px;font-size:1.02rem;color:var(--muted);line-height:1.65}
+
+/* ---------- controls ---------- */
+.advbox{position:fixed;top:70px;right:16px;z-index:55;padding:12px 16px;border-radius:18px;max-width:280px}
+.advrow{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.advrow .lb{font-size:.8rem;font-weight:700;letter-spacing:.05em;color:var(--navy);text-transform:uppercase}
+.sw{position:relative;width:46px;height:26px;border-radius:14px;background:rgba(18,41,63,.16);cursor:pointer;transition:background .25s;flex:none}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.25);transition:left .25s}
+body.adv .sw{background:var(--navy-2)}
+body.adv .sw::after{left:23px}
+.nwrow{display:none;margin-top:10px}
+body.adv .nwrow{display:block}
+.nwrow label{display:block;font-size:.64rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.nwrow .field{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);border-radius:10px;padding:8px 12px}
+.nwrow .field span{font-weight:700;color:var(--muted)}
+.nwrow input{border:none;background:transparent;outline:none;font:inherit;font-weight:650;width:100%;color:var(--ink)}
+.nwrow .hint{font-size:.66rem;color:var(--muted);margin-top:6px;line-height:1.4}
+
+.persona{position:relative;z-index:3;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:22px auto 6px;padding:10px 14px;max-width:660px;border-radius:30px}
+.persona .lbl{font-size:.74rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);align-self:center}
+.chip{font-size:.83rem;font-weight:600;padding:8px 15px;border-radius:20px;cursor:pointer;user-select:none;border:1px solid rgba(255,255,255,.8);background:rgba(255,255,255,.45);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:all .25s;color:var(--ink)}
+.chip:hover{transform:translateY(-1px)}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* ---------- journey: content justified right ---------- */
+.journey{position:relative;z-index:1;max-width:1280px;margin:26px auto 0;padding:10px 22px 50px}
+.spine{position:absolute;left:38%;top:0;bottom:0;width:2px;background:linear-gradient(180deg,rgba(18,41,63,.18),rgba(250,248,243,0));border-radius:2px}
+.traveler{position:absolute;left:38%;width:16px;height:16px;transform:translate(-7px,-8px);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--gold));box-shadow:0 0 18px rgba(169,136,79,.75);z-index:3;transition:top .12s linear}
+
+.stage{position:relative;display:grid;grid-template-columns:34% 8% 58%;padding:56px 0;opacity:0;transform:translateY(38px);transition:opacity .8s ease,transform .8s ease}
+.stage.vis{opacity:1;transform:none}
+.lane-a{grid-column:1;display:flex;flex-direction:column;gap:12px;align-items:flex-end;padding-top:70px}
+.lane-c{grid-column:3}
+.wide{grid-column:1/-1}
+
+.era{display:block;font-size:.74rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;margin-bottom:14px;color:var(--gold-text)}
+.panel{position:relative;max-width:620px;padding:30px 34px}
+.panel .icon{font-size:1.9rem;display:block;margin-bottom:8px;filter:saturate(.7)}
+.panel h2{font-size:1.55rem;font-weight:700;letter-spacing:-.01em;margin-bottom:8px;color:var(--navy)}
+.panel p.lead{font-size:.97rem;line-height:1.65;color:var(--muted)}
+
+/* ---------- client bubbles (right lane) ---------- */
+.bubbles{display:flex;flex-wrap:wrap;gap:13px;justify-content:flex-start;max-width:660px;margin:24px 0 0}
+.bub{--d:0ms;position:relative;padding:13px 19px;border-radius:14px;cursor:pointer;text-align:left;max-width:250px;
+  background:linear-gradient(135deg,rgba(255,255,255,.66),rgba(255,255,255,.36));
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:0 8px 26px rgba(18,41,63,.1), inset 0 1px 0 rgba(255,255,255,.75);
+  opacity:0;transform:translateY(22px) scale(.94);
+  transition:opacity .6s ease var(--d),transform .6s cubic-bezier(.2,.9,.3,1.2) var(--d),box-shadow .25s}
+.stage.vis .bub{opacity:1;transform:none}
+.bub:hover{box-shadow:0 14px 34px rgba(18,41,63,.18), inset 0 1px 0 rgba(255,255,255,.85)}
+.bub b{display:block;font-size:.93rem;font-weight:650;margin-bottom:3px;color:var(--ink)}
+.bub small{display:block;font-size:.78rem;line-height:1.45;color:var(--muted)}
+.bub .tag{position:absolute;top:-9px;right:12px;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:10px;background:var(--navy);color:#fff}
+.bub.cond{display:none}
+.bub.cond.show{display:block}
+
+/* ---------- advanced bubbles (left lane) ---------- */
+.abub{display:none;position:relative;max-width:340px;padding:13px 18px;border-radius:12px;cursor:pointer;text-align:left;
+  background:linear-gradient(135deg,rgba(226,232,238,.62),rgba(226,232,238,.32));
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  border:1px solid rgba(28,61,92,.28);
+  box-shadow:0 8px 26px rgba(18,41,63,.12), inset 0 1px 0 rgba(255,255,255,.7)}
+body.adv .abub{display:block;animation:pop .5s ease both}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.95)}to{opacity:1;transform:none}}
+.abub b{display:block;font-size:.89rem;font-weight:650;margin-bottom:3px;color:var(--navy)}
+.abub small{display:block;font-size:.76rem;line-height:1.45;color:var(--muted)}
+.abub .atag{position:absolute;top:-9px;left:12px;font-size:.56rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 9px;border-radius:10px;background:var(--navy-2);color:#fff}
+.abub .num{display:block;margin-top:6px;font-size:.77rem;font-weight:700;color:var(--navy-2)}
+.alane-note{display:none;font-size:.7rem;color:var(--muted);text-align:right;max-width:340px;line-height:1.5;font-style:italic}
+body.adv .alane-note{display:block}
+
+/* ---------- whiteboard ---------- */
+.board{display:none;margin:44px auto 0;max-width:1080px;padding:34px 36px 30px;border-radius:20px;
+  background:linear-gradient(150deg,rgba(255,255,255,.88),rgba(255,255,255,.7));
+  backdrop-filter:blur(26px) saturate(1.4);-webkit-backdrop-filter:blur(26px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.9);box-shadow:0 24px 60px rgba(18,41,63,.16)}
+body.adv .board{display:block}
+.board h3{font-size:1.22rem;font-weight:700;margin-bottom:4px;color:var(--navy)}
+.board .bsub{font-size:.85rem;color:var(--muted);margin-bottom:22px;line-height:1.55}
+.routes{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.route{border-radius:14px;padding:20px 22px;border:1.5px dashed rgba(138,61,58,.4);background:rgba(255,255,255,.42)}
+.route.bad{border-color:rgba(138,61,58,.4)}
+.route.good{border-color:rgba(169,136,79,.5)}
+.route h4{font-size:.93rem;font-weight:700;margin-bottom:12px;letter-spacing:.01em}
+.route.bad h4{color:var(--brick)}
+.route.good h4{color:var(--gold-ink)}
+.wbox{border:1.5px solid rgba(30,41,54,.25);border-radius:10px;padding:9px 13px;margin-bottom:8px;font-size:.81rem;line-height:1.45;background:rgba(255,255,255,.58)}
+.wbox b{font-size:.83rem}
+.wbox.cst{border-color:var(--gold);background:rgba(169,136,79,.1)}
+.wbox.qtip{border-color:var(--gold-soft);background:rgba(198,168,110,.12)}
+.wbox.tax{border-color:var(--brick);background:rgba(138,61,58,.08)}
+.warrow{text-align:center;font-size:.98rem;color:var(--muted);margin:2px 0 8px}
+.verdict{margin-top:20px;padding:16px 20px;border-radius:12px;text-align:center;background:rgba(169,136,79,.12);border:1px solid rgba(169,136,79,.35);font-size:.93rem;color:var(--ink)}
+.verdict b{font-size:1.1rem;color:var(--gold-ink)}
+.stand{display:none;margin:26px auto 0;max-width:1080px;padding:18px 26px;border-radius:14px;text-align:center;font-size:.93rem;line-height:1.6;
+  background:rgba(28,61,92,.08);border:1px solid rgba(28,61,92,.28);color:var(--navy)}
+body.adv .stand{display:block}
+.stand b{font-weight:750}
+
+/* ---------- fork ---------- */
+.fork{display:flex;gap:16px;flex-wrap:wrap;max-width:660px;margin:24px 0 0}
+.road{flex:1 1 300px;padding:22px 24px;text-align:left}
+.road h4{font-size:.98rem;font-weight:700;margin-bottom:8px;color:var(--navy)}
+.road ul{margin:0 0 4px 18px}
+.road li{font-size:.84rem;line-height:1.5;margin-bottom:5px;color:var(--muted)}
+.road .roadtag{display:inline-block;font-size:.62rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:4px 11px;border-radius:10px;margin-bottom:10px}
+
+/* ---------- modal ---------- */
+.veil{position:fixed;inset:0;background:rgba(15,25,35,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:80;opacity:0;pointer-events:none;transition:opacity .3s}
+.veil.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;top:50%;transform:translate(-50%,-46%) scale(.96);z-index:90;width:min(520px,92vw);max-height:86vh;overflow:auto;
+  padding:34px 34px 28px;opacity:0;pointer-events:none;transition:all .35s cubic-bezier(.2,.9,.3,1.1);
+  background:linear-gradient(150deg,rgba(255,255,255,.9),rgba(255,255,255,.72));
+  backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.88);border-radius:20px;box-shadow:0 30px 80px rgba(15,29,43,.32)}
+.sheet.open{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.sheet .stg{font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-ink);margin-bottom:8px;display:block}
+.sheet.advm .stg{color:var(--navy-2)}
+.sheet h3{font-size:1.28rem;font-weight:700;margin-bottom:12px;color:var(--navy)}
+.sheet p{font-size:.95rem;line-height:1.66;color:rgba(30,43,54,.86);margin-bottom:12px;white-space:pre-line}
+.sheet .why{font-size:.84rem;line-height:1.6;padding:12px 16px;border-radius:12px;background:rgba(169,136,79,.14);border:1px solid rgba(169,136,79,.32)}
+.sheet .why b{font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;display:block;margin-bottom:4px;color:var(--gold-ink)}
+.sheet .calcline{margin-top:12px;font-size:.89rem;font-weight:700;padding:10px 16px;border-radius:10px;background:rgba(28,61,92,.1);border:1px solid rgba(28,61,92,.32);color:var(--navy)}
+.sheet .x{position:absolute;top:16px;right:18px;width:32px;height:32px;border-radius:50%;border:none;cursor:pointer;background:rgba(18,41,63,.08);font-size:1rem;font-weight:600;color:var(--ink)}
+.sheet .x:hover{background:rgba(18,41,63,.16)}
+
+.closing{position:relative;z-index:1;text-align:center;padding:36px 22px 26px}
+.closing .panel2{max-width:600px;margin:0 auto;padding:36px 34px}
+.closing h2{font-size:1.55rem;font-weight:700;margin-bottom:12px;color:var(--navy)}
+.closing p{font-size:.95rem;line-height:1.7;color:var(--muted);margin-bottom:10px}
+.cta{display:inline-block;margin-top:12px;padding:13px 28px;border-radius:2px;font-weight:600;font-size:.9rem;letter-spacing:.03em;text-decoration:none;background:var(--gold);color:#1a1204}
+.cta:hover{background:var(--gold-soft);color:#1a1204}
+footer{position:relative;z-index:1;text-align:center;padding:24px 20px 38px;font-size:.72rem;color:var(--muted);line-height:1.7}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--navy)}
+
+@media(max-width:900px){
+  .stage{grid-template-columns:1fr;padding:44px 0}
+  .lane-a{grid-column:1;order:2;align-items:stretch;padding-top:20px}
+  .lane-c{grid-column:1;order:1}
+  .abub{max-width:100%}
+  .spine,.traveler{left:12px}
+  .routes{grid-template-columns:1fr}
+  .advbox{max-width:230px;top:64px}
+  .alane-note{text-align:left}
+}
+@media(max-width:480px){
+  header{padding:44px 18px 22px}
+  .panel{padding:22px 20px}
+  .board{padding:24px 20px 22px}
+  .board h3{font-size:1.08rem}
+  .advbox{max-width:190px;top:60px;right:10px;padding:10px 12px}
+  .sheet{padding:26px 22px 22px}
+  .sheet .x{width:36px;height:36px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.lawbar{position:relative;z-index:2;max-width:860px;margin:16px auto 0;padding:12px 18px;border-left:4px solid var(--gold);font-size:.78rem;color:var(--ink);line-height:1.55;border-radius:0 14px 14px 0}
+.lawbar b{color:var(--navy)}
+
+/* ---------- Ask Kristian ---------- */
+.akbtn{display:block;width:100%;margin-top:10px;padding:9px 14px;border-radius:22px;cursor:pointer;
+  font:inherit;font-size:.82rem;font-weight:700;letter-spacing:.01em;color:var(--navy);
+  background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(226,232,238,.55));
+  border:1px solid rgba(28,61,92,.30);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);
+  box-shadow:0 6px 20px rgba(18,41,63,.13), inset 0 1px 0 rgba(255,255,255,.8);transition:transform .2s,box-shadow .2s}
+.akbtn:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(18,41,63,.18), inset 0 1px 0 rgba(255,255,255,.9)}
+/* "Ask Kristian about this" — the small handoff button that carries a block's own
+   context into the conversation, so the visitor never has to re-explain what they
+   are looking at. Quiet by default, gold on hover, never competes with the content. */
+/* Always on its own line, never tucked onto the end of a sentence, and at the same
+   reading size as the block it belongs to. A shrunken uppercase chip reads as a
+   cookie banner; this should read as an invitation. */
+.askmore{display:flex;width:fit-content;clear:both;align-items:center;gap:7px;cursor:pointer;
+  margin:16px 0 2px;padding:8px 15px;border-radius:999px;border:1px solid rgba(169,136,79,.45);
+  background:rgba(169,136,79,.08);color:var(--gold-text,#8a6d3b);
+  font:inherit;font-size:.8rem;font-weight:700;letter-spacing:.005em;line-height:1.3;
+  transition:background .18s,border-color .18s,transform .18s}
+.askmore:hover{background:rgba(169,136,79,.18);border-color:var(--gold);transform:translateY(-1px)}
+.askmore::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none}
+.akctx{display:flex;align-items:flex-start;gap:8px;margin:0 0 8px;padding:8px 10px;border-radius:9px;
+  background:rgba(169,136,79,.10);border:1px solid rgba(169,136,79,.32);font-size:.72rem;line-height:1.4}
+.akctx b{color:var(--gold-text,#8a6d3b);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:2px}
+.akctx button{margin-left:auto;border:0;background:none;cursor:pointer;color:var(--muted);font-size:.95rem;line-height:1;padding:0 2px}
+.aktog{margin-left:auto;margin-right:6px;cursor:pointer;border-radius:999px;padding:3px 9px;
+  border:1px solid rgba(28,61,92,.28);background:rgba(255,255,255,.5);color:var(--muted);
+  font:inherit;font-size:.6rem;font-weight:800;letter-spacing:.04em;white-space:nowrap;transition:all .18s}
+.aktog+.aktog{margin-left:0}
+.aktog[aria-pressed="true"]{background:rgba(58,122,186,.16);border-color:rgba(58,122,186,.5);color:var(--navy)}
+.aktog.live{animation:akpulse 1.6s ease-in-out infinite}
+@keyframes akpulse{0%,100%{box-shadow:0 0 0 0 rgba(58,122,186,.45)}50%{box-shadow:0 0 0 5px rgba(58,122,186,0)}}
+/* The edges breathe while he is speaking, the way Cortex does in the living room. */
+#akglow.speak{opacity:1;animation:akbreath 2.1s ease-in-out infinite;
+  box-shadow:inset 0 0 90px 12px rgba(169,136,79,.5), inset 0 0 220px 46px rgba(169,136,79,.2)}
+#akglow{position:fixed;inset:0;pointer-events:none;z-index:80;opacity:0;transition:opacity .5s;
+  box-shadow:inset 0 0 90px 12px rgba(58,122,186,.55), inset 0 0 200px 40px rgba(58,122,186,.22)}
+#akglow.on{opacity:1;animation:akbreath 3.2s ease-in-out infinite}
+@keyframes akbreath{0%,100%{opacity:.45}50%{opacity:.95}}
+#akpanel{position:fixed;right:18px;bottom:18px;width:min(430px,calc(100vw - 36px));max-height:min(74vh,720px);
+  display:none;flex-direction:column;z-index:90;border-radius:18px;overflow:hidden;
+  background:linear-gradient(150deg,rgba(255,255,255,.93),rgba(232,238,244,.88));
+  backdrop-filter:blur(22px) saturate(1.35);-webkit-backdrop-filter:blur(22px) saturate(1.35);
+  border:1px solid rgba(28,61,92,.26);box-shadow:0 22px 60px rgba(18,41,63,.30)}
+#akpanel.on{display:flex;animation:akin .32s ease both}
+@keyframes akin{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.akhead{display:flex;align-items:center;gap:9px;padding:12px 14px;border-bottom:1px solid rgba(28,61,92,.16)}
+.akhead b{font-size:.9rem;color:var(--navy)}
+.akhead .akx{margin-left:auto;cursor:pointer;border:0;background:transparent;font-size:1.15rem;line-height:1;color:var(--muted);padding:2px 5px}
+.akdisc{padding:9px 14px;font-size:.66rem;line-height:1.5;color:var(--muted);background:rgba(28,61,92,.05);border-bottom:1px solid rgba(28,61,92,.10)}
+#akbody{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px}
+.akmsg{font-size:.79rem;line-height:1.62;padding:10px 13px;border-radius:13px;max-width:92%;white-space:pre-wrap}
+.akmsg.me{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:4px}
+.akmsg.k{align-self:flex-start;background:rgba(255,255,255,.92);border:1px solid rgba(28,61,92,.16);color:var(--ink);border-bottom-left-radius:4px}
+.aksrc{font-size:.62rem;color:var(--muted);margin-top:7px;padding-top:6px;border-top:1px dashed rgba(28,61,92,.20)}
+.akfoot{display:flex;gap:8px;padding:11px;border-top:1px solid rgba(28,61,92,.16);background:rgba(255,255,255,.55)}
+#akin{flex:1;padding:10px 12px;border-radius:12px;border:1px solid rgba(28,61,92,.24);font:inherit;font-size:.8rem;background:rgba(255,255,255,.9);resize:none;max-height:96px}
+#aksend{padding:0 16px;border-radius:12px;border:0;background:var(--navy);color:#fff;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer}
+#aksend:disabled{opacity:.5;cursor:default}
+.akseed{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.akseed span{font-size:.68rem;padding:6px 10px;border-radius:14px;background:rgba(255,255,255,.85);
+  border:1px solid rgba(28,61,92,.20);cursor:pointer;color:var(--navy)}
+.akseed span:hover{background:#fff}
+@media(max-width:520px){#akpanel{right:9px;left:9px;bottom:9px;width:auto;max-height:80vh}}
+
+
+/* ===== TEETH LAYER v2: Building an Unshakable Foundation ===== */
+.teeth{margin:22px 0 6px;padding:18px 20px;border-radius:16px;position:relative}
+.teeth .disc{font-family:Georgia,serif;font-style:italic;font-size:1.02rem;color:var(--navy);margin:0 0 4px;line-height:1.4}
+.teeth .tsub{font-size:.78rem;color:var(--muted);margin:0 0 12px;line-height:1.5}
+.teeth .trow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0}
+.teeth label{font-size:.64rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block}
+.teeth input[type=text],.teeth input[type=number]{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:9px;font-size:.95rem;margin-top:3px;background:#fff}
+.teeth .tout{background:#e9f2ec;border-left:4px solid #2e6b4f;border-radius:9px;padding:10px 13px;margin-top:10px;font-size:.84rem;line-height:1.55;color:var(--ink)}
+.teeth .tout b{color:var(--navy)}
+.teeth .tout .big{font-family:Georgia,serif;font-size:1.15rem;font-weight:700;color:#2e6b4f}
+.teeth .tbtn{border:1px solid var(--gold);background:#fff;color:var(--gold-ink);border-radius:10px;padding:8px 14px;font-size:.84rem;cursor:pointer;margin-top:4px}
+.teeth .tbtn:disabled{opacity:.5}
+.teeth .docck{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.teeth .docck span{border:1px solid var(--line);border-radius:16px;padding:7px 14px;font-size:.8rem;cursor:pointer;background:#fff;user-select:none}
+.teeth .docck span.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.teeth .meter{height:10px;border-radius:6px;background:#e4ddd0;overflow:hidden;margin-top:8px}
+.teeth .meter i{display:block;height:100%;background:linear-gradient(90deg,#a9884f,#2e6b4f);width:0;transition:width .5s}
+.teeth .foot{font-size:.68rem;color:var(--muted);margin-top:8px;line-height:1.45}
+.advline{display:none;position:relative;max-width:340px;padding:16px 18px 13px;border-radius:12px;text-align:left;margin-top:14px;
+  background:linear-gradient(135deg,rgba(226,232,238,.62),rgba(226,232,238,.32));
+  backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);
+  border:1px solid rgba(28,61,92,.28);box-shadow:0 8px 26px rgba(18,41,63,.12), inset 0 1px 0 rgba(255,255,255,.7);
+  font-size:.76rem;line-height:1.5;color:var(--ink)}
+.advline::before{content:'The math and the law';position:absolute;top:-9px;left:12px;font-size:.56rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:3px 9px;border-radius:10px;background:var(--navy-2);color:#fff}
+.advline b{color:var(--navy)}
+body.adv .advline{display:block;animation:pop .5s ease both}
+.gl{border-bottom:1px dashed var(--gold);cursor:help;position:relative}
+.glpop{display:none;position:absolute;left:0;bottom:calc(100% + 6px);z-index:40;background:var(--navy);color:#fff;border-radius:10px;padding:9px 12px;font-size:.74rem;line-height:1.45;width:230px;font-style:normal;font-weight:400;box-shadow:0 10px 28px rgba(18,41,63,.35)}
+.gl.open .glpop{display:block}
+.steprail{position:fixed;left:16px;bottom:16px;z-index:55;padding:9px 15px;border-radius:16px;font-size:.7rem;color:var(--muted);max-width:230px;line-height:1.4}
+.steprail b{display:block;font-size:.76rem;color:var(--navy);letter-spacing:.04em}
+@media(max-width:900px){.steprail{display:none}}
+/* The prompt that sends a reader to a box they have not filled. It has to look like
+   something you press, or it reads as one more sentence to skim past. */
+.teeth .needrow{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.teeth .needchip{cursor:pointer;font:inherit;font-size:.72rem;font-weight:700;color:var(--gold-ink,#7c5f2e);
+  padding:6px 12px;border-radius:999px;border:1px solid rgba(169,136,79,.5);background:rgba(169,136,79,.10);
+  transition:background .16s,border-color .16s,transform .16s}
+.teeth .needchip:hover{background:rgba(169,136,79,.2);border-color:var(--gold);transform:translateY(-1px)}
+.teeth input.needflash{outline:2px solid var(--gold);outline-offset:2px;
+  animation:needpulse 1.6s ease-in-out}
+@keyframes needpulse{0%,100%{background:rgba(255,255,255,.9)}40%{background:rgba(169,136,79,.22)}}
+.teeth .addrow{border:1px dashed var(--gold);background:transparent;color:var(--gold-ink);border-radius:10px;padding:6px 12px;font-size:.76rem;cursor:pointer;margin-top:6px}
+/* Folder-hierarchy rule: whatever this page opens, the same page can close.
+   A control that only expands leaves the reader stuck inside their own click. */
+.teeth .addrow.on{background:var(--gold);color:#fff;border-style:solid}
+.teeth .trow.rmv{position:relative;padding-right:26px}
+.teeth .rowx{position:absolute;right:0;top:50%;transform:translateY(-50%);width:20px;height:20px;line-height:1;
+  border:1px solid var(--line);background:rgba(255,255,255,.7);color:var(--muted);border-radius:50%;
+  font-size:.8rem;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.teeth .rowx:hover{border-color:var(--gold);color:var(--gold-ink);background:#fff}
+@media(max-width:640px){.teeth .trow.rmv{padding-right:0}.teeth .rowx{position:static;transform:none;margin-top:4px}}
+.teeth .panelx{float:right;margin:8px 0 0 10px;border:1px solid var(--line);background:rgba(255,255,255,.7);
+  color:var(--muted);border-radius:10px;padding:5px 11px;font-size:.72rem;cursor:pointer;transition:all .15s}
+.teeth .panelx:hover{border-color:var(--gold);color:var(--gold-ink);background:#fff}
+.teeth .flagbad{color:#8a3b2e;font-weight:700}
+.teeth .lesson{margin-top:14px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.5);font-size:.84rem;line-height:1.5}
+.teeth .lesson b{color:var(--navy)}
+.teeth .lesson input[type=range]{accent-color:#a9884f}
+.teeth .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:10px;margin-top:12px}
+.teeth .tcard{border:1px solid var(--line);border-radius:12px;padding:12px 13px;background:rgba(255,255,255,.55);opacity:.4;transition:opacity .35s,border-color .35s,box-shadow .35s}
+.teeth .tcard.fit{opacity:1;border-color:var(--gold);box-shadow:0 6px 18px rgba(18,41,63,.1)}
+.teeth .tcard .cat{font-size:.56rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold-ink)}
+.teeth .tcard h4{font-size:.85rem;margin:4px 0;color:var(--navy);font-family:Georgia,serif}
+.teeth .tcard p{font-size:.72rem;line-height:1.45;color:var(--muted);margin:0}
+.teeth .tcard .fitlb{display:inline-block;margin-top:6px;font-size:.6rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#2e6b4f}
+.teeth .tcard .whyln{display:none;font-size:.7rem;line-height:1.45;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line);color:var(--ink)}
+body.adv .teeth .tcard .whyln{display:block}
+.teeth .tcard .num{display:block;margin-top:7px;padding-top:7px;border-top:1px dashed rgba(46,107,79,.4);font-size:.73rem;line-height:1.45;font-weight:700;color:#2e6b4f}
+.teeth .antab-wrap{overflow-x:auto;margin-top:10px}
+.teeth .antab{width:100%;border-collapse:collapse;font-size:.74rem;background:rgba(255,255,255,.65);border-radius:10px;overflow:hidden}
+.teeth .antab th{background:var(--navy);color:#fff;padding:7px 9px;text-align:right;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.teeth .antab th:first-child,.teeth .antab td:first-child{text-align:left}
+.teeth .antab td{padding:6px 9px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+.teeth .antab tr.mkt td{background:rgba(18,41,63,.07);font-weight:700}
+.teeth .antab tr.port td{background:#e9f2ec;font-weight:700}
+.teeth .antab .pass{color:#2e6b4f;font-weight:800}
+.teeth .antab .fail{color:#8a3b2e;font-weight:800}
+.teeth .anstats{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.teeth .anstat{flex:1;min-width:135px;background:rgba(255,255,255,.65);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.teeth .anstat b{display:block;font-family:Georgia,serif;font-size:1.08rem;color:var(--navy)}
+.teeth .anstat span{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.teeth .anstat i{display:block;font-style:normal;font-size:.68rem;color:var(--muted);margin-top:2px}
+.teeth .anlegend{font-size:.74rem;color:var(--ink);line-height:1.65;margin-top:10px;background:rgba(255,255,255,.5);border:1px dashed var(--line);border-radius:10px;padding:9px 13px}
+#t_anout .big{font-size:1em}
+/* ===== PORTFOLIO CHARTS =====
+   Two stacked panes, both canvases fully transparent so the page gradient is the
+   background. Companies are named ONCE, in the chip row, which is also the control:
+   the chips are the legend, and the only in-plot text is the direct label at the end
+   of each line. No boxed legend, no repeated axis symbols. */
+.teeth .tvglass{margin-top:12px;border-radius:14px;background:transparent;border:none;box-shadow:none;padding:0}
+.teeth .tvkey{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:10px 0 4px}
+.teeth .tvkey .kl{font-size:.6rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.teeth .tvchip{display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(18,41,63,.16);background:rgba(255,255,255,.55);border-radius:16px;padding:4px 11px 4px 8px;font-size:.76rem;font-weight:650;color:var(--ink);cursor:pointer;user-select:none;transition:background .2s,border-color .2s,box-shadow .2s}
+.teeth .tvchip .tvsw{width:12px;height:12px;border-radius:3px;flex:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6)}
+.teeth .tvchip .tvsw.dash{border-radius:2px;height:4px;width:16px}
+.teeth .tvchip .pc{font-variant-numeric:tabular-nums;font-weight:700;font-size:.72rem}
+.teeth .tvchip.on{background:#fff;border-color:rgba(18,41,63,.42);box-shadow:0 3px 10px rgba(18,41,63,.13)}
+.teeth .tvchip.off{opacity:.42}
+.teeth .tvpane{position:relative;width:100%}
+.teeth #tv_p1{height:300px}
+.teeth #tv_p2{height:250px}
+@media(max-width:640px){.teeth #tv_p1{height:230px}.teeth #tv_p2{height:200px}}
+.teeth .tvpane .cv{width:100%;height:100%}
+.teeth .tvlabels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.teeth .tvlab{position:absolute;font-size:.68rem;font-weight:750;line-height:1.15;white-space:nowrap;padding:3px 6px;border-radius:5px;background:rgba(255,255,255,.9);box-shadow:0 1px 4px rgba(18,41,63,.1);letter-spacing:.01em;transition:opacity .18s}
+.teeth .tvlab i{font-style:normal;font-variant-numeric:tabular-nums;opacity:.85;margin-left:4px}
+.teeth .tvtip{position:absolute;z-index:6;pointer-events:none;display:none;background:rgba(255,255,255,.96);border:1px solid rgba(18,41,63,.16);border-radius:9px;box-shadow:0 8px 22px rgba(18,41,63,.16);padding:8px 10px;font-size:.72rem;line-height:1.5;min-width:132px}
+.teeth .tvtip .dt{font-size:.6rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.teeth .tvtip .rw{display:flex;align-items:center;gap:6px;justify-content:space-between}
+.teeth .tvtip .rw span{display:flex;align-items:center;gap:5px}
+.teeth .tvtip .rw em{width:9px;height:9px;border-radius:2px;display:inline-block}
+.teeth .tvtip .rw b{font-variant-numeric:tabular-nums;font-weight:700}
+.teeth .tvhead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin:16px 0 2px}
+.teeth .tvhead .ttl{font-family:Georgia,serif;font-size:.95rem;color:var(--navy);font-weight:700}
+.teeth .tvhead .sub{font-size:.7rem;color:var(--muted)}
+.teeth .tvhead .mv{font-size:.7rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.teeth .tvhead .mv b{color:var(--ink);font-variant-numeric:tabular-nums}
+.teeth .tvrange{display:inline-flex;gap:4px;margin-left:auto}
+.teeth .tvrange button{border:1px solid rgba(18,41,63,.16);background:rgba(255,255,255,.55);color:var(--muted);border-radius:14px;padding:3px 10px;font-size:.68rem;font-weight:700;cursor:pointer;font-family:inherit}
+.teeth .tvrange button.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.teeth .tvnote{font-size:.66rem;color:var(--muted);margin-top:6px;line-height:1.5}
+@media(max-width:640px){.teeth .tvrange{margin-left:0;margin-top:4px}}
+.teeth .deedbig{font-family:Georgia,serif;font-size:1.5rem;color:var(--navy);font-weight:700}
+.advline.wide{max-width:none;width:auto;position:static;grid-column:1/-1;margin-top:22px}
+@media(max-width:900px){.advline{max-width:100%}}
+
+
+/* ---------- equity guide additions ---------- */
+/* The Advanced switch floats fixed at the top right. On a wide screen it sits in the
+   margin; on anything under about 1600 the journey used to run straight under it and the
+   switch covered an input box. The lane reserves the gutter instead, so the control has
+   somewhere of its own to be and nothing is ever underneath it. */
+@media(min-width:901px){
+  .journey{max-width:min(1280px, calc(100vw - 330px))}
+}
+.draftbar{position:relative;z-index:3;max-width:1080px;margin:14px auto 0;padding:10px 18px;
+  border-radius:12px;font-size:.74rem;line-height:1.55;color:var(--navy);
+  background:rgba(138,61,58,.09);border:1px dashed rgba(138,61,58,.45)}
+.draftbar b{letter-spacing:.06em;text-transform:uppercase;font-size:.66rem;color:var(--brick)}
+.teeth .roll{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:8px}
+.teeth .roll th{font-size:.58rem;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);
+  text-align:left;font-weight:800;padding:0 6px 4px}
+.teeth .roll td{padding:3px 6px 3px 0;vertical-align:middle}
+.teeth .roll input{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:8px;
+  font-size:.86rem;background:#fff;font:inherit;font-size:.86rem}
+.teeth .roll td.rx{width:26px;padding-right:0}
+.teeth .roll .rowx{position:static;transform:none}
+.teeth .roll-wrap{overflow-x:auto}
+.teeth .roll{min-width:430px}
+.teeth .kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:9px;margin-top:11px}
+.teeth .kpi .k{background:rgba(255,255,255,.66);border:1px solid var(--line);border-radius:11px;padding:9px 11px}
+.teeth .kpi .k span{display:block;font-size:.58rem;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--muted)}
+.teeth .kpi .k b{display:block;font-family:Georgia,serif;font-size:1.12rem;color:var(--navy);
+  font-variant-numeric:tabular-nums;margin-top:2px}
+.teeth .kpi .k i{display:block;font-style:normal;font-size:.65rem;color:var(--muted);margin-top:2px;line-height:1.35}
+.teeth .kpi .k.good{border-color:rgba(46,107,79,.55);background:#eaf3ee}
+.teeth .kpi .k.good b{color:#2e6b4f}
+.teeth .kpi .k.bad{border-color:rgba(138,61,58,.5);background:rgba(138,61,58,.07)}
+.teeth .kpi .k.bad b{color:#8a3b2e}
+.teeth .kpi .k.hero{grid-column:1/-1;border-color:var(--gold);background:rgba(169,136,79,.11)}
+.teeth .kpi .k.hero b{font-size:1.9rem;color:var(--gold-ink)}
+.teeth .chartbox{margin-top:12px}
+.teeth .chartbox svg{width:100%;height:auto;display:block;overflow:visible}
+.teeth .ckey{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;font-size:.68rem;color:var(--muted)}
+.teeth .ckey i{display:inline-block;width:16px;height:3px;border-radius:2px;vertical-align:.15em;margin-right:5px}
+.teeth .doors{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:11px;margin-top:12px}
+.teeth .door{border:1px solid var(--line);border-radius:13px;padding:13px 14px;background:rgba(255,255,255,.6)}
+.teeth .door h4{font-family:Georgia,serif;font-size:.92rem;color:var(--navy);margin:0 0 4px}
+.teeth .door .amt{font-family:Georgia,serif;font-size:1.3rem;font-weight:700;color:var(--navy);
+  font-variant-numeric:tabular-nums;display:block;margin:3px 0}
+.teeth .door p{font-size:.72rem;line-height:1.5;color:var(--muted);margin:0}
+.teeth .door.win{border-color:var(--gold);box-shadow:0 6px 18px rgba(18,41,63,.1);background:rgba(169,136,79,.09)}
+.teeth .door .wl{display:inline-block;margin-top:7px;font-size:.58rem;font-weight:800;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--gold-ink)}
+.teeth .grid7{width:100%;border-collapse:collapse;font-size:.72rem;margin-top:9px;min-width:430px}
+.teeth .grid7 th{background:var(--navy);color:#fff;padding:6px 7px;font-size:.58rem;letter-spacing:.05em;
+  text-transform:uppercase;white-space:nowrap;text-align:right}
+.teeth .grid7 th:first-child{text-align:left}
+.teeth .grid7 td{padding:5px 7px;text-align:right;border-bottom:1px solid var(--line);
+  white-space:nowrap;font-variant-numeric:tabular-nums}
+.teeth .grid7 td:first-child{text-align:left;font-weight:700;color:var(--navy)}
+.teeth .grid7 td.d{background:#eaf3ee;color:#2e6b4f;font-weight:700}
+.teeth .grid7 td.n{background:rgba(138,61,58,.08);color:#8a3b2e}
+.teeth .grid7 td.t{outline:2px solid var(--gold);outline-offset:-2px;font-weight:800}
+.teeth .srcline{font-size:.65rem;color:var(--muted);margin-top:9px;line-height:1.5;
+  border-top:1px dashed var(--line);padding-top:7px}
+.teeth .srcline b{color:var(--navy)}
+.teeth .modeck{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 2px}
+.teeth .modeck span{border:1px solid var(--line);border-radius:16px;padding:7px 14px;font-size:.8rem;
+  cursor:pointer;background:#fff;user-select:none}
+.teeth .modeck span.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+</style>
+<script data-goatcounter="https://kpfeffer.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<link rel="stylesheet" href="/assets/ask-kristian.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="orb o1" aria-hidden="true"></div><div class="orb o2" aria-hidden="true"></div><div class="orb o3" aria-hidden="true"></div>
+
+<nav class="site" aria-label="Primary">
+  <div class="navwrap">
+    <a class="brand" href="index.html">Kristian&nbsp;R.&nbsp;Pfeffer</a>
+    <span class="navlinks">
+      <a href="index.html#about">About</a>
+      <a href="services.html">Services</a>
+      <a href="wealth-guide.html">Wealth Guide</a>
+      <a href="estate-guide.html">Estate Guide</a>
+      <a href="equity-guide.html" style="color:var(--navy)">Equity Guide</a>
+      <a href="capstone.html">Capstone</a>
+      <a href="newsletter/">Held in Trust</a>
+    </span>
+    <details class="navmenu">
+      <summary aria-label="Menu">Menu <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <div class="panel">
+        <a href="index.html#about">About</a>
+        <a href="services.html">Services</a>
+        <a href="wealth-guide.html">Wealth Guide</a>
+        <a href="estate-guide.html">Estate Guide</a>
+        <a href="equity-guide.html">Equity Guide</a>
+        <a href="capstone.html">Capstone</a>
+        <a href="newsletter/">Held in Trust</a>
+      </div>
+    </details>
+  </div>
+</nav>
+
+<div class="advbox glass" id="advbox">
+  <div class="advrow">
+    <span class="lb">Advanced</span>
+    <div class="sw" id="advsw" role="switch" aria-checked="false" tabindex="0" aria-label="Show the math and the law"></div>
+  </div>
+  <div class="nwrow">
+    <div class="hint">The math and the law appear beside every answer: the formula that produced it, the statute behind it, and what a lender or an appraiser would call it.</div>
+  </div>
+</div>
+
+<header id="main">
+  <div class="eyebrow">Part Three &middot; The Property</div>
+  <h1>Your house is not paying you<br>what you think it is.</h1>
+  <p class="sub">Every owner knows what their property is worth. Almost none know what it <em>earns</em> &mdash; and the number that matters is not the return on what you paid, it is the return on what you have locked inside it today. That number falls every year you own the place. This guide computes it, and tells you the year it stops being worth it.</p>
+</header>
+
+<div class="draftbar glass">
+  <b>Private draft &middot; not published</b><br>
+  This page is <b>noindex</b>, absent from the site map, and reachable only by its address. The site
+  navigation shown above is what it would look like if it goes live, next to the Estate Guide, exactly as
+  you asked. Nothing here is linked from any published page. Tell me to ship it and it becomes public in
+  one commit; tell me to change it and nobody outside this conversation ever saw the first draft.
+</div>
+
+<div class="lawbar glass">
+  <b>Everything stays in this browser tab.</b> Rents, balances, and addresses are computed here and
+  never stored, never sent to a server except the one lookup you press a button for. The live figures
+  &mdash; the mortgage rate, the Treasury yield, the house price index &mdash; come from the same automated
+  pipeline the Wealth Guide runs on, and every one of them is stamped with its date and its source. Nothing
+  on this page states a rate or a limit from memory.
+</div>
+
+<div class="journey">
+<div class="spine" aria-hidden="true"></div><div class="traveler" id="trav" aria-hidden="true"></div>
+<!-- ============================ 1 · THE RECORD ============================ -->
+<section class="stage">
+  <div class="lane-a">
+    <div class="advline" id="q_adv1" data-anchor="#q_rec_out"><b>What the record is and is not.</b> The value that comes back is an <b>automated valuation model</b>, a regression on recent comparable sales, not an appraisal and not an opinion of value under USPAP. It has a confidence band and the band is printed. The sale price and date come from the county's recorded transfer, which is the same document a title examiner reads. <b>Basis is not price.</b> Under IRC Section 1012 your basis starts at cost and is adjusted under Section 1016 for capital improvements up and depreciation down, so the number that matters at sale is almost never the number on the deed. <b>And appreciation is not income.</b> It is unrealized, it is untaxed until you sell, and until then it is the denominator of everything below.</div>
+  </div>
+  <div class="lane-c">
+    <span class="era">One &middot; The Record</span>
+    <div class="panel glass">
+      <h2>Start with what the county already knows.</h2>
+      <p class="lead">Before a single assumption gets made, the public record supplies three of the four numbers this guide runs on: what it is worth now, what it last sold for, and when. Type the address and let the records do the work.</p>
+    </div>
+    <div class="teeth glass">
+      <p class="disc">Help me understand what I actually own, and what it has actually done.</p>
+      <p class="tsub">The address goes to the records provider and nowhere else. It is not stored, not logged, and not attached to you.</p>
+      <div class="trow" style="grid-template-columns:2fr 1fr;align-items:end">
+        <label>Street address<input type="text" id="q_addr" placeholder="113 Hillside Ave, Raleigh, NC" autocomplete="off"></label>
+        <button class="tbtn" id="q_pull" type="button" style="margin-top:0;padding:9px 14px;width:100%">Pull the record</button>
+      </div>
+      <div class="modeck" id="q_mode">
+        <span data-m="home" class="on">This is my home</span>
+        <span data-m="rental">This is a rental</span>
+        <span data-m="buying">I am deciding whether to buy it</span>
+      </div>
+      <div class="trow">
+        <label>Value today<input type="number" id="q_val" placeholder="from the record, or type it"></label>
+        <label>What you paid<input type="number" id="q_cost" placeholder="purchase price"></label>
+        <label>Year you bought<input type="number" id="q_year" min="1900" max="2100" placeholder="2019"></label>
+        <label>Capital improvements since<input type="number" id="q_improve" placeholder="0"></label>
+      </div>
+      <div class="tout" id="q_rec_out">Type an address and press the button, or fill the boxes yourself. Everything below builds on these four numbers.</div>
+      <div class="kpi" id="q_rec_kpi"></div>
+      <div class="srcline" id="q_rec_src" style="display:none"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 2 · THE INCOME ============================ -->
+<section class="stage">
+  <div class="lane-a">
+    <div class="advline" id="q_adv2" data-anchor="#q_noi_out"><b>Net operating income is a defined term, and the definition is the whole fight.</b> NOI is effective gross income less operating expenses, and it deliberately excludes four things: debt service, income taxes, depreciation, and capital expenditures. That is not an accounting nicety. It exists so a property can be valued independently of who buys it and how they finance it &mdash; the same building has one NOI and a thousand different cash flows. <b>Which is exactly why a seller's pro forma is not evidence.</b> The three line items a seller quietly leaves out are vacancy, management, and reserves, and leaving out all three can lift a stated NOI by a fifth. A fifth of NOI, divided by a nine percent cap rate, is roughly two years of your money. Vacancy and credit loss, management whether or not you hire it, and a reserve for the roof you will replace are underwriting requirements, not pessimism.</div>
+  </div>
+  <div class="lane-c">
+    <span class="era">Two &middot; The Income</span>
+    <div class="panel glass">
+      <h2>What it collects, and what it keeps.</h2>
+      <p class="lead">A rent roll is not a number, it is a list. Every unit, every fee, every month. Then the three expenses owners forget, and what is left is the only figure a lender or an appraiser will look at.</p>
+    </div>
+    <div class="teeth glass">
+      <p class="disc">Help me understand what this property actually earns before the bank takes its share.</p>
+      <p class="tsub" id="q_rollnote"></p>
+      <p class="tsub"><b>The rent roll.</b> One line per unit &mdash; for a single family home that is one line. <b>Base rent</b> is the lease amount. A <b>resident benefits package</b> is the bundled monthly charge many managers add for filter delivery, renters insurance, credit reporting and the like; leave it at zero if you do not run one. <b>Other</b> is pet rent, parking, storage, laundry: recurring monthly money that is not base rent. If you pulled the address above, the market rent estimate is filled into row one as a starting point &mdash; overwrite it with your actual lease.</p>
+      <div class="roll-wrap">
+      <table class="roll"><thead><tr>
+        <th>Unit</th><th>Base rent</th><th>Benefits pkg</th><th>Other monthly</th><th></th>
+      </tr></thead><tbody id="q_units"></tbody></table>
+      </div>
+      <button class="addrow" id="q_addunit" type="button">+ Add a unit</button>
+      <button class="addrow" id="q_hill" type="button" style="margin-left:6px">Load the eight unit example</button>
+      <p class="tsub" style="margin-top:14px"><b>Now the money that never arrives, and the money that leaves.</b> Vacancy and credit loss is the share of a year the unit sits empty or the rent does not get paid; a month of turnover a year is about eight percent. Management, maintenance and reserves are entered as percentages of collected rent because that is how they actually behave. Count management even if you self manage: your time is the fee, and the day you sell, the buyer pays it.</p>
+      <div class="trow">
+        <label>Vacancy &amp; credit loss (%)<input type="number" id="q_vac" value="8" step="0.5" min="0" max="60"></label>
+        <label>Management (%)<input type="number" id="q_mgmt" value="8" step="0.5" min="0" max="30"></label>
+        <label>Maintenance (%)<input type="number" id="q_maint" value="7" step="0.5" min="0" max="40"></label>
+        <label>Capital reserve (%)<input type="number" id="q_res" value="5" step="0.5" min="0" max="30"></label>
+      </div>
+      <div class="trow">
+        <label>Property tax (yearly)<input type="number" id="q_tax" placeholder="5592"></label>
+        <label>Insurance (yearly)<input type="number" id="q_ins" placeholder="4800"></label>
+        <label>Utilities you pay (yearly)<input type="number" id="q_util" placeholder="0"></label>
+        <label>HOA &amp; other (yearly)<input type="number" id="q_hoa" placeholder="0"></label>
+      </div>
+      <div class="tout" id="q_noi_out">Add at least one rent and the operating statement builds itself.</div>
+      <div class="kpi" id="q_noi_kpi"></div>
+      <div class="lesson" style="margin-top:14px"><b>Override, if you have the real statement.</b> If you are holding a seller's actual profit and loss, or your own, type the net operating income here and every figure below this line uses yours instead of mine. Leave it blank and the rent roll drives everything.
+        <div class="trow"><label>Net operating income (yearly)<input type="number" id="q_noiOver" placeholder="computed above"></label></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 3 · THE DEBT ============================ -->
+<section class="stage">
+  <div class="lane-a">
+    <div class="advline" id="q_adv3" data-anchor="#q_debt_out"><b>The payment is a formula, not a quote.</b> Level payment amortization solves for the single payment that retires the balance in exactly n periods: <b>PMT = L &times; i / (1 &minus; (1 + i)<sup>&minus;n</sup>)</b>, where i is the monthly rate and n is the number of months. Twelve of those over the loan amount is the <b>mortgage constant</b>, or annual loan factor, and it is the number Stage Four runs on. <b>Debt service coverage</b> is net operating income over annual debt service; below 1.00 the property does not pay for itself, and most portfolio lenders on small multifamily will not write below about 1.20 &mdash; that spread is their margin for the year you have a vacancy and a furnace at once. Note what the payment does <em>not</em> include here: taxes and insurance were already taken out in Stage Two as operating expenses, so counting them again in the payment would double charge you. This is the single most common error in a homemade spreadsheet.</div>
+  </div>
+  <div class="lane-c">
+    <span class="era">Three &middot; The Debt</span>
+    <div class="panel glass">
+      <h2>What the bank&rsquo;s money costs.</h2>
+      <p class="lead">Leverage is the reason real estate returns what it does, and the reason it can take the house down. Both live in the same two numbers: the payment, and how much of the income it eats.</p>
+    </div>
+    <div class="teeth glass">
+      <p class="disc">Help me understand the loan, honestly, including the part that is not really mine yet.</p>
+      <p class="tsub">The rate box starts at this week&rsquo;s national average from the Freddie Mac survey, stamped below with the week it was published. If you already have a mortgage, type your own rate and the balance you owe today &mdash; that is what makes Stage Five real rather than hypothetical.</p>
+      <div class="trow">
+        <label>Loan balance today<input type="number" id="q_loan" placeholder="from your statement"></label>
+        <label>Interest rate (%)<input type="number" id="q_rate" step="0.01" placeholder="live rate"></label>
+        <label>Years remaining<input type="number" id="q_term" value="30" min="1" max="40"></label>
+        <label>Extra principal monthly<input type="number" id="q_extra" placeholder="0"></label>
+      </div>
+      <div class="needrow" id="q_debt_need"></div>
+      <div class="tout" id="q_debt_out">Add the balance you still owe and the payment, the coverage ratio and the cash flow all compute here.</div>
+      <div class="kpi" id="q_debt_kpi"></div>
+      <div class="srcline" id="q_rate_src" style="display:none"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 4 · THE VALUE ============================ -->
+<section class="stage">
+  <div class="lane-a">
+    <div class="advline" id="q_adv4" data-anchor="#q_biv_out"><b>Band of investment, also called the mortgage equity technique.</b> A capitalization rate is not a market opinion here; it is built from the two parties who have to be paid. The lender needs its mortgage constant on its share of the money, the equity investor needs its cash on cash return on the rest, and the weighted sum of those two demands is the rate the property has to earn: <b>R = (LF &times; M) + (Y<sub>E</sub> &times; E)</b>, with M the loan to value share and E the equity share. Divide net operating income by that rate and you have <b>value by the income approach</b> &mdash; what the building is worth to somebody who has to finance it and wants a return, which is a different question from what a buyer might pay. Appraisal recognises three approaches, sales comparison, cost, and income, and reconciles them; income is the one that governs anything bought to produce money. The uncomfortable part is that the rate moves with the debt market, so the same building is worth less on the week rates rise, having changed in no way at all.</div>
+    <div class="advline" id="q_adv4b" data-anchor="#q_biv_kpi"><b>Where the numbers came from.</b> The loan factor is not typed in here. It is computed from the rate and term in Stage Three, which is the correction to the way this is usually done in a spreadsheet: a hardcoded constant like 0.0922696 is right for one rate on one day and silently wrong forever after. <b>Cash on cash</b> is the equity investor&rsquo;s demanded first year return on the money actually put in, not the total return &mdash; appreciation and paydown are deliberately excluded, because a cap rate is a snapshot of a single year and pretending otherwise is how people talk themselves into overpaying.</div>
+  </div>
+  <div class="lane-c">
+    <span class="era">Four &middot; The Value</span>
+    <div class="panel glass">
+      <h2>What it is worth to somebody who needs a return.</h2>
+      <p class="lead">An asking price is a wish. This is the arithmetic that turns income into value, built from what a lender requires and what an investor demands &mdash; and it is the same worksheet that told me a building listed at seven hundred sixty thousand was worth six hundred and six.</p>
+    </div>
+    <div class="teeth glass">
+      <p class="disc">Help me understand what this property is worth as an investment, not as a listing.</p>
+      <div class="trow">
+        <label>Loan to value (%)<input type="number" id="q_ltv" value="75" min="0" max="100" step="1"></label>
+        <label>Cash on cash you require (%)<input type="number" id="q_coc" value="10" min="0" max="40" step="0.5"></label>
+        <label>Asking price<input type="number" id="q_ask" placeholder="the listing, or your offer"></label>
+      </div>
+      <div class="tout" id="q_biv_out">Fill in the income above and the value builds here.</div>
+      <div class="kpi" id="q_biv_kpi"></div>
+    </div>
+  </div>
+</section>
+<!-- ============================ 5 · THE DECAY ============================ -->
+<section class="stage">
+  <div class="lane-a">
+    <div class="advline" id="q_adv5" data-anchor="#q_roe_kpi"><b>Return on equity, and why it has to fall.</b> The numerator is the three ways a property pays: <b>cash flow</b> after debt service, <b>principal reduction</b> (the part of each payment that is savings wearing a bill&rsquo;s clothing), and <b>appreciation</b>. The denominator is your equity at the start of the year &mdash; value less what you owe, and if you check the box, less what it would cost to get the money out. Return on <em>cost</em> is a museum piece: it measures a decision you already made and can never make differently. Return on equity measures the decision you are making again every morning you do not sell. <br><br>It falls for a structural reason, not a market one. Appreciation grows with value; equity grows with value <em>plus</em> every dollar of principal you retire, so the denominator outruns the numerator by construction. Leverage is the whole engine: the same five percent appreciation on a house is a fifty percent return on a ten percent down payment and a five percent return once the mortgage is gone. Paying a rental off does not increase your return. It converts a levered asset into an unlevered one and quietly cuts your return by most of what leverage was giving you.</div>
+    <div class="advline" id="q_adv5b" data-anchor="#q_roe_chart"><b>What the crossing line means, and what it does not.</b> The comparison line is a real alternative: the ten year Treasury is the risk free rate live from the U.S. Treasury par yield curve, and the market line is the long run average return on U.S. large company stocks, which is an average and not a promise. The honest caveats, in order. Selling is not free, so the comparison only becomes real if you check the net of costs box. A mortgage below the current market rate is itself an asset &mdash; giving up a three percent loan to chase a higher return elsewhere is a trade with a hidden price on the other side. Property is illiquid and undiversified; a Treasury is neither. And these lines are stripped of tax: Stage Six is where the tax arrives, and it changes the answer more than anything on this chart.</div>
+  </div>
+  <div class="lane-c">
+    <span class="era">Five &middot; The Decay</span>
+    <div class="panel glass">
+      <h2>The number nobody computes.</h2>
+      <p class="lead">Ask an owner how their rental is doing and they will tell you what they paid and what it is worth. Ask what it returns on the equity trapped inside it this year, and the room goes quiet. It is usually the highest number the day you buy and the lowest number the day you finish paying it off, which is the exact opposite of what everyone believes.</p>
+    </div>
+    <div class="teeth glass">
+      <p class="disc">Help me understand what my equity is earning right now, and when it stops being worth it.</p>
+      <p class="tsub">Appreciation starts at the long run national rate from the federal house price index, which is a repeat sales index &mdash; it compares houses to themselves rather than to whatever else sold that quarter. If the record found your purchase price and year, the rate this property has <em>actually</em> done is offered next to it. Rent growth drives the income side; historically it tracks somewhere near inflation, and a rate above three or four percent is a forecast, not an assumption.</p>
+      <div class="trow">
+        <label>Appreciation per year (%)<input type="number" id="q_appr" step="0.1" placeholder="live index"></label>
+        <label>Rent growth per year (%)<input type="number" id="q_rentg" value="3" step="0.1"></label>
+        <label>Years to project<input type="number" id="q_years" value="30" min="5" max="40"></label>
+        <label>Cost to sell (%)<input type="number" id="q_sellc" value="7" step="0.5" min="0" max="15"></label>
+      </div>
+      <div class="docck" id="q_roeopt">
+        <span data-o="net">Measure equity net of selling costs</span>
+        <span data-o="actual">Use this property&rsquo;s actual appreciation</span>
+      </div>
+      <div class="needrow" id="q_roe_need"></div>
+      <div class="kpi" id="q_roe_kpi"></div>
+      <div class="tout" id="q_roe_out">Finish the record, the income and the debt above and the whole curve appears here.</div>
+      <div class="chartbox" id="q_roe_chart"></div>
+      <div class="antab-wrap"><table class="antab" id="q_roe_tab" style="display:none"></table></div>
+      <div class="srcline" id="q_roe_src" style="display:none"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 6 · THE EXIT ============================ -->
+<section class="stage">
+  <div class="lane-a">
+    <div class="advline" id="q_adv6" data-anchor="#q_exit_doors"><b>Four doors, and the tax code behind each one.</b> <b>Refinance</b> is borrowing, and borrowed money is not income &mdash; there is no tax event at all, which is why a cash out refinance is the only door that moves money without a return. <b>Section 1031</b> defers gain on an exchange of real property held for productive use or investment for like kind property, on a schedule with no mercy in it: forty five days to identify, one hundred eighty days to close, a qualified intermediary holding the money the entire time because touching it ends the exchange. Personal residences do not qualify. <b>Selling</b> triggers gain under Section 1001, and gain on a rental arrives in two flavors: unrecaptured Section 1250 gain, the part attributable to depreciation you took, taxed at a maximum rate of twenty five percent under Section 1(h)(1)(D), and the rest at long term capital gain rates under Section 1(h), plus the net investment income tax of three point eight percent under Section 1411 if you are above the threshold. Depreciation is not optional: the basis is reduced by the amount <em>allowed or allowable</em>, so an owner who never claimed it still owes the recapture. <b>Dying</b> is the door nobody puts on a spreadsheet, and under Section 1014 the basis of property in a decedent&rsquo;s estate becomes its fair market value at death &mdash; the entire gain, and the entire depreciation recapture, evaporates. That is the sentence that connects this page to the Estate Guide.</div>
+    <div class="advline" id="q_adv6b" data-anchor="#q_exit_out"><b>The figure law applies hardest right here.</b> The rates above are written into the Code and do not move with the calendar: twenty five percent, three point eight percent, the zero, fifteen and twenty percent brackets. The <em>income thresholds</em> that decide which of those applies to you are indexed every single year, and this page therefore does not state one. It asks which bracket you are in rather than guessing from a number it half remembers, because a threshold typed into a web page is a threshold that is wrong the following January. The North Carolina rate is likewise on a statutory schedule that steps down over several years under N.C. Gen. Stat. Section 105-153.7, so it is a box you fill, not a number I supply. Check the current year with the Department of Revenue or your preparer and type it in.</div>
+  </div>
+  <div class="lane-c">
+    <span class="era">Six &middot; The Exit</span>
+    <div class="panel glass">
+      <h2>Four doors out, and what each one costs.</h2>
+      <p class="lead">Once the curve says your equity has stopped earning, there are only four things you can do about it, and three of them have a tax bill attached. This is the comparison, side by side, on your actual numbers.</p>
+    </div>
+    <div class="teeth glass">
+      <p class="disc">Help me understand what it would cost me to get my money back out.</p>
+      <p class="tsub"><b>Depreciation first, because it drives the bill.</b> Residential rental property is written off straight line over 27.5 years under IRC Section 168(c); commercial over 39. Land is never depreciated, so only the building share counts. If you have owned it as a rental, the years below are the years it was in service &mdash; and remember, allowed <em>or allowable</em>: not claiming it does not avoid the recapture.</p>
+      <div class="trow">
+        <label>Years held as a rental<input type="number" id="q_dyrs" placeholder="0" min="0" max="40"></label>
+        <label>Land share of value (%)<input type="number" id="q_land" value="20" min="0" max="60"></label>
+        <label>Your state rate (%)<input type="number" id="q_state" placeholder="type yours"></label>
+        <label>Refinance to (% LTV)<input type="number" id="q_refi" value="75" min="0" max="90"></label>
+      </div>
+      <p class="tsub" style="margin-top:10px"><b>Which long term capital gain rate applies to you?</b> Not a dollar threshold &mdash; those are indexed annually and this page will not state one. Pick the bracket your preparer puts you in.</p>
+      <div class="docck" id="q_ltcg">
+        <span data-c="0">0 percent</span><span data-c="15" class="on">15 percent</span><span data-c="20">20 percent</span>
+        <span data-c="niit">Add the 3.8 percent net investment income tax</span>
+      </div>
+      <div class="doors" id="q_exit_doors"></div>
+      <div class="tout" id="q_exit_out">Fill in the record and the debt above and the four doors compute here.</div>
+      <div class="lesson" style="margin-top:14px"><b>Your home is a different animal.</b> If this is where you live, Section 121 excludes a large slice of gain on a principal residence owned and used as such for two of the last five years, and it is one of the last genuinely generous provisions left in the Code. The exclusion amount is indexed language I will not quote here for the same reason as everything else; it is a figure to confirm, not to remember. What is worth knowing without looking anything up: a home has no depreciation recapture unless you took a home office or rented part of it, and there is no Section 1031 on a personal residence at all.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 7 · THE OTHER TRADE ============================ -->
+<section class="stage">
+  <div class="lane-a">
+    <div class="advline" id="q_adv7" data-anchor="#q_flip_grid"><b>The seventy percent rule and what it is actually protecting.</b> The maximum allowable offer is after repair value times a discount, less the rehab: <b>MAO = ARV &times; d &minus; rehab</b>. The classic d is seventy percent for a full flip and it is not a profit margin &mdash; it is the space that has to absorb agent commissions on both sides, buy and sell closing costs, points, carrying interest, insurance and utilities while it is empty, holding taxes, and being wrong about the rehab. Eighty percent is a wholetail number, for a property that needs cosmetics rather than construction and sells close to as is. <br><br>Read the grid down, not across. Down is the market moving against you; across is time moving against you. The column that matters is the one where both go wrong at once, because that is the deal you will actually get. A flip that only works at the top left corner is not a deal, it is a bet on a forecast &mdash; and note that a profit column shrinking as months pass is a hard money loan doing exactly what it was designed to do. This is not a rental calculation and it is not taxed like one: property held primarily for sale to customers is dealer property, the gain is ordinary income subject to self employment tax, and it does not qualify for Section 1031.</div>
+  </div>
+  <div class="lane-c">
+    <span class="era">Seven &middot; The Other Trade</span>
+    <div class="panel glass">
+      <h2>If you are not keeping it.</h2>
+      <p class="lead">Everything above assumes you hold the property and let time do the work. Buying to fix and sell is a different trade with different arithmetic, and the reason most people lose money on it is that they underwrite one outcome instead of the grid of outcomes they will actually face.</p>
+    </div>
+    <div class="teeth glass">
+      <p class="disc">Help me understand whether this is a deal or a lesson.</p>
+      <p class="tsub">Rehab can be entered as a dollar figure or estimated from square footage. The three rough bands I was taught: light cosmetic work around twenty dollars a foot, a medium rehab around thirty five, a heavy one with systems and layout around fifty. They are starting points for an offer, never a substitute for a contractor walking it.</p>
+      <div class="trow">
+        <label>After repair value<input type="number" id="q_arv" placeholder="450000"></label>
+        <label>Purchase price<input type="number" id="q_fpur" placeholder="285000"></label>
+        <label>Square feet<input type="number" id="q_sf" placeholder="1800"></label>
+        <label>Rehab budget<input type="number" id="q_rehab" placeholder="from the bands below"></label>
+      </div>
+      <div class="docck" id="q_band">
+        <span data-b="20">Light &middot; $20/sf</span><span data-b="35">Medium &middot; $35/sf</span><span data-b="50">Heavy &middot; $50/sf</span>
+      </div>
+      <div class="trow" style="margin-top:8px">
+        <label>Hard money rate (%)<input type="number" id="q_hmrate" value="11" step="0.25"></label>
+        <label>Points (%)<input type="number" id="q_pts" value="2" step="0.5"></label>
+        <label>Selling commission (%)<input type="number" id="q_comm" value="5" step="0.5"></label>
+        <label>Closing costs, both sides (%)<input type="number" id="q_cc" value="2.5" step="0.5"></label>
+      </div>
+      <div class="kpi" id="q_flip_kpi"></div>
+      <div class="roll-wrap"><table class="grid7" id="q_flip_grid" style="display:none"></table></div>
+      <div class="tout" id="q_flip_out">Add an after repair value, a purchase price and a rehab budget and the whole grid runs.</div>
+    </div>
+  </div>
+</section>
+</div><!-- /journey -->
+
+<section class="closing">
+  <div class="panel2 glass">
+    <h2>Equity is not a score.<br>It is money with a job to do.</h2>
+    <p>Every dollar sitting inside a property is a dollar you have chosen not to put somewhere else, and that choice gets made again every year whether or not anyone runs the numbers. Most people run them once, at closing, and never again.</p>
+    <p><em>If the curve on this page crossed, the next conversation is about which door &mdash; and that conversation belongs with a licensed attorney and a CPA in your state before it belongs with anyone else.</em></p>
+    <a class="cta" href="mailto:mail@kpfeffer.com">Start the conversation</a>
+  </div>
+</section>
+
+<footer>
+  Educational illustration only &mdash; not legal, tax, investment, or real estate brokerage advice, and not an appraisal or an opinion of value. Statutes cited for reference; capital gain, recapture, and exchange treatment turn on facts this page does not know. Verify every figure with your own attorney, CPA, and lender before acting.<br>
+  &copy; <span id="yr"></span> Kristian R. Pfeffer &middot; <a href="index.html">kpfeffer.com</a> &middot; <a href="wealth-guide.html">The Seasons of Your Wealth</a> &middot; <a href="estate-guide.html">The Estate Guide</a>
+</footer>
+<script>
+/* =====================================================================
+   THE EQUITY GUIDE
+   One state object, one calc(), everything downstream of it. Nothing is
+   stored, nothing is sent anywhere except the record lookup you press a
+   button for. Every dated figure comes from data/rates.json, which is
+   refreshed by the same automated pipeline the Wealth Guide runs on.
+   ===================================================================== */
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+function num(id){var e=$(id);if(!e)return 0;var v=parseFloat(String(e.value).replace(/[^0-9.\-]/g,''));return isFinite(v)?v:0;}
+function has(id){var e=$(id);return !!(e&&String(e.value).trim()!=='');}
+function money(n){if(!isFinite(n))return '—';var s=Math.abs(Math.round(n)).toLocaleString();return (n<0?'−$':'$')+s;}
+function pc(n,d){if(!isFinite(n))return '—';return (n*100).toFixed(d===undefined?1:d)+'%';}
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+
+/* ---------- live figures ---------- */
+var RTS={};
+var LONGRUN=10;               /* long run U.S. large cap average, teaching constant */
+function autoset(id,val){var e=$(id);if(!e||!val)return;if(String(e.value).trim()==='' ){e.value=val;e.dataset.auto='1';}}
+fetch('data/rates.json').then(function(r){return r.json();}).then(function(d){
+  RTS=d||{};
+  autoset('q_rate',RTS.mortgage30);
+  autoset('q_appr',RTS.hpiLongRun);
+  paintSources();calc();
+}).catch(function(){paintSources();calc();});
+
+function paintSources(){
+  var rs=$('q_rate_src');
+  if(rs&&RTS.mortgage30){
+    rs.style.display='';
+    rs.innerHTML='<b>Live:</b> the 30 year fixed averaged '+RTS.mortgage30+' percent'+
+      (RTS.mortgage15?' and the 15 year '+RTS.mortgage15+' percent':'')+
+      ' in the week of '+esc(RTS.mortgageDate||'')+', per the '+esc(RTS.mortgageSource||'')+
+      '. That is a national survey average, not a quote: your rate moves with credit, occupancy and the number of units.';
+  }
+  var qs=$('q_roe_src');
+  if(qs&&RTS.hpiLongRun){
+    qs.style.display='';
+    qs.innerHTML='<b>Live:</b> U.S. house prices have compounded at about '+RTS.hpiLongRun+
+      ' percent a year over '+(RTS.hpiSpanYears||'')+' years ('+esc(RTS.hpiFrom||'')+' to '+esc(RTS.hpiAsOf||'')+')'+
+      (RTS.hpi1y!==undefined?', and '+RTS.hpi1y+' percent over the last four quarters':'')+
+      ', per the '+esc(RTS.hpiSource||'')+'. The risk free line is the 10 year Treasury at '+
+      (RTS.tenYear!==undefined?RTS.tenYear+' percent ('+esc(RTS.tenYearDate||'')+')':'the live par yield curve')+
+      '. Neither is a forecast.';
+  }
+}
+
+/* ---------- advanced toggle, remembered but reversible ---------- */
+var sw=$('advsw');
+function setAdv(on){document.body.classList.toggle('adv',!!on);if(sw){sw.setAttribute('aria-checked',on?'true':'false');}
+  try{localStorage.setItem('eqadv',on?'1':'0');}catch(e){} syncSoon();}
+try{if(localStorage.getItem('eqadv')==='1')setAdv(true);}catch(e){}
+if(sw){
+  sw.addEventListener('click',function(){setAdv(!document.body.classList.contains('adv'));});
+  sw.addEventListener('keydown',function(e){if(e.key===' '||e.key==='Enter'){e.preventDefault();sw.click();}});
+}
+
+/* ---------- stages reveal + traveler ---------- */
+var stages=[].slice.call(document.querySelectorAll('.stage'));
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add('vis');syncSoon();}});},{threshold:.12});
+  stages.forEach(function(s){io.observe(s);});
+}else{stages.forEach(function(s){s.classList.add('vis');});}
+var trav=$('trav'),jr=document.querySelector('.journey');
+function moveTrav(){if(!trav||!jr)return;var r=jr.getBoundingClientRect();
+  var p=Math.min(1,Math.max(0,(window.innerHeight*0.5-r.top)/Math.max(1,r.height)));
+  trav.style.top=(p*r.height)+'px';}
+window.addEventListener('scroll',moveTrav,{passive:true});moveTrav();
+var yr=$('yr');if(yr)yr.textContent=new Date().getFullYear();
+
+/* ---------- the lateral rule: every advanced tile sits level with the block it explains,
+     and the lane reserves the room it uses so nothing ever covers anything ---------- */
+function syncAdv(){
+  var NARROW=window.innerWidth<=900;
+  stages.forEach(function(sec){
+    var la=sec.querySelector('.lane-a');if(!la)return;
+    var tiles=[].slice.call(la.children).filter(function(el){
+      return el.classList&&el.classList.contains('advline')&&!el.classList.contains('wide');});
+    if(NARROW){
+      la.style.minHeight='';la.style.position='';
+      tiles.forEach(function(el){el.style.position='';el.style.top='';el.style.width='';});
+      return;
+    }
+    la.style.position='relative';
+    tiles.forEach(function(el){el.style.width='100%';});          /* width first, always */
+    tiles.forEach(function(el){
+      var empty=!(el.textContent||'').trim();
+      el.style.visibility=empty?'hidden':'';el.dataset.empty=empty?'1':'';
+    });
+    var lastBottom=0,used=0;
+    tiles.forEach(function(el){
+      var sel=el.dataset&&el.dataset.anchor?el.dataset.anchor:null;
+      var a=sel?sec.querySelector(sel):sec.querySelector('.teeth');
+      var top;
+      if(a){
+        var ar=a.getBoundingClientRect();
+        if(ar.top===0&&ar.height===0){top=parseFloat(el.style.top)||lastBottom+20;}
+        else{top=Math.max(0,Math.round(ar.top-la.getBoundingClientRect().top+la.scrollTop));}
+      }else{top=lastBottom+20;}
+      if(top<lastBottom+20)top=lastBottom+20;                     /* 20: the badge sits 9px high */
+      el.style.position='absolute';el.style.top=top+'px';
+      if(el.dataset.empty==='1')return;
+      lastBottom=top+el.offsetHeight;used=Math.max(used,lastBottom);
+    });
+    la.style.minHeight=used?(used+24)+'px':'';
+  });
+}
+function syncSoon(){syncAdv();setTimeout(syncAdv,320);}
+window.addEventListener('resize',syncSoon);
+if(window.ResizeObserver){var rz=new ResizeObserver(syncSoon);
+  document.querySelectorAll('.teeth').forEach(function(t){rz.observe(t);});}
+setTimeout(syncSoon,500);
+
+/* ---------- whatever is missing renders as a button that goes and gets it ---------- */
+function needRow(box,list){
+  var el=$(box);if(!el)return;
+  if(!list.length){el.innerHTML='';return;}
+  el.innerHTML=list.map(function(n){
+    return '<button type="button" class="needchip" data-need="'+n[0]+'">'+esc(n[1])+'</button>';}).join('');
+}
+document.addEventListener('click',function(e){
+  var c=e.target.closest?e.target.closest('.needchip'):null;if(!c)return;
+  var t=$(c.dataset.need);if(!t)return;
+  t.scrollIntoView({behavior:'smooth',block:'center'});
+  setTimeout(function(){try{t.focus({preventScroll:true});}catch(err){t.focus();}
+    t.classList.add('needflash');setTimeout(function(){t.classList.remove('needflash');},1600);},380);
+});
+
+/* ---------- chip rows ---------- */
+var MODE='home',ROEOPT={},LTCG=15,NIIT=false;
+document.querySelectorAll('#q_mode span').forEach(function(s){
+  s.addEventListener('click',function(){
+    document.querySelectorAll('#q_mode span').forEach(function(x){x.classList.remove('on');});
+    s.classList.add('on');MODE=s.dataset.m;applyMode(true);calc();});
+});
+/* A house you live in runs the same engine on a different premise: it pays you rent you
+   never see. Economists call it imputed rent, the Code does not tax it, and it is the
+   single largest reason owning beats renting on paper. So the worksheet asks what this
+   house would cost to rent, and treats that as the income — because it is. */
+function applyMode(userDid){
+  var n=$('q_rollnote');if(!n)return;
+  if(MODE==='home'){
+    n.innerHTML='<b>Your home pays you rent. You just never see it.</b> What would it cost to rent this exact house '+
+      'from somebody else? That figure is what living here is worth every month, it arrives whether or not anyone '+
+      'writes a cheque, and it is not taxable income to you &mdash; which is most of the reason owning beats renting '+
+      'in the tax code. Put it in the first row below; the address lookup above fills in the market estimate if you '+
+      'pulled the record. Vacancy and management have been set to zero, because you do not go vacant on yourself and '+
+      'you do not pay yourself a fee.';
+    if(userDid){$('q_vac').value=0;$('q_mgmt').value=0;}
+  }else if(MODE==='buying'){
+    n.innerHTML='<b>You are underwriting somebody else&rsquo;s numbers.</b> Use the rents on the actual leases, not the '+
+      'rents on the marketing sheet, and if a unit is vacant put in what it truly rents for rather than what it is '+
+      'listed at. Everything a seller leaves out of a pro forma is in the row of percentages below this table.';
+    if(userDid){$('q_vac').value=8;$('q_mgmt').value=8;}
+  }else{
+    n.innerHTML='<b>Your own building, your own numbers.</b> Copy the leases exactly, including the fees, and be honest '+
+      'in the percentages below: the vacancy you actually run, the management you actually pay &mdash; or would have to '+
+      'pay the day you stop doing it yourself.';
+    if(userDid){$('q_vac').value=8;$('q_mgmt').value=8;}
+  }
+}
+applyMode(false);
+document.querySelectorAll('#q_roeopt span').forEach(function(s){
+  s.addEventListener('click',function(){s.classList.toggle('on');
+    ROEOPT[s.dataset.o]=s.classList.contains('on');calc();});
+});
+document.querySelectorAll('#q_ltcg span').forEach(function(s){
+  s.addEventListener('click',function(){
+    if(s.dataset.c==='niit'){s.classList.toggle('on');NIIT=s.classList.contains('on');}
+    else{document.querySelectorAll('#q_ltcg span').forEach(function(x){if(x.dataset.c!=='niit')x.classList.remove('on');});
+      s.classList.add('on');LTCG=parseFloat(s.dataset.c);}
+    calc();});
+});
+document.querySelectorAll('#q_band span').forEach(function(s){
+  s.addEventListener('click',function(){
+    document.querySelectorAll('#q_band span').forEach(function(x){x.classList.remove('on');});
+    s.classList.add('on');
+    var sf=num('q_sf');if(sf>0){$('q_rehab').value=Math.round(sf*parseFloat(s.dataset.b));}
+    calc();});
+});
+
+/* ================= THE RENT ROLL ================= */
+var unitSeq=0;
+function unitRow(rent,ben,oth,label){
+  unitSeq++;
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td style="white-space:nowrap;font-size:.72rem;color:var(--muted);font-weight:700">'+
+      esc(label||('Unit '+unitSeq))+'</td>'+
+    '<td><input type="number" class="u-rent" placeholder="0" value="'+(rent||'')+'"></td>'+
+    '<td><input type="number" class="u-ben" placeholder="0" value="'+(ben||'')+'"></td>'+
+    '<td><input type="number" class="u-oth" placeholder="0" value="'+(oth||'')+'"></td>'+
+    '<td class="rx"><button type="button" class="rowx" aria-label="Remove this unit">&times;</button></td>';
+  tr.querySelector('.rowx').addEventListener('click',function(){tr.remove();renumber();calc();});
+  tr.querySelectorAll('input').forEach(function(i){i.addEventListener('input',live);});
+  return tr;
+}
+function renumber(){
+  var n=0;[].slice.call($('q_units').children).forEach(function(tr){
+    n++;var c=tr.firstElementChild;if(c&&/^Unit/.test(c.textContent))c.textContent='Unit '+n;});
+  unitSeq=n;
+}
+function addUnit(r,b,o,l){$('q_units').appendChild(unitRow(r,b,o,l));}
+addUnit();
+$('q_addunit').addEventListener('click',function(){addUnit();syncSoon();calc();});
+/* His own eight unit building, the one this whole worksheet was rebuilt from. */
+$('q_hill').addEventListener('click',function(){
+  var R=[[900,150,20],[900,150,20],[775,125,0],[700,120,0],[900,150,0],[750,135,0],[750,135,0],[650,100,0]];
+  $('q_units').innerHTML='';unitSeq=0;R.forEach(function(r){addUnit(r[0],r[1],r[2]);});
+  $('q_tax').value=5592;$('q_ins').value=4800;$('q_ask').value=760000;$('q_val').value=760000;
+  $('q_rate').value=8.5;$('q_term').value=30;$('q_ltv').value=75;$('q_coc').value=10;
+  $('q_loan').value=570000;$('q_noiOver').value=57120;
+  document.querySelectorAll('#q_mode span').forEach(function(x){x.classList.remove('on');});
+  var rm=document.querySelector('#q_mode [data-m="rental"]');if(rm)rm.classList.add('on');MODE='rental';
+  syncSoon();calc();
+});
+
+/* ================= THE ENGINES ================= */
+function pmt(L,ratePct,years){
+  var i=ratePct/100/12,n=Math.round(years*12);
+  if(!L||n<=0)return 0;
+  if(i<=0)return L/n;
+  return L*i/(1-Math.pow(1+i,-n));
+}
+function loanFactor(ratePct,years){var L=100000;return pmt(L,ratePct,years)*12/L;}
+/* one year of amortisation, month by month, so an extra payment and an early payoff
+   are both handled honestly instead of by a closed form that assumes neither */
+function stepYear(bal,ratePct,pay,extra){
+  var i=ratePct/100/12,prin=0,intr=0,m,int1,p1;
+  for(m=0;m<12&&bal>0.005;m++){
+    int1=bal*i;p1=pay-int1+extra;
+    if(p1<=0)p1=0;                       /* negative amortisation: the payment does not cover interest */
+    if(p1>bal)p1=bal;
+    bal-=p1;prin+=p1;intr+=int1;
+  }
+  return {bal:Math.max(0,bal),principal:prin,interest:intr,paid:prin+intr};
+}
+
+function rentRoll(){
+  var g=0,rows=0;
+  [].slice.call(document.querySelectorAll('#q_units tr')).forEach(function(tr){
+    var r=parseFloat(tr.querySelector('.u-rent').value)||0;
+    var b=parseFloat(tr.querySelector('.u-ben').value)||0;
+    var o=parseFloat(tr.querySelector('.u-oth').value)||0;
+    if(r||b||o)rows++;
+    g+=r+b+o;
+  });
+  return {monthly:g,annual:g*12,units:rows};
+}
+
+/* ================= CALC ================= */
+function calc(){
+  var out;
+  /* ---- 1 · the record ---- */
+  var val=num('q_val')||num('q_ask'), cost=num('q_cost'), yr0=num('q_year'), imp=num('q_improve');
+  var thisYear=new Date().getFullYear();
+  var held=(yr0>1900&&yr0<=thisYear)?Math.max(0,thisYear-yr0):0;
+  var basis=cost+imp;
+  var apprActual=null;
+  if(cost>0&&val>0&&held>=1)apprActual=(Math.pow(val/cost,1/held)-1)*100;
+  var kpi=[];
+  if(val>0){
+    kpi.push(['Value today',money(val),'']);
+    if(cost>0)kpi.push(['Adjusted basis',money(basis),'cost '+money(cost)+(imp?' + '+money(imp)+' improvements':'')]);
+    if(cost>0)kpi.push([held?'Gain, unrealised':'Gain',money(val-basis),held?'over '+held+' year'+(held===1?'':'s'):'']);
+    if(apprActual!==null)kpi.push(['Its actual rate',apprActual.toFixed(1)+'%','compounded, this property'+
+      (RTS.hpiLongRun?' · national '+RTS.hpiLongRun+'%':'')]);
+  }
+  paintKpi('q_rec_kpi',kpi);
+  out=$('q_rec_out');
+  if(val>0&&cost>0){
+    out.innerHTML='This property has carried you from <b>'+money(cost)+'</b> to <b>'+money(val)+'</b>'+
+      (held?' over '+held+' year'+(held===1?'':'s'):'')+'. '+
+      (apprActual!==null?'That is <b>'+apprActual.toFixed(1)+' percent a year</b>, '+
+        (RTS.hpiLongRun?(apprActual>RTS.hpiLongRun?'ahead of':'behind')+' the national long run rate of '+RTS.hpiLongRun+' percent. ':'')
+        :'')+
+      'None of it is income and none of it is taxed yet. From here down, that number is the denominator.';
+  }else if(val>0){
+    out.innerHTML='Value is in. Add what you paid and the year, and this page can tell you what the property has actually done rather than what the market has done on average.';
+  }else{
+    out.innerHTML='Type an address and press the button, or fill the boxes yourself. Everything below builds on these four numbers.';
+  }
+
+  /* ---- 2 · the income ---- */
+  var rr=rentRoll();
+  var vac=num('q_vac')/100,mg=num('q_mgmt')/100,mt=num('q_maint')/100,rs=num('q_res')/100;
+  var gsi=rr.annual, vloss=gsi*vac, egi=gsi-vloss;
+  var fixed=num('q_tax')+num('q_ins')+num('q_util')+num('q_hoa');
+  var variable=egi*(mg+mt+rs);
+  var opex=fixed+variable;
+  var noiCalc=egi-opex;
+  var noi=has('q_noiOver')?num('q_noiOver'):noiCalc;
+  var exRatio=egi>0?opex/egi:0;
+  var kp2=[];
+  if(gsi>0){
+    kp2.push(['Gross scheduled',money(gsi),rr.units+' unit'+(rr.units===1?'':'s')+' · '+money(rr.monthly)+'/mo']);
+    kp2.push(['Effective gross',money(egi),'after '+pc(vac,0)+' vacancy −'+money(vloss)]);
+    kp2.push(['Operating expense',money(opex),pc(exRatio,0)+' of collected rent']);
+    kp2.push([has('q_noiOver')?'NOI (yours)':'Net operating income',money(noi),
+      has('q_noiOver')?'overriding my '+money(noiCalc):'the only line a lender reads']);
+  }
+  paintKpi('q_noi_kpi',kp2);
+  out=$('q_noi_out');
+  if(gsi>0){
+    var verdict=exRatio>0.55?'That is high. Something in the fixed costs is out of line, or the rents are.':
+                exRatio<0.30?'That is low enough to be suspicious. Check that management, maintenance and a real reserve are all in there.':
+                'That sits inside the 35 to 45 percent band lenders underwrite small residential rental to.';
+    out.innerHTML='This building collects <b>'+money(rr.monthly)+' a month</b> on paper, <b>'+money(egi)+'</b> a year after vacancy, '+
+      'and keeps <b>'+money(noi)+'</b> of it before any mortgage. Your operating expense ratio is <b>'+pc(exRatio,0)+'</b>. '+verdict+
+      (has('q_noiOver')?' <b>You have overridden the computed figure</b> with '+money(noi)+', so everything below runs on yours.':'');
+  }else{out.innerHTML='Add at least one rent and the operating statement builds itself.';}
+
+  /* ---- 3 · the debt ---- */
+  var loan=num('q_loan'),rate=num('q_rate'),term=num('q_term')||30,extra=num('q_extra');
+  var pay=pmt(loan,rate,term);
+  var ads=(pay+extra)*12;
+  var dscr=ads>0?noi/ads:0;
+  var cfBefore=noi-ads;
+  var need=[];
+  if(!(loan>0))need.push(['q_loan','Add the balance you owe']);
+  if(!(rate>0))need.push(['q_rate','Add the interest rate']);
+  if(!(noi!==0||gsi>0))need.push(['q_units','Add a rent above']);
+  needRow('q_debt_need',need);
+  var kp3=[];
+  if(loan>0&&rate>0){
+    kp3.push(['Payment, principal &amp; interest',money(pay)+'/mo',money(pay*12)+' a year'+(extra?' + '+money(extra)+'/mo extra':'')]);
+    kp3.push(['Loan factor',(loanFactor(rate,term)).toFixed(6),'annual debt service per dollar borrowed']);
+    if(noi){
+      kp3.push(['Debt service coverage',dscr.toFixed(2),dscr>=1.25?'comfortable':dscr>=1.2?'at the usual lender floor':dscr>=1?'thin':'the property does not pay for itself',
+        dscr>=1.2?'good':dscr>=1?'':'bad']);
+      kp3.push(['Cash flow after debt',money(cfBefore),(cfBefore>=0?'':'you feed it ')+money(Math.abs(cfBefore)/12)+' a month'+(cfBefore>=0?' to you':''),cfBefore>=0?'good':'bad']);
+    }
+  }
+  paintKpi('q_debt_kpi',kp3);
+  out=$('q_debt_out');
+  if(loan>0&&rate>0&&noi){
+    out.innerHTML='The payment is <b>'+money(pay)+' a month</b> in principal and interest. Coverage is <b>'+dscr.toFixed(2)+'</b>, '+
+      (dscr<1?'which means the rents do not cover the mortgage and you are subsidising it out of pocket.':
+       dscr<1.2?'which is below where most portfolio lenders on small residential will write. A vacancy and a repair in the same month is where this breaks.':
+       'which clears the usual 1.20 lender floor with room for a bad month.')+
+      ' <b>Taxes and insurance are not in this payment</b> because they were already taken as operating expenses above; adding them here would charge you twice, and that is the most common error in a homemade sheet.';
+  }else if(loan>0&&rate>0){
+    out.innerHTML='Payment computed. Add the rents above and this becomes a coverage ratio instead of a number.';
+  }else{out.innerHTML='Add the balance you still owe and the payment, the coverage ratio and the cash flow all compute here.';}
+
+  /* ---- 4 · band of investment ---- */
+  var ltv=num('q_ltv')/100,coc=num('q_coc')/100,ask=num('q_ask');
+  var lf=rate>0?loanFactor(rate,term):0;
+  var capR=lf*ltv+(1-ltv)*coc;
+  var ivalue=(capR>0&&noi>0)?noi/capR:0;
+  var kp4=[];
+  if(capR>0&&noi>0){
+    kp4.push(['Lender&rsquo;s share',(lf*ltv).toFixed(6),'loan factor '+lf.toFixed(6)+' × '+pc(ltv,0)+' LTV']);
+    kp4.push(['Your share',((1-ltv)*coc).toFixed(6),pc(1-ltv,0)+' down × '+pc(coc,0)+' cash on cash']);
+    kp4.push(['Capitalisation rate',pc(capR,2),'the two demands, added']);
+    if(ivalue>0)kp4.push(['Investment value',money(ivalue),'NOI '+money(noi)+' ÷ '+pc(capR,2),'hero']);
+  }
+  paintKpi('q_biv_kpi',kp4);
+  out=$('q_biv_out');
+  if(ivalue>0){
+    var gap=ask>0?ivalue-ask:null;
+    out.innerHTML='At '+pc(ltv,0)+' leverage and a '+pc(coc,0)+' cash on cash requirement, this property has to earn <b>'+pc(capR,2)+
+      '</b> to pay everyone who is owed. Capitalising '+money(noi)+' at that rate values it at <b>'+money(ivalue)+'</b>.'+
+      (gap!==null?(gap<0?' The asking price of '+money(ask)+' is <b>'+money(-gap)+' above</b> that — '+
+          (Math.abs(gap/ask)*100).toFixed(0)+' percent above. Either the income has to be higher than the rent roll says, or your required return has to be lower than you said it was, or it is not a deal at that number.'
+        :' The asking price of '+money(ask)+' is <b>'+money(gap)+' below</b> the value the income supports.'):'')+
+      ' Notice what moves this: raise the rate in Stage Three and the value falls, though the building has not changed in any way.';
+  }else{out.innerHTML='Fill in the income above and the value builds here.';}
+
+  /* ---- 5 · return on equity ---- */
+  var g=(has('q_appr')?num('q_appr'):(RTS.hpiLongRun||0))/100;
+  if(ROEOPT.actual&&apprActual!==null)g=apprActual/100;
+  var rg=num('q_rentg')/100,years=Math.max(5,Math.min(40,num('q_years')||30)),sc=num('q_sellc')/100;
+  var netMode=!!ROEOPT.net;
+  var need5=[];
+  if(!(val>0))need5.push(['q_val','Add the value']);
+  if(!(noi!==0))need5.push(['q_units',MODE==='home'?'Add what it would rent for':'Add the rents']);
+  if(!(loan>0))need5.push(['q_loan','Add the loan balance']);
+  needRow('q_roe_need',need5);
+  var proj=[],ok=(val>0);
+  if(ok){
+    var V=val,B=loan,NOIt=noi,pay5=pmt(loan,rate,term);
+    for(var t=1;t<=years;t++){
+      var E0=netMode?(V*(1-sc)-B):(V-B);
+      var st=B>0?stepYear(B,rate,pay5,extra):{bal:0,principal:0,interest:0,paid:0};
+      var V1=V*(1+g);
+      var cf=NOIt-st.paid;
+      var appr=V1-V;
+      var total=cf+st.principal+appr;
+      proj.push({y:t,E0:E0,V0:V,V1:V1,B0:B,B1:st.bal,cf:cf,prin:st.principal,appr:appr,
+                 total:total,roe:E0>0?total/E0:NaN});
+      V=V1;B=st.bal;NOIt=NOIt*(1+rg);
+    }
+  }
+  var altT=(RTS.tenYear||0)/100, altM=LONGRUN/100;
+  var kp5=[],cross=null,crossT=null;
+  if(proj.length){
+    proj.forEach(function(p){
+      if(cross===null&&isFinite(p.roe)&&p.roe<altM)cross=p.y;
+      if(crossT===null&&isFinite(p.roe)&&p.roe<altT)crossT=p.y;
+    });
+    var p1=proj[0];
+    kp5.push(['Return on equity, this year',pc(p1.roe),'on '+money(p1.E0)+' of equity','hero']);
+    kp5.push([MODE==='home'?'Housing, less the payment':'Cash flow',money(p1.cf),
+      MODE==='home'?(noi?'imputed rent less what you pay to live here':'add what it would rent for above'):'rents less the whole payment',
+      p1.cf>=0?'':'bad']);
+    kp5.push(['Principal you retire',money(p1.prin),'savings inside a bill']);
+    kp5.push(['Appreciation',money(p1.appr),(g*100).toFixed(1)+'% on '+money(p1.V0)]);
+    var last=proj[proj.length-1];
+    kp5.push(['In year '+last.y,pc(last.roe),'on '+money(last.E0)+' of equity by then',
+      isFinite(last.roe)&&last.roe<altM?'bad':'']);
+  }
+  paintKpi('q_roe_kpi',kp5);
+  out=$('q_roe_out');
+  if(proj.length){
+    var p1b=proj[0];
+    out.innerHTML='Your equity today is <b>'+money(p1b.E0)+'</b>'+(netMode?' after '+pc(sc,0)+' of selling costs':'')+
+      ', and this year it earns you <b>'+money(p1b.total)+'</b> in the three ways property pays: '+
+      money(p1b.cf)+(MODE==='home'?' in housing after the payment':' in cash flow')+', '+money(p1b.prin)+
+      ' in principal you retire, and '+money(p1b.appr)+' in appreciation. '+
+      (MODE==='home'&&!noi?'<b>That first number is missing its income.</b> A home you live in pays you the rent you would otherwise be handing a landlord, so until you put that figure in the rent roll above, this is the mortgage with nothing on the other side of it. ':'')+
+      'That is a return on equity of <b>'+pc(p1b.roe)+'</b>.'+
+      (cross?' It falls below the long run market average of '+LONGRUN+' percent in <b>year '+cross+'</b>'+
+        (crossT?', and below the risk free '+(RTS.tenYear||0)+' percent Treasury in year '+crossT:'')+
+        '. That is not a sell signal, it is a question: from that year on, the money inside these walls is being paid less than money parked elsewhere, and doing nothing is a decision.'
+      :' It never drops below the long run market average inside '+years+' years — the leverage and the cash flow are carrying it, which is exactly what leverage is for.')+
+      (loan<=0?' <b>And note what the paid off loan did:</b> with no mortgage there is no principal to retire and no leverage on the appreciation, so this is the floor, not the peak. That is the part nobody believes until they see it.':'');
+    drawRoe(proj,altM,altT,cross);
+    tableRoe(proj);
+  }else{
+    out.innerHTML='Finish the record, the income and the debt above and the whole curve appears here.';
+    $('q_roe_chart').innerHTML='';var rt=$('q_roe_tab');if(rt)rt.style.display='none';
+  }
+
+  /* ---- 6 · the exit ---- */
+  var dyrs=num('q_dyrs'),landPct=num('q_land')/100,stRate=num('q_state')/100;
+  var refiLtv=num('q_refi')/100;
+  /* Land is never depreciated, so only the building share of the purchase counts. Capital
+     improvements are all building by definition: you cannot improve dirt. */
+  var bldg=Math.max(0,(cost>0?cost:val)*(1-landPct))+imp;
+  var deprAnnual=bldg>0?bldg/27.5:0;
+  var depr=Math.min(bldg,deprAnnual*Math.max(0,dyrs));
+  var adjBasis=Math.max(0,basis-depr);
+  var netSale=val*(1-sc);
+  var gain=Math.max(0,netSale-adjBasis);
+  var recap=Math.min(depr,gain);
+  var capGain=Math.max(0,gain-recap);
+  var fedTax=recap*0.25+capGain*(LTCG/100)+(NIIT?gain*0.038:0);
+  var stTax=gain*stRate;
+  var totalTax=fedTax+stTax;
+  var sellNet=netSale-loan-totalTax;
+  var refiProceeds=Math.max(0,val*refiLtv-loan);
+  var refiPay=pmt(val*refiLtv,rate,30);
+  var exNet=netSale-loan;                         /* 1031: gain deferred, equity moves whole */
+  var doors=[];
+  if(val>0){
+    doors.push({t:'Keep it',a:proj.length?pc(proj[0].roe):'—',v:null,
+      p:'No tax, no cost, no decision. Your equity earns whatever the curve above says it earns, and next year it earns less.'});
+    doors.push({t:'Refinance',a:money(refiProceeds),v:refiProceeds,wl:'Most cash, no tax at all',
+      p:'Borrowed money is not income, so nothing here is taxable. A new loan at '+pc(refiLtv,0)+' of value would pay '+money(refiPay)+
+        ' a month at '+(rate||0)+' percent over 30 years, '+
+        (Math.abs(refiPay-pay)<25?'about the same as you pay now':(refiPay>pay?money(refiPay-pay)+' more':money(pay-refiPay)+' less')+' than you pay now')+
+        '. You keep the property and reset the leverage that was making the return in the first place.'+
+        (refiProceeds<=0?' At '+pc(refiLtv,0)+' of value there is nothing to take out: the loan is already there. Raising the box above, or waiting for more value, is what creates room.':'')});
+    doors.push({t:'Exchange it',a:money(exNet),v:exNet,wl:'Most equity carried forward',
+      p:'Section 1031 moves the whole '+money(exNet)+' into the next property with the gain deferred and the basis carried over — '+
+        'no cash in your pocket, a bigger asset underneath you. Forty five days to identify, one hundred eighty to close, a qualified '+
+        'intermediary holding the money the entire time. '+(MODE==='home'?'Not available on a home you live in.':'Investment property only.')});
+    doors.push({t:'Sell it',a:money(sellNet),v:sellNet,wl:'Most cash in hand',
+      p:'Gain of '+money(gain)+(depr>0?', of which '+money(recap)+' is unrecaptured Section 1250 gain at 25 percent':'')+
+        '. Federal '+money(fedTax)+(stRate?', state '+money(stTax):', state not entered')+
+        '. After the loan and '+pc(sc,0)+' of selling costs you walk with '+money(sellNet)+'.'+
+        (MODE==='home'?' This is before Section 121, which excludes a large slice of gain on a principal residence you owned and lived in for two of the last five years — confirm the current amount, do not take mine.':'')});
+    doors.push({t:'Hold it to the end',a:money(netSale-loan),v:null,
+      p:'Under Section 1014 the basis resets to fair market value at death, so the '+money(gain)+' of gain and the '+
+        money(recap)+' of recapture both disappear and your heirs sell for no gain at all. That is '+money(totalTax)+
+        ' of tax that simply never happens, and it is the one door nobody puts on a spreadsheet.'});
+    var best=-1e18,bi=-1;
+    doors.forEach(function(d,i){if(d.v!==null&&d.v>best){best=d.v;bi=i;}});
+    if(bi>=0&&best>0)doors[bi].win=true;
+  }
+  var db=$('q_exit_doors');
+  db.innerHTML=doors.map(function(d){
+    return '<div class="door'+(d.win?' win':'')+'"><h4>'+d.t+'</h4><span class="amt">'+d.a+'</span><p>'+d.p+'</p>'+
+      (d.win?'<span class="wl">'+(d.wl||'Biggest number here')+'</span>':'')+'</div>';}).join('');
+  out=$('q_exit_out');
+  if(val>0&&cost>0){
+    out.innerHTML='On a sale today the gain is <b>'+money(gain)+'</b>'+
+      (depr>0?', and <b>'+money(recap)+'</b> of it is unrecaptured Section 1250 gain because '+
+        money(depr)+' of depreciation was allowed or allowable over '+dyrs+' year'+(dyrs===1?'':'s')+' — owed whether or not you ever claimed it':'')+
+      '. Tax comes to <b>'+money(totalTax)+'</b>'+(stRate?'':' before state tax, which you have not entered')+
+      ', and after the loan and selling costs you keep <b>'+money(sellNet)+'</b>. '+
+      'The exchange moves '+money(exNet)+' instead, and the refinance moves '+money(refiProceeds)+' with no tax at all. '+
+      'Dying is worth '+money(totalTax)+' of the difference, which is a sentence about planning, not about mortality.';
+  }else{out.innerHTML='Fill in the record and the debt above and the four doors compute here.';}
+
+  /* ---- 7 · the flip ---- */
+  var arv=num('q_arv'),fpur=num('q_fpur'),rehab=num('q_rehab'),sf=num('q_sf');
+  var hm=num('q_hmrate')/100,pts=num('q_pts')/100,comm=num('q_comm')/100,cc=num('q_cc')/100;
+  var mao70=arv*0.70-rehab, mao80=arv*0.80-rehab;
+  var kp7=[];
+  if(arv>0){
+    kp7.push(['Max offer, flip',money(mao70),'ARV × 70% − rehab',fpur>0?(fpur<=mao70?'good':'bad'):'']);
+    kp7.push(['Max offer, wholetail',money(mao80),'ARV × 80% − rehab',fpur>0?(fpur<=mao80?'good':''):'']);
+    if(sf>0&&rehab>0)kp7.push(['Rehab per foot','$'+(rehab/sf).toFixed(0),Math.round(rehab/sf)<=25?'cosmetic':Math.round(rehab/sf)<=42?'medium':'heavy']);
+    if(fpur>0)kp7.push(['All in, before carry',money(fpur+rehab),'purchase + rehab']);
+  }
+  paintKpi('q_flip_kpi',kp7);
+  var gt=$('q_flip_grid');
+  if(arv>0&&fpur>0){
+    var base=fpur+rehab;
+    var rows=[0,-10000,-20000,-30000];
+    var h='<thead><tr><th>Sale price</th>';
+    for(var m=1;m<=6;m++)h+='<th>'+m+' mo</th>';
+    h+='</tr></thead><tbody>';
+    var bestCell=-1e18;
+    rows.forEach(function(dl){
+      var sp=arv+dl;
+      h+='<tr><td>'+money(sp)+(dl?' ('+money(dl)+')':'')+'</td>';
+      for(var m=1;m<=6;m++){
+        var interest=base*hm*m/12;
+        var points=base*pts;
+        var be=base+points+interest+sp*comm+sp*cc;
+        var profit=sp-be;
+        if(profit>bestCell)bestCell=profit;
+        var cls=profit>20000?'d':profit>5000?'':'n';
+        h+='<td class="'+cls+'">'+money(profit)+'</td>';
+      }
+      h+='</tr>';
+    });
+    h+='</tbody>';
+    gt.innerHTML=h;gt.style.display='';
+    var worst=(function(){var sp=arv-30000,interest=base*hm*6/12,points=base*pts;
+      return sp-(base+points+interest+sp*comm+sp*cc);})();
+    $('q_flip_out').innerHTML='At the asking numbers the best corner of this grid is <b>'+money(bestCell)+
+      '</b> and the corner you should underwrite to — thirty thousand under value, six months on the market — is <b>'+money(worst)+'</b>. '+
+      (worst>20000?'That clears a twenty thousand dollar target even when everything goes wrong, which is the only version of this that is a deal.':
+       worst>5000?'That still ends above water in the worst corner, but it is a thin deal and one surprise in the rehab eats it.':
+       'That corner loses money. A flip that only works in the top left of this grid is a bet on a forecast.')+
+      ' Maximum allowable offer at the seventy percent rule is <b>'+money(mao70)+'</b>'+
+      (fpur>mao70?', and you are being asked '+money(fpur)+' — '+money(fpur-mao70)+' over.':'.')+
+      ' Note the profit shrinking left to right: that is the hard money loan doing what it was designed to do.';
+  }else{
+    gt.style.display='none';
+    $('q_flip_out').innerHTML='Add an after repair value, a purchase price and a rehab budget and the whole grid runs.';
+  }
+
+  syncSoon();
+}
+
+/* ---------- painters ---------- */
+function paintKpi(id,items){
+  var el=$(id);if(!el)return;
+  el.innerHTML=items.map(function(k){
+    var cls=k[3]?' '+k[3]:'';
+    return '<div class="k'+cls+'"><span>'+k[0]+'</span><b>'+k[1]+'</b>'+(k[2]?'<i>'+k[2]+'</i>':'')+'</div>';
+  }).join('');
+}
+
+function drawRoe(proj,altM,altT,cross){
+  var box=$('q_roe_chart');if(!box)return;
+  var W=660,H=280,L=48,R=16,T=14,B=30;
+  var vals=proj.map(function(p){return p.roe;}).filter(isFinite);
+  if(!vals.length){box.innerHTML='';return;}
+  var hi=Math.max.apply(null,vals.concat([altM,altT])), lo=Math.min.apply(null,vals.concat([0]));
+  hi=hi*1.12; if(hi<=lo)hi=lo+0.1;
+  var n=proj.length;
+  var X=function(i){return L+(W-L-R)*(i/Math.max(1,n-1));};
+  var Y=function(v){return T+(H-T-B)*(1-(v-lo)/(hi-lo));};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Return on equity by year, against the market and risk free lines">';
+  /* horizontal grid */
+  var steps=5,i,gv;
+  for(i=0;i<=steps;i++){
+    gv=lo+(hi-lo)*i/steps;
+    s+='<line x1="'+L+'" y1="'+Y(gv).toFixed(1)+'" x2="'+(W-R)+'" y2="'+Y(gv).toFixed(1)+
+       '" stroke="rgba(18,41,63,.10)" stroke-width="1"/>'+
+       '<text x="'+(L-7)+'" y="'+(Y(gv)+3.5).toFixed(1)+'" text-anchor="end" font-size="10" fill="#5a6a78">'+
+       (gv*100).toFixed(0)+'%</text>';
+  }
+  /* zero line if the plot crosses it */
+  if(lo<0)s+='<line x1="'+L+'" y1="'+Y(0).toFixed(1)+'" x2="'+(W-R)+'" y2="'+Y(0).toFixed(1)+'" stroke="rgba(138,61,58,.5)" stroke-width="1"/>';
+  /* year ticks */
+  for(i=0;i<n;i++){
+    if(i===0||((i+1)%5===0)){
+      s+='<text x="'+X(i).toFixed(1)+'" y="'+(H-9)+'" text-anchor="middle" font-size="10" fill="#5a6a78">'+proj[i].y+'</text>';
+    }
+  }
+  s+='<text x="'+((L+W-R)/2)+'" y="'+(H+0)+'" text-anchor="middle" font-size="9" fill="#5a6a78"></text>';
+  /* alternative lines */
+  s+='<line x1="'+L+'" y1="'+Y(altM).toFixed(1)+'" x2="'+(W-R)+'" y2="'+Y(altM).toFixed(1)+
+     '" stroke="#12293f" stroke-width="1.6" stroke-dasharray="6 4"/>';
+  s+='<line x1="'+L+'" y1="'+Y(altT).toFixed(1)+'" x2="'+(W-R)+'" y2="'+Y(altT).toFixed(1)+
+     '" stroke="#8a6d3b" stroke-width="1.4" stroke-dasharray="2 4"/>';
+  /* the curve */
+  var d='',area='';
+  proj.forEach(function(p,ix){
+    if(!isFinite(p.roe))return;
+    d+=(d?'L':'M')+X(ix).toFixed(1)+' '+Y(p.roe).toFixed(1)+' ';
+  });
+  if(d){
+    area='M'+X(0).toFixed(1)+' '+Y(lo<0?0:lo).toFixed(1)+' '+d.slice(1)+
+         'L'+X(n-1).toFixed(1)+' '+Y(lo<0?0:lo).toFixed(1)+' Z';
+    s+='<path d="'+area+'" fill="rgba(169,136,79,.16)"/>';
+    s+='<path d="'+d+'" fill="none" stroke="#a9884f" stroke-width="2.6" stroke-linejoin="round"/>';
+  }
+  /* the crossing */
+  if(cross){
+    var ci=cross-1;
+    s+='<line x1="'+X(ci).toFixed(1)+'" y1="'+T+'" x2="'+X(ci).toFixed(1)+'" y2="'+(H-B)+
+       '" stroke="rgba(138,61,58,.55)" stroke-width="1.4" stroke-dasharray="3 3"/>';
+    s+='<circle cx="'+X(ci).toFixed(1)+'" cy="'+Y(proj[ci].roe).toFixed(1)+'" r="4.5" fill="#8a3d3a"/>';
+    var lx=Math.min(W-R-96,X(ci)+8);
+    s+='<text x="'+lx.toFixed(1)+'" y="'+(T+13)+'" font-size="10.5" font-weight="700" fill="#8a3d3a">year '+cross+'</text>';
+  }
+  s+='</svg>';
+  box.innerHTML=s+
+    '<div class="ckey">'+
+      '<span><i style="background:#a9884f"></i>Return on your equity</span>'+
+      '<span><i style="background:#12293f"></i>Long run market average, '+(LONGRUN)+'%</span>'+
+      '<span><i style="background:#8a6d3b"></i>Risk free, 10 year Treasury '+(RTS.tenYear!==undefined?RTS.tenYear+'%':'')+'</span>'+
+      '<span style="color:#8a3d3a">Vertical: the year it crosses</span>'+
+    '</div>';
+}
+
+function tableRoe(proj){
+  var t=$('q_roe_tab');if(!t)return;
+  var picks=proj.filter(function(p){return p.y<=3||p.y%5===0||p.y===proj.length;});
+  var h='<thead><tr><th>Year</th><th>Equity, start</th><th>Cash flow</th><th>Principal</th><th>Appreciation</th><th>Total</th><th>Return on equity</th></tr></thead><tbody>';
+  picks.forEach(function(p){
+    h+='<tr><td>'+p.y+'</td><td>'+money(p.E0)+'</td><td>'+money(p.cf)+'</td><td>'+money(p.prin)+
+       '</td><td>'+money(p.appr)+'</td><td>'+money(p.total)+'</td><td class="'+
+       (isFinite(p.roe)&&p.roe>=LONGRUN/100?'pass':'fail')+'">'+pc(p.roe)+'</td></tr>';
+  });
+  t.innerHTML=h+'</tbody>';t.style.display='';
+}
+
+/* ---------- live recompute, debounced ---------- */
+var tmr=null;
+function live(){clearTimeout(tmr);tmr=setTimeout(calc,220);}
+document.querySelectorAll('.teeth input').forEach(function(i){
+  i.addEventListener('input',function(){if(i.dataset.auto)delete i.dataset.auto;live();});
+});
+
+/* ---------- the record lookup ---------- */
+$('q_pull').addEventListener('click',function(){
+  var a=($('q_addr').value||'').trim();
+  var o=$('q_rec_out');
+  if(a.length<8||!/\d/.test(a)){o.innerHTML='Give me a full street address with the number, the city and the state.';return;}
+  var btn=this;btn.disabled=true;btn.textContent='Reading…';
+  o.innerHTML='Reading the public record…';
+  Promise.all([
+    fetch('/api/home-value?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('/api/property-record?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
+    fetch('/api/rent-estimate?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+  ]).then(function(res){
+    btn.disabled=false;btn.textContent='Pull the record';
+    var v=res[0],p=res[1],rent=res[2];
+    var said=[];
+    if(v&&v.price){$('q_val').value=Math.round(v.price);
+      said.push('valued at <b>'+money(v.price)+'</b>'+(v.low&&v.high?' (band '+money(v.low)+' to '+money(v.high)+')':''));}
+    if(p&&p.lastSalePrice){$('q_cost').value=Math.round(p.lastSalePrice);
+      said.push('last recorded sale <b>'+money(p.lastSalePrice)+'</b>'+(p.lastSaleDate?' in '+String(p.lastSaleDate).slice(0,4):''));}
+    if(p&&p.lastSaleDate){$('q_year').value=parseInt(String(p.lastSaleDate).slice(0,4),10)||'';}
+    if(rent&&rent.rent){
+      var first=document.querySelector('#q_units .u-rent');
+      if(first&&!String(first.value).trim()){first.value=Math.round(rent.rent);}
+      said.push('market rent about <b>'+money(rent.rent)+' a month</b>');
+    }
+    var src=$('q_rec_src');
+    if(said.length){
+      src.style.display='';
+      src.innerHTML='<b>From the record:</b> '+said.join(', ')+'. Sources: '+
+        [v&&v.source,p&&p.source,rent&&rent.source].filter(Boolean).join('; ')+
+        '. An automated valuation is a regression on comparable sales, not an appraisal, and the rent figure is a model, not a lease. '+
+        (p&&p.squareFootage?'The record puts it at '+p.squareFootage.toLocaleString()+' square feet'+(p.yearBuilt?', built '+p.yearBuilt:'')+
+          (p.county?', '+esc(p.county)+' County':'')+'. ':'')+
+        'Overwrite anything that is wrong; your numbers always win.';
+      if(p&&p.squareFootage&&!has('q_sf'))$('q_sf').value=p.squareFootage;
+    }else{
+      src.style.display='';
+      src.innerHTML='<b>No record came back for that address.</b> The provider covers most of the country but not all of it, and a new subdivision or a rural parcel often has nothing on file. Type the numbers in and everything below still works.';
+    }
+    calc();syncSoon();
+  }).catch(function(){
+    btn.disabled=false;btn.textContent='Pull the record';
+    o.innerHTML='The lookup did not answer. Type the numbers in yourself and the rest of the page works exactly the same.';
+  });
+});
+$('q_addr').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('q_pull').click();}});
+
+/* first paint */
+calc();
+window.EQCALC=calc;
+})();
+</script>
+
+<!-- Ask Kristian. The same widget, the same voice, the same library as the other two
+     guides, loaded from one shared file so a fix lands everywhere at once. -->
+<script>
+window.AK_CONFIG = {
+  surface: 'equity',
+  fabLabel: 'Ask Kristian',
+  placeholder: 'Ask me anything about property, equity, or the tax on the way out',
+  greeting: "Ask me anything about what a property earns, what it is worth to an investor, and what it costs to get your money back out. I will show the arithmetic rather than assert the answer.\n\nWhere it turns on a statute I will name the statute. Where it turns on a figure that changes every year, I will tell you it changes every year rather than quote you one I half remember.",
+  seeds: [
+    'My rental is nearly paid off and cash flows well. Why would my return be getting worse?',
+    'The seller’s pro forma shows a 9 cap. What is he leaving out?',
+    'I never claimed depreciation on my rental. Do I still owe the recapture when I sell?',
+    'Cash out refinance or 1031 exchange — what does each one actually cost me?'
+  ],
+  targets: [
+    { sel: '.advline', label: 'Ask Kristian about this',
+      name: function(el){ var b=el.querySelector('b');
+        return ((b?b.textContent:'')||'The math and the law').replace(/[:\s]+$/,''); },
+      ask: 'Explain the math and the law in this tile, and say what it changes for someone who only read the plain version beside it.' },
+    { sel: '.teeth', label: 'Ask Kristian about this',
+      name: function(el){ var d=el.querySelector('.disc');
+        return ((d?d.textContent:'')||'This worksheet').replace(/^Help me understand\s*/i,'').replace(/[.\s]+$/,''); },
+      ask: 'Walk me through this worksheet: what each input is really asking for, what the output means, and what people get wrong here.' }
+  ],
+  explain: 'Explain this to me. Go a level deeper than the block itself does: what the number actually measures, what would change it, and what an owner or an investor typically misreads about it. Use the figures shown if there are any.'
+};
+</script>
+<script src="/assets/ask-kristian.js" defer></script>
+</body>
+</html>
