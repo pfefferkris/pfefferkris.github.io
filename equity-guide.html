@@ -894,6 +894,14 @@ function has(id){var e=$(id);return !!(e&&String(e.value).trim()!=='');}
 function money(n){if(!isFinite(n))return '—';var s=Math.abs(Math.round(n)).toLocaleString();return (n<0?'−$':'$')+s;}
 function pc(n,d){if(!isFinite(n))return '—';return (n*100).toFixed(d===undefined?1:d)+'%';}
 function esc(s){return String(s).replace(/[&<>]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+/* Counties answer with whatever shape their GIS keeps. A date input accepts exactly one. */
+function toIso(v){
+  if(!v)return null;
+  var s=String(v).trim();
+  if(/^\d{4}-\d{2}-\d{2}/.test(s))return s.slice(0,10);
+  var d=new Date(s);
+  return isNaN(d)?null:d.toISOString().slice(0,10);
+}
 
 /* ---------- live figures ----------
    There is no teaching constant on this page any more. The first draft compared return on
@@ -1191,7 +1199,7 @@ function loanFromPayment(pay,ratePct,years){
 var RECON=null;
 function reconstruct(auto){
   var out=$('q_recon_out');
-  var d=$('q_pdate').value||RECORD.saleDate||(num('q_year')>1900?num('q_year')+'-07-01':'');
+  var d=toIso($('q_pdate').value)||RECORD.saleDate||(num('q_year')>1900?num('q_year')+'-07-01':'');
   var price=num('q_cost')||num('q_val');
   if(!d||!(price>0)){
     if(auto)return;
@@ -1839,9 +1847,9 @@ $('q_pull').addEventListener('click',function(){
        of its own. The first drives the mortgage reconstruction, the second replaces a
        guess at the land share with a third party's allocation on the public record. */
     var asd=dd&&dd.assessed;
-    RECORD={saleDate:(asd&&asd.saleDate)||(dd&&dd.recorded)||(p&&p.lastSaleDate)||null,
+    RECORD={saleDate:toIso((asd&&asd.saleDate)||(dd&&dd.recorded)||(p&&p.lastSaleDate)),
             landShare:asd?asd.landShare:null,assessed:asd||null,deed:dd||null};
-    if(RECORD.saleDate&&!$('q_pdate').value)$('q_pdate').value=String(RECORD.saleDate).slice(0,10);
+    if(RECORD.saleDate&&!$('q_pdate').value)$('q_pdate').value=RECORD.saleDate;
     if(asd&&asd.salePrice&&!has('q_cost')){$('q_cost').value=asd.salePrice;
       said.push('the county records a sale at <b>'+money(asd.salePrice)+'</b>');}
     var lsrc=$('q_land_src');

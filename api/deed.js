@@ -161,7 +161,9 @@ export default async function handler(req, res) {
       book: m ? m[1].replace(/^0+(?=\d)/, "") : null,
       page: m ? m[2] : null,
       legal: pick(a, "legdecfull") || null,
-      recorded: pick(a, "sourcedatx") || null,
+      // normalized: Wake already answers in ISO and the statewide layer answers M/D/Y,
+      // and a consumer that feeds this straight into a date input needs one shape
+      recorded: dateOf(pick(a, "sourcedatx")) || pick(a, "sourcedatx") || null,
       use: pick(a, "parusedesc") || null,
       assessed: assessedFrom(pick(a, "landval"), pick(a, "improvval"), pick(a, "parval"),
                              null, pick(a, "saledate") || pick(a, "saledatetx"),
