@@ -5,8 +5,29 @@
 //
 // Text in, mp3 out. Nothing is stored, and the text is never logged.
 
-const VOICE_ID = process.env.ASK_VOICE_ID || "TxGEqnHWrfWFTfGW9XjX"; // ElevenLabs "Josh"
+const VOICE_ID = process.env.ASK_VOICE_ID || "TxGEqnHWrfWFTfGW9XjX";
 const MODEL = process.env.ASK_TTS_MODEL || "eleven_flash_v2_5";
+
+// Speed is a real fix, not a preference. The default read is too slow for someone
+// explaining something they know well; a person who is comfortable with the material
+// moves. 1.2 is the ceiling ElevenLabs allows on this model.
+const SPEED = Math.min(1.2, Math.max(0.7, parseFloat(process.env.ASK_TTS_SPEED || "1.2")));
+
+// An allowlist, not a passthrough. Without it this endpoint is a free ElevenLabs
+// proxy for anyone who finds it. These are the male voices worth auditioning for a
+// man in his thirties explaining trust law on his own website.
+const VOICES = {
+  josh:   "TxGEqnHWrfWFTfGW9XjX", // current, young American, light
+  brian:  "nPczCjzI2devNBz1zQrb", // deep American narration
+  adam:   "pNInz6obpgDQGcFmaJgB", // deep American, authoritative
+  bill:   "pqHfZKP75CvOlQylNhV4", // older American, documentary gravitas
+  eric:   "cjVigY5qzO86Huf0OWal", // middle aged American, smooth
+  chris:  "iP95p4xoKVk53GoZ742B", // casual American, conversational
+  will:   "bIHbv24MWmeRgasZH58o", // friendly American, warm
+  liam:   "TX3LPaxmHKxFdv7VOQHJ", // younger American, articulate
+  daniel: "onwK4e9ZLuTAKqWW03F9", // British news presenter
+  george: "JBFqnCBsd6RMkjVDRZzb"  // British, warm and raspy
+};
 
 // A public page can be refreshed all day, and every synthesis costs characters.
 // 60 requests an hour per address, and a hard ceiling on how much text one request
@@ -54,14 +75,21 @@ export default async function handler(req, res) {
     const ip = (req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "anon";
     if (limited(ip, text.length)) return res.status(200).json({ error: "rate limited", limited: true });
 
-    const r = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + VOICE_ID, {
+    // Auditioning a voice is allowed; pointing this at an arbitrary voice id is not.
+    const pick = String(body.voice || "").toLowerCase().replace(/[^a-z]/g, "");
+    const voiceId = (pick && VOICES[pick]) || VOICE_ID;
+    const speed = body.speed ? Math.min(1.2, Math.max(0.7, parseFloat(body.speed) || SPEED)) : SPEED;
+
+    const r = await fetch("https://api.elevenlabs.io/v1/text-to-speech/" + voiceId, {
       method: "POST",
       headers: { "xi-api-key": key, "Content-Type": "application/json", "Accept": "audio/mpeg" },
       body: JSON.stringify({
         text,
         model_id: MODEL,
         // Steady rather than theatrical. He is explaining something, not performing it.
-        voice_settings: { stability: 0.45, similarity_boost: 0.75, style: 0.0, use_speaker_boost: true }
+        // Higher stability keeps the delivery level, which is what reads as expertise:
+        // the calm downward inflection, not volume and not drama.
+        voice_settings: { stability: 0.55, similarity_boost: 0.75, style: 0.0, use_speaker_boost: true, speed: speed }
       })
     });
 
