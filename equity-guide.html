@@ -682,7 +682,10 @@ body.adv .teeth .tcard .whyln{display:block}
       <p class="tsub">The rate box starts at this week&rsquo;s national average from the Freddie Mac survey, stamped below with the week it was published. If you already have a mortgage, type your own rate and the balance you owe today &mdash; that is what makes Stage Five real rather than hypothetical. And if you do not know either number, do not guess: the county knows the day your deed was recorded, and the block below knows what a mortgage cost that week.</p>
 
       <div class="lesson" id="q_recon">
-        <b>Reconstruct the loan instead of guessing at it.</b> Nobody has their interest rate to hand. But your deed was recorded on a particular day, and the Freddie Mac survey has published the market rate every single week since April 1971, so the two together get closer than memory does. The order of precision, best first: <b>the balance you type wins outright</b>; failing that, <b>your actual principal and interest payment</b> pins the original loan exactly; failing that, the recorded price and a down payment assumption. Whichever rung it lands on, it shows its work.
+        <b>Reconstruct the loan instead of guessing at it.</b> Four rungs, best first, and it tells you which one it stood on.<br>
+        <b>One. The mortgage itself.</b> Your loan is recorded as a deed of trust in the same register as your deed, usually within a page or two of it, and its face amount is the original balance to the dollar. That is the true answer and no county in North Carolina publishes it in a form a page can read. Where the record gives us the deed book and page, Stage One prints it, and one search at the register of deeds turns this whole block into a fact.<br>
+        <b>Two. What you tell us.</b> The balance you type wins over everything below it. Failing that, your actual principal and interest payment pins the original loan exactly &mdash; payment and rate determine the loan, so that rung needs no assumption about your down payment at all.<br>
+        <b>Three. The recorded price and the market of that week.</b> The Freddie Mac survey has published the rate every week since April 1971. Where the county publishes the excise stamp on your deed, the purchase price is not an estimate either: North Carolina charges a dollar per five hundred of consideration, so the stamp <em>is</em> the price. Only the down payment is then an assumption.
         <div class="trow">
           <label>Deed recorded / purchased<input type="date" id="q_pdate"></label>
           <label>Down payment (%)<input type="number" id="q_dppct" value="20" min="0" max="100" step="0.5"></label>
@@ -1827,66 +1830,107 @@ $('q_pull').addEventListener('click',function(){
     fetch('/api/home-value?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
     fetch('/api/property-record?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
     fetch('/api/rent-estimate?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}),
-    fetch('/api/deed?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+    fetch('/api/parcel?address='+encodeURIComponent(a)).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
   ]).then(function(res){
     btn.disabled=false;btn.textContent='Pull the record';
-    var v=res[0],p=res[1],rent=res[2],dd=res[3];
-    var said=[];
+    var v=res[0],p=res[1],rent=res[2],pc0=res[3];
+    var said=[],asd=pc0&&pc0.assessed,bld=(pc0&&pc0.building)||{},arms=pc0&&pc0.lastArmsLength;
+
+    /* ---- the value estimate, and the record's own price, which beats it ---- */
     if(v&&v.price){$('q_val').value=Math.round(v.price);
       said.push('valued at <b>'+money(v.price)+'</b>'+(v.low&&v.high?' (band '+money(v.low)+' to '+money(v.high)+')':''));}
-    if(p&&p.lastSalePrice){$('q_cost').value=Math.round(p.lastSalePrice);
-      said.push('last recorded sale <b>'+money(p.lastSalePrice)+'</b>'+(p.lastSaleDate?' in '+String(p.lastSaleDate).slice(0,4):''));}
-    if(p&&p.lastSaleDate){$('q_year').value=parseInt(String(p.lastSaleDate).slice(0,4),10)||'';}
+    /* An arms length sale off the recorded deed is not an estimate. Where the county
+       publishes the excise stamp, the price is the stamp times 500 under NCGS 105-228.30,
+       which is the consideration the parties swore to, and it beats any model. */
+    var priceSrc=null;
+    if(arms&&(arms.price||arms.stampPrice)){
+      var recPrice=arms.price||arms.stampPrice;
+      if(!$('q_cost').dataset.touched){$('q_cost').value=Math.round(recPrice);$('q_cost').dataset.auto='1';}
+      if(arms.date){
+        if(!$('q_year').dataset.touched)$('q_year').value=+String(arms.date).slice(0,4);
+        if(!$('q_pdate').value)$('q_pdate').value=arms.date;
+      }
+      priceSrc=arms;
+      said.push('the recorded deed says <b>'+money(recPrice)+'</b>'+
+        (arms.stamps?' (excise stamps of '+arms.stamps+', which is '+money(arms.stampPrice)+')':'')+
+        (arms.date?' in '+String(arms.date).slice(0,4):''));
+    }else if(p&&p.lastSalePrice){
+      if(!$('q_cost').dataset.touched){$('q_cost').value=Math.round(p.lastSalePrice);$('q_cost').dataset.auto='1';}
+      said.push('last recorded sale <b>'+money(p.lastSalePrice)+'</b>'+(p.lastSaleDate?' in '+String(p.lastSaleDate).slice(0,4):''));
+    }
+    if(p&&p.lastSaleDate&&!has('q_year'))$('q_year').value=parseInt(String(p.lastSaleDate).slice(0,4),10)||'';
     if(rent&&rent.rent){
       var first=document.querySelector('#q_units .u-rent');
-      if(first&&!String(first.value).trim()){first.value=Math.round(rent.rent);}
+      if(first&&!String(first.value).trim())first.value=Math.round(rent.rent);
       said.push('market rent about <b>'+money(rent.rent)+' a month</b>');
     }
-    /* The parcel record carries three things the valuation feed does not: the day the
-       deed was recorded, the assessor's own split of land from building, and often a sale
-       of its own. The first drives the mortgage reconstruction, the second replaces a
-       guess at the land share with a third party's allocation on the public record. */
-    var asd=dd&&dd.assessed;
-    RECORD={saleDate:toIso((asd&&asd.saleDate)||(dd&&dd.recorded)||(p&&p.lastSaleDate)),
-            landShare:asd?asd.landShare:null,assessed:asd||null,deed:dd||null};
+
+    RECORD={saleDate:toIso((arms&&arms.date)||(asd&&asd.saleDate)||(pc0&&pc0.deed&&pc0.deed.recorded)||(p&&p.lastSaleDate)),
+            landShare:asd?asd.landShare:null,parcel:pc0||null};
     if(RECORD.saleDate&&!$('q_pdate').value)$('q_pdate').value=RECORD.saleDate;
-    if(asd&&asd.salePrice&&!has('q_cost')){$('q_cost').value=asd.salePrice;
-      said.push('the county records a sale at <b>'+money(asd.salePrice)+'</b>');}
+
+    /* ---- the assessor's own land split ---- */
     var lsrc=$('q_land_src');
     if(RECORD.landShare&&RECORD.landShare>0&&RECORD.landShare<80){
       var le=$('q_land');
       if(!le.dataset.touched){le.value=RECORD.landShare;le.dataset.auto='1';}
       lsrc.style.display='';
-      lsrc.innerHTML='<b>From the record:</b> the '+esc(asd.source||'county assessor')+' values the land at '+
+      lsrc.innerHTML='<b>From the record:</b> '+esc(pc0.county||'the county')+' County values the land at '+
         money(asd.land)+' and the building at '+money(asd.building)+', which puts land at <b>'+RECORD.landShare+
         ' percent</b> of the assessment. That ratio has been carried into the box above. It is an assessment, not '+
         'market value, but the ratio is what the depreciation turns on, and a third party&rsquo;s allocation on the '+
-        'public record stands up better than a round number of your own. Your appraisal or your CPA&rsquo;s allocation beats both.';
+        'public record stands up better than a round number of your own. Your appraisal or your CPA&rsquo;s beats both.';
     }else{lsrc.style.display='none';}
+
+    /* ---- the real property tax bill, instead of asking someone to remember it ---- */
+    if(pc0&&pc0.tax&&pc0.tax.billed&&!$('q_tax').dataset.touched){
+      $('q_tax').value=Math.round(pc0.tax.billed);$('q_tax').dataset.auto='1';
+      said.push('the '+esc(pc0.tax.year||'current')+' tax bill is <b>'+money(pc0.tax.billed)+'</b>');
+    }
+    /* ---- heated area, which is the one an automated model gets wrong ---- */
+    if(bld.heatedArea&&!$('q_sf').dataset.touched){$('q_sf').value=bld.heatedArea;$('q_sf').dataset.auto='1';}
+    else if(p&&p.squareFootage&&!has('q_sf'))$('q_sf').value=p.squareFootage;
+
     var src=$('q_rec_src');
-    if(said.length){
-      src.style.display='';
-      src.innerHTML='<b>From the record:</b> '+said.join(', ')+'. Sources: '+
-        [v&&v.source,p&&p.source,rent&&rent.source].filter(Boolean).join('; ')+
-        '. An automated valuation is a regression on comparable sales, not an appraisal, and the rent figure is a model, not a lease. '+
-        (p&&p.squareFootage?'The record puts it at '+p.squareFootage.toLocaleString()+' square feet'+(p.yearBuilt?', built '+p.yearBuilt:'')+
-          (p.county?', '+esc(p.county)+' County':'')+'. ':'')+
-        'Overwrite anything that is wrong; your numbers always win.';
-      if(p&&p.squareFootage&&!has('q_sf'))$('q_sf').value=p.squareFootage;
-      else if(asd&&asd.heatedArea&&!has('q_sf'))$('q_sf').value=asd.heatedArea;
-      if(dd&&dd.book&&dd.page){
-        src.innerHTML+='<br><b>The deed itself:</b> Book '+esc(dd.book)+', Page '+esc(dd.page)+
-          (dd.recorded?', recorded '+esc(dd.recorded):'')+', per '+esc(dd.source||'the county')+
-          '. The mortgage was recorded in the same office, usually within a page or two of that deed, and its face '+
-          'amount is your original loan to the dollar. Stage Three reconstructs it from the week&rsquo;s market rate '+
-          'because that document is behind a human search rather than an open one.';
+    src.style.display='';
+    if(said.length||pc0){
+      var line='<b>From the record:</b> '+(said.length?said.join(', ')+'. ':'');
+      if(pc0){
+        line+='Parcel matched in <b>'+esc(pc0.county||'—')+' County</b> via '+esc(pc0.source||'')+'. ';
+        var bits=[];
+        if(bld.heatedArea)bits.push(bld.heatedArea.toLocaleString()+' heated square feet');
+        if(bld.footprint&&bld.footprint!==bld.heatedArea)bits.push('a '+bld.footprint.toLocaleString()+' foot footprint');
+        if(bld.grossLeasableArea)bits.push(bld.grossLeasableArea.toLocaleString()+' total');
+        if(bld.bedrooms)bits.push(bld.bedrooms+' bedrooms');
+        if(bld.yearBuilt)bits.push('built '+bld.yearBuilt);
+        if(bld.effectiveYear&&bld.effectiveYear!==bld.yearBuilt)bits.push('effective year '+bld.effectiveYear);
+        if(bld.grade)bits.push('grade '+esc(bld.grade));
+        if(bld.condition)bits.push('condition '+esc(bld.condition));
+        if(bld.units>1)bits.push(bld.units+' units');
+        if(pc0.land&&pc0.land.zoning)bits.push('zoned '+esc(pc0.land.zoning));
+        if(bits.length)line+='The assessor has it as '+bits.join(', ')+'. ';
+        if(pc0.deed&&pc0.deed.book)line+='The deed is Book '+esc(pc0.deed.book)+', Page '+esc(pc0.deed.page||'')+
+          (pc0.deed.recorded?', recorded '+esc(pc0.deed.recorded):'')+'. ';
       }
+      line+='An automated valuation is a regression on comparable sales, not an appraisal, and the rent figure is a model, not a lease. Overwrite anything that is wrong; your numbers always win.';
+      /* the chain of title, where the county publishes one */
+      var sales=(pc0&&pc0.sales||[]).filter(function(x){return x.date;});
+      if(sales.length>1){
+        line+='<br><b>The chain, as recorded:</b> '+sales.slice(0,6).map(function(x){
+          var pr=x.price||x.stampPrice;
+          return String(x.date).slice(0,10)+' &middot; '+(pr?money(pr):'no consideration shown')+
+                 (x.type?' &middot; '+esc(x.type.toLowerCase()):'')+
+                 (x.armsLength?'':' <i>(not a sale)</i>');
+        }).join(' &nbsp;|&nbsp; ')+'.';
+      }
+      if(pc0&&pc0.notes&&pc0.notes.length){
+        line+='<br><b>Read this before you trust it:</b> '+pc0.notes.map(esc).join(' ');
+      }
+      src.innerHTML=line;
     }else{
-      src.style.display='';
       src.innerHTML='<b>No record came back for that address.</b> The provider covers most of the country but not all of it, and a new subdivision or a rural parcel often has nothing on file. Type the numbers in and everything below still works.';
     }
     calc();syncSoon();
-    /* the moment worth building this for: it now knows enough to price the loan */
     if(RECORD.saleDate&&(has('q_cost')||has('q_val'))&&!has('q_loan'))reconstruct(true);
   }).catch(function(){
     btn.disabled=false;btn.textContent='Pull the record';

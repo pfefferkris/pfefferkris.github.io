@@ -1,0 +1,1430 @@
+{
+ "checked": "2026-08-13",
+ "counties": 100,
+ "county": {
+  "Alamance": {
+   "fields": {
+    "address": 99,
+    "building": 82,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 79
+   },
+   "parcels": 79495,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Alexander": {
+   "fields": {
+    "address": 100,
+    "building": 67,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 25265,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Alleghany": {
+   "fields": {
+    "address": 99,
+    "building": 61,
+    "deed": 100,
+    "land": 98,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 14795,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Anson": {
+   "fields": {
+    "address": 91,
+    "building": 50,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 19127,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Ashe": {
+   "fields": {
+    "address": 52,
+    "building": 51,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 38836,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Avery": {
+   "fields": {
+    "address": 0,
+    "building": 55,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 51
+   },
+   "parcels": 24598,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Beaufort": {
+   "fields": {
+    "address": 99,
+    "building": 58,
+    "deed": 100,
+    "land": 93,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 47
+   },
+   "parcels": 46322,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Bertie": {
+   "fields": {
+    "address": 100,
+    "building": 52,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 3
+   },
+   "parcels": 18788,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Bladen": {
+   "fields": {
+    "address": 0,
+    "building": 51,
+    "deed": 100,
+    "land": 96,
+    "saledate": 0,
+    "use": 96,
+    "yearbuilt": 0
+   },
+   "parcels": 34161,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Brunswick": {
+   "fields": {
+    "address": 85,
+    "building": 61,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 61
+   },
+   "parcels": 151754,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Buncombe": {
+   "fields": {
+    "address": 100,
+    "building": 69,
+    "deed": 100,
+    "land": 83,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 134741,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Burke": {
+   "fields": {
+    "address": 100,
+    "building": 67,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 99,
+    "yearbuilt": 58
+   },
+   "parcels": 59374,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Cabarrus": {
+   "fields": {
+    "address": 0,
+    "building": 81,
+    "deed": 100,
+    "land": 92,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 110009,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Caldwell": {
+   "fields": {
+    "address": 100,
+    "building": 71,
+    "deed": 0,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 52777,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Camden": {
+   "fields": {
+    "address": 98,
+    "building": 0,
+    "deed": 100,
+    "land": 0,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 0
+   },
+   "parcels": 7955,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Carteret": {
+   "fields": {
+    "address": 89,
+    "building": 72,
+    "deed": 100,
+    "land": 84,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 72
+   },
+   "parcels": 64151,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Caswell": {
+   "fields": {
+    "address": 100,
+    "building": 67,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 17222,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Catawba": {
+   "fields": {
+    "address": 100,
+    "building": 75,
+    "deed": 100,
+    "land": 98,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 69
+   },
+   "parcels": 93505,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Chatham": {
+   "fields": {
+    "address": 99,
+    "building": 74,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 48850,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Cherokee": {
+   "fields": {
+    "address": 100,
+    "building": 60,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 35669,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Chowan": {
+   "fields": {
+    "address": 99,
+    "building": 0,
+    "deed": 100,
+    "land": 0,
+    "saledate": 100,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 12845,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Clay": {
+   "fields": {
+    "address": 85,
+    "building": 52,
+    "deed": 100,
+    "land": 98,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 17018,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Cleveland": {
+   "fields": {
+    "address": 100,
+    "building": 71,
+    "deed": 0,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 59964,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Columbus": {
+   "fields": {
+    "address": 99,
+    "building": 48,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 39
+   },
+   "parcels": 51706,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Craven": {
+   "fields": {
+    "address": 92,
+    "building": 72,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 59840,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Cumberland": {
+   "fields": {
+    "address": 100,
+    "building": 84,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 74
+   },
+   "parcels": 140513,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Currituck": {
+   "fields": {
+    "address": 100,
+    "building": 72,
+    "deed": 100,
+    "land": 100,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 66
+   },
+   "parcels": 27885,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Dare": {
+   "fields": {
+    "address": 100,
+    "building": 83,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 79
+   },
+   "parcels": 40483,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Davidson": {
+   "fields": {
+    "address": 100,
+    "building": 79,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 78,
+    "yearbuilt": 0
+   },
+   "parcels": 98799,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Davie": {
+   "fields": {
+    "address": 100,
+    "building": 78,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 26424,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Duplin": {
+   "fields": {
+    "address": 99,
+    "building": 52,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 44
+   },
+   "parcels": 43612,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Durham": {
+   "fields": {
+    "address": 100,
+    "building": 83,
+    "deed": 100,
+    "land": 95,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 133075,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Edgecombe": {
+   "fields": {
+    "address": 100,
+    "building": 70,
+    "deed": 100,
+    "land": 98,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 31591,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Forsyth": {
+   "fields": {
+    "address": 100,
+    "building": 79,
+    "deed": 100,
+    "land": 91,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 166755,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Franklin": {
+   "fields": {
+    "address": 0,
+    "building": 73,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 63
+   },
+   "parcels": 47981,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Gaston": {
+   "fields": {
+    "address": 100,
+    "building": 82,
+    "deed": 100,
+    "land": 96,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 78
+   },
+   "parcels": 117252,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Gates": {
+   "fields": {
+    "address": 97,
+    "building": 64,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 7997,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Graham": {
+   "fields": {
+    "address": 91,
+    "building": 49,
+    "deed": 100,
+    "land": 92,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 49
+   },
+   "parcels": 9840,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Granville": {
+   "fields": {
+    "address": 100,
+    "building": 71,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 34602,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Greene": {
+   "fields": {
+    "address": 99,
+    "building": 62,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 99,
+    "yearbuilt": 0
+   },
+   "parcels": 12720,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Guilford": {
+   "fields": {
+    "address": 0,
+    "building": 84,
+    "deed": 100,
+    "land": 96,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 84
+   },
+   "parcels": 222442,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Halifax": {
+   "fields": {
+    "address": 99,
+    "building": 0,
+    "deed": 100,
+    "land": 0,
+    "saledate": 0,
+    "use": 99,
+    "yearbuilt": 49
+   },
+   "parcels": 39403,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Harnett": {
+   "fields": {
+    "address": 100,
+    "building": 72,
+    "deed": 100,
+    "land": 95,
+    "saledate": 0,
+    "use": 96,
+    "yearbuilt": 65
+   },
+   "parcels": 84508,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Haywood": {
+   "fields": {
+    "address": 100,
+    "building": 72,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 77,
+    "yearbuilt": 64
+   },
+   "parcels": 53178,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Henderson": {
+   "fields": {
+    "address": 100,
+    "building": 76,
+    "deed": 100,
+    "land": 95,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 73
+   },
+   "parcels": 75373,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Hertford": {
+   "fields": {
+    "address": 99,
+    "building": 63,
+    "deed": 100,
+    "land": 97,
+    "saledate": 0,
+    "use": 97,
+    "yearbuilt": 0
+   },
+   "parcels": 16102,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Hoke": {
+   "fields": {
+    "address": 0,
+    "building": 0,
+    "deed": 100,
+    "land": 0,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 30524,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Hyde": {
+   "fields": {
+    "address": 100,
+    "building": 39,
+    "deed": 100,
+    "land": 93,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 7698,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Iredell": {
+   "fields": {
+    "address": 100,
+    "building": 79,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 74
+   },
+   "parcels": 109254,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Jackson": {
+   "fields": {
+    "address": 99,
+    "building": 57,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 41375,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Johnston": {
+   "fields": {
+    "address": 100,
+    "building": 80,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 98,
+    "yearbuilt": 74
+   },
+   "parcels": 125583,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Jones": {
+   "fields": {
+    "address": 97,
+    "building": 44,
+    "deed": 100,
+    "land": 98,
+    "saledate": 100,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 9451,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Lee": {
+   "fields": {
+    "address": 98,
+    "building": 71,
+    "deed": 83,
+    "land": 98,
+    "saledate": 100,
+    "use": 0,
+    "yearbuilt": 61
+   },
+   "parcels": 35303,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Lenoir": {
+   "fields": {
+    "address": 99,
+    "building": 68,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 59,
+    "yearbuilt": 59
+   },
+   "parcels": 36463,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Lincoln": {
+   "fields": {
+    "address": 100,
+    "building": 78,
+    "deed": 100,
+    "land": 94,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 56862,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Macon": {
+   "fields": {
+    "address": 99,
+    "building": 56,
+    "deed": 100,
+    "land": 97,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 44699,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Madison": {
+   "fields": {
+    "address": 93,
+    "building": 57,
+    "deed": 100,
+    "land": 93,
+    "saledate": 0,
+    "use": 93,
+    "yearbuilt": 0
+   },
+   "parcels": 21381,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Martin": {
+   "fields": {
+    "address": 99,
+    "building": 0,
+    "deed": 100,
+    "land": 0,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 17415,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "McDowell": {
+   "fields": {
+    "address": 100,
+    "building": 56,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 33449,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Mecklenburg": {
+   "fields": {
+    "address": 86,
+    "building": 88,
+    "deed": 100,
+    "land": 88,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 88
+   },
+   "parcels": 442287,
+   "tier": "deep",
+   "via": "Mecklenburg County CAMA parcel data"
+  },
+  "Mitchell": {
+   "fields": {
+    "address": 98,
+    "building": 53,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 99,
+    "yearbuilt": 0
+   },
+   "parcels": 17671,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Montgomery": {
+   "fields": {
+    "address": 100,
+    "building": 55,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 97,
+    "yearbuilt": 43
+   },
+   "parcels": 30283,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Moore": {
+   "fields": {
+    "address": 100,
+    "building": 69,
+    "deed": 100,
+    "land": 100,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 60
+   },
+   "parcels": 76657,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Nash": {
+   "fields": {
+    "address": 82,
+    "building": 73,
+    "deed": 100,
+    "land": 97,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 69
+   },
+   "parcels": 55717,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "New Hanover": {
+   "fields": {
+    "address": 100,
+    "building": 87,
+    "deed": 100,
+    "land": 96,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 0
+   },
+   "parcels": 103489,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Northampton": {
+   "fields": {
+    "address": 52,
+    "building": 0,
+    "deed": 99,
+    "land": 99,
+    "saledate": 100,
+    "use": 0,
+    "yearbuilt": 52
+   },
+   "parcels": 20504,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Onslow": {
+   "fields": {
+    "address": 100,
+    "building": 80,
+    "deed": 100,
+    "land": 97,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 76
+   },
+   "parcels": 95297,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Orange": {
+   "fields": {
+    "address": 0,
+    "building": 82,
+    "deed": 100,
+    "land": 92,
+    "saledate": 100,
+    "use": 0,
+    "yearbuilt": 80
+   },
+   "parcels": 59366,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Pamlico": {
+   "fields": {
+    "address": 100,
+    "building": 60,
+    "deed": 100,
+    "land": 92,
+    "saledate": 100,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 17110,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Pasquotank": {
+   "fields": {
+    "address": 99,
+    "building": 75,
+    "deed": 100,
+    "land": 98,
+    "saledate": 0,
+    "use": 99,
+    "yearbuilt": 0
+   },
+   "parcels": 22788,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Pender": {
+   "fields": {
+    "address": 78,
+    "building": 69,
+    "deed": 100,
+    "land": 97,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 55025,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Perquimans": {
+   "fields": {
+    "address": 0,
+    "building": 0,
+    "deed": 100,
+    "land": 13,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 15019,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Person": {
+   "fields": {
+    "address": 99,
+    "building": 70,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 99,
+    "yearbuilt": 64
+   },
+   "parcels": 28272,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Pitt": {
+   "fields": {
+    "address": 100,
+    "building": 79,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 75
+   },
+   "parcels": 80993,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Polk": {
+   "fields": {
+    "address": 99,
+    "building": 65,
+    "deed": 100,
+    "land": 97,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 18211,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Randolph": {
+   "fields": {
+    "address": 74,
+    "building": 70,
+    "deed": 100,
+    "land": 98,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 66
+   },
+   "parcels": 80940,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Richmond": {
+   "fields": {
+    "address": 0,
+    "building": 53,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 32625,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Robeson": {
+   "fields": {
+    "address": 97,
+    "building": 60,
+    "deed": 100,
+    "land": 97,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 80391,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Rockingham": {
+   "fields": {
+    "address": 100,
+    "building": 76,
+    "deed": 100,
+    "land": 98,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 71
+   },
+   "parcels": 56362,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Rowan": {
+   "fields": {
+    "address": 100,
+    "building": 77,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 83292,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Rutherford": {
+   "fields": {
+    "address": 100,
+    "building": 59,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 57599,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Sampson": {
+   "fields": {
+    "address": 98,
+    "building": 0,
+    "deed": 100,
+    "land": 0,
+    "saledate": 0,
+    "use": 98,
+    "yearbuilt": 41
+   },
+   "parcels": 50538,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Scotland": {
+   "fields": {
+    "address": 86,
+    "building": 67,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 21992,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Stanly": {
+   "fields": {
+    "address": 99,
+    "building": 72,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 68
+   },
+   "parcels": 44171,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Stokes": {
+   "fields": {
+    "address": 99,
+    "building": 68,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 0
+   },
+   "parcels": 31982,
+   "tier": "deep",
+   "via": "shared NCPTS assessor platform"
+  },
+  "Surry": {
+   "fields": {
+    "address": 100,
+    "building": 76,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 44417,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Swain": {
+   "fields": {
+    "address": 100,
+    "building": 56,
+    "deed": 0,
+    "land": 100,
+    "saledate": 0,
+    "use": 4,
+    "yearbuilt": 0
+   },
+   "parcels": 12669,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Transylvania": {
+   "fields": {
+    "address": 100,
+    "building": 64,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 64
+   },
+   "parcels": 31755,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Tyrrell": {
+   "fields": {
+    "address": 100,
+    "building": 52,
+    "deed": 100,
+    "land": 96,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 43
+   },
+   "parcels": 4368,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Union": {
+   "fields": {
+    "address": 99,
+    "building": 0,
+    "deed": 100,
+    "land": 0,
+    "saledate": 0,
+    "use": 99,
+    "yearbuilt": 77
+   },
+   "parcels": 117539,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Vance": {
+   "fields": {
+    "address": 99,
+    "building": 70,
+    "deed": 100,
+    "land": 99,
+    "saledate": 0,
+    "use": 99,
+    "yearbuilt": 65
+   },
+   "parcels": 26547,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Wake": {
+   "fields": {
+    "address": 100,
+    "building": 87,
+    "deed": 100,
+    "land": 96,
+    "saledate": 100,
+    "use": 100,
+    "yearbuilt": 87
+   },
+   "parcels": 435380,
+   "tier": "deep",
+   "via": "Wake County parcel GIS"
+  },
+  "Warren": {
+   "fields": {
+    "address": 82,
+    "building": 55,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 0
+   },
+   "parcels": 23477,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Washington": {
+   "fields": {
+    "address": 82,
+    "building": 49,
+    "deed": 100,
+    "land": 82,
+    "saledate": 0,
+    "use": 42,
+    "yearbuilt": 44
+   },
+   "parcels": 12608,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Watauga": {
+   "fields": {
+    "address": 62,
+    "building": 60,
+    "deed": 100,
+    "land": 98,
+    "saledate": 100,
+    "use": 99,
+    "yearbuilt": 50
+   },
+   "parcels": 47388,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Wayne": {
+   "fields": {
+    "address": 100,
+    "building": 68,
+    "deed": 100,
+    "land": 97,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 62
+   },
+   "parcels": 70711,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Wilkes": {
+   "fields": {
+    "address": 99,
+    "building": 66,
+    "deed": 100,
+    "land": 99,
+    "saledate": 100,
+    "use": 0,
+    "yearbuilt": 42
+   },
+   "parcels": 52847,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Wilson": {
+   "fields": {
+    "address": 99,
+    "building": 76,
+    "deed": 100,
+    "land": 93,
+    "saledate": 0,
+    "use": 99,
+    "yearbuilt": 73
+   },
+   "parcels": 43308,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Yadkin": {
+   "fields": {
+    "address": 100,
+    "building": 65,
+    "deed": 100,
+    "land": 100,
+    "saledate": 0,
+    "use": 100,
+    "yearbuilt": 55
+   },
+   "parcels": 28320,
+   "tier": "standard",
+   "via": "NC OneMap statewide parcels"
+  },
+  "Yancey": {
+   "fields": {
+    "address": 99,
+    "building": 0,
+    "deed": 100,
+    "land": 0,
+    "saledate": 0,
+    "use": 0,
+    "yearbuilt": 0
+   },
+   "parcels": 17378,
+   "tier": "thin",
+   "via": "NC OneMap statewide parcels"
+  }
+ },
+ "fieldMeaning": {
+  "address": "a site address to search on",
+  "building": "the assessor's building value",
+  "deed": "the deed book and page, which is how you find the mortgage",
+  "land": "the assessor's land value, which sets the share that is never depreciated",
+  "saledate": "when it last changed hands",
+  "use": "what it is used for",
+  "yearbuilt": "the year the structure went up"
+ },
+ "note": "What the public record gives us for each North Carolina county, counted from the sources on the day this ran rather than claimed. deep means the county's own system answers with building detail and the ownership chain; standard means only the statewide parcel layer; thin means the statewide layer has the county but not the fields that change an answer.",
+ "parcels": 5926052,
+ "sources": {
+  "own": {
+   "Mecklenburg": "Mecklenburg County CAMA parcel data",
+   "Wake": "Wake County parcel GIS"
+  },
+  "shared": "NCPTS assessor platform, lrcpwa.ncptscloud.com",
+  "statewide": "NC OneMap statewide parcels, NC1Map_Parcels FeatureServer"
+ },
+ "tally": {
+  "deep": 13,
+  "standard": 75,
+  "thin": 12
+ }
+}
