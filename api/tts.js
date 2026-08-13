@@ -12,10 +12,10 @@
 const VOICE_ID = process.env.ASK_VOICE_ID || "nPczCjzI2devNBz1zQrb";
 const MODEL = process.env.ASK_TTS_MODEL || "eleven_flash_v2_5";
 
-// Speed is a real fix, not a preference. The default read is too slow for someone
-// explaining something they know well; a person who is comfortable with the material
-// moves. 1.2 is the ceiling ElevenLabs allows on this model.
-const SPEED = Math.min(1.2, Math.max(0.7, parseFloat(process.env.ASK_TTS_SPEED || "1.2")));
+// The default read is too slow for someone explaining material they know well. 1.2
+// is the ceiling this model allows and it turned out to be slightly hot, so this sits
+// 10 percent back from it: unhurried, but not reciting.
+const SPEED = Math.min(1.2, Math.max(0.7, parseFloat(process.env.ASK_TTS_SPEED || "1.08")));
 
 // An allowlist, not a passthrough. Without it this endpoint is a free ElevenLabs
 // proxy for anyone who finds it. These are the male voices worth auditioning for a
