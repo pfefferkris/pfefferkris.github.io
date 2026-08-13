@@ -1,0 +1,38 @@
+name: Build corpus
+# The newsletter is the part of this site that grows, and the library Ask Kristian reads
+# from has to grow with it. Publishing an issue is the only action required; this closes
+# the gap between "published" and "the AI has read it" without anyone remembering to.
+on:
+  push:
+    paths:
+      - "_posts/**"
+      - "scripts/build_corpus.py"
+  schedule:
+    - cron: "20 12 * * 1"   # Monday backstop, in case a post landed some other way
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: build-corpus
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fold the newsletter into the library
+        run: python scripts/build_corpus.py
+      - name: Commit if changed
+        run: |
+          if ! git diff --quiet data/corpus.json; then
+            git config user.name "corpus-bot"
+            git config user.email "actions@github.com"
+            git add data/corpus.json
+            git commit -m "Auto update: newsletter issues folded into the Ask Kristian library"
+            git push
+          else
+            echo "No corpus changes"
+          fi

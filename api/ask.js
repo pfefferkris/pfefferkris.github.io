@@ -147,7 +147,24 @@ function index() {
   docs.forEach(d => {
     new Set(terms(d.title + " " + d.headings.join(" ") + " " + d.body))
       .forEach(t => { df[t] = (df[t] || 0) + 1; });
-    terms(d.title + " " + String(d.id || "").replace(/-/g, " ")).forEach(t => topic.add(t));
+  });
+  // An explainer is titled after its subject, so its title IS the subject and every word
+  // of it belongs on the gate. A newsletter issue is titled like an essay, and its
+  // headline carries ordinary English: cost, wall, edge, age, silence. Those words let
+  // "how much does a wedding cost" through a door built for estate questions.
+  //
+  // So a headline word joins the gate only if it earns it: either the domain vocabulary
+  // already knows it, or it is distinctive enough that few documents use it at all.
+  // Note this is a filter on WHAT COUNTS AS ON TOPIC, never a weight on ranking. The
+  // scoring below still carries no inverse document frequency, for the reason stated
+  // there. Document frequency decides who gets in the door, not who wins the room.
+  const rare = t => (df[t] || 0) <= Math.max(1, Math.floor(N * 0.25));
+  docs.forEach(d => {
+    const headline = d.kind === "newsletter";
+    terms(d.title + " " + String(d.id || "").replace(/-/g, " "))
+      .forEach(t => { if (!headline || vocab().has(t) || rare(t)) topic.add(t); });
+    // A citation the library actually carries is always on topic, however it was titled.
+    terms((d.authority || []).join(" ")).forEach(t => topic.add(t));
   });
   // Boilerplate: a term in EVERY document that no document is titled after. "north",
   // "carolina", "attorney", the disclaimer words. They match everything, so they rank
@@ -161,7 +178,15 @@ function index() {
   const gate = new Set();
   topic.forEach(t => { if (!WEAK.has(t)) gate.add(t); });
   vocab().forEach(t => { if (!WEAK.has(t)) gate.add(t); });
-  CORE = { topic, boiler, gate };
+  // Long gate terms kept as an array so a question can reach the library through a
+  // different ending of the same word. "incapacitated" and "incapacity" are the same
+  // subject, and a library that answers one and not the other is a library with a typo
+  // for a door.
+  // Seven characters, not six. Six lets "instructions" reach "instrument" and a prompt
+  // injection walks straight through the door the gate exists to hold shut. Seven keeps
+  // incapacitated/incapacity and beneficiaries/beneficiary together and stops there.
+  const stems = new Set([...gate].filter(t => t.length >= 7).map(t => t.slice(0, 7)));
+  CORE = { topic, boiler, gate, stems };
   return CORE;
 }
 
@@ -176,13 +201,16 @@ function retrieve(q, chips, k) {
   const ix = index();
   let qt = terms(q);
   if (!qt.length) return [];
-  if (!qt.some(t => ix.gate.has(t))) return [];
+  // A generic word never opens the door on a near match either: "business" must not
+  // reach "businesses" and turn a food truck loan into an estate question.
+  if (!qt.some(t => ix.gate.has(t) ||
+      (t.length >= 7 && !WEAK.has(t) && ix.stems.has(t.slice(0, 7))))) return [];
   qt = qt.filter(t => !ix.boiler.has(t));
   if (!qt.length) return [];
   const scored = docs.map(d => {
     const hay = {
       title: new Set(terms(d.title + " " + String(d.id || "").replace(/-/g, " "))),
-      heads: new Set(terms(d.headings.join(" ") + " " + (d.authority || []).join(" "))),
+      heads: new Set(terms(d.headings.join(" ") + " " + (d.authority || []).join(" ") + " " + (d.summary || ""))),
       body: terms(d.body).join(" ")
     };
     let score = 0;
