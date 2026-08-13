@@ -922,7 +922,7 @@ const BLOCKS=[
  <div id="t_pos"></div>
  <button class="addrow" id="t_addpos" type="button">+ Add a position</button>
  <span id="t_presets"></span>
- <p class="tsub" style="margin-top:6px;font-size:.68rem">The copy trade buttons load mixes inspired by publicly disclosed congressional trading filings, the kind the copy trading apps follow, refreshed quarterly. Nobody&#8217;s actual portfolio. The point is the grade: in 2025 only about a third of congressional portfolios beat the S&amp;P 500.</p>
+ <p class="tsub" style="margin-top:6px;font-size:.68rem">The copy trade buttons load mixes inspired by publicly disclosed congressional trading filings, the kind the copy trading apps follow, refreshed quarterly. Nobody&#8217;s actual portfolio. The point is the grade: in 2025 only about a third of congressional portfolios beat the S&amp;P 500. <b>Tap one to bring it in, tap it again to pull it back out.</b> Two at a time combine into one graded portfolio, your own tickers ride alongside them, and any row you type over becomes yours and stays put when the mix leaves. While the grade is showing, every edit re-runs it.</p>
  <button class="tbtn" id="t_run" type="button" style="display:none;margin-top:10px">Run the full analysis on these positions</button>
  <div id="t_anwrap" style="display:none">
   <button class="panelx" id="t_anhide" type="button">Collapse this analysis</button>
@@ -1043,6 +1043,8 @@ const railIO=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){c
 stages.forEach(s=>railIO.observe(s));
 
 const $=id=>document.getElementById(id);
+/* Which sample mixes were loaded when the tab was last touched, read back on restore. */
+let RESTOREPK=[];
 /* Every row a visitor adds carries the control that removes it. Same click, other direction. */
 function rowX(r,after){
   r.classList.add('rmv');
@@ -1062,7 +1064,13 @@ function saveSession(){try{
   const fe=$('t_foot');if(fe)F.foot=[...fe.querySelectorAll('span.on')].map(s=>s.dataset.f);
   F.goals=(T.goals||[]).map(g=>({n:g.name,c:g.cost,y:g.yrs}));
   F.debts=(T.debts||[]).map(d=>({n:d.name,b:d.bal,r:d.rate}));
-  F.pos=(T.pos||[]).map(x=>({t:x.tkr,v:x.val}));
+  F.pos=[...(posEl?posEl.querySelectorAll('.posrow'):[])].map(r=>({
+    t:(r.querySelector('.p_tkr').value||'').trim().toUpperCase(),
+    v:+r.querySelector('.p_val').value||0,
+    k:r.dataset.pk||'',
+    m:r.dataset.mine==='1'?1:0
+  })).filter(x=>x.t||x.v);
+  F.pk=(typeof activeKeys==='function')?activeKeys():[];
   /* Whether the analysis is open travels with the entries, so a refresh restores the
      view a visitor left, and collapsing it stays collapsed. */
   F.an=(typeof ANOPEN!=='undefined'&&ANOPEN)?1:0;
@@ -1075,7 +1083,11 @@ function restoreSession(){try{
   const de=$('t_docs');if(de)(F.docs||[]).forEach(dd=>{const s=de.querySelector('span[data-d="'+dd+'"]');if(s&&!s.classList.contains('on'))s.classList.add('on');});
   const fe=$('t_foot');if(fe)(F.foot||[]).forEach(ff=>{const s=fe.querySelector('span[data-f="'+ff+'"]');if(s&&!s.classList.contains('on'))s.classList.add('on');});
   (F.goals||[]).forEach((g,i)=>{if(i>0&&typeof addGoal==='function')addGoal();const r=goalsEl?goalsEl.children[i]:null;if(r){r.querySelector('.g_name').value=g.n||'';r.querySelector('.g_cost').value=g.c||'';r.querySelector('.g_yrs').value=g.y||'';}});
-  (F.pos||[]).forEach(x=>{if(typeof addPos==='function'&&posEl){addPos();const r=posEl.lastChild;r.querySelector('.p_tkr').value=x.t||'';r.querySelector('.p_val').value=x.v||'';}});
+  RESTOREPK=F.pk||[];
+  /* The buttons may already exist (the preset file answered first) or may not (it is
+     still in flight). Cover both: light what is here, and the builder lights the rest. */
+  try{RESTOREPK.forEach(k=>{const rec=PRESETS.get(k);if(rec){rec.on=true;if(rec.btn)rec.btn.classList.add('on');}});}catch(e){}
+  (F.pos||[]).forEach(x=>{if(typeof addPos==='function'&&posEl){const r=addPos(x.k||'');if(r){r.querySelector('.p_tkr').value=x.t||'';r.querySelector('.p_val').value=x.v||'';if(x.m)r.dataset.mine='1';}}});
   (F.debts||[]).forEach((d,i)=>{if(i>0&&typeof addDebt==='function')addDebt();const r=debtsEl?debtsEl.children[i]:null;if(r){r.querySelector('.d_name').value=d.n==='that debt'?'':(d.n||'');r.querySelector('.d_bal').value=d.b||'';r.querySelector('.d_rate').value=d.r||'';}});
   if(F.an&&(F.pos||[]).length){
     setTimeout(()=>{try{
@@ -1143,17 +1155,30 @@ function wireSearch(inp){
     },250);
   });
 }
-function addPos(){if(!posEl)return;
+function addPos(pk){if(!posEl)return null;
   const r=document.createElement('div');r.className='trow posrow';r.style.gridTemplateColumns='1fr 2fr';
+  /* data-pk records which sample mixes put this row here. A row a visitor typed carries
+     none, and a sample row the visitor edits is promoted to theirs, so pulling the mix
+     back out never takes their own work with it. */
+  r.dataset.pk=pk||'';
   r.innerHTML='<label>Ticker or company name, type to search every U.S. listing<input type="text" class="p_tkr" list="t_tkrlist" placeholder="AAPL, or type Apple" style="text-transform:uppercase" autocomplete="off"></label><label>Value held<input type="number" class="p_val" placeholder="15000"></label>';
-  r.querySelectorAll('input').forEach(i=>i.addEventListener('input',tcalc));
+  r.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>{
+    r.dataset.mine='1';
+    tcalc();
+    if(typeof scheduleLive==='function')scheduleLive();
+  }));
   wireSearch(r.querySelector('.p_tkr'));
   /* Removing the last position collapses the analysis with it: an empty table
      grading nothing is worse than no table. */
-  rowX(r,()=>{tcalc();if(typeof clearPreset==='function')clearPreset();
-    if(!posEl.querySelector('.posrow')&&typeof closeAnalysis==='function')closeAnalysis();});
-  posEl.appendChild(r);}
-const ap=$('t_addpos');if(ap)ap.addEventListener('click',()=>{addPos();});
+  rowX(r,()=>{
+    tcalc();
+    if(typeof syncPresetLights==='function')syncPresetLights();
+    if(!posEl.querySelector('.posrow')){if(typeof closeAnalysis==='function')closeAnalysis();}
+    else if(typeof scheduleLive==='function')scheduleLive();
+  });
+  posEl.appendChild(r);
+  return r;}
+const ap=$('t_addpos');if(ap)ap.addEventListener('click',()=>{addPos();if(typeof syncRunBtn==='function')syncRunBtn();});
 
 /* whiteboard integration: the board gets a provenance line and a bridge to the rest of the guide */
 (function(){
@@ -1264,10 +1289,20 @@ if(nwWatch)nwWatch.addEventListener('input',()=>{if(!nwSelf)nwWatch.dataset.auto
    beta, realized return, CAPM required return, Jensen alpha, workbook pass test -> portfolio metrics. */
 function anMean(r){return r.reduce((s,x)=>s+x,0)/r.length;}
 function anCov(a,b){const n=a.length,ma=anMean(a),mb=anMean(b);let s=0;for(let i=0;i<n;i++)s+=(a[i]-ma)*(b[i]-mb);return s/(n-1);}
+const ANHIST=new Map();
 async function anFetch(sym){
-  const r=await fetch('/api/history?symbol='+encodeURIComponent(sym));
-  if(!r.ok)throw new Error(sym);
-  return r.json();
+  /* A year of closes for one symbol does not change while somebody types a dollar amount.
+     Cached for the visit, so editing a weight is instant and only a brand new ticker
+     costs a round trip. */
+  if(ANHIST.has(sym))return ANHIST.get(sym);
+  const pr=(async()=>{
+    const r=await fetch('/api/history?symbol='+encodeURIComponent(sym));
+    if(!r.ok)throw new Error(sym);
+    return r.json();
+  })();
+  ANHIST.set(sym,pr);
+  pr.catch(()=>ANHIST.delete(sym));
+  return pr;
 }
 const anPct=x=>(x>=0?'+':'')+(x*100).toFixed(1)+'%';
 /* ===== THE PORTFOLIO CHARTS =====
@@ -1612,32 +1647,68 @@ function tvRender(rows,common,series,raw){
 }
 
 const runBtn=$('t_run');
-let LASTRUN=null,ANOPEN=false,ACTIVEPRESET=null;
-/* The same control, the other direction. Nothing here expands without a way back in. */
+let LASTRUN=null,ANOPEN=false,ANBUSY=false,ANSIG='',LIVET=null;
+/* Three separate controls, three separate jobs, and none of them one way.
+     the sample buttons decide WHICH MIXES are sitting in the position list,
+     the run button decides WHETHER THE GRADE IS SHOWING,
+     the collapse control puts the grade away without touching the list.
+   Mixes add to each other rather than replacing, so a visitor can hold one mix,
+   pull a second one alongside it, and drop either without losing their own tickers. */
+const PRESETS=new Map();
+function activeKeys(){return [...PRESETS.keys()].filter(k=>PRESETS.get(k).on);}
 function closeAnalysis(){
   const wrap=$('t_anwrap');if(!wrap)return;
+  clearTimeout(LIVET);
   wrap.style.display='none';
   if(TVSTATE&&TVSTATE.destroy){try{TVSTATE.destroy();}catch(e){}}
   TVSTATE=null;
   ['t_anstats','t_tv','t_anout','t_antech','t_anlabel'].forEach(id=>{const e=$(id);if(e)e.innerHTML='';});
-  ANOPEN=false;LASTRUN=null;
-  /* The sample button goes back to unlit, so the next tap opens rather than clears.
-     Whatever rows were loaded stay put: those are the visitor's to keep or delete. */
-  clearPreset();
+  ANOPEN=false;LASTRUN=null;ANSIG='';
   if(typeof saveSession==='function')saveSession();
   if(typeof syncSoon==='function')syncSoon();
+  syncRunBtn();
 }
-function clearPreset(){
-  ACTIVEPRESET=null;
-  const h=$('t_presets');
-  if(h)[...h.querySelectorAll('button')].forEach(b=>b.classList.remove('on'));
+function syncRunBtn(){
+  if(!runBtn)return;
+  const any=[...(posEl?posEl.querySelectorAll('.posrow'):[])].some(r=>(r.querySelector('.p_tkr').value||'').trim()&&+r.querySelector('.p_val').value>0);
+  runBtn.style.display=any?'':'none';
+  if(!runBtn.disabled)runBtn.textContent=ANOPEN?'Recompute now':'Run the full analysis on these positions';
+}
+/* Live recompute. While the grade is showing, editing a value, adding a ticker, deleting a
+   row or pulling in another mix re-grades the portfolio on its own. The wait is deliberate:
+   long enough that typing four digits is one recompute and not four. */
+function scheduleLive(){
+  if(!ANOPEN)return;
+  clearTimeout(LIVET);
+  LIVET=setTimeout(()=>{
+    const held=(T.pos||[]).filter(x=>x.tkr&&x.val>0);
+    if(!held.length){closeAnalysis();return;}
+    const sig=held.map(h=>h.tkr+':'+h.val).sort().join('|');
+    if(sig===ANSIG)return;
+    if(ANBUSY){LIVET=setTimeout(scheduleLive,600);return;}
+    runAnalysis(held,'live');
+  },900);
 }
 async function runAnalysis(held,src){
   const wrap=$('t_anwrap'),out=$('t_anout'),tech=$('t_antech');
   if(!held||!held.length)return;
   const lbl=$('t_anlabel');
-  if(lbl)lbl.innerHTML=src==='preset'?'Showing the sample mix you tapped, graded live so you can see how this works. Type your own positions above and run them to replace it, or tap that sample again to put it away.':'<b>Your positions, graded live.</b>';
-  if(runBtn){runBtn.disabled=true;runBtn.textContent='Reading a year of market data...';}
+  if(lbl){
+    const keys=(typeof activeKeys==='function')?activeKeys():[];
+    const mine=[...(posEl?posEl.querySelectorAll('.posrow'):[])].some(r=>{
+      const t=(r.querySelector('.p_tkr').value||'').trim(),v=+r.querySelector('.p_val').value;
+      return t&&v>0&&(!r.dataset.pk||r.dataset.mine==='1');
+    });
+    const names=keys.map(k=>(PRESETS.get(k)||{}).label).filter(Boolean);
+    lbl.innerHTML=(names.length&&!mine)
+      ? 'Showing '+(names.length>1?'the sample mixes':'the sample mix')+' you tapped'+(names.length>1?' ('+names.length+' of them, combined)':'')+', graded live. Type your own tickers in and this re-grades itself as you go; tap a lit sample again to pull it back out.'
+      : (names.length
+         ? '<b>Your positions, graded live</b>, alongside the sample '+(names.length>1?'mixes':'mix')+' you pulled in. Everything re-grades as you edit.'
+         : '<b>Your positions, graded live.</b> Edit any row and this re-grades itself.');
+  }
+  ANBUSY=true;
+  ANSIG=held.map(h=>h.tkr+':'+h.val).sort().join('|');
+  if(runBtn){runBtn.disabled=true;runBtn.textContent=(src==='live'?'Re-grading...':'Reading a year of market data...');}
   try{
     const syms=held.map(p=>p.tkr);
     const data=await Promise.all(syms.concat(['^GSPC']).map(anFetch));
@@ -1721,33 +1792,64 @@ async function runAnalysis(held,src){
     ANOPEN=true;
     if(typeof saveSession==='function')saveSession();
   }
-  if(runBtn){runBtn.disabled=false;runBtn.textContent='Run the full analysis on these positions';}
+  ANBUSY=false;
+  if(runBtn)runBtn.disabled=false;
+  syncRunBtn();
 }
 if(runBtn)runBtn.addEventListener('click',()=>{const held=T.pos.filter(p=>p.tkr&&p.val>0);if(held.length)runAnalysis(held,'user');});
 const anHide=$('t_anhide');if(anHide)anHide.addEventListener('click',closeAnalysis);
-function loadPreset(list,key,btn){
+function togglePreset(key,list,btn,label){
   if(!posEl)return;
-  /* Tapping the sample a second time puts it away. The button that opened it closes it,
-     which is the only arrangement a reader can undo without guessing. */
-  if(key&&ACTIVEPRESET===key){
-    posEl.innerHTML='';
-    clearPreset();
-    tcalc();
-    closeAnalysis();
-    return;
+  const rec=PRESETS.get(key)||{list:list,label:label,on:false,btn:btn};
+  rec.list=list;rec.label=label;rec.btn=btn;PRESETS.set(key,rec);
+  const rows=()=>[...posEl.querySelectorAll('.posrow')];
+  const keysOf=r=>(r.dataset.pk||'').split(' ').filter(Boolean);
+
+  if(rec.on){
+    /* Pull this mix back out. A row keeps its seat if another mix also claims it, or if
+       the visitor typed over it: their edit outranks the sample that suggested it. */
+    rows().forEach(r=>{
+      const had=keysOf(r);
+      if(had.indexOf(key)<0)return;
+      const left=had.filter(x=>x!==key);
+      r.dataset.pk=left.join(' ');
+      if(!left.length&&r.dataset.mine!=='1')r.remove();
+    });
+    rec.on=false;
+    if(btn)btn.classList.remove('on');
+  } else {
+    /* Bring this mix alongside whatever is already there. A ticker already on the list
+       is claimed, not duplicated, and its dollar amount is left exactly as it stands. */
+    list.forEach(p=>{
+      const sym=String(p[0]).toUpperCase();
+      const hit=rows().find(r=>(r.querySelector('.p_tkr').value||'').trim().toUpperCase()===sym);
+      if(hit){
+        const k=keysOf(hit);if(k.indexOf(key)<0)k.push(key);
+        hit.dataset.pk=k.join(' ');
+        if(!(+hit.querySelector('.p_val').value>0))hit.querySelector('.p_val').value=p[1];
+      } else {
+        const r=addPos(key);
+        if(r){r.querySelector('.p_tkr').value=p[0];r.querySelector('.p_val').value=p[1];}
+      }
+    });
+    rec.on=true;
+    if(btn)btn.classList.add('on');
   }
-  posEl.innerHTML='';
-  list.forEach(p=>{
-    addPos();
-    const r=posEl.lastChild;
-    r.querySelector('.p_tkr').value=p[0];
-    r.querySelector('.p_val').value=p[1];
-  });
-  clearPreset();
-  if(key){ACTIVEPRESET=key;if(btn)btn.classList.add('on');}
   tcalc();
-  if(runBtn)runBtn.style.display='';
-  runAnalysis(T.pos.filter(p2=>p2.tkr&&p2.val>0),key?'preset':'user');
+  syncRunBtn();
+  const held=(T.pos||[]).filter(x=>x.tkr&&x.val>0);
+  if(!held.length){closeAnalysis();return;}
+  if(ANOPEN)scheduleLive();
+  else runAnalysis(held,'preset');
+}
+/* Rows can also be deleted by hand, which can empty a mix out from under its button. */
+function syncPresetLights(){
+  const rows=[...(posEl?posEl.querySelectorAll('.posrow'):[])];
+  PRESETS.forEach((rec,key)=>{
+    if(!rec.on)return;
+    const still=rows.some(r=>(r.dataset.pk||'').split(' ').indexOf(key)>-1);
+    if(!still){rec.on=false;if(rec.btn)rec.btn.classList.remove('on');}
+  });
 }
 /* copy trade presets load from data/copytrade.json, refreshed quarterly from public STOCK Act disclosures */
 let CTDATA=null;
@@ -1756,8 +1858,12 @@ fetch('data/copytrade.json').then(r=>r.json()).then(ct=>{
   const holder=$('t_presets');if(!holder||!ct.presets)return;
   ct.presets.forEach(ps=>{
     const b=document.createElement('button');b.type='button';b.className='addrow';b.textContent=ps.label;b.title=ps.desc;
-    b.addEventListener('click',()=>loadPreset(ps.positions.map(x=>[String(x[0]),String(x[1])]),ps.key||ps.label,b));
+    const key=ps.key||ps.label;
+    const list=ps.positions.map(x=>[String(x[0]),String(x[1])]);
+    PRESETS.set(key,{list:list,label:ps.label,on:false,btn:b});
+    b.addEventListener('click',()=>togglePreset(key,list,b,ps.label));
     holder.appendChild(b);
+    if(RESTOREPK.indexOf(key)>-1){const rec=PRESETS.get(key);rec.on=true;b.classList.add('on');}
   });
   /* No analysis runs on its own. Step 2 stays closed until a visitor either taps a
      sample or types positions and presses the button, because a panel that opens by
@@ -1765,7 +1871,10 @@ fetch('data/copytrade.json').then(r=>r.json()).then(ct=>{
 }).catch(()=>{
   const holder=$('t_presets');if(!holder)return;
   const b=document.createElement('button');b.type='button';b.className='addrow';b.textContent='Autopilot check: grade a famous copy trade mix';
-  b.addEventListener('click',()=>loadPreset([['NVDA','25000'],['AVGO','15000'],['MSFT','15000'],['GOOGL','15000'],['PANW','10000'],['VST','10000']],'fallback',b));
+  const fbList=[['NVDA','25000'],['AVGO','15000'],['MSFT','15000'],['GOOGL','15000'],['PANW','10000'],['VST','10000']];
+  PRESETS.set('fallback',{list:fbList,label:'a famous copy trade mix',on:false,btn:b});
+  b.addEventListener('click',()=>togglePreset('fallback',fbList,b,'a famous copy trade mix'));
+  if(RESTOREPK.indexOf('fallback')>-1){PRESETS.get('fallback').on=true;b.classList.add('on');}
   holder.appendChild(b);
 });
 
@@ -2199,8 +2308,7 @@ function tcalc(){
     } else o1.innerHTML='Add your balance and monthly savings to project the harvest.';
     if(a1)a1.innerHTML='<b>The math:</b> lump sum grows as PV times (1+r)^n; contributions grow as the annuity stream formula. The floor uses the live 10 year Treasury ('+RTS.tenYear+' percent); the market track uses the long run average of about '+LONGRUN+' percent'+(RTS.sp500?'; the S&P 500 stands at '+RTS.sp500.toLocaleString()+' as of '+RTS.sp500Date:'')+'. <b>The doctrine:</b> a diversified portfolio is judged against its benchmark by beta and the Sharpe ratio, (portfolio return minus the risk free rate) over standard deviation, not by raw return, because diversification removes only unsystematic risk. Two asset portfolio variance is w1²σ1² + w2²σ2² + 2·w1·w2·ρ·σ1·σ2, and the negative correlation term is where the hedge lesson lives. Brinson, Hood and Beebower is the allocation study; fee drag compounds at the same exponent returns do. Past performance never guarantees future results.';
   }
-  const rb=$('t_run');
-  if(rb)rb.style.display=(T.pos&&T.pos.some(p=>p.tkr&&p.val>0))?'':'none';
+  if(typeof syncRunBtn==='function')syncRunBtn();
   const footEl=$('t_foot'),footOut=$('t_foot_out');
   if(footEl&&footOut){
     const haveFund=!!footEl.querySelector('span[data-f="fund"].on');
