@@ -3,8 +3,15 @@
 # The site's other pages are static files; jekyll-sitemap lists every static .html it
 # finds and only honours "sitemap: false" on a real page, so this file has to be one.
 # There is no layout: the document below is complete on its own.
+#
+# The permalink is not decoration. This site sets a pretty permalink style for the
+# newsletter, and Jekyll applies that style's trailing slash to every page that has front
+# matter, so the moment this file grew a header it moved from /equity-guide.html to
+# /equity-guide/ and the address I had already sent out started answering 404. Naming the
+# output path pins it back to where it was.
 sitemap: false
 layout: null
+permalink: /equity-guide.html
 ---
 <!DOCTYPE html>
 <html lang="en">
