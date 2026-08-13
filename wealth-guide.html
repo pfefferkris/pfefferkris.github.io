@@ -2581,11 +2581,16 @@ window.AK_CONFIG = {
   ],
   targets: [
     { sel: '.advline', label: 'Ask Kristian about this',
-      name: function(el){ var b=el.querySelector('b'); return (b?b.textContent:'')||'The math and the law'; } },
+      name: function(el){ var b=el.querySelector('b');
+        return ((b?b.textContent:'')||'The math and the law').replace(/[:\s]+$/,''); },
+      ask: 'Explain the math and the law in this tile, and say what it changes for someone who only read the plain version above it.' },
     { sel: '#whiteboard,.wbox', label: 'Ask Kristian about this',
-      name: function(){ return 'The whiteboard, what happens at the first death'; } },
+      name: function(){ return 'The whiteboard, what happens at the first death'; },
+      ask: 'Walk me through what this whiteboard is showing, what actually happens at the first death, and what a family usually misreads here.' },
     { sel: '#sheet', label: 'Ask Kristian to go deeper',
-      name: function(){ var t=document.getElementById('s-t'); return t?t.textContent.trim():'This step'; } }
+      name: function(){ var t=document.getElementById('s-t');
+        return (t?t.textContent.trim():'This step').replace(/[:\s]+$/,''); },
+      ask: 'Go deeper on this step than the card does: what it actually involves, what it turns on, and what people get wrong about it.' }
   ]
 };
 </script>

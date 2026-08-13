@@ -100,13 +100,18 @@
       .map(function (c) { return c.dataset.p; });
   }
 
-  function ask() {
-    var q = (input.value || "").trim();
+  function ask(qArg, opts) {
+    // A question can come from the box or be handed in. When it is handed in by a block
+    // the visitor tapped, no visitor bubble is drawn: they did not type anything, the
+    // context bar already names what they are looking at, and echoing a sentence they
+    // never wrote back at them reads as the widget talking to itself.
+    var silent = !!(opts && opts.silent);
+    var q = (typeof qArg === "string" ? qArg : (input.value || "")).trim();
     if (!q || busy) return;
-    busy = true; send.disabled = true; input.value = "";
-    input.style.height = "auto";
-    say("me", q);
-    var thinking = say("k", "Reading…");
+    busy = true; send.disabled = true;
+    if (typeof qArg !== "string") { input.value = ""; input.style.height = "auto"; }
+    if (!silent) say("me", q);
+    var thinking = say("k", silent ? "Reading this…" : "Reading…");
     glow.classList.add("on");
     fetch("/api/ask", {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -426,12 +431,17 @@
 
   // The handoff. Any block on the page can send the visitor here already holding the
   // thing they were reading, so the first question does not have to describe it.
+  var EXPLAIN = CFG.explain ||
+    "Explain this to me. Go a level deeper than the block itself does: what it means, why it " +
+    "is built that way, and what someone reading it usually gets wrong.";
   window.askKristianAbout = function (title, text, seed) {
     setCtx({ title: title, text: String(text || "").replace(/\s+/g, " ").trim().slice(0, 1200) });
     if (!panel.classList.contains("on")) panel.classList.add("on");
-    if (!opened) { opened = true; greet(); }
-    if (seed) { input.value = seed; input.dispatchEvent(new Event("input")); }
-    input.focus();
+    // No greeting on this path. Someone who tapped a block has already told us what they
+    // want; making them read a hello first and then ask a question is asking twice.
+    opened = true;
+    unlockAudio();              // still inside the click, so he is allowed to speak
+    ask(seed || EXPLAIN, { silent: true });
     body.scrollTop = body.scrollHeight;
   };
 
@@ -454,7 +464,7 @@
     b.type = "button"; b.className = "askmore"; b.textContent = t.label || "Ask Kristian about this";
     b.addEventListener("click", function (ev) {
       ev.stopPropagation();
-      window.askKristianAbout(t.name ? t.name(el) : "This block", textOf(el), "");
+      window.askKristianAbout(t.name ? t.name(el) : "This block", textOf(el), t.ask || "");
     });
     el.appendChild(b);
   }

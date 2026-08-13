@@ -606,9 +606,12 @@ window.AK_CONFIG = {
   ],
   targets: [
     { sel: '#sheet', label: 'Ask Kristian to go deeper',
-      name: function(){ var t=document.getElementById('s-t'); return t ? t.textContent.trim() : 'This step'; } },
+      name: function(){ var t=document.getElementById('s-t');
+        return (t ? t.textContent.trim() : 'This step').replace(/[:\s]+$/,''); },
+      ask: 'Go deeper on this step of settling an estate than the card does: what the Clerk actually needs, what the deadline turns on, and where this one goes wrong.' },
     { sel: '.advbox', label: 'Ask Kristian about this',
-      name: function(){ return 'The law behind this step'; } }
+      name: function(){ return 'The law behind this step'; },
+      ask: 'Explain the law behind this step, why it is written this way, and what it means for the person doing the work.' }
   ]
 };
 </script>
