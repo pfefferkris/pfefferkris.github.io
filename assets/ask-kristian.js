@@ -434,8 +434,13 @@
   var EXPLAIN = CFG.explain ||
     "Explain this to me. Go a level deeper than the block itself does: what it means, why it " +
     "is built that way, and what someone reading it usually gets wrong.";
-  window.askKristianAbout = function (title, text, seed) {
-    setCtx({ title: title, text: String(text || "").replace(/\s+/g, " ").trim().slice(0, 1200) });
+  window.askKristianAbout = function (title, text, seed, pair) {
+    // The whole tile travels, not a slice of it. Someone reading the deed block is looking
+    // at the OCR explanation too, and an answer built from the first paragraph would tell
+    // them what a deed is and never reach the part they were actually staring at.
+    setCtx({ title: title,
+             text: String(text || "").replace(/\s+/g, " ").trim().slice(0, 4500),
+             pair: String(pair || "").replace(/\s+/g, " ").trim().slice(0, 2500) });
     if (!panel.classList.contains("on")) panel.classList.add("on");
     // No greeting on this path. Someone who tapped a block has already told us what they
     // want; making them read a hello first and then ask a question is asking twice.
@@ -455,6 +460,16 @@
     c.querySelectorAll(".askmore,button,script,style").forEach(function (n) { n.remove(); });
     return (c.textContent || "").replace(/\s+/g, " ").trim();
   }
+  // A tile carries data-anchor naming the simple block it was written to sit beside. That
+  // pairing is a rule of the page, so the answer gets both sides of it rather than half.
+  function pairedText(el) {
+    var sel = el.getAttribute && el.getAttribute("data-anchor");
+    if (!sel) return "";
+    var host = (el.closest && el.closest(".stage")) || document;
+    var a = null;
+    try { a = host.querySelector(sel); } catch (e) { return ""; }
+    return a ? textOf(a) : "";
+  }
   function mount(el, t) {
     if (!el || el.dataset.askmounted) return;
     var txt = textOf(el);
@@ -464,7 +479,8 @@
     b.type = "button"; b.className = "askmore"; b.textContent = t.label || "Ask Kristian about this";
     b.addEventListener("click", function (ev) {
       ev.stopPropagation();
-      window.askKristianAbout(t.name ? t.name(el) : "This block", textOf(el), t.ask || "");
+      window.askKristianAbout(t.name ? t.name(el) : "This block", textOf(el), t.ask || "",
+                              t.pair ? t.pair(el) : pairedText(el));
     });
     el.appendChild(b);
   }

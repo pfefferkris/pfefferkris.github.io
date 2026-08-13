@@ -1922,27 +1922,64 @@ fetch('data/copytrade.json').then(r=>r.json()).then(ct=>{
 
 /* SITE RULE: advanced tiles stay laterally in sync with the simple block they explain */
 function syncAdv(){
-  if(window.innerWidth<=900){
-    document.querySelectorAll('.advline.synced').forEach(el=>{el.style.position='';el.style.top='';el.style.width='';el.classList.remove('synced');});
-    return;
-  }
+  /* SITE RULE: an advanced tile sits level with the simple block it explains.
+     Two things broke that. Every tile in the lane is absolutely positioned, and an
+     absolutely positioned child contributes no height, so the lane collapsed to whatever
+     the bubbles above it needed and a tall tile ran straight out the bottom of its stage
+     and over whatever was underneath. The deed card was being covered by thirty one
+     pixels of the tile above it. The lane has to reserve the room it is using.
+     And a tile whose anchor happened to be hidden on that pass returned before it was
+     ever given a width, so it collapsed to a thirty eight pixel sliver with its text cut
+     off. Width is set for every tile up front, before anything can return early. */
+  const NARROW=window.innerWidth<=900;
   document.querySelectorAll('.stage').forEach(sec=>{
     const la=sec.querySelector('.lane-a');if(!la)return;
+    const tiles=[...la.children].filter(el=>el.classList&&el.classList.contains('advline')
+                                            &&!el.classList.contains('wide'));
+    if(NARROW){
+      la.style.minHeight='';la.style.position='';
+      tiles.forEach(el=>{el.style.position='';el.style.top='';el.style.width='';el.classList.remove('synced');});
+      return;
+    }
     la.style.position='relative';
-    let lastBottom=0;
-    [...la.children].filter(el=>el.classList&&el.classList.contains('advline')).forEach(el=>{
+    /* Before any early return can happen, so nothing is ever left without a width. */
+    tiles.forEach(el=>{el.style.width='100%';});
+    /* A tile whose content has not been written yet is an empty box wearing a label. Hide
+       it until it has something to say. */
+    tiles.forEach(el=>{
+      const empty=!(el.textContent||'').trim();
+      el.style.visibility=empty?'hidden':'';
+      el.dataset.empty=empty?'1':'';
+    });
+    let lastBottom=0, used=0;
+    tiles.forEach(el=>{
       const sel=el.dataset&&el.dataset.anchor?el.dataset.anchor:(el.id==='t_antech'?'#t_anwrap':null);
       const anchorEl=sel?sec.querySelector(sel):sec.querySelector('.teeth');
-      if(!anchorEl)return;
-      const aRect=anchorEl.getBoundingClientRect();
-      if(aRect.top===0&&aRect.height===0)return; /* anchor hidden right now: keep the last good position */
-      const aTop=aRect.top-la.getBoundingClientRect().top+la.scrollTop;
-      let top=Math.max(0,Math.round(aTop));
-      if(top<lastBottom+12)top=lastBottom+12;
-      el.style.position='absolute';el.style.width='100%';el.style.top=top+'px';
+      let top;
+      if(anchorEl){
+        const aRect=anchorEl.getBoundingClientRect();
+        if(aRect.top===0&&aRect.height===0){
+          /* anchor hidden on this pass: hold the last good position rather than jumping */
+          top=parseFloat(el.style.top)||lastBottom+20;
+        }else{
+          const aTop=aRect.top-la.getBoundingClientRect().top+la.scrollTop;
+          top=Math.max(0,Math.round(aTop));
+        }
+      }else{
+        top=lastBottom+20;
+      }
+      /* 20, not 12: the label badge on each tile sits nine pixels above its own border,
+         so a twelve pixel gap left three pixels of daylight and read as a collision. */
+      if(top<lastBottom+20)top=lastBottom+20;
+      el.style.position='absolute';el.style.top=top+'px';
       el.classList.add('synced');
+      if(el.dataset.empty==='1')return;         // takes no room while it has nothing in it
       lastBottom=top+el.offsetHeight;
+      used=Math.max(used,lastBottom);
     });
+    /* The lane keeps the room it is using, so the stage grows to hold the tiles instead
+       of letting them fall onto the next one. */
+    la.style.minHeight=used?(used+24)+'px':'';
   });
 }
 function syncSoon(){syncAdv();setTimeout(syncAdv,350);}
