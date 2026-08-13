@@ -750,6 +750,16 @@ body.adv .advline{display:block;animation:pop .5s ease both}
 .steprail{position:fixed;left:16px;bottom:16px;z-index:55;padding:9px 15px;border-radius:16px;font-size:.7rem;color:var(--muted);max-width:230px;line-height:1.4}
 .steprail b{display:block;font-size:.76rem;color:var(--navy);letter-spacing:.04em}
 @media(max-width:900px){.steprail{display:none}}
+/* The prompt that sends a reader to a box they have not filled. It has to look like
+   something you press, or it reads as one more sentence to skim past. */
+.teeth .needrow{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.teeth .needchip{cursor:pointer;font:inherit;font-size:.72rem;font-weight:700;color:var(--gold-ink,#7c5f2e);
+  padding:6px 12px;border-radius:999px;border:1px solid rgba(169,136,79,.5);background:rgba(169,136,79,.10);
+  transition:background .16s,border-color .16s,transform .16s}
+.teeth .needchip:hover{background:rgba(169,136,79,.2);border-color:var(--gold);transform:translateY(-1px)}
+.teeth input.needflash{outline:2px solid var(--gold);outline-offset:2px;
+  animation:needpulse 1.6s ease-in-out}
+@keyframes needpulse{0%,100%{background:rgba(255,255,255,.9)}40%{background:rgba(169,136,79,.22)}}
 .teeth .addrow{border:1px dashed var(--gold);background:transparent;color:var(--gold-ink);border-radius:10px;padding:6px 12px;font-size:.76rem;cursor:pointer;margin-top:6px}
 /* Folder-hierarchy rule: whatever this page opens, the same page can close.
    A control that only expands leaves the reader stuck inside their own click. */
@@ -935,6 +945,7 @@ const BLOCKS=[
  <p class="tsub" style="margin-top:18px">One more thing before the big question, because the wrappers confuse everyone: the Step 1 balance usually lives inside a <b>retirement account</b>, a 401(k) at work where a fund company manages it for you (often through a target date fund that adjusts itself as you age), or an IRA you opened yourself. The Step 2 positions usually live in a regular <b>brokerage account</b> you control directly. Different wrappers, different tax treatment, same engine underneath, and the next step asks what it all adds up to.</p>
  <p class="tsub" style="margin-top:12px"><b>STEP 3 · Will it be enough to retire on?</b> My method: project the nest egg, turn it into income, and compare it to your final working year of pay. That percentage is your ${gl('replacement','replacement rate')}, and it is the number retirement planning actually optimizes.</p>
  <div class="trow">
+   <label>Your age today<input type="number" id="t_rage" min="16" max="90" placeholder="from Spring, or type it"></label>
    <label>Retire at age<input type="number" id="t_retage" value="65" min="45" max="80"></label>
    <label>Salary today<input type="number" id="t_rsal" placeholder="from Spring, or type it"></label>
    <label>Raises per year (%)<input type="number" id="t_wage" value="3" step="0.5"></label>
@@ -1059,7 +1070,7 @@ function rowX(r,after){
 /* Session memory: entries live ONLY in this browser tab (sessionStorage) and vanish when it closes. Nothing is ever sent or saved anywhere. */
 function saveSession(){try{
   const F={f:{},chips:[],docs:[],foot:[],goals:[],pos:[]};
-  ['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon','t_retage','t_rsal','t_wage','t_fee','t_addr'].forEach(id=>{const e=$(id);if(e&&e.value)F.f[id]=e.value;});
+  ['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon','t_rage','t_retage','t_rsal','t_wage','t_fee','t_addr'].forEach(id=>{const e=$(id);if(e&&e.value)F.f[id]=e.value;});
   F.chips=[...document.querySelectorAll('.persona [data-p]')].filter(c=>c.classList.contains('on')).map(c=>c.dataset.p);
   const de=$('t_docs');if(de)F.docs=[...de.querySelectorAll('span.on')].map(s=>s.dataset.d);
   const fe=$('t_foot');if(fe)F.foot=[...fe.querySelectorAll('span.on')].map(s=>s.dataset.f);
@@ -1097,7 +1108,16 @@ function restoreSession(){try{
     }catch(e){}},300);
   }
 }catch(e){}}
-['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon','t_retage','t_rsal','t_wage'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',tcalc);});
+['t_age','t_exp','t_sal','t_def','t_cap','t_bal','t_mon','t_rage','t_retage','t_rsal','t_wage'].forEach(id=>{const el=$(id);if(el)el.addEventListener('input',tcalc);});
+/* One age, two boxes. Whichever one is typed into carries to the other, so the guide
+   never holds two different answers to the same question. */
+(function(){
+  const a=$('t_age'), b=$('t_rage');
+  if(!a||!b)return;
+  const mirror=(from,to)=>from.addEventListener('input',()=>{if(to.value!==from.value){to.value=from.value;tcalc();}});
+  mirror(a,b); mirror(b,a);
+  if(a.value&&!b.value)b.value=a.value;
+})();
 const docEl=$('t_docs');
 if(docEl)docEl.querySelectorAll('span').forEach(s=>s.addEventListener('click',()=>{s.classList.toggle('on');tcalc();}));
 const titleEl=$('t_title');
@@ -2258,7 +2278,9 @@ const TITLEM={
         life:'<b>A life estate deed.</b> The owner kept the right to live there for life, and the remainder passes automatically at death, OUTSIDE probate, to the named remaindermen. The enhanced version (the Lady Bird deed, where the owner also reserves the power to sell, gift, mortgage, and keep the proceeds) keeps full control for life while still skipping probate. Read the reservation paragraph carefully: the difference between a plain and an enhanced life estate is exactly what powers the owner kept.'
 };
 function tcalc(){
-  T.age=+($('t_age')&&$('t_age').value)||null;
+  // Either box fills it. Spring asked first, but a reader who starts in Summer should not
+  // have to go back for a number the box in front of them is already asking for.
+  T.age=+($('t_age')&&$('t_age').value)||+($('t_rage')&&$('t_rage').value)||null;
   T.expenses=+($('t_exp')&&$('t_exp').value)||null;
   T.salary=+($('t_sal')&&$('t_sal').value)||null;
   T.defer=+($('t_def')&&$('t_def').value)||0;
@@ -2379,11 +2401,25 @@ function tcalc(){
         nv.style.color=needMonthly<1||( T.monthly&&T.monthly>=needMonthly)?'#2e6b4f':'';
         ns.textContent='to reach 75% replacement at '+rAge+(T.monthly?' (now: '+tfmt(T.monthly)+'/mo)':'');}
     } else {
+      // Naming what is missing is not enough when the missing box is a season away. Each
+      // one is a button that scrolls to the box and puts the cursor in it, because the
+      // reader filling this in has already told us they want the answer.
       const miss=[];
-      if(!T.age)miss.push('your age (first box in Spring)');
-      if(!rsal)miss.push('a salary (the box above, or Spring)');
-      if(T.retBal===null&&T.monthly===null)miss.push('a balance or monthly savings (Step 1)');
-      ro.innerHTML='Almost there. Give me '+miss.join(', and ')+', and the whole chain computes right here, ending in <b>YOUR NUMBER</b>: the exact monthly contribution that reaches your target.';
+      if(!T.age)miss.push(['Your age today','t_rage']);
+      if(!rsal)miss.push(['Salary today','t_rsal']);
+      if(T.retBal===null)miss.push(['Retirement balance today (Step 1)','t_bal']);
+      if(T.monthly===null)miss.push(['What you save monthly (Step 1)','t_mon']);
+      ro.innerHTML='<b>One or two boxes to go.</b> Tap any of these and I will take you to it. '+
+        'The balance and the monthly savings are in Step 1, just above.<div class="needrow">'+
+        miss.map(m=>'<button type="button" class="needchip" data-need="'+m[1]+'">'+m[0]+'</button>').join('')+
+        '</div>';
+      ro.querySelectorAll('.needchip').forEach(btn=>btn.addEventListener('click',()=>{
+        const el=$(btn.dataset.need);
+        if(!el)return;
+        el.scrollIntoView({behavior:'smooth',block:'center'});
+        setTimeout(()=>{try{el.focus({preventScroll:true});}catch(e){el.focus();}
+          el.classList.add('needflash');setTimeout(()=>el.classList.remove('needflash'),1600);},420);
+      }));
       const nc=$('t_numcard');if(nc)nc.style.display='none';
     }
   }
