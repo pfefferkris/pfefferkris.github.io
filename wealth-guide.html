@@ -253,6 +253,20 @@ footer a:hover{color:var(--navy)}
   border:1px solid rgba(28,61,92,.30);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);
   box-shadow:0 6px 20px rgba(18,41,63,.13), inset 0 1px 0 rgba(255,255,255,.8);transition:transform .2s,box-shadow .2s}
 .akbtn:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(18,41,63,.18), inset 0 1px 0 rgba(255,255,255,.9)}
+/* "Ask Kristian about this" — the small handoff button that carries a block's own
+   context into the conversation, so the visitor never has to re-explain what they
+   are looking at. Quiet by default, gold on hover, never competes with the content. */
+.askmore{display:inline-flex;align-items:center;gap:5px;margin-top:10px;cursor:pointer;
+  padding:5px 11px;border-radius:999px;border:1px solid rgba(169,136,79,.45);
+  background:rgba(169,136,79,.08);color:var(--gold-text,#8a6d3b);
+  font:inherit;font-size:.68rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;
+  transition:background .18s,border-color .18s,transform .18s}
+.askmore:hover{background:rgba(169,136,79,.18);border-color:var(--gold);transform:translateY(-1px)}
+.askmore::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none}
+.akctx{display:flex;align-items:flex-start;gap:8px;margin:0 0 8px;padding:8px 10px;border-radius:9px;
+  background:rgba(169,136,79,.10);border:1px solid rgba(169,136,79,.32);font-size:.72rem;line-height:1.4}
+.akctx b{color:var(--gold-text,#8a6d3b);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:2px}
+.akctx button{margin-left:auto;border:0;background:none;cursor:pointer;color:var(--muted);font-size:.95rem;line-height:1;padding:0 2px}
 #akglow{position:fixed;inset:0;pointer-events:none;z-index:80;opacity:0;transition:opacity .5s;
   box-shadow:inset 0 0 90px 12px rgba(58,122,186,.55), inset 0 0 200px 40px rgba(58,122,186,.22)}
 #akglow.on{opacity:1;animation:akbreath 3.2s ease-in-out infinite}
@@ -2309,11 +2323,23 @@ tcalc();
     '<div class="akhead"><b>Ask Kristian</b><button class="akx" id="akx" aria-label="Close">&#215;</button></div>'+
     '<div class="akdisc">I am not an attorney and not a registered investment adviser. This is education, not legal, tax, or investment advice, and I cannot answer questions about your own situation. Nothing you type is stored.</div>'+
     '<div id="akbody"></div>'+
+    '<div id="akctx" class="akctx" style="display:none"><span><b>Looking at</b><span id="akctxt"></span></span><button id="akctxx" aria-label="Drop this context">&#215;</button></div>'+
     '<div class="akfoot"><textarea id="akin" rows="1" placeholder="Ask me anything about wills, trusts, or probate"></textarea><button id="aksend">Ask</button></div>';
   document.body.appendChild(panel);
 
   const body=panel.querySelector('#akbody'), input=panel.querySelector('#akin'), send=panel.querySelector('#aksend');
+  const ctxBar=panel.querySelector('#akctx'), ctxLbl=panel.querySelector('#akctxt');
   let history=[], busy=false, opened=false;
+  // What the visitor is currently looking at. Set when they hand off from a block,
+  // so they never have to retype the thing that is already on their screen.
+  let ctx=null;
+
+  function setCtx(c){
+    ctx=c;
+    if(c){ctxLbl.textContent=c.title;ctxBar.style.display='flex';}
+    else{ctxBar.style.display='none';}
+  }
+  panel.querySelector('#akctxx').onclick=()=>setCtx(null);
 
   const say=(who,text,sources)=>{
     const d=document.createElement('div');d.className='akmsg '+who;d.textContent=text;
@@ -2346,7 +2372,7 @@ tcalc();
     glow.classList.add('on');
     try{
       const r=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({q:q,chips:chips(),history:history})}).then(x=>x.json());
+        body:JSON.stringify({q:q,chips:chips(),history:history,context:ctx})}).then(x=>x.json());
       thinking.remove();
       say('k',r.answer||'I could not answer that one.',r.sources);
       history.push({role:'user',content:q});
@@ -2368,6 +2394,72 @@ tcalc();
     panel.classList.toggle('on');
     if(panel.classList.contains('on')){ if(!opened){opened=true;greet();} input.focus(); }
   };
+
+  // The handoff. Any block on the page can send the visitor here already holding the
+  // thing they were reading, so the first question does not have to describe it.
+  window.askKristianAbout=function(title,text,seed){
+    setCtx({title:title,text:String(text||'').replace(/\s+/g,' ').trim().slice(0,1200)});
+    if(!panel.classList.contains('on'))panel.classList.add('on');
+    if(!opened){opened=true;greet();}
+    if(seed){input.value=seed;input.dispatchEvent(new Event('input'));}
+    input.focus();
+    body.scrollTop=body.scrollHeight;
+  };
+})();
+
+/* ============ "Ask Kristian about this" on the blocks themselves ============
+   The guide already opens a card when you tap a stage, and the advanced tiles
+   already carry the math and the law. What was missing was the bridge: a way to
+   go from "I am reading this" to "explain this to me" without retyping it. These
+   buttons mount themselves onto blocks as those blocks appear, because most of
+   this page is written in at runtime. */
+(function(){
+  if(!document.getElementById('akbtn'))return;
+  const TARGETS=[
+    {sel:'.advline',  label:'Ask Kristian about this',
+     name:el=>(el.querySelector('b')?el.querySelector('b').textContent:'')||'The math and the law'},
+    {sel:'#whiteboard,.wbox', label:'Ask Kristian about this',
+     name:()=>'The whiteboard, what happens at the first death'},
+    {sel:'#sheet', label:'Ask Kristian to go deeper',
+     name:()=>{const t=document.getElementById('s-t');return t?t.textContent.trim():'This step';}}
+  ];
+  function textOf(el){
+    const c=el.cloneNode(true);
+    c.querySelectorAll('.askmore,button,script,style').forEach(n=>n.remove());
+    return (c.textContent||'').replace(/\s+/g,' ').trim();
+  }
+  function mount(el,t){
+    if(!el||el.dataset.askmounted)return;
+    const txt=textOf(el);
+    if(txt.length<60)return;               // nothing worth asking about yet
+    el.dataset.askmounted='1';
+    const b=document.createElement('button');
+    b.type='button';b.className='askmore';b.textContent=t.label;
+    b.addEventListener('click',ev=>{
+      ev.stopPropagation();
+      const title=t.name(el);
+      window.askKristianAbout(title,textOf(el),'');
+    });
+    el.appendChild(b);
+  }
+  function sweep(){
+    TARGETS.forEach(t=>document.querySelectorAll(t.sel).forEach(el=>mount(el,t)));
+  }
+  sweep();
+  // The stage card and the advanced tiles are rewritten as the visitor moves through
+  // the guide, so re-mount whenever the DOM settles rather than assuming one pass.
+  let pending=null;
+  new MutationObserver(()=>{
+    clearTimeout(pending);
+    pending=setTimeout(()=>{
+      document.querySelectorAll('.advline,#sheet,.wbox').forEach(el=>{
+        const t=textOf(el);
+        // content was replaced: drop the flag so the button remounts with fresh text
+        if(el.dataset.askmounted&&!el.querySelector('.askmore'))delete el.dataset.askmounted;
+      });
+      sweep();
+    },180);
+  }).observe(document.body,{childList:true,subtree:true});
 })();
 
 </script>
