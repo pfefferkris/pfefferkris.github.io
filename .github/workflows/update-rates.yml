@@ -15,13 +15,15 @@ jobs:
           python-version: "3.12"
       - name: Fetch rates
         run: python scripts/update_rates.py
+      - name: Watch policy sources
+        run: python scripts/policy_watch.py
       - name: Commit if changed
         run: |
-          if ! git diff --quiet data/rates.json; then
+          if ! git diff --quiet data/rates.json data/policy-watch.json; then
             git config user.name "rates-bot"
             git config user.email "actions@github.com"
-            git add data/rates.json
-            git commit -m "Auto update rates: 7520 and 10 year Treasury"
+            git add data/rates.json data/policy-watch.json
+            git commit -m "Auto update: figures and policy watch"
             git push
           else
             echo "No rate changes"

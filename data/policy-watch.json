@@ -1,0 +1,101 @@
+{
+  "federalRegister": [
+    {
+      "date": "2026-07-24",
+      "type": "Rule",
+      "title": "Revising Qualified Domestic Trust Regulations Under Section 2056A To Update Outdated References and Procedures; Correction",
+      "url": "https://www.federalregister.gov/documents/2026/07/24/2026-15008/revising-qualified-domestic-trust-regulations-under-section-2056a-to-update-outdated-references-and",
+      "matched": "estate tax"
+    },
+    {
+      "date": "2026-07-10",
+      "type": "Rule",
+      "title": "Revising Qualified Domestic Trust Regulations Under Section 2056A To Update Outdated References and Procedures",
+      "url": "https://www.federalregister.gov/documents/2026/07/10/2026-13925/revising-qualified-domestic-trust-regulations-under-section-2056a-to-update-outdated-references-and",
+      "matched": "estate tax"
+    },
+    {
+      "date": "2026-07-09",
+      "type": "Rule",
+      "title": "Charitable Remainder Annuity Trust Listed Transaction",
+      "url": "https://www.federalregister.gov/documents/2026/07/09/2026-13851/charitable-remainder-annuity-trust-listed-transaction",
+      "matched": "estate tax"
+    },
+    {
+      "date": "2026-07-09",
+      "type": "Rule",
+      "title": "Information Reporting and Transfer for Valuable Consideration Rules for Section 1035 Exchanges of Life Insurance and Certain Other Life Insurance Contract Transactions",
+      "url": "https://www.federalregister.gov/documents/2026/07/09/2026-13830/information-reporting-and-transfer-for-valuable-consideration-rules-for-section-1035-exchanges-of",
+      "matched": "estate tax"
+    },
+    {
+      "date": "2026-06-02",
+      "type": "Proposed Rule",
+      "title": "Estate Tax Closing Letter User Fee Update",
+      "url": "https://www.federalregister.gov/documents/2026/06/02/2026-10963/estate-tax-closing-letter-user-fee-update",
+      "matched": "estate tax"
+    },
+    {
+      "date": "2026-05-13",
+      "type": "Proposed Rule",
+      "title": "Excepted Fertility Benefits",
+      "url": "https://www.federalregister.gov/documents/2026/05/13/2026-09479/excepted-fertility-benefits",
+      "matched": "gift tax"
+    },
+    {
+      "date": "2026-03-19",
+      "type": "Rule",
+      "title": "Consistent Basis Reporting Between Estate and Person Acquiring Property From Decedent; Correction",
+      "url": "https://www.federalregister.gov/documents/2026/03/19/2026-05447/consistent-basis-reporting-between-estate-and-person-acquiring-property-from-decedent-correction",
+      "matched": "estate tax"
+    },
+    {
+      "date": "2026-03-09",
+      "type": "Proposed Rule",
+      "title": "Trump Accounts",
+      "url": "https://www.federalregister.gov/documents/2026/03/09/2026-04533/trump-accounts",
+      "matched": "fiduciary income tax"
+    }
+  ],
+  "federalRegisterChecked": "2026-08-12",
+  "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
+  "cfrParts": [
+    {
+      "cfr": "26 CFR part 20",
+      "what": "Federal estate tax regulations",
+      "lastAmended": "2026-07-24",
+      "issueDate": "2026-07-24"
+    },
+    {
+      "cfr": "26 CFR part 25",
+      "what": "Federal gift tax regulations",
+      "lastAmended": "2024-12-30",
+      "issueDate": "2025-05-30"
+    },
+    {
+      "cfr": "26 CFR part 26",
+      "what": "Generation-skipping transfer tax regulations",
+      "lastAmended": "2024-12-30",
+      "issueDate": "2024-12-30"
+    },
+    {
+      "cfr": "20 CFR part 416",
+      "what": "Supplemental Security Income (drives the special needs trust rules)",
+      "lastAmended": "2026-04-03",
+      "issueDate": "2026-04-03"
+    }
+  ],
+  "cfrChecked": "2026-08-12",
+  "cfrSource": "eCFR versioner API",
+  "changes": [
+    "NEW Rule 2026-07-24: Revising Qualified Domestic Trust Regulations Under Section 2056A To Update Outdated References and Procedures; Correction",
+    "NEW Rule 2026-07-10: Revising Qualified Domestic Trust Regulations Under Section 2056A To Update Outdated References and Procedures",
+    "NEW Rule 2026-07-09: Charitable Remainder Annuity Trust Listed Transaction",
+    "NEW Rule 2026-07-09: Information Reporting and Transfer for Valuable Consideration Rules for Section 1035 Exchanges of Life Insurance and Certain Other Life Insurance Contract Transactions",
+    "NEW Proposed Rule 2026-06-02: Estate Tax Closing Letter User Fee Update",
+    "NEW Proposed Rule 2026-05-13: Excepted Fertility Benefits",
+    "NEW Rule 2026-03-19: Consistent Basis Reporting Between Estate and Person Acquiring Property From Decedent; Correction",
+    "NEW Proposed Rule 2026-03-09: Trump Accounts"
+  ],
+  "updated": "2026-08-12"
+}
