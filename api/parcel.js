@@ -1,3 +1,11 @@
+// NOTE ON WHY THIS FILE ROUTES.
+// The host allows twelve serverless functions per deployment and the thirteenth failed the
+// whole build silently: the site kept serving the previous deployment, so the page was up,
+// the new endpoint was a 404, and nothing anywhere said why. The comparable-sales engine
+// therefore lives in lib/comps.js, which is bundled into this function rather than
+// deployed as one of its own, and is reached at /api/parcel?mode=comps.
+import compsHandler from "../lib/comps.js";
+
 // /api/parcel — one address in, the deepest public record North Carolina will give up.
 //
 // Three tiers, tried in order and merged, deepest winning:
@@ -293,6 +301,7 @@ function merge(base, deep) {
 }
 
 export default async function handler(req, res) {
+  if ((req.query.mode || "") === "comps") return compsHandler(req, res);
   res.setHeader("Access-Control-Allow-Origin", "https://kpfeffer.com");
   res.setHeader("Cache-Control", "s-maxage=43200, stale-while-revalidate");
 

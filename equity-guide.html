@@ -1854,7 +1854,7 @@ $('q_comps').addEventListener('click',function(){
   var btn=this;btn.disabled=true;btn.textContent='Reading the record…';
   out.style.display='';out.innerHTML='Finding what sold nearby…';
   var cty=(RECORD.parcel&&RECORD.parcel.county)||'';
-  fetch('/api/comps?address='+encodeURIComponent(a)+(cty?'&county='+encodeURIComponent(cty):''))
+  fetch('/api/parcel?mode=comps&address='+encodeURIComponent(a)+(cty?'&county='+encodeURIComponent(cty):''))
     .then(function(r){return r.ok?r.json():r.json().then(function(j){throw new Error(j.error||'no');});})
     .then(function(d){
       btn.disabled=false;btn.textContent='Pull the comparable sales';
