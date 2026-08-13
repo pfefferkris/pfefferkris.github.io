@@ -1,0 +1,88 @@
+/* Ask Kristian, shared by every guide on the site.
+   The wealth guide carried this inline and the estate guide had nothing. One file now,
+   so a fix to the microphone or the panel lands on every page at once instead of on
+   whichever page happened to get edited. */
+
+.akbtn{display:block;width:100%;margin-top:10px;padding:9px 14px;border-radius:22px;cursor:pointer;
+  font:inherit;font-size:.82rem;font-weight:700;letter-spacing:.01em;color:var(--navy,#12293f);
+  background:linear-gradient(135deg,rgba(255,255,255,.82),rgba(226,232,238,.55));
+  border:1px solid rgba(28,61,92,.30);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);
+  box-shadow:0 6px 20px rgba(18,41,63,.13), inset 0 1px 0 rgba(255,255,255,.8);transition:transform .2s,box-shadow .2s}
+.akbtn:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(18,41,63,.18), inset 0 1px 0 rgba(255,255,255,.9)}
+
+/* The floating opener, for a page that does not host the button in its own furniture. */
+.akfab{position:fixed;right:18px;bottom:18px;z-index:85;display:flex;align-items:center;gap:9px;
+  padding:12px 19px;border-radius:999px;cursor:pointer;border:1px solid rgba(28,61,92,.28);
+  font:inherit;font-size:.82rem;font-weight:700;color:var(--navy,#12293f);
+  background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(226,232,238,.72));
+  backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+  box-shadow:0 10px 34px rgba(18,41,63,.22), inset 0 1px 0 rgba(255,255,255,.85);
+  transition:transform .22s cubic-bezier(.2,.9,.25,1),box-shadow .22s}
+.akfab:hover{transform:translateY(-2px);box-shadow:0 16px 42px rgba(18,41,63,.28)}
+.akfab .akdot{width:9px;height:9px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 30% 30%,#c6a86e,#a9884f);box-shadow:0 0 12px rgba(169,136,79,.75)}
+@media(max-width:640px){.akfab{right:12px;bottom:12px;padding:11px 16px;font-size:.78rem}}
+
+.askmore{display:flex;width:fit-content;clear:both;align-items:center;gap:7px;cursor:pointer;
+  margin:16px 0 2px;padding:8px 15px;border-radius:999px;border:1px solid rgba(169,136,79,.45);
+  background:rgba(169,136,79,.08);color:var(--gold-text,#8a6d3b);
+  font:inherit;font-size:.8rem;font-weight:700;letter-spacing:.005em;line-height:1.3;
+  transition:background .18s,border-color .18s,transform .18s}
+.askmore:hover{background:rgba(169,136,79,.18);border-color:var(--gold,#a9884f);transform:translateY(-1px)}
+.askmore::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold,#a9884f);flex:none}
+
+#akglow{position:fixed;inset:0;pointer-events:none;z-index:80;opacity:0;transition:opacity .5s;
+  box-shadow:inset 0 0 90px 12px rgba(58,122,186,.55), inset 0 0 200px 40px rgba(58,122,186,.22)}
+#akglow.on{opacity:1;animation:akbreath 3.2s ease-in-out infinite}
+#akglow.speak{opacity:1;animation:akbreath 2.1s ease-in-out infinite;
+  box-shadow:inset 0 0 90px 12px rgba(169,136,79,.5), inset 0 0 220px 46px rgba(169,136,79,.2)}
+@keyframes akbreath{0%,100%{filter:brightness(1)}50%{filter:brightness(1.28)}}
+@keyframes akin{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes akpulse{0%,100%{box-shadow:0 0 0 0 rgba(58,122,186,.45)}50%{box-shadow:0 0 0 6px rgba(58,122,186,0)}}
+
+#akpanel{position:fixed;right:18px;bottom:18px;width:min(430px,calc(100vw - 36px));max-height:min(74vh,720px);
+  display:none;flex-direction:column;z-index:90;border-radius:18px;overflow:hidden;
+  background:linear-gradient(150deg,rgba(255,255,255,.93),rgba(232,238,244,.88));
+  backdrop-filter:blur(22px) saturate(1.35);-webkit-backdrop-filter:blur(22px) saturate(1.35);
+  border:1px solid rgba(28,61,92,.26);box-shadow:0 22px 60px rgba(18,41,63,.30)}
+#akpanel.on{display:flex;animation:akin .32s ease both}
+@media(max-width:640px){#akpanel{right:9px;left:9px;bottom:9px;width:auto;max-height:80vh}}
+
+.akhead{display:flex;align-items:center;gap:9px;padding:12px 14px;border-bottom:1px solid rgba(28,61,92,.16)}
+.akhead b{font-size:.9rem;color:var(--navy,#12293f)}
+.akhead .akx{margin-left:auto;cursor:pointer;border:0;background:transparent;font-size:1.15rem;line-height:1;color:var(--muted,#5a6a78);padding:2px 5px}
+.akdisc{padding:9px 14px;font-size:.66rem;line-height:1.5;color:var(--muted,#5a6a78);background:rgba(28,61,92,.05);border-bottom:1px solid rgba(28,61,92,.10)}
+#akbody{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:9px;padding:12px 13px}
+.akmsg{font-size:.79rem;line-height:1.62;padding:10px 13px;border-radius:13px;max-width:92%;white-space:pre-wrap}
+.akmsg.me{align-self:flex-end;background:var(--navy,#12293f);color:#fff;border-bottom-right-radius:4px}
+.akmsg.k{align-self:flex-start;background:rgba(255,255,255,.92);border:1px solid rgba(28,61,92,.16);color:var(--ink,#1e2b36);border-bottom-left-radius:4px}
+.aksrc{font-size:.62rem;color:var(--muted,#5a6a78);margin-top:7px;padding-top:6px;border-top:1px dashed rgba(28,61,92,.20)}
+.akseed{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.akseed span{font-size:.68rem;padding:6px 10px;border-radius:14px;background:rgba(255,255,255,.85);
+  border:1px solid rgba(28,61,92,.20);cursor:pointer;color:var(--navy,#12293f)}
+.akseed span:hover{background:#fff}
+.akctx{display:flex;align-items:flex-start;gap:8px;margin:0 13px 8px;padding:8px 10px;border-radius:9px;
+  background:rgba(169,136,79,.10);border:1px solid rgba(169,136,79,.32);font-size:.72rem;line-height:1.4}
+.akctx b{color:var(--gold-text,#8a6d3b);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:2px}
+.akctx button{margin-left:auto;border:0;background:none;cursor:pointer;color:var(--muted,#5a6a78);font-size:.95rem;line-height:1;padding:0 2px}
+.akfoot{display:flex;gap:8px;align-items:flex-end;padding:11px;border-top:1px solid rgba(28,61,92,.16);background:rgba(255,255,255,.55)}
+#akin{flex:1;resize:none;font:inherit;font-size:.78rem;line-height:1.5;padding:9px 11px;border-radius:11px;
+  border:1px solid rgba(28,61,92,.24);background:rgba(255,255,255,.9);color:var(--ink,#1e2b36);outline:none;max-height:96px}
+#aksend{padding:9px 15px;border-radius:11px;border:0;cursor:pointer;font:inherit;font-size:.78rem;font-weight:700;
+  color:#fff;background:var(--navy,#12293f)}
+#aksend:disabled{opacity:.55;cursor:default}
+
+.aktog{margin-left:auto;margin-right:6px;cursor:pointer;border-radius:999px;padding:3px 9px;
+  border:1px solid rgba(28,61,92,.28);background:rgba(255,255,255,.5);color:var(--muted,#5a6a78);
+  font:inherit;font-size:.6rem;font-weight:800;letter-spacing:.04em;white-space:nowrap;transition:all .18s}
+.aktog+.aktog{margin-left:0}
+.aktog[aria-pressed="true"]{background:rgba(58,122,186,.16);border-color:rgba(58,122,186,.5);color:var(--navy,#12293f)}
+.aktog.live{animation:akpulse 1.6s ease-in-out infinite}
+
+/* The lines, from Cortex. Thin bars that ride the microphone while he is listening and
+   ride his own voice while he is speaking, so the widget is visibly alive rather than a
+   button that may or may not have heard you. Same geometry as the living room. */
+.akbars{display:inline-flex;align-items:center;justify-content:center;gap:3px;height:16px;width:26px;vertical-align:middle}
+.akbars i{width:2.5px;height:3px;border-radius:2px;background:currentColor;opacity:.9;transition:height .07s linear}
+.aktog.live .akbars i{background:#3a7aba}
+#akglow.speak ~ #akpanel .aktog .akbars i{background:var(--gold,#a9884f)}

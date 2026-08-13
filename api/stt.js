@@ -6,6 +6,12 @@
 // do in the living room: record locally, transcribe on the server, one code path that
 // behaves the same in every browser.
 //
+// The page no longer sends MediaRecorder output either. MediaRecorder hands back
+// webm/opus on Chrome, ogg on Firefox and mp4/AAC on Safari, and on older iOS it is
+// simply absent, so a single hardcoded filename was quietly wrong on most of the
+// internet. The page now writes a WAV header by hand over raw PCM, and this accepts
+// whatever arrives by reading the content type rather than assuming one.
+//
 // Audio is transcribed and dropped. Nothing is written to disk and nothing is logged.
 
 export const config = { api: { bodyParser: false } };
@@ -45,11 +51,20 @@ export default async function handler(req, res) {
   try {
     // A wake word clip is a couple of seconds. Anything larger is not what this is for.
     const buf = await readBody(req, 4 * 1024 * 1024);
-    if (buf.length < 1200) return res.status(200).json({ text: "" });
+    // A WAV header alone is 44 bytes, so anything near that is a room with nobody in it.
+    if (buf.length < 2000) return res.status(200).json({ text: "" });
 
-    const type = req.headers["content-type"] || "audio/webm";
+    // The extension has to match the bytes. Sending WAV under a .webm name is the kind
+    // of mismatch a transcription API rejects with an unhelpful error.
+    const type = (req.headers["content-type"] || "audio/wav").split(";")[0].trim();
+    const EXT = {
+      "audio/wav": "wav", "audio/wave": "wav", "audio/x-wav": "wav",
+      "audio/webm": "webm", "audio/ogg": "ogg", "audio/mp4": "mp4",
+      "audio/mpeg": "mp3", "audio/m4a": "m4a", "audio/x-m4a": "m4a", "audio/flac": "flac"
+    };
+    const ext = EXT[type] || "wav";
     const form = new FormData();
-    form.append("file", new Blob([buf], { type }), "clip.webm");
+    form.append("file", new Blob([buf], { type }), "clip." + ext);
     form.append("model_id", process.env.ASK_STT_MODEL || "scribe_v1");
     form.append("language_code", "eng");
 
