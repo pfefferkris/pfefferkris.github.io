@@ -2480,15 +2480,17 @@ tcalc();
      level for a pause, and sends the clip to /api/stt. One path, same behaviour
      everywhere. The microphone is only ever opened after a real conversation has begun,
      and it closes the moment the panel does. */
-  let micStream=null, recorder=null, vad=null, ctx=null;
+  // NOT named ctx: that identifier already holds the block the visitor handed off from,
+  // and redeclaring it took the whole widget down.
+  let micStream=null, recorder=null, vad=null, actx=null;
 
   async function startMic(){
     if(!listening||recorder)return;
     try{
       if(!micStream) micStream=await navigator.mediaDevices.getUserMedia({audio:true});
-      if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)();
-      const src=ctx.createMediaStreamSource(micStream);
-      const an=ctx.createAnalyser();an.fftSize=1024;src.connect(an);
+      if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+      const src=actx.createMediaStreamSource(micStream);
+      const an=actx.createAnalyser();an.fftSize=1024;src.connect(an);
       const buf=new Uint8Array(an.fftSize);
       recorder=new MediaRecorder(micStream);
       let chunks=[],speaking=false,quiet=0,started=0;
