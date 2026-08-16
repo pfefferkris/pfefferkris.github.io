@@ -189,12 +189,43 @@
   .sig{margin-top:26px; font-style:italic; color:var(--muted); font-size:16px; font-family:Georgia,serif;}
   .fine{position:fixed; bottom:0; left:0; right:0; padding:7px 16px 6px; font-size:10px; color:var(--muted); opacity:.6; text-align:center; z-index:40;
     background:linear-gradient(transparent, rgba(250,248,243,.9) 45%);}
+  /* wheel rail */
+  .rail{position:fixed; left:14px; top:50%; transform:translateY(-50%); z-index:60; display:flex; flex-direction:column; gap:2px; opacity:.85; transition:opacity .4s;}
+  .rail:hover{opacity:1;}
+  .rail .ritem{display:flex; align-items:center; gap:8px; padding:4px 10px 4px 6px; cursor:pointer; border:none; background:transparent;
+    font-family:inherit; text-align:left; transition:transform .5s cubic-bezier(.2,.7,.2,1), opacity .5s; border-radius:14px; transform-origin:left center;}
+  .rail .ritem i{width:5px; height:5px; border-radius:50%; background:rgba(18,41,63,.3); flex:none; transition:background .3s;}
+  .rail .ritem span{font-size:12px; color:var(--muted); letter-spacing:.06em; white-space:nowrap;}
+  .rail .ritem.rcur{background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(255,255,255,.4));
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:1px solid rgba(255,255,255,.75);
+    box-shadow:0 8px 22px rgba(18,41,63,.12);}
+  .rail .ritem.rcur i{background:var(--gold);}
+  .rail .ritem.rcur span{color:var(--navy); font-weight:700;}
+  .rail .ritem.rseen i{background:var(--goldsoft);}
+  @media (max-width:960px){ .rail{display:none;} }
+
+  /* asset number correction */
+  .afix{display:none; margin-top:9px; border-top:1px dashed rgba(255,255,255,.25); padding-top:8px;}
+  .asset.open .afix{display:block;}
+  .afix .aq{font-size:11.5px; color:#c9b98a; cursor:pointer; text-decoration:underline; text-underline-offset:3px; background:none; border:none; font-family:inherit; padding:0;}
+  .afix .arow{display:none; margin-top:7px; gap:6px;}
+  .afix.editing .arow{display:flex;}
+  .afix.editing .aq{display:none;}
+  .afix input{flex:1; min-width:0; font-family:Georgia,serif; font-size:14px; padding:6px 9px; border-radius:8px; border:1px solid rgba(255,255,255,.5);
+    background:rgba(255,255,255,.92); color:var(--navy); outline:none;}
+  .afix .ago{border:none; border-radius:8px; background:var(--gold); color:#fff; font-family:inherit; font-size:11px; font-weight:700;
+    letter-spacing:.08em; padding:0 12px; cursor:pointer;}
+  .yourbadge{display:inline-block; margin-left:6px; font-size:9.5px; letter-spacing:.1em; color:var(--goldsoft); border:1px solid rgba(198,168,110,.6);
+    border-radius:8px; padding:1px 6px; vertical-align:2px;}
+  .asset .arevert{display:none; font-size:10.5px; color:#c9b98a; background:none; border:none; font-family:inherit; cursor:pointer; text-decoration:underline; padding:0; margin-top:5px;}
+  .asset.changed .arevert{display:inline;}
   @media (max-width:720px){ .wishcols,.twocol{grid-template-columns:1fr;} .nextline{display:none;} .stage{height:74vw;} }
 </style>
 </head>
 <body>
 <div class="orb" id="orb1"></div><div class="orb" id="orb2"></div>
 <button class="backarrow glass" id="backarrow" onclick="go(cur-1)">Back</button>
+<nav class="rail" id="rail" aria-label="Chapters"></nav>
 
 <!-- CH 0 GATE -->
 <section class="chapter on" id="ch0">
@@ -223,7 +254,7 @@
 <section class="chapter" id="ch2">
   <div class="kicker">The table</div>
   <h1>Everything you own, in one place.</h1>
-  <p class="lead">Touch anything. Each of these has a story, and the stories decide the plan.</p>
+  <p class="lead">Touch anything. Each of these has a story, and the stories decide the plan. Every figure here was built from the records you shared, and if you know better, tell me: correct any number and the whole room recalculates around you.</p>
   <div class="bignum" id="totalnum">$0</div>
   <div class="grid" id="assetgrid"></div>
   <button class="continue" onclick="go(3)">So what is the problem?</button>
@@ -240,12 +271,12 @@
     <div class="wm">FICTIONAL CASE STUDY</div>
     <div class="bhead"><div><b>Department of the Treasury</b><br>Internal Revenue Service</div><div style="text-align:right">Form 706<br>United States Estate Tax Return</div></div>
     <div class="btitle">ESTATE OF RICARDO, TAX COMPUTATION</div>
-    <div class="brow"><span>1. Total gross estate</span><span>$55,986,000</span></div>
+    <div class="brow"><span>1. Total gross estate</span><span id="b_gross">$55,986,000</span></div>
     <div class="brow"><span>2. Basic exclusion amounts applied, two spouses</span><span>($30,000,000)</span></div>
-    <div class="brow"><span>3. Taxable estate</span><span>$25,986,000</span></div>
-    <div class="brow"><span>4. Tax at 40 percent</span><span>$10,394,400</span></div>
+    <div class="brow"><span>3. Taxable estate</span><span id="b_taxable">$25,986,000</span></div>
+    <div class="brow"><span>4. Tax at 40 percent</span><span id="b_tax">$10,394,400</span></div>
     <div class="brow"><span>5. Payment due</span><span>nine months after date of death</span></div>
-    <div class="due">AMOUNT DUE $10,394,400</div>
+    <div class="due" id="b_due">AMOUNT DUE $10,394,400</div>
     <div class="bfoot">Simplified illustration for a fictional academic case study. An actual Form 706 computes a tentative tax and applies the unified credit. The size of the number is not simplified.</div>
   </div>
   <div class="reveal glass" id="taxreveal">And here is the part that matters more than the number: your wealth is a farm, two houses, and a train collection. It is not cash. A nine month deadline against property like that has one name in my business, and the name is fire sale. The plan we build tonight exists so that no one ever holds an auction on Joe's farm to pay a bill everyone saw coming.</div>
@@ -426,7 +457,7 @@
 <section class="chapter" id="ch13">
   <div class="kicker">The check</div>
   <h1>The day the bill comes, a trust hands the estate a check.</h1>
-  <p class="lead">After everything tonight, that bill you saw in chapter three falls from about <span class="badnum">$10,400,000</span> to roughly <span class="goodnum">$4,000,000</span>, and it keeps shrinking every year the freezes work. But some bill will come, nine months after the second of you passes, and we already agreed: no auctions.</p>
+  <p class="lead">After everything tonight, that bill you saw in chapter three falls from about <span class="badnum" id="n13bad">$10,400,000</span> to roughly <span class="goodnum" id="n13good">$4,000,000</span>, and it keeps shrinking every year the freezes work. But some bill will come, nine months after the second of you passes, and we already agreed: no auctions.</p>
   <p class="lead">So the last vessel owns a life insurance policy on both of your lives. Small gifts each year cover the premium. The trust was never yours, so the payout is never taxed in your estate. And on the exact day the IRS wants its money, the trustee is holding cash for that purpose and no other. The farm stays a farm. The houses stay houses. The check clears.</p>
   <button class="continue" onclick="go(14)">Who runs all of this?</button>
   <div class="nextline">Next: Father O'Keefe, and the honest conversation</div>
@@ -498,6 +529,9 @@
   var cur = 0;
   var unlocked = false;
 
+  var ASSETV = [9254000, 6820000, 7870000, 10220000, 11230000, 752000, 3199000, 6440000, 151000, 50000];
+  var ORIG = ASSETV.slice();
+  function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
   var assets = [
     {n:"The Raleigh home", v:"$9,254,000", o:"owned together, as a couple", s:"Bought in 2016 for $2,100,000. It has grown $7,154,000 in ten years, which is exactly why it gets its own chapter."},
     {n:"The Malibu house", v:"$6,820,000", o:"in Ricky's name", s:"Bought in 2018 for $3,300,000. Earns about $82,000 a year. The kids love it. California has plans for it that we are going to cancel."},
@@ -511,13 +545,52 @@
     {n:"Furnishings and effects", v:"$50,000", o:"owned together", s:"Outright to each other, then to the children. The sentimental things follow the shortest path."}
   ];
   var grid = document.getElementById("assetgrid");
-  assets.forEach(function(a){
+  assets.forEach(function(a, idx){
     var d = document.createElement("div");
-    d.className = "asset glass";
-    d.innerHTML = "<div class=\"an\">"+a.n+"</div><div class=\"av\">"+a.v+"</div><div class=\"ao\">"+a.o+"</div><div class=\"astory\">"+a.s+"</div>";
-    d.onclick = function(){ d.classList.toggle("open"); };
+    d.className = "asset glass"; d.id = "acard"+idx;
+    d.innerHTML = "<div class=\"an\">"+a.n+"<span class=\"yourbadge\" style=\"display:none\">YOUR NUMBER</span></div><div class=\"av\">"+money(ASSETV[idx])+"</div><div class=\"ao\">"+a.o+"</div><div class=\"astory\">"+a.s+"</div>"
+      + "<div class=\"afix\" id=\"afix"+idx+"\"><button class=\"aq\">Is this number exactly right?</button>"
+      + "<div class=\"arow\"><input inputmode=\"numeric\" value=\""+money(ASSETV[idx])+"\"><button class=\"ago\">SET</button></div>"
+      + "<button class=\"arevert\">back to the record, "+money(ORIG[idx])+"</button></div>";
+    d.onclick = function(e){
+      if (e.target.closest(".afix")) return;
+      d.classList.toggle("open");
+    };
+    var fix = d.querySelector(".afix");
+    var inp = fix.querySelector("input");
+    fix.querySelector(".aq").onclick = function(){ fix.classList.add("editing"); inp.focus(); inp.select(); };
+    function apply(){
+      var raw = inp.value.replace(/[^0-9]/g,"");
+      if (raw){ ASSETV[idx] = parseInt(raw,10); recalcAll(); }
+      inp.value = money(ASSETV[idx]);
+      fix.classList.remove("editing"); inp.blur();
+    }
+    fix.querySelector(".ago").onclick = apply;
+    inp.addEventListener("keydown", function(e){ if (e.key==="Enter"){ e.preventDefault(); apply(); } e.stopPropagation(); });
+    d.querySelector(".arevert").onclick = function(){ ASSETV[idx] = ORIG[idx]; inp.value = money(ORIG[idx]); recalcAll(); };
     grid.appendChild(d);
   });
+
+  function recalcAll(){
+    var total = ASSETV.reduce(function(a,b){ return a+b; }, 0);
+    for (var i=0;i<assets.length;i++){
+      var card = document.getElementById("acard"+i);
+      card.querySelector(".av").textContent = money(ASSETV[i]);
+      var changed = ASSETV[i] !== ORIG[i];
+      card.classList.toggle("changed", changed);
+      card.querySelector(".yourbadge").style.display = changed ? "inline-block" : "none";
+    }
+    document.getElementById("totalnum").textContent = money(total);
+    var taxable = Math.max(0, total - 30000000);
+    var tax = taxable * 0.4;
+    document.getElementById("b_gross").textContent = money(total);
+    document.getElementById("b_taxable").textContent = money(taxable);
+    document.getElementById("b_tax").textContent = money(tax);
+    document.getElementById("b_due").textContent = tax > 0 ? "AMOUNT DUE " + money(tax) : "NO AMOUNT DUE, TODAY";
+    document.getElementById("n13bad").textContent = money(tax);
+    var charityBase = Math.max(0, total - ASSETV[3] - ASSETV[4]/2 - 30000000);
+    document.getElementById("n13good").textContent = money(charityBase * 0.4);
+  }
 
   var dots = document.getElementById("dots");
   for (var i=0;i<N;i++){
@@ -525,6 +598,45 @@
     (function(k){ s.onclick = function(){ if(unlocked||k===0) go(k); }; })(i);
     dots.appendChild(s);
   }
+
+  var RAILNAMES = ["The word","Welcome","The table","The clock","The promise","The shape","Raleigh","Malibu","The farm","The trains","The stock","Eve","Adam","The check","The wheel","The day after","Make it yours"];
+  var visited = {0:true};
+  var rail = document.getElementById("rail");
+  RAILNAMES.forEach(function(nm, k){
+    var b = document.createElement("button");
+    b.className = "ritem"; b.type = "button";
+    b.innerHTML = "<i></i><span>"+nm+"</span>";
+    b.onclick = function(){ if (unlocked || k===0) go(k); };
+    rail.appendChild(b);
+  });
+  function updateRail(){
+    var items = rail.children;
+    for (var k=0;k<items.length;k++){
+      var d = Math.abs(k - cur);
+      var op = Math.max(0.10, 1 - d*0.16);
+      var sc = Math.max(0.82, 1 - d*0.035);
+      var tx = -(d*d)*1.1;
+      items[k].style.opacity = op;
+      items[k].style.transform = "translateX("+tx+"px) scale("+sc+")";
+      items[k].className = "ritem" + (k===cur ? " rcur" : (visited[k] ? " rseen" : ""));
+    }
+  }
+  var wheelAcc = 0, wheelLock = 0;
+  rail.addEventListener("wheel", function(e){
+    e.preventDefault();
+    if (!unlocked) return;
+    var now = Date.now();
+    if (now < wheelLock) return;
+    wheelAcc += e.deltaY;
+    if (wheelAcc > 90){ if (cur<N-1) go(cur+1); wheelAcc = 0; wheelLock = now + 350; }
+    if (wheelAcc < -90){ if (cur>1) go(cur-1); wheelAcc = 0; wheelLock = now + 350; }
+  }, { passive: false });
+  updateRail();
+
+  document.addEventListener("click", function(e){
+    var t = e.target.closest("button, .asset, .forkhead, .wish, .chip, .dots i");
+    if (t && !e.target.closest("input")) setTimeout(function(){ if (document.activeElement && document.activeElement.tagName !== "INPUT") document.activeElement.blur(); }, 0);
+  });
 
   function tryGate(){
     var v = document.getElementById("pass").value.trim().toLowerCase();
@@ -542,6 +654,8 @@
     var ds = dots.children;
     for (var i=0;i<ds.length;i++) ds[i].className = (i===n) ? "on" : "";
     document.getElementById("backarrow").className = "backarrow glass" + (n>1 ? " show" : "");
+    visited[n] = true;
+    updateRail();
     if (n===2) countTotal();
     if (n===5) stageInit();
     if (n===15) finale();
@@ -550,8 +664,9 @@
 
   var counted = false;
   function countTotal(){
-    if (counted) return; counted = true;
-    var el = document.getElementById("totalnum"), target = 55986000, t0 = null;
+    if (counted) { recalcAll(); return; }
+    counted = true;
+    var el = document.getElementById("totalnum"), target = ASSETV.reduce(function(a,b){ return a+b; }, 0), t0 = null;
     function step(ts){ if(!t0) t0=ts; var p=Math.min((ts-t0)/1800,1); var e=1-Math.pow(1-p,3);
       el.textContent = "$" + Math.round(target*e).toLocaleString("en-US"); if(p<1) requestAnimationFrame(step); }
     requestAnimationFrame(step);
@@ -696,8 +811,12 @@
   document.addEventListener("keydown", function(e){
     if (!unlocked) return;
     if (e.target && (e.target.tagName==="INPUT" || e.target.tagName==="TEXTAREA")) return;
-    if (e.key === "ArrowRight" || e.key === " ") { if (cur<N-1 && cur!==5) go(cur+1); if(cur===5) stageNext(); }
-    if (e.key === "ArrowLeft") { if (cur>1) go(cur-1); }
+    if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      if (document.activeElement) document.activeElement.blur();
+      if (cur===5 && stageStep<3){ stageNext(); } else if (cur<N-1){ go(cur+1); }
+    }
+    if (e.key === "ArrowLeft") { e.preventDefault(); if (cur>1) go(cur-1); }
   });
 </script>
 </body>
