@@ -348,6 +348,13 @@
       <div><span class="delta bgood">stepped up basis wipes $3,690,000 of gain</span><span class="delta bneut">their choice, not forced</span></div>
     </div>
   </div>
+  <div class="fork glass" id="fork8b">
+    <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">What if the farm mattered less to Eve than the beach house?</div><div class="sw"></div></div>
+    <div class="forkbody">Then the tool we set aside comes back off the shelf. North Carolina runs a farmland preservation fund that can pay a family real money for a promise to keep farmland as farmland, and a conservation easement adds a deduction and shrinks the estate on top. Tonight we said no, because welding the land shut is wrong while Eve may need what stands behind it. But if her heart lives at the beach and the farm is heritage rather than her safety net, the calculus flips: the state's check could fund her trust while the land stays farmland, in the family name, forever. Same facts. Different values. Different best plan.
+      <div><span class="delta bgood">state money in, estate value down</span><span class="delta badd">the land locks forever</span><span class="delta bneut">the plan bends to your values, never the other way</span></div>
+      <div class="forknote">This is what every switch on these pages is for. The best plan is the best plan for who you are now, and we revisit it as who you are changes.</div>
+    </div>
+  </div>
   <button class="continue" onclick="go(9)">What about the trains?</button>
   <div class="nextline">Next: Lucy's chapter</div>
 </section>
@@ -410,6 +417,7 @@
   <h1>Adam inherits when he is ready, not when he turns eighteen.</h1>
   <p class="lead">Without a plan, the law would hand Adam everything in one envelope on his eighteenth birthday. Nobody who remembers being eighteen thinks that is a good idea.</p>
   <p class="lead">His trust holds his share, pays for his education and his needs along the way, and then opens in stages through his late twenties and early thirties, when the judgment has caught up with the money. If he turns out to be great with it, the stages simply come easy. If he needs time, the trust gives him time.</p>
+  <p class="lead">And one page nobody likes to talk about does the heaviest lifting: Ricky's will names a guardian for Adam, Lucy first, so that if the worst happened tomorrow, the person who raises him was chosen by his father and not by a courthouse.</p>
   <button class="continue" onclick="go(13)">So who pays the tax bill?</button>
   <div class="nextline">Next: the check that arrives exactly on time</div>
 </section>
@@ -440,6 +448,7 @@
   <h1>Every ring, green.</h1>
   <div class="wishcols" id="finalwishes"></div>
   <p class="lead" style="margin-top:22px">When the first of you passes: nothing is sold, no court in two states, the survivor's income never pauses. When the second of you passes: the tax is a fraction of what it was, and the check that pays it is already written. Adam inherits when he is ready. Eve never misses a benefit. Campbell University receives a legacy measured in eight figures. Two people who found each other after the worst years of their lives will have kept every promise they made.</p>
+  <p class="lead">And every switch you flipped tonight is a real alternative we can build. Life changes circumstances. Time changes values. The plan is built to bend to both, which is why this page will still be here the next time either one moves.</p>
   <p class="lead">That is the plan. Now let us talk about it.</p>
   <div class="sig">Kristian R. Pfeffer</div>
   <button class="continue" onclick="go(16)">Or make it yours</button>
@@ -549,10 +558,10 @@
   }
 
   function showBill(){
-    document.getElementById("bill").classList.add("on");
-    document.getElementById("taxreveal").classList.add("on");
+    document.getElementById("bill").classList.toggle("on");
+    document.getElementById("taxreveal").classList.toggle("on");
   }
-  function rev(id){ document.getElementById(id).classList.add("on"); }
+  function rev(id){ document.getElementById(id).classList.toggle("on"); }
 
   /* ===== vessels ===== */
   var VES = [
