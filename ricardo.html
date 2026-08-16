@@ -307,7 +307,7 @@
   </div>
   <div class="fork glass" id="fork4">
     <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">You both said per stirpes. Want to see what those two words actually decide?</div><div class="sw"></div></div>
-    <div class="forkbody">Per stirpes means by the roots: a branch of the family that loses its parent keeps its parent's share. Today it changes nothing, because Adam and Eve are both here, half and half under every reading. But there are three versions of the rule. Old per stirpes splits at the children no matter what. The modern version splits at the first generation with someone living. And North Carolina's own default runs a hybrid where cousins can end up sharing equally. Same two words, three different family trees, and the answer changes at the state line.
+    <div class="forkbody">Per stirpes means by the roots: a branch of the family that loses its parent keeps its parent's share. Today it changes nothing, because Adam and Eve are both here, half and half under every reading. But there are three versions of the rule. Old per stirpes splits at the children no matter what. The modern version splits at the first generation with someone living. And North Carolina's own default runs a hybrid where cousins can end up sharing equally. Same two words, three different family trees, and the answer changes at the state line. There is also a quiet control choice inside it: the older English version keeps each share on the branch closest to you, while the modern version can spray money to cousins you have never met, so writing the older rule into the documents keeps the wealth among people you actually know. And one more provision from the same family: the survivor keeps a limited power to redraw the children's shares by codicil, inside the bloodline only, for life. Our seminar called it the Sunday dinner clause. The kids stay close to the person holding the pen.
       <div><span class="delta bneut">today: identical, half to Adam, half to Eve</span><span class="delta badd">if a child passes first: the versions split the money differently</span><span class="delta bgood">our fix: the documents define it, so no default ever decides</span></div>
       <div class="forknote">This is why the papers spell it out instead of trusting two Latin words to mean the same thing in every courtroom.</div>
     </div>
@@ -530,10 +530,26 @@
     <div class="ht">Take it further in the Wealth Guide</div>
     <div class="hs">Put in your real address and watch it pull your actual deed and read how your own home is titled. Walk all four seasons with your own goals. Same room, your family.</div>
   </a>
+  <button class="continue" onclick="go(17)">One more thing: your homework</button>
   <a class="handoff glass" href="https://kpfeffer.com/capstone.html">
     <div class="ht">Or open the workshop version of this exact plan</div>
     <div class="hs">Every decision from tonight as a toggle, with the savings recomputing live as you flip them.</div>
   </a>
+  <div class="sig">Kristian R. Pfeffer</div>
+</section>
+
+<!-- CH 17 HOMEWORK -->
+<section class="chapter" id="ch17">
+  <div class="kicker">Homework</div>
+  <h1>Four people. Four questions to sleep on.</h1>
+  <p class="lead">Nothing here needs an answer tonight. Take the switches home, play with every fork, and bring your answers to Sunday dinner. These are the questions the plan cannot answer for you.</p>
+  <div class="twocol">
+    <div class="col glass"><h3>Ricky</h3><p>What does taking care of Lucy actually look like in monthly dollars, in every order of deaths? And how would you want the farm run the year the tenant retires? It seems like the land is a promise to your father as much as an asset; who inherits the promise?</p></div>
+    <div class="col glass"><h3>Lucy</h3><p>How long do you want to keep working, and what does the first month after you stop look like? It sounds like the trains are your father more than they are money. What would honoring Donald look like if the collection were cash and a building carried your family's name?</p></div>
+    <div class="col glass"><h3>Eve</h3><p>What does a perfect ordinary week look like for you? Your trust will pay for that week for the rest of your life, so the more honestly you describe it, the better it gets built. And which place holds your heart, the farm or the beach? Your answer moves real money.</p></div>
+    <div class="col glass"><h3>Adam</h3><p>What do you want to be true about your life at 25 that money could either help or ruin? And what would you study if the tuition were already paid? The accounts are built either way; your answers decide their size.</p></div>
+  </div>
+  <p class="lead">When the answers come back, the switches move, the numbers move with them, and we sit down again. That is not a follow up meeting. That is the plan working.</p>
   <div class="sig">Kristian R. Pfeffer</div>
 </section>
 
@@ -542,7 +558,7 @@
 
 <script>
   var PASSWORDS = ["bumble"];
-  var N = 17;
+  var N = 18;
   var cur = 0;
   var unlocked = false;
 
@@ -616,7 +632,7 @@
     dots.appendChild(s);
   }
 
-  var RAILNAMES = ["The word","Welcome","The table","The clock","The promise","The shape","Raleigh","Malibu","The farm","The trains","The stock","Eve","Adam","The check","The wheel","The day after","Make it yours"];
+  var RAILNAMES = ["The word","Welcome","The table","The clock","The promise","The shape","Raleigh","Malibu","The farm","The trains","The stock","Eve","Adam","The check","The wheel","The day after","Make it yours","Homework"];
   var visited = {0:true};
   var rail = document.getElementById("rail");
   RAILNAMES.forEach(function(nm, k){
@@ -697,8 +713,8 @@
 
   /* ===== vessels ===== */
   var VES = [
-    {id:"vh",  lbl:"HIS TRUST",        sub:"revocable, his any Tuesday",  x:14, y:2,  w:30, h:34},
-    {id:"vw",  lbl:"HER TRUST",        sub:"revocable, hers any Tuesday", x:56, y:2,  w:30, h:34},
+    {id:"vh",  lbl:"RICKY'S TRUST",  sub:"revocable, his any Tuesday",  x:14, y:2,  w:30, h:34},
+    {id:"vw",  lbl:"LUCY'S TRUST",  sub:"revocable, hers any Tuesday", x:56, y:2,  w:30, h:34},
     {id:"vsh", lbl:"SHELTER ROOM",     sub:"$15,000,000 sealed from tax forever", x:2,  y:46, w:22, h:32},
     {id:"vmh", lbl:"MARITAL ROOM",     sub:"income to the survivor for life",     x:27, y:46, w:22, h:32},
     {id:"vsw", lbl:"SHELTER ROOM",     sub:"$15,000,000 sealed from tax forever", x:52, y:46, w:22, h:32},
@@ -718,8 +734,8 @@
   };
   var CAPS = [
     "This is the whole idea in one picture. A trust is a container. It holds things, the way a folder holds files or a basket holds bread. While you live, these two are just <b>your</b> containers: you put things in, take things out, change your mind any Tuesday you like.",
-    "Then, at the moment it is needed, his vessel pours. The first $15,000,000 fills the <b>shelter room</b> and the lid seals: nothing in there is ever taxed again, no matter how big it grows. Everything else flows to the <b>marital room</b>, which pays Lucy for life and then delivers exactly where Ricky said.",
-    "Her vessel does the same pour in mirror image. Two shelters sealed, two marital rooms flowing. This is why the order of deaths never breaks the plan: the vessels are already built, whichever one pours first.",
+    "Then, at the moment it is needed, Ricky's vessel pours. The first $15,000,000 fills the <b>shelter room</b> and the lid seals: nothing in there is ever taxed again, no matter how big it grows. Everything else flows to the <b>marital room</b>, which pays Lucy for life and then delivers exactly where Ricky said.",
+    "Lucy's vessel does the same pour in mirror image. Two shelters sealed, two marital rooms flowing. This is why the order of deaths never breaks the plan: the vessels are already built, whichever one pours first.",
     "And at the very bottom, the guard vessels. Every drop meant for Eve lands in her trust and never in her name, so her benefits never stop. Adam's holds his share until he is ready. Nothing outright, nothing accidental, nothing lost. That is the entire plan, and every chapter from here is one vessel up close."
   ];
   var stageStep = -1, stageBuilt = false;
