@@ -219,7 +219,35 @@
     border-radius:8px; padding:1px 6px; vertical-align:2px;}
   .asset .arevert{display:none; font-size:10.5px; color:#c9b98a; background:none; border:none; font-family:inherit; cursor:pointer; text-decoration:underline; padding:0; margin-top:5px;}
   .asset.changed .arevert{display:inline;}
-  @media (max-width:720px){ .wishcols,.twocol{grid-template-columns:1fr;} .nextline{display:none;} .stage{height:74vw;} }
+  /* live layer: ask bubble + tools */
+  .askbub{position:fixed; right:22px; bottom:70px; z-index:70; border:1px solid rgba(169,136,79,.6);
+    background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.45));
+    backdrop-filter:blur(16px) saturate(1.3); -webkit-backdrop-filter:blur(16px) saturate(1.3);
+    color:var(--navy); font-family:inherit; font-size:13px; font-weight:700; letter-spacing:.08em;
+    padding:11px 18px; border-radius:24px; cursor:pointer; box-shadow:0 10px 28px rgba(18,41,63,.16); transition:transform .25s;}
+  .askbub:hover{transform:translateY(-2px);}
+  .askpanel{position:fixed; right:22px; bottom:120px; z-index:70; width:min(380px,90vw); padding:16px; display:none; text-align:left;}
+  .askpanel.on{display:block; animation:fadein .4s ease;}
+  .askpanel .aprow{display:flex; gap:8px;}
+  .askpanel input{flex:1; min-width:0; font-family:inherit; font-size:14.5px; padding:10px 12px; border-radius:10px;
+    border:1px solid rgba(169,136,79,.5); background:rgba(255,255,255,.9); color:var(--ink); outline:none;}
+  .askpanel .asend{border:none; border-radius:10px; background:var(--navy); color:#fff; font-family:inherit; font-size:12px;
+    font-weight:700; letter-spacing:.1em; padding:0 16px; cursor:pointer;}
+  .askpanel .aans{margin-top:12px; font-size:14px; line-height:1.6; color:var(--ink); max-height:38vh; overflow-y:auto;}
+  .askpanel .asrc{margin-top:8px; font-size:11px; color:var(--muted);}
+  .askpanel .ahint{margin-top:8px; font-size:11px; color:var(--muted); font-style:italic;}
+  .toolform{margin-top:12px;}
+  .toolform .aprow{display:flex; gap:8px;}
+  .toolform input, .toolform textarea{flex:1; min-width:0; font-family:inherit; font-size:14.5px; padding:10px 12px; border-radius:10px;
+    border:1px solid rgba(169,136,79,.5); background:rgba(255,255,255,.9); color:var(--ink); outline:none;}
+  .toolform textarea{min-height:74px; resize:vertical;}
+  .toolform .asend{border:none; border-radius:10px; background:var(--gold); color:#fff; font-family:inherit; font-size:12px;
+    font-weight:700; letter-spacing:.1em; padding:10px 16px; cursor:pointer;}
+  .toolout{margin-top:12px; font-size:14px; line-height:1.6; color:var(--ink); display:none;}
+  .toolout.on{display:block; animation:fadein .4s ease;}
+  .toolout .trow{display:flex; justify-content:space-between; border-bottom:1px dotted rgba(90,106,120,.35); padding:4px 0; font-size:13.5px;}
+  .toolout .tgood{color:var(--good); font-weight:700;} .toolout .tbad{color:var(--brick); font-weight:700;}
+  @media (max-width:720px){ .wishcols,.twocol{grid-template-columns:1fr;} .nextline{display:none;} .stage{height:74vw;} .askbub{bottom:60px;} }
 </style>
 </head>
 <body>
@@ -336,6 +364,11 @@
   <div class="reveal glass" id="whyterms">Those numbers come straight off the mortality table, the same tables that price every life insurance policy written today. The current table gives a woman of 70 about 17 more years and a man of 50 nearly 30. So Lucy's term ends at 83 with roughly eight expected years still ahead of her, and Ricky's ends with decades to spare. And here is my rule, and it does not bend: the term always stays inside the table's number. Right at that number, making it through the term is basically a coin flip. Past it, the odds are quietly against you, and I do not build plans on odds that are against you. Could the two of you outlive the table? Maybe. People do it every day. But these tables have been humbling optimists since the 1740s, when two Scottish ministers used one to price the first pension fund for widows and predicted its balance twenty years out to within one pound. Their method spread across Europe and America for one reason: it kept being right. The law hands us the tool. The table tells us how hard we can lean on it.</div>
   <button class="ghostbtn" onclick="rev('qprtrisk')">What could go wrong?</button>
   <div class="reveal glass" id="qprtrisk">Honesty first: if one of you passes before your term ends, that half of the house comes back into the estate, and we are simply back where we started, no worse. That is why Lucy's term is shorter than Ricky's. And when the terms end, you stay right where you are and pay the children's trusts a fair rent, which quietly moves even more to them with no gift tax at all.</div>
+  <button class="ghostbtn" onclick="rev('deedtool6')">Try it on a real house, right now</button>
+  <div class="reveal glass" id="deedtool6">The capstone runs on the Ricardo numbers, but the machinery underneath is live. Type a real street address in Raleigh, Charlotte, Greensboro, Winston Salem, Fayetteville, or Wilmington and watch the county's own records answer: the deed book and page, the assessed value, the last sale. This is the same engine the Wealth Guide uses to read your deed and how your home is titled.
+    <div class="toolform"><div class="aprow"><input id="deedaddr6" placeholder="702 Glenwood Avenue, Raleigh" autocomplete="off"><button class="asend" onclick="PORTAL.deed.run(6)">PULL</button></div></div>
+    <div class="toolout" id="deedout6"></div>
+  </div>
   <div class="fork glass" id="fork6">
     <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">What if you hated the idea of ever paying rent on your own house?</div><div class="sw"></div></div>
     <div class="forkbody">Then we skip this vessel entirely and the house simply rides inside your two trusts. Nothing breaks. Lucy still has the home for life, the kids still inherit it, and probate never touches it. What changes is the arithmetic: the full $9,254,000, plus everything it grows into, stays on the taxable side of the ledger.
@@ -355,6 +388,11 @@
   <p class="lead">Second: California real estate owned at death by a North Carolina family means a second court case, in the most expensive probate state in America, before anyone inherits anything. So we cancel the courtroom and honor the ownership at the same time: you each place your half into its own vessel, Ricky for 15 years, Lucy for 13, the same table tested terms as Raleigh, counted together as a gift of about $3,360,000 instead of $6,820,000. When the terms end, the house sits in a trust that lets <b>the survivor use it for life</b>, and only then divides between Adam and Eve.</p>
   <button class="ghostbtn" onclick="rev('cpstep')">The one thing this trade gives up</button>
   <div class="reveal glass" id="cpstep">Community property carries a famous gift: when the first spouse passes and the property goes to the survivor, the tax law erases the old gain on the whole house, both halves, not just one. Give the house away during life and that erasure never happens. I want you to see the price tag before you nod. Here is why we still do it: the erasure saves a capital gains rate on yesterday's growth once, while the vessel removes tomorrow's growth from a 40 percent tax forever. On a house that doubled in six years, tomorrow wins. But that is a judgment, not a law of nature, and it is yours to make.</div>
+  <button class="ghostbtn" onclick="rev('deedtool7')">Test the record on your own place</button>
+  <div class="reveal glass" id="deedtool7">California counties do not answer our engine yet, but every North Carolina metro does. Put in any real address you own or love and see what the public record says about it, deed, value, and last sale, live.
+    <div class="toolform"><div class="aprow"><input id="deedaddr7" placeholder="Street address, City" autocomplete="off"><button class="asend" onclick="PORTAL.deed.run(7)">PULL</button></div></div>
+    <div class="toolout" id="deedout7"></div>
+  </div>
   <div class="fork glass" id="fork7">
     <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">What if you thought you might sell Malibu someday?</div><div class="sw"></div></div>
     <div class="forkbody">Then the vessels are the wrong tool, because they are built around keeping a residence, and a sale mid term forces awkward replumbing. Instead the house rides your two trusts as the community property it is, the California courtroom stays canceled, you keep full freedom to sell, and if it passes to the survivor at the first death, the old gain on the whole house is erased before any sale. Sometimes flexibility is worth more than a freeze.
@@ -427,6 +465,11 @@
     <div class="forkbody">Then we hand it over today and pay the toll at the gate: a gift now uses up $5,615,000 of exemption at full value, where the freeze vessel moves the growth for pennies. Sometimes the human answer beats the efficient one, and that is allowed. My job is only to make sure you choose it with the price tag showing.
       <div><span class="delta badd">$5,615,000 of exemption spent today</span><span class="delta bgood">the kids hold it now</span></div>
     </div>
+  </div>
+  <button class="ghostbtn" onclick="rev('foliotool')">Grade your own portfolio against this one</button>
+  <div class="reveal glass" id="foliotool">The Ricardos hold one stock at twenty percent of their wealth, which is exactly the concentration this chapter exists to fix. List your own holdings, one per line, ticker then dollars, and get the same checkup: count, concentration, and the doctrine that judges them.
+    <div class="toolform"><textarea id="folioin" placeholder="AAPL 40000&#10;VTI 120000&#10;NVDA 15000"></textarea><div class="aprow" style="margin-top:8px"><button class="asend" onclick="PORTAL.folio.run()">GRADE</button></div></div>
+    <div class="toolout" id="folioout"></div>
   </div>
   <div class="fork glass" id="fork10b">
     <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">What if we skipped the company to keep things simple?</div><div class="sw"></div></div>
@@ -531,6 +574,10 @@
     <div class="hs">Put in your real address and watch it pull your actual deed and read how your own home is titled. Walk all four seasons with your own goals. Same room, your family.</div>
   </a>
   <button class="continue" onclick="go(17)">One more thing: your homework</button>
+  <a class="handoff glass" href="https://kpfeffer.com/equity-guide.html">
+    <div class="ht">Run the return on equity engine</div>
+    <div class="hs">Every property you own has a working dollar and a lazy dollar. The Equity Guide computes return on equity for real addresses, compared against the live Cumberland County market map, so you can see which walls your money should be standing in.</div>
+  </a>
   <a class="handoff glass" href="https://kpfeffer.com/capstone.html">
     <div class="ht">Or open the workshop version of this exact plan</div>
     <div class="hs">Every decision from tonight as a toggle, with the savings recomputing live as you flip them.</div>
@@ -552,6 +599,14 @@
   <p class="lead">When the answers come back, the switches move, the numbers move with them, and we sit down again. That is not a follow up meeting. That is the plan working.</p>
   <div class="sig">Kristian R. Pfeffer</div>
 </section>
+
+<button class="askbub" id="askbub" style="display:none">Ask Kristian</button>
+<div class="askpanel glass" id="askpanel">
+  <div class="aprow"><input id="askq" placeholder="Ask about this page" autocomplete="off"><button class="asend" id="asksend">ASK</button></div>
+  <div class="aans" id="askans"></div>
+  <div class="asrc" id="asksrc"></div>
+  <div class="ahint">Answers come from Kristian's own published explainers. Nothing you type is stored.</div>
+</div>
 
 <div class="dots glass" id="dots"></div>
 <div class="fine">The Ricardo family is a fictional case study prepared for the TRST 760 capstone, Master of Trust and Wealth Management, Campbell University. Educational only. Nothing here is legal, tax, or investment advice, and nothing typed on this page is stored or transmitted. Kristian Pfeffer is not an attorney; drafting of legal instruments is the practice of law under N.C.G.S. Chapter 84 and belongs with licensed counsel.</div>
@@ -689,6 +744,7 @@
     document.getElementById("backarrow").className = "backarrow glass" + (n>1 ? " show" : "");
     visited[n] = true;
     updateRail();
+    PORTAL.ask.show(n > 0);
     if (n===2) countTotal();
     if (n===5) stageInit();
     if (n===15) finale();
@@ -840,6 +896,122 @@
     var el = document.getElementById("sbnw");
     if (raw) el.value = fmt(nw);
   }
+
+  /* ===================================================================
+     PORTAL live layer - modular components (standing rule: modular code)
+     PORTAL.ask   - Ask Kristian bubble, chapter aware context -> /api/ask
+     PORTAL.deed  - real property record pull -> /api/deed
+     PORTAL.folio - local portfolio checkup (no market data v1 doctrine)
+     =================================================================== */
+  var PORTAL = {};
+
+  PORTAL.ask = (function(){
+    var CITYLESS = { open:false };
+    var bub = document.getElementById("askbub");
+    var panel = document.getElementById("askpanel");
+    var input = document.getElementById("askq");
+    var ans = document.getElementById("askans");
+    var src = document.getElementById("asksrc");
+    function context(){
+      var ch = document.getElementById("ch"+cur);
+      if (!ch) return null;
+      var title = (ch.querySelector("h1")||{}).textContent || "";
+      var leads = Array.prototype.map.call(ch.querySelectorAll(".lead"), function(p){ return p.textContent; }).join(" ");
+      var openBits = Array.prototype.map.call(ch.querySelectorAll(".reveal.on, .fork.on .forkbody"), function(p){ return p.textContent; }).join(" ");
+      return { title: title, text: (leads + " " + openBits).slice(0, 4200), pair: "" };
+    }
+    function toggle(){
+      CITYLESS.open = !CITYLESS.open;
+      panel.className = "askpanel glass" + (CITYLESS.open ? " on" : "");
+      if (CITYLESS.open) input.focus();
+    }
+    function send(){
+      var q = input.value.trim();
+      if (q.length < 2) return;
+      ans.textContent = "Thinking it over.";
+      src.textContent = "";
+      fetch("/api/ask", { method:"POST", headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ q: q, context: context() }) })
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        ans.textContent = j.answer || "Something on my end did not answer just now.";
+        if (j.sources && j.sources.length) src.textContent = "Drawing on: " + j.sources.map(function(x){ return x.title; }).join("; ");
+      })
+      .catch(function(){ ans.textContent = "Could not reach the library just now. Try again in a moment."; });
+    }
+    bub.onclick = toggle;
+    document.getElementById("asksend").onclick = send;
+    input.addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); send(); } e.stopPropagation(); });
+    return { show: function(on){ bub.style.display = on ? "block" : "none"; if(!on){ CITYLESS.open=false; panel.className="askpanel glass"; } } };
+  })();
+
+  PORTAL.deed = (function(){
+    var CITY_COUNTY = { "raleigh":"WAKE", "charlotte":"MECKLENBURG", "greensboro":"GUILFORD",
+      "winston salem":"FORSYTH", "winston-salem":"FORSYTH", "fayetteville":"CUMBERLAND", "wilmington":"NEW HANOVER" };
+    function money(n){ return (n || n === 0) ? "$" + Math.round(n).toLocaleString("en-US") : "on file"; }
+    function run(n){
+      var raw = document.getElementById("deedaddr"+n).value.trim();
+      var out = document.getElementById("deedout"+n);
+      if (!raw){ return; }
+      var parts = raw.split(",");
+      var street = parts[0].trim();
+      var city = (parts[1] || "").trim().toLowerCase();
+      var county = CITY_COUNTY[city] || "";
+      out.className = "toolout on";
+      out.innerHTML = "Asking the county.";
+      var url = "/api/deed?address=" + encodeURIComponent(street) + (county ? "&county=" + encodeURIComponent(county) : "");
+      fetch(url).then(function(r){ return r.json(); }).then(function(j){
+        if (j.error || !(j.siteAddress || j.book || j.deedBook)){
+          out.innerHTML = "No record matched. The engine covers the six North Carolina metros; check the street spelling and include the city.";
+          return;
+        }
+        var rows = [];
+        rows.push(["The record I matched", (j.siteAddress || street) + (j.county ? ", " + j.county + " County" : "")]);
+        var bk = j.deedBook || j.book, pg = j.deedPage || j.page;
+        if (bk) rows.push(["Deed book and page", bk + " / " + (pg || "")]);
+        if (j.deedDate) rows.push(["Deed date", j.deedDate]);
+        if (j.totalAssessed || j.TOTAL_VALUE_ASSD) rows.push(["Assessed value", money(j.totalAssessed || j.TOTAL_VALUE_ASSD)]);
+        if (j.salePrice) rows.push(["Last sale", money(j.salePrice) + (j.saleDate ? ", " + j.saleDate : "")]);
+        if (j.yearBuilt) rows.push(["Year built", j.yearBuilt]);
+        out.innerHTML = rows.map(function(r){ return "<div class=\"trow\"><span>"+r[0]+"</span><span>"+r[1]+"</span></div>"; }).join("")
+          + "<div style=\"margin-top:9px; font-size:12.5px\">A wrong city can silently match a real but different house, so always read the matched address line first. For the full deed image, the title read, and the chain, take this address into the <a href=\"https://kpfeffer.com/wealth-guide.html\">Wealth Guide</a>; for the return on equity engine and the market comparisons, the <a href=\"https://kpfeffer.com/equity-guide.html\">Equity Guide</a>.</div>";
+      }).catch(function(){ out.innerHTML = "The county did not answer just now. Try again in a moment."; });
+    }
+    return { run: run };
+  })();
+
+  PORTAL.folio = (function(){
+    function run(){
+      var raw = document.getElementById("folioin").value.trim();
+      var out = document.getElementById("folioout");
+      if (!raw) return;
+      var lines = raw.split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
+      var pos = [];
+      lines.forEach(function(l){
+        var m = l.match(/^([A-Za-z.\-]{1,10})[\s,]+\$?([0-9,]+)/);
+        if (m) pos.push({ t: m[1].toUpperCase(), v: parseInt(m[2].replace(/,/g,""),10) || 0 });
+      });
+      out.className = "toolout on";
+      if (!pos.length){ out.innerHTML = "Could not read the list. One holding per line: ticker, then dollars."; return; }
+      var total = pos.reduce(function(a,b){ return a+b.v; }, 0);
+      var biggest = pos.slice().sort(function(a,b){ return b.v-a.v; })[0];
+      var share = total ? (biggest.v/total*100) : 0;
+      var rows = [];
+      rows.push("<div class=\"trow\"><span>Holdings</span><span>"+pos.length+"</span></div>");
+      rows.push("<div class=\"trow\"><span>Total</span><span>$"+total.toLocaleString("en-US")+"</span></div>");
+      rows.push("<div class=\"trow\"><span>Largest position</span><span>"+biggest.t+", "+share.toFixed(1)+" percent</span></div>");
+      var verdicts = [];
+      verdicts.push(share > 10
+        ? "<span class=\"tbad\">Concentration: "+biggest.t+" is above the ten percent line, the same shape as the Ricardos and their Campbell stock. The freeze and diversification chapters were written for exactly this.</span>"
+        : "<span class=\"tgood\">No single position crosses the ten percent concentration line.</span>");
+      verdicts.push(pos.length < 10
+        ? "<span class=\"tbad\">Thin count: under ten positions leaves unsystematic risk on the table, and diversification only ever kills unsystematic risk.</span>"
+        : "<span class=\"tgood\">Position count carries real diversification, judged properly by beta and Sharpe rather than by count alone.</span>");
+      out.innerHTML = rows.join("") + "<div style=\"margin-top:9px\">" + verdicts.join("<br>") + "</div>"
+        + "<div style=\"margin-top:9px; font-size:12.5px\">For the live charts, beta and Sharpe, and the full technical read, run these tickers through the Grow season of the <a href=\"https://kpfeffer.com/wealth-guide.html\">Wealth Guide</a>.</div>";
+    }
+    return { run: run };
+  })();
 
   document.addEventListener("keydown", function(e){
     if (!unlocked) return;
