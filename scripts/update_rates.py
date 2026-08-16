@@ -2,6 +2,8 @@
 """Refresh data/rates.json from public sources. Runs inside GitHub Actions, no PC required.
 Sources: IRS Section 7520 page, U.S. Treasury daily par yield curve XML, Yahoo Finance S&P 500 chart.
 Fails soft: if a source cannot be parsed, the existing value is kept."""
+import csv
+import io
 import json
 import pathlib, re, sys, urllib.request, datetime
 
@@ -374,6 +376,86 @@ def fetch_mortgage(existing):
     out["propertyChecked"] = datetime.date.today().isoformat()
     return out
 
+def fetch_loan_limits(existing):
+    """The conforming loan limit, county by county, which is also the VA county limit.
+
+    A veteran's entitlement is computed off it: twenty five percent of the county limit is
+    the maximum guarantee, and the down payment on a purchase above the remaining
+    entitlement is the difference. That is arithmetic a veteran should be able to do
+    without asking anyone, and it is impossible to do from memory because the limit moves
+    every single year and differs by county. So it is fetched, all one hundred, and stamped
+    with the year.
+
+    Written to data/loan-limits.json rather than into rates.json because it is a table
+    rather than a figure, and because the equity guide only loads it when a veteran asks.
+    """
+    year = datetime.date.today().year
+    urls = ["https://www.fhfa.gov/sites/default/files/2025-11/"
+            "FullCountyLoanLimitList%d_HERA-BASED_FINAL_FLAT.csv" % year,
+            "https://www.fhfa.gov/sites/default/files/2025-11/"
+            "FullCountyLoanLimitList%d_HERA-BASED_FINAL_FLAT.csv" % (year - 1)]
+    text = None
+    for u in urls:
+        try:
+            text = get(u)
+            if "County Name" in text or "COUNTY" in text.upper():
+                break
+        except Exception:
+            text = None
+    if not text:
+        print("loan limit fetch failed, leaving the table alone", file=sys.stderr)
+        return {}
+    rows = list(csv.reader(io.StringIO(text)))
+    if not rows:
+        print("loan limit file unreadable", file=sys.stderr)
+        return {}
+    head = [h.replace("\n", " ").strip().lower() for h in rows[0]]
+    def col(*names):
+        for i, h in enumerate(head):        # an exact header wins: "state" is not "fips state code"
+            if h in names:
+                return i
+        for i, h in enumerate(head):
+            if any(n in h for n in names):
+                return i
+        return None
+    ci, si, oi = col("county name"), col("state"), col("one-unit", "one unit")
+    ti, thi, fi = col("two-unit", "two unit"), col("three-unit", "three unit"), col("four-unit", "four unit")
+    if ci is None or si is None or oi is None:
+        print("loan limit columns not found: %s" % head, file=sys.stderr)
+        return {}
+    def money(v):
+        v = re.sub(r"[^0-9]", "", v or "")
+        return int(v) if v else None
+    table = {}
+    for r in rows[1:]:
+        if len(r) <= max(x for x in (ci, si, oi, ti, thi, fi) if x is not None):
+            continue
+        if (r[si] or "").strip().upper() != "NC":
+            continue
+        name = re.sub(r"\s+COUNTY$", "", (r[ci] or "").strip(), flags=re.I).title()
+        one = money(r[oi])
+        if not name or not one:
+            continue
+        table[name] = {"one": one,
+                       "two": money(r[ti]) if ti is not None else None,
+                       "three": money(r[thi]) if thi is not None else None,
+                       "four": money(r[fi]) if fi is not None else None}
+    if len(table) < 90:
+        print("only %d North Carolina counties parsed; not writing" % len(table), file=sys.stderr)
+        return {}
+    doc = {"note": ("Conforming loan limit by North Carolina county, which is the same figure "
+                    "the Department of Veterans Affairs uses as the county limit when computing "
+                    "entitlement. One, two, three and four unit limits."),
+           "source": "Federal Housing Finance Agency county loan limit list",
+           "url": u, "year": year, "counties": len(table), "limit": table}
+    pathlib.Path("data/loan-limits.json").write_text(
+        json.dumps(doc, separators=(",", ":"), sort_keys=True) + "\n")
+    print("loan limits: %d North Carolina counties, one unit %s to %s"
+          % (len(table), min(v["one"] for v in table.values()),
+             max(v["one"] for v in table.values())), file=sys.stderr)
+    return {"loanLimitYear": year,
+            "loanLimitSource": "Federal Housing Finance Agency county loan limit list"}
+
 def main():
     existing = load_existing()
     data = dict(existing)
@@ -384,6 +466,7 @@ def main():
     data.update(fetch_transfer_tax(existing))
     data.update(fetch_retirement_limits(existing))
     data.update(fetch_mortgage(existing))
+    data.update(fetch_loan_limits(existing))
     data["updated"] = datetime.date.today().isoformat()
     if {k: v for k, v in data.items() if k != "updated"} == {k: v for k, v in existing.items() if k != "updated"}:
         print("no change")

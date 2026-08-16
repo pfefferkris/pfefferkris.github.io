@@ -622,6 +622,15 @@ body.adv .teeth .tcard .whyln{display:block}
 
       <p class="tsub" style="margin-top:16px"><b>What the neighbors actually sold for.</b> This is the row of properties an appraiser lines up before any of the work starts &mdash; the same street where possible, the same rough size, the characteristics the county has on file, and what each one is recorded as having sold for. Nothing on it is from a multiple listing service, and that is a decision rather than a limitation: the county record is public, statewide, free, and nobody can take it away.</p>
       <button class="tbtn" id="q_comps" type="button">Pull the comparable sales</button>
+      <div id="q_adjwrap" style="display:none">
+        <p class="tsub" style="margin-top:12px"><b>The adjustments, which are mine and are rules of thumb.</b> A bedroom is worth about ten thousand, a full bathroom five, a half bath twenty five hundred. Square footage is handled differently: work out the price per foot, apply it to the difference, then <b>halve it</b> &mdash; because a bigger house is not worth proportionally more, and halving is the crude correction that keeps the number honest. Change any of them; they are starting points, not findings. The last column is yours: a closed privacy fence, a lake, a new roof, a bad corner. That column is where a broker earns the fee, and it is why there is a button on this page to ask me.</p>
+        <div class="trow">
+          <label>Per bedroom<input type="number" id="q_adjbed" value="10000" step="500"></label>
+          <label>Per full bath<input type="number" id="q_adjbath" value="5000" step="500"></label>
+          <label>Per half bath<input type="number" id="q_adjhalf" value="2500" step="250"></label>
+          <label>Your bedrooms<input type="number" id="q_mybed" placeholder="from the record" min="0" max="20"></label>
+        </div>
+      </div>
       <div class="roll-wrap"><table class="grid7" id="q_comp_tab" style="display:none"></table></div>
       <div class="tout" id="q_comp_out" style="display:none"></div>
       <div class="srcline" id="q_comp_src" style="display:none"></div>
@@ -871,6 +880,42 @@ body.adv .teeth .tcard .whyln{display:block}
       <div class="kpi" id="q_flip_kpi"></div>
       <div class="roll-wrap"><table class="grid7" id="q_flip_grid" style="display:none"></table></div>
       <div class="tout" id="q_flip_out">Add an after repair value, a purchase price and a rehab budget and the whole grid runs.</div>
+    </div>
+  </div>
+</section>
+<!-- ============================ 8 · THE DEAL ============================ -->
+<section class="stage">
+  <div class="lane-a">
+    <div class="advline" id="q_adv8" data-anchor="#q_coc_kpi"><b>Cash on cash is the only return that answers the question you actually asked.</b> Cap rate values the building and ignores you. Return on equity measures what is trapped inside it. Cash on cash measures the one thing you can feel: money out of pocket at closing against money in your pocket that year. The denominator is everything you actually spent &mdash; down payment plus closing costs plus what it took to make it rentable &mdash; and the numerator is the cash flow after every expense and the whole mortgage payment. It says nothing about appreciation, nothing about principal paydown, and nothing about tax, which is the point: it is the number that tells you whether the thing feeds you or you feed it. <br><br><b>Break-even occupancy</b> is its shadow and nobody computes it. It is the share of the year the property has to be rented just to cover its own costs, and the gap between that and full occupancy is your entire margin for a bad tenant, a slow winter, and a furnace. Above about eighty five percent, the deal has no room in it.</div>
+    <div class="advline" id="q_adv8b" data-anchor="#q_va_out"><b>Entitlement is not a credit score and not a coupon.</b> A VA guaranty is the Department&rsquo;s promise to the lender to cover a quarter of the loan, and the arithmetic follows from that: the county loan limit times twenty five percent is the maximum guaranty, less whatever is tied up in a loan you already have, and four times what remains is what you can borrow with nothing down. Above that, the down payment is not a percentage of the price &mdash; it is the shortfall between a quarter of the price and the guaranty you have left, which is a much smaller number than most veterans assume and the reason the second house is more possible than it sounds. Entitlement is restored when the loan is paid off or when a qualified buyer assumes it, and one restoration can be used without selling. This is the arithmetic; the Certificate of Eligibility is the fact, and the funding fee, the residual income test and the occupancy requirement are three more things a lender will apply that this box does not.</div>
+  </div>
+  <div class="lane-c">
+    <span class="era">Eight &middot; The Deal</span>
+    <div class="panel glass">
+      <h2>Does it feed you, or do you feed it?</h2>
+      <p class="lead">Everything above is about a property you already own. This is the screen for the one you are looking at &mdash; the same numbers you have already typed, turned into the three figures that decide whether to keep reading: what it returns on the cash you put in, how empty it can afford to be, and, if you served, what it would take out of pocket.</p>
+    </div>
+    <div class="teeth glass">
+      <p class="disc">Help me understand whether this is worth the cash it would take.</p>
+      <p class="tsub">The rent, taxes, insurance and operating percentages come from Stage Two, and the rate and term from Stage Three. Only the three things a purchase adds are asked for here.</p>
+      <div class="trow">
+        <label>Purchase price<input type="number" id="q_dprice" placeholder="from the asking price"></label>
+        <label>Down payment (%)<input type="number" id="q_ddown" value="25" min="0" max="100" step="0.5"></label>
+        <label>Closing costs<input type="number" id="q_dclose" placeholder="1 to 3% of price"></label>
+        <label>Repairs to make it rentable<input type="number" id="q_drehab" placeholder="0"></label>
+      </div>
+      <div class="needrow" id="q_deal_need"></div>
+      <div class="kpi" id="q_coc_kpi"></div>
+      <div class="tout" id="q_coc_out">Add a purchase price and the rents in Stage Two, and the deal screen runs.</div>
+
+      <div class="lesson" style="margin-top:16px"><b>If you served, the arithmetic is different.</b> Entitlement is the part almost nobody computes correctly, including lenders in a hurry. Your county limit is read live from the federal figure; what you have already used is on your Certificate of Eligibility, and zero is the right answer if this is your first.
+        <div class="trow">
+          <label>Entitlement already used<input type="number" id="q_vaused" placeholder="0"></label>
+          <label>County (for the limit)<input type="text" id="q_vacounty" placeholder="from the record, or type it" autocomplete="off"></label>
+        </div>
+        <div class="tout" id="q_va_out" style="display:none"></div>
+      </div>
+      <div class="foot" style="font-size:.68rem;color:var(--muted);margin-top:12px;line-height:1.5">Educational illustration only. Not a loan estimate, not a pre-approval, and not a substitute for a lender running your actual file.</div>
     </div>
   </div>
 </section>
@@ -1140,6 +1185,13 @@ $('q_hill').addEventListener('click',function(){
    the reconstruction is shown so a reader can throw out any part of it they know better.
    The history is fetched only when somebody asks for it, so it never costs a page load.
    ===================================================================== */
+var LIMITS=null,limWait=null;
+function loadLimits(){
+  if(LIMITS)return Promise.resolve(LIMITS);
+  if(!limWait)limWait=fetch('data/loan-limits.json').then(function(r){return r.json();})
+    .then(function(d){LIMITS=d;return d;});
+  return limWait;
+}
 var PMMS=null,pmmsWait=null;
 function loadPmms(){
   if(PMMS)return Promise.resolve(PMMS);
@@ -1725,6 +1777,97 @@ function calc(){
     $('q_flip_out').innerHTML='Add an after repair value, a purchase price and a rehab budget and the whole grid runs.';
   }
 
+
+  /* ---- 8 · the deal screen, and the veteran's version of it ---- */
+  var dprice=num('q_dprice')||ask||val, ddown=num('q_ddown')/100;
+  var dclose=num('q_dclose'), drehab=num('q_drehab');
+  var dneed=[];
+  if(!(dprice>0))dneed.push(['q_dprice','Add a purchase price']);
+  if(!(gsi>0))dneed.push(['q_units',MODE==='home'?'Add what it would rent for':'Add the rents']);
+  needRow('q_deal_need',dneed);
+  var kp8=[];
+  if(dprice>0&&gsi>0){
+    /* His own cash on cash sheet, line for line: net operating income less the whole
+       mortgage payment, over every dollar that actually left his hands at closing. */
+    var dloan=dprice*(1-ddown);
+    var drate=has('q_rate')?rate:(RTS.mortgage30||0);
+    var dpay=pmt(dloan,drate,30);
+    var dnoi=noi;                                   /* Stage Two, already computed */
+    var dcash=dnoi-dpay*12;
+    var dinvest=dprice*ddown+dclose+drehab;
+    var coc=dinvest>0?dcash/dinvest:NaN;
+    var gross=gsi;
+    var opexOnly=fixed+ (egi>0?egi*(mg+mt+rs):0);
+    var breakeven=gross>0?(opexOnly+dpay*12)/gross:NaN;
+    var onePct=dprice>0?(rr.monthly/dprice):NaN;
+    kp8.push(['Cash on cash return',isFinite(coc)?pc(coc):'—',
+      money(dcash)+' a year on '+money(dinvest)+' in',
+      coc>=0.08?'good':coc>=0.04?'':'bad','hero']);
+    kp8.push(['Cash in at closing',money(dinvest),
+      money(dprice*ddown)+' down + '+money(dclose)+' costs + '+money(drehab)+' repairs']);
+    kp8.push(['Cash flow',money(dcash/12)+'/mo',money(dcash)+' a year after everything',
+      dcash>=0?'good':'bad']);
+    kp8.push(['Break-even occupancy',isFinite(breakeven)?pc(breakeven,0):'—',
+      breakeven<=0.85?'room for a bad year':'no room in it',breakeven<=0.85?'good':'bad']);
+    kp8.push(['Rent to price',isFinite(onePct)?(onePct*100).toFixed(2)+'%':'—',
+      'the one percent rule, monthly rent over price']);
+  }
+  paintKpi('q_coc_kpi',kp8.map(function(k){return [k[0],k[1],k[2],k[3]==='hero'?'hero':k[3]];}));
+  out=$('q_coc_out');
+  if(kp8.length){
+    var dloan2=dprice*(1-ddown),drate2=has('q_rate')?rate:(RTS.mortgage30||0);
+    var dpay2=pmt(dloan2,drate2,30),dinv2=dprice*ddown+dclose+drehab,dcash2=noi-dpay2*12;
+    var coc2=dinv2>0?dcash2/dinv2:0;
+    var be2=gsi>0?((fixed+(egi>0?egi*(mg+mt+rs):0))+dpay2*12)/gsi:0;
+    out.innerHTML='Putting <b>'+money(dinv2)+'</b> in gets you <b>'+money(dcash2)+'</b> a year, which is a '+
+      'cash on cash return of <b>'+pc(coc2)+'</b>'+
+      (coc2>=0.08?'. That is the range people are actually hunting for.':
+       coc2>=0.04?'. Real, but thin enough that one bad year erases a good one.':
+       coc2>=0?'. Positive, and barely. Money in a Treasury does better with none of the work.':
+       '. Negative: you would be paying for the privilege of owning it, every month.')+
+      ' It has to stay rented <b>'+pc(be2,0)+'</b> of the year just to cover itself'+
+      (be2>0.85?', which leaves almost nothing for a turnover and a repair in the same season.':
+                ', which leaves real room for a bad tenant and a bad winter.')+
+      ' <b>None of this counts appreciation, principal paydown or the depreciation shelter</b> &mdash; '+
+      'Stage Five counts all three. Cash on cash answers a narrower question on purpose: does it feed you.';
+  }else{out.innerHTML='Add a purchase price and the rents in Stage Two, and the deal screen runs.';}
+
+  /* the veteran's arithmetic, on the live county limit */
+  var vout=$('q_va_out');
+  var vcounty=($('q_vacounty').value||'').trim()||((RECORD.parcel&&RECORD.parcel.county)||'');
+  if(vcounty&&!$('q_vacounty').dataset.touched&&!$('q_vacounty').value)$('q_vacounty').value=vcounty;
+  if(dprice>0&&vcounty){
+    loadLimits().then(function(){
+      var key=Object.keys(LIMITS.limit||{}).find(function(k){
+        return k.toUpperCase()===vcounty.toUpperCase().replace(/\s+COUNTY$/,'');});
+      var lim=key?LIMITS.limit[key].one:null;
+      if(!lim){vout.style.display='';vout.innerHTML='I could not match "'+esc(vcounty)+'" to a North Carolina county, so the limit is missing. Type the county name on its own.';return;}
+      var guarantyMax=lim*0.25;
+      var used=num('q_vaused');
+      var avail=Math.max(0,guarantyMax-used);
+      var maxNoDown=avail*4;
+      var needed=dprice*0.25;
+      var down=Math.max(0,needed-avail);
+      vout.style.display='';
+      vout.innerHTML='<b>'+esc(key)+' County&rsquo;s limit for '+(LIMITS.year||'')+' is '+money(lim)+
+        '</b>, so the maximum guaranty is a quarter of it, <b>'+money(guarantyMax)+'</b>.'+
+        (used?' You have '+money(used)+' tied up already, leaving <b>'+money(avail)+'</b>.':' None of it is used, so all of it is available.')+
+        ' Four times that is <b>'+money(maxNoDown)+'</b> &mdash; the most you can borrow with nothing down.'+
+        '<br><br>On a purchase at '+money(dprice)+', the lender wants a quarter of the price guaranteed, which is '+
+        money(needed)+'. '+
+        (down<=0
+          ? '<b>Your entitlement covers it, so the down payment is zero.</b>'
+          : '<b>The shortfall is '+money(down)+'</b>, and that is your down payment &mdash; not '+
+            pc(ddown,0)+' of the price, which would be '+money(dprice*ddown)+'. Notice the difference: '+
+            money(dprice*ddown-down)+' less than the box above assumes.')+
+        ' <span style="font-size:.72rem;color:var(--muted)">Live from the '+
+        esc(RTS.loanLimitSource||'Federal Housing Finance Agency county loan limit list')+
+        '. The funding fee, the residual income test and the occupancy requirement are three more things '+
+        'a lender applies that this does not, and your Certificate of Eligibility is the only document that '+
+        'settles what you have actually used.</span>';
+    }).catch(function(){vout.style.display='none';});
+  }else{vout.style.display='none';}
+
   syncSoon();
 }
 
@@ -1847,6 +1990,90 @@ function rodLink(county){
 }
 
 function compCell(v){return (v===null||v===undefined||v==='')?'&mdash;':v;}
+var COMPS=null;
+function adjOf(c,subj){
+  /* His method, and only his method. A bedroom is ten thousand. Square footage is priced
+     at the comparable's own dollars per foot and then halved, because a bigger house is
+     not worth proportionally more and half is the crude correction that keeps it honest. */
+  var bedAmt=num('q_adjbed'),myBed=has('q_mybed')?num('q_mybed'):(subj.bedrooms||0);
+  var a={bed:0,sf:0,manual:0,total:0,notes:[]};
+  if(myBed&&c.bedrooms){
+    a.bed=(myBed-c.bedrooms)*bedAmt;
+    if(a.bed)a.notes.push((myBed-c.bedrooms>0?'+':'')+(myBed-c.bedrooms)+' bed');
+  }
+  if(subj.heatedArea&&c.heatedArea&&c.pricePerFoot){
+    a.sf=(subj.heatedArea-c.heatedArea)*(c.pricePerFoot/2);
+    if(Math.abs(a.sf)>=250)a.notes.push((subj.heatedArea-c.heatedArea>0?'+':'')+
+      (subj.heatedArea-c.heatedArea).toLocaleString()+' sf at half of $'+c.pricePerFoot);
+  }
+  var mi=document.querySelector('.cadj[data-pin="'+String(c.pin).replace(/"/g,'')+'"]');
+  a.manual=mi?(parseFloat(mi.value)||0):0;
+  a.total=a.bed+a.sf+a.manual;
+  return a;
+}
+function paintComps(){
+  if(!COMPS)return;
+  var d=COMPS,s=d.subject||{},rows=d.comps||[],tab=$('q_comp_tab'),out=$('q_comp_out');
+  var h='<thead><tr><th>Property</th><th>Miles</th><th>Heated sf</th><th>Beds</th><th>Built</th>'+
+        '<th>Sold for</th><th>When</th><th>Per foot</th><th>My adjustments</th><th>Yours</th>'+
+        '<th>Adjusted</th></tr></thead><tbody>';
+  var myBed=has('q_mybed')?num('q_mybed'):(s.bedrooms||0);
+  h+='<tr style="background:rgba(169,136,79,.16)"><td><b>'+esc(s.address||'This property')+
+     '</b><br><span style="font-size:.62rem;color:var(--muted);font-weight:400">the subject</span></td>'+
+     '<td>&mdash;</td><td>'+compCell(s.heatedArea&&s.heatedArea.toLocaleString())+'</td>'+
+     '<td>'+compCell(myBed||null)+'</td><td>'+compCell(s.yearBuilt)+'</td>'+
+     '<td>'+(s.salePrice?money(s.salePrice):'&mdash;')+'</td><td>'+compCell(s.saleDate)+'</td>'+
+     '<td>'+(s.assessedPerFoot?'$'+s.assessedPerFoot+' assessed':'&mdash;')+'</td>'+
+     '<td colspan="3" style="text-align:left;font-size:.68rem;color:var(--muted)">every row below is adjusted <em>to</em> this one</td></tr>';
+  var adjusted=[];
+  rows.forEach(function(c){
+    var a=adjOf(c,s);
+    var fin=c.salePrice?c.salePrice+a.total:null;
+    if(fin)adjusted.push(fin);
+    var pin=String(c.pin||'').replace(/"/g,'');
+    h+='<tr><td>'+esc(c.address||'—')+(c.deedType?'<br><span style="font-size:.62rem;color:var(--muted);font-weight:400">'+
+         esc(String(c.deedType).toLowerCase())+'</span>':'')+'</td>'+
+       '<td>'+compCell(c.miles)+'</td><td>'+compCell(c.heatedArea&&c.heatedArea.toLocaleString())+'</td>'+
+       '<td>'+compCell(c.bedrooms)+'</td><td>'+compCell(c.yearBuilt)+'</td>'+
+       '<td>'+(c.salePrice?money(c.salePrice):'&mdash;')+'</td><td>'+compCell(c.saleDate)+'</td>'+
+       '<td>'+(c.pricePerFoot?'$'+c.pricePerFoot:'&mdash;')+'</td>'+
+       '<td style="text-align:right">'+(a.bed||a.sf?money(a.bed+a.sf):'&mdash;')+
+         (a.notes.length?'<br><span style="font-size:.6rem;color:var(--muted);font-weight:400">'+esc(a.notes.join(', '))+'</span>':'')+'</td>'+
+       '<td><input type="number" class="cadj" data-pin="'+esc(pin)+'" value="'+(a.manual||'')+
+         '" placeholder="0" style="width:88px;padding:5px 6px;border:1px solid var(--line);border-radius:7px;font:inherit;font-size:.78rem;background:#fff"></td>'+
+       '<td class="'+(fin?'d':'')+'">'+(fin?'<b>'+money(fin)+'</b>':'&mdash;')+'</td></tr>';
+  });
+  tab.innerHTML=h+'</tbody>';tab.style.display='';
+  document.querySelectorAll('.cadj').forEach(function(i){
+    i.addEventListener('input',function(){clearTimeout(i._t);i._t=setTimeout(paintComps,300);});
+  });
+  var msg='<b>'+rows.length+' comparable'+(rows.length===1?'':'s')+'</b>, found inside <b>'+
+    (d.searchMiles||'—')+' of a mile</b>'+(d.sizeBand?' and within '+d.sizeBand+' percent of your square footage':'')+'. ';
+  if(d.school){
+    msg+=d.school.assigned
+      ? '<b>School assignment:</b> '+[d.school.elementary&&d.school.elementary+' Elementary',
+          d.school.middle&&d.school.middle+' Middle',d.school.high&&d.school.high+' High']
+          .filter(Boolean).map(esc).join(', ')+'. Attendance areas are why streets become markets, '+
+          'and every comparable above sits inside this one. '
+      : '<b>Nearest schools:</b> '+(d.school.nearest||[]).slice(0,3).map(function(x){
+          return esc(x.name)+' ('+x.miles+' mi)';}).join(', ')+'. '+
+        'This district does not publish its attendance boundaries as data, so that is proximity, '+
+        'not assignment &mdash; and the two are often different, which is exactly the thing that moves a price. ';
+  }
+  if(adjusted.length){
+    adjusted.sort(function(a,b){return a-b;});
+    var lo=adjusted[0],hi=adjusted[adjusted.length-1];
+    var mid=adjusted.length%2?adjusted[(adjusted.length-1)/2]:(adjusted[adjusted.length/2-1]+adjusted[adjusted.length/2])/2;
+    msg+='<br><br><b>Adjusted, they land between '+money(lo)+' and '+money(hi)+'</b>, with the middle at '+
+      money(mid)+'. That spread of '+money(hi-lo)+' is the answer, not the middle of it: '+
+      'a range is what the evidence supports and a single number is what somebody wants to hear. ';
+  }
+  msg+='<br><br>'+esc(d.disclosure)+'<br><br><b>Left out on purpose:</b> '+esc(d.excluded);
+  if(d.method)msg+='<br><br><b>How these five were chosen:</b> '+esc(d.method);
+  if((d.limits||[]).length)msg+='<br><br><b>What is weak about this set:</b> '+d.limits.map(esc).join(' ');
+  out.style.display='';out.innerHTML=msg;
+  syncSoon();
+}
 $('q_comps').addEventListener('click',function(){
   var a=($('q_addr').value||'').trim();
   var out=$('q_comp_out'),tab=$('q_comp_tab'),src=$('q_comp_src');
@@ -1858,63 +2085,37 @@ $('q_comps').addEventListener('click',function(){
     .then(function(r){return r.ok?r.json():r.json().then(function(j){throw new Error(j.error||'no');});})
     .then(function(d){
       btn.disabled=false;btn.textContent='Pull the comparable sales';
-      var rows=d.comps||[],s=d.subject||{};
-      if(!rows.length){
-        tab.style.display='none';
+      if(!(d.comps||[]).length){
+        tab.style.display='none';$('q_adjwrap').style.display='none';
         out.innerHTML='<b>Nothing nearby came back.</b> '+((d.limits||[]).join(' ')||
           'Either the county publishes no sales, or nothing comparable has changed hands close enough to be worth showing.');
         return;
       }
-      var h='<thead><tr><th>Property</th><th>Miles</th><th>Heated sf</th><th>Beds</th><th>Built</th>'+
-            '<th>Grade &amp; condition</th><th>Sold for</th><th>When</th><th>Per foot</th></tr></thead><tbody>';
-      h+='<tr style="background:rgba(169,136,79,.16)"><td><b>'+esc(s.address||'This property')+
-         '</b><br><span style="font-size:.62rem;color:var(--muted);font-weight:400">the subject</span></td>'+
-         '<td>&mdash;</td><td>'+compCell(s.heatedArea&&s.heatedArea.toLocaleString())+'</td>'+
-         '<td>'+compCell(s.bedrooms)+'</td><td>'+compCell(s.yearBuilt)+'</td>'+
-         '<td>'+compCell([s.grade,s.condition].filter(Boolean).join(' &middot; '))+'</td>'+
-         '<td>'+(s.salePrice?money(s.salePrice):'&mdash;')+'</td><td>'+compCell(s.saleDate)+'</td>'+
-         '<td>'+(s.assessedPerFoot?'$'+s.assessedPerFoot+' assessed':'&mdash;')+'</td></tr>';
-      rows.forEach(function(c){
-        h+='<tr><td>'+esc(c.address||'—')+(c.deedType?'<br><span style="font-size:.62rem;color:var(--muted);font-weight:400">'+
-             esc(String(c.deedType).toLowerCase())+'</span>':'')+'</td>'+
-           '<td>'+compCell(c.miles)+'</td><td>'+compCell(c.heatedArea&&c.heatedArea.toLocaleString())+'</td>'+
-           '<td>'+compCell(c.bedrooms)+'</td><td>'+compCell(c.yearBuilt)+'</td>'+
-           '<td>'+compCell([c.grade,c.condition].filter(Boolean).join(' &middot; '))+'</td>'+
-           '<td>'+(c.salePrice?money(c.salePrice):'&mdash;')+'</td><td>'+compCell(c.saleDate)+'</td>'+
-           '<td>'+(c.pricePerFoot?'<b>$'+c.pricePerFoot+'</b>':'&mdash;')+'</td></tr>';
-      });
-      tab.innerHTML=h+'</tbody>';tab.style.display='';
-      var msg='<b>'+rows.length+' properties within '+
-        (rows[rows.length-1].miles!==null?rows[rows.length-1].miles+' miles':'the neighborhood')+'</b>, '+
-        d.soldCount+' of them with a recorded sale price. ';
-      if(d.perFoot){
-        msg+='They sold between <b>$'+d.perFoot.low+'</b> and <b>$'+d.perFoot.high+
-             '</b> a heated square foot, with the middle one at $'+d.perFoot.middle+'. '+
-             (s.heatedArea?'On '+s.heatedArea.toLocaleString()+' heated feet that whole range is '+
-               money(d.perFoot.low*s.heatedArea)+' to '+money(d.perFoot.high*s.heatedArea)+
-               ', which is a spread of '+money((d.perFoot.high-d.perFoot.low)*s.heatedArea)+
-               ' and is exactly why nobody should hand you one number. ':'');
-      }
-      msg+='<br><br>'+esc(d.disclosure)+'<br><br><b>Left out on purpose:</b> '+esc(d.excluded);
-      if((d.limits||[]).length)msg+='<br><br><b>What is weak about this set:</b> '+d.limits.map(esc).join(' ');
-      out.innerHTML=msg;
+      COMPS=d;
+      $('q_adjwrap').style.display='';
+      if(d.subject&&d.subject.bedrooms&&!$('q_mybed').dataset.touched)$('q_mybed').value=d.subject.bedrooms;
+      paintComps();
       src.style.display='';
-      src.innerHTML='<b>Source:</b> '+esc(d.source||'county records')+'. No listing service data appears '+
-        'anywhere on this page. An IDX feed may not be used for anything but display of listings, and every '+
-        'North Carolina multiple listing service forbids a closed-sale display from being presented as a '+
-        'comparative market analysis. County records carry no such restriction: under N.C. Gen. Stat. '+
-        'Section 132-1 public records are the property of the people, and Section 132-10 expressly excludes '+
-        'a licensed professional&rsquo;s own use from the commercial-purpose limit a county may impose.';
-      syncSoon();
+      src.innerHTML='<b>Source:</b> '+esc(d.source||'county records')+
+        (d.school?' School data: '+esc(d.school.source)+'.':'')+
+        ' No listing service data appears anywhere on this page. An IDX feed may not be used for anything '+
+        'but display of listings, and every North Carolina multiple listing service forbids a closed-sale '+
+        'display from being presented as a comparative market analysis. County records carry no such '+
+        'restriction: under N.C. Gen. Stat. Section 132-1 public records are the property of the people, '+
+        'and Section 132-10 expressly excludes a licensed professional&rsquo;s own use from the '+
+        'commercial-purpose limit a county may impose.';
     })
-    .catch(function(e){
+    .catch(function(){
       btn.disabled=false;btn.textContent='Pull the comparable sales';
-      tab.style.display='none';
+      tab.style.display='none';$('q_adjwrap').style.display='none';
       out.innerHTML='<b>The comparable lookup did not answer.</b> '+
         'Deep coverage runs where a county publishes its own records: Wake, Mecklenburg, and the eleven '+
         'counties on the shared assessor platform. Everywhere else the statewide layer carries assessments '+
         'but not prices, and this stops rather than inventing a number.';
     });
+});
+['q_adjbed','q_adjbath','q_adjhalf','q_mybed'].forEach(function(id){
+  var e=$(id);if(e)e.addEventListener('input',function(){e.dataset.touched='1';paintComps();});
 });
 
 /* ---------- live recompute, debounced ---------- */
@@ -2052,6 +2253,9 @@ $('q_addr').addEventListener('keydown',function(e){if(e.key==='Enter'){e.prevent
 /* first paint */
 calc();
 window.EQCALC=calc;
+/* the comparable renderer, reachable so its arithmetic can be driven by a test with a
+   known set rather than whatever a county happened to answer with that morning */
+window.EQCOMPS=function(d){COMPS=d;paintComps();};
 })();
 </script>
 
