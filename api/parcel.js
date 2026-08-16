@@ -180,6 +180,92 @@ async function meck(street) {
   return out;
 }
 
+/* ---------------- tier 1c: Cumberland ----------------
+   The deepest single parcel record published by any county in the state, and the only one
+   that publishes bathrooms. Everywhere else a bathroom adjustment has nothing to stand on.
+   Two things about this table are easy to read wrong and are handled here rather than
+   left to the reader:
+     - ADDRESS is the owner's mailing address, which is often a post office box. The
+       address of the house is LOCATION_ADDR. Matching on ADDRESS returns the wrong parcel.
+     - TOTAL_PROP_VALUE is the value the assessor settled on, by whichever approach
+       VALUE_APPROACH names. TOTAL_LAND_VALUE_ASSESSED and TOTAL_BLDG_VALUE_ASSESSED are
+       the cost-approach components and do not have to add up to it. Treating their sum as
+       the total, or the total as their sum, produces a land share that is simply wrong. */
+const CUMB = "https://gis.co.cumberland.nc.us/server/rest/services/Tax/Parcels/MapServer/0/query";
+const CUMB_F = "PIN,LOCATION_ADDR,CITY,ZIP,ACREAGE,ZONING,LAND_CLASS,NEIGHBORHOOD,VCS,TOWNSHIP," +
+  "HEATED_AREA,GROSS_LEASABLE_AREA,BEDROOMS,BATH_FULL,BATH_HALF,YEAR_BUILT,EFF_YEAR,GRADE," +
+  "CONDITION,BLDG_DESC,BLDG_TYPE,STORY_HEIGHT,UNITS,TOTAL_UNITS," +
+  "TOTAL_PROP_VALUE,TOTAL_LAND_VALUE_ASSESSED,TOTAL_BLDG_VALUE_ASSESSED,TOTAL_OBLDG_VALUE," +
+  "COST_TOTAL_VALUE,INCOME_TOTAL_VALUE,SALES_COMP_TOTAL_VALUE,VALUE_APPROACH," +
+  "USE_VALUE_DEFERRED,HISTORIC_VALUE_DEFERRED,TOTAL_DEFERRED_VALUE,VETRANS_EXCL,ELDERLY_EXCL," +
+  "EXEMPTION_DESC,PKG_SALE_PRICE,PKG_SALE_DATE,LAND_SALE_PRICE,LAND_SALE_DATE," +
+  "REVENUE_STAMPS,DEED_BOOK,DEED_PAGE,DEED_DATE,PLAT_BOOK,PLAT_PAGE,PERMIT_DATE,PERMIT_NUMBER," +
+  "IS_PENDING,ETJ,FIRE_DISTRICT";
+
+const APPROACH = { VLAPSALESCOMP: "the sales comparison approach", VLAPCOST: "the cost approach",
+                   VLAPINCOME: "the income approach" };
+
+async function cumberland(street) {
+  const s = street.replace(/'/g, "''");
+  let j = await agQuery(CUMB, "LOCATION_ADDR LIKE '" + s + "%'", CUMB_F, 3);
+  let f = (j.features || [])[0];
+  if (!f) {                                   // "123 N Main" against a table that splits the prefix
+    const t = s.split(" ");
+    if (t.length > 2) {
+      j = await agQuery(CUMB, "PHYADDR_STR_NUM='" + t[0] + "' AND PHYADDR_STR LIKE '" +
+        t.slice(1).join(" ") + "%'", CUMB_F, 3);
+      f = (j.features || [])[0];
+    }
+  }
+  if (!f) return null;
+  const a = f.attributes;
+  const land = n(a.TOTAL_LAND_VALUE_ASSESSED), bldg = n(a.TOTAL_BLDG_VALUE_ASSESSED);
+  const out = {
+    county: "Cumberland", pin: a.PIN || null, address: a.LOCATION_ADDR || null,
+    city: a.CITY || null, zip: a.ZIP || null,
+    source: "Cumberland County tax parcel record (the county's own GIS)", depth: "deep",
+    assessed: {
+      land: land, building: bldg, total: n(a.TOTAL_PROP_VALUE),
+      otherBuildings: n(a.TOTAL_OBLDG_VALUE),
+      // the assessor's own components are the defensible allocation for depreciation,
+      // whatever total the chosen approach landed on
+      landShare: (land && bldg) ? Math.round((land / (land + bldg)) * 1000) / 10 : null,
+      byCost: n(a.COST_TOTAL_VALUE), byIncome: n(a.INCOME_TOTAL_VALUE),
+      bySalesComparison: n(a.SALES_COMP_TOTAL_VALUE),
+      approach: APPROACH[a.VALUE_APPROACH] || a.VALUE_APPROACH || null,
+      deferred: n(a.TOTAL_DEFERRED_VALUE),
+      exemption: str0(a.EXEMPTION_DESC),
+      veteranExclusion: str0(a.VETRANS_EXCL), elderlyExclusion: str0(a.ELDERLY_EXCL),
+      pendingAppeal: a.IS_PENDING === "Y" || null
+    },
+    building: {
+      heatedArea: n(a.HEATED_AREA), grossLeasableArea: n(a.GROSS_LEASABLE_AREA),
+      bedrooms: n(a.BEDROOMS), bathsFull: n(a.BATH_FULL),
+      bathsHalf: a.BATH_HALF == null || a.BATH_HALF === "" ? null : (parseInt(a.BATH_HALF, 10) || 0),
+      yearBuilt: n(a.YEAR_BUILT), effectiveYear: n(a.EFF_YEAR),
+      grade: str0(a.GRADE), condition: str0(a.CONDITION),
+      style: str0(a.BLDG_DESC) || str0(a.BLDG_TYPE), storyHeight: str0(a.STORY_HEIGHT),
+      units: n(a.TOTAL_UNITS) || n(a.UNITS)
+    },
+    land: {
+      acres: n(a.ACREAGE), use: str0(a.LAND_CLASS), zoning: str0(a.ZONING),
+      neighborhood: str0(a.NEIGHBORHOOD), marketArea: str0(a.VCS),
+      township: str0(a.TOWNSHIP), jurisdiction: str0(a.ETJ)
+    },
+    sales: [saleRow({ date: a.PKG_SALE_DATE, price: a.PKG_SALE_PRICE,
+                      stamps: a.REVENUE_STAMPS, book: a.DEED_BOOK, page: a.DEED_PAGE })]
+             .filter(x => x.date || x.price || x.stamps),
+    deed: { book: (a.DEED_BOOK || "").replace(/^0+(?=\d)/, "") || null,
+            page: (a.DEED_PAGE || "").replace(/^0+(?=\d)/, "") || null,
+            recorded: iso(a.DEED_DATE),
+            plat: a.PLAT_BOOK ? (a.PLAT_BOOK + "/" + a.PLAT_PAGE) : null },
+    permit: (a.PERMIT_NUMBER && iso(a.PERMIT_DATE) && iso(a.PERMIT_DATE) > "1900-01-01")
+              ? { number: a.PERMIT_NUMBER, date: iso(a.PERMIT_DATE) } : null
+  };
+  return out;
+}
+function str0(v) { const t = String(v == null ? "" : v).trim(); return t ? t : null; }
+
 /* ---------------- tier 1c: the shared NCPTS tax platform ---------------- */
 async function ncpts(tenant, street) {
   const H = { "X-Tenant": tenant };
@@ -325,6 +411,7 @@ export default async function handler(req, res) {
     const C = String(countyName || "").toUpperCase();
     if (C.indexOf("WAKE") === 0) return wake(street);
     if (C.indexOf("MECKLENBURG") === 0) return meck(street);
+    if (C.indexOf("CUMBERLAND") === 0) return cumberland(street);
     const t = NCPTS.find(x => C.indexOf(x.toUpperCase()) === 0);
     return t ? ncpts(t, street) : null;
   }
@@ -359,7 +446,14 @@ export default async function handler(req, res) {
     // what the reader should know about the answer they just got
     const notes = [];
     const A = out.assessed || {};
-    if (A.land && A.total) out.assessed.landShare = Math.round((A.land / A.total) * 1000) / 10;
+    /* Land share for the depreciation split. Where the county publishes both components,
+       land over land-plus-building is the allocation that survives a question, because the
+       final assessed total may have come from a different approach entirely and need not
+       equal the two parts. Falling back to land over total is only for counties that
+       publish no building value at all. */
+    if (A.landShare) { /* the county source already computed it from its own components */ }
+    else if (A.land && A.building) out.assessed.landShare = Math.round((A.land / (A.land + A.building)) * 1000) / 10;
+    else if (A.land && A.total) out.assessed.landShare = Math.round((A.land / A.total) * 1000) / 10;
     else notes.push("This county does not publish its land and building split, so the land share " +
                     "for depreciation has to be your own allocation.");
     const arms = (out.sales || []).filter(s => s.armsLength && (s.price || s.stampPrice));
@@ -381,6 +475,24 @@ export default async function handler(req, res) {
     }
     if (bl.percentComplete && parseFloat(bl.percentComplete) < 100) {
       notes.push("The assessor has this building at " + bl.percentComplete + " percent complete.");
+    }
+    if (A.approach && A.byCost && A.total && Math.abs(A.byCost - A.total) > A.total * 0.02) {
+      notes.push("The assessor valued this by " + A.approach + " at $" + A.total.toLocaleString() +
+                 ". Its cost-approach figure for the same parcel is $" + A.byCost.toLocaleString() +
+                 ". The land and building split above comes from the cost side, which is why the " +
+                 "two parts do not add to the total.");
+    }
+    if (A.pendingAppeal) {
+      notes.push("This parcel has an appeal pending on its assessment, so the assessed value " +
+                 "is not settled.");
+    }
+    if (A.veteranExclusion) {
+      notes.push("The disabled veteran exclusion is on this parcel. It runs with the owner, " +
+                 "not the land, so a buyer does not inherit it and the tax line will change.");
+    }
+    if (A.deferred) {
+      notes.push("$" + A.deferred.toLocaleString() + " of value is deferred. Deferred taxes come " +
+                 "due on a change of use, and in North Carolina that bill can reach back three years.");
     }
     if (out.tax && out.tax.delinquentYears && out.tax.delinquentYears.length) {
       notes.push("Property tax is unpaid for " + out.tax.delinquentYears.join(", ") +
