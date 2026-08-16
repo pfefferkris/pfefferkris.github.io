@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>A Private Room | The Ricardo Family</title>
+<style>
+  :root{
+    --paper:#f7f2e7; --ink:#1c2a24; --ink2:#41544a; --brass:#a8802f; --brassdim:#c9b98a;
+    --good:#2e7d4f; --bad:#a33b2e; --card:#fffdf7; --line:#d9cfb8; --shadow:0 10px 30px rgba(28,42,36,.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:Georgia, "Times New Roman", serif;
+    overflow:hidden;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; opacity:.5;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(168,128,47,.10), transparent 60%),
+      radial-gradient(900px 500px at 0% 110%, rgba(46,125,79,.07), transparent 60%);
+  }
+  .chapter{
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:6vh 8vw 12vh; text-align:center; opacity:0; visibility:hidden; transform:translateY(18px);
+    transition:opacity .7s ease, transform .7s ease, visibility .7s;
+    overflow-y:auto;
+  }
+  .chapter.on{opacity:1; visibility:visible; transform:none;}
+  .kicker{
+    font-size:13px; letter-spacing:.28em; text-transform:uppercase; color:var(--brass); margin-bottom:18px;
+  }
+  h1{font-size:clamp(30px,4.6vw,54px); font-weight:normal; line-height:1.15; max-width:21ch;}
+  h1 b{font-weight:bold;}
+  .lead{font-size:clamp(17px,1.6vw,21px); color:var(--ink2); max-width:58ch; line-height:1.65; margin-top:22px;}
+  .lead + .lead{margin-top:14px;}
+  .bignum{font-size:clamp(44px,7vw,92px); color:var(--ink); margin:26px 0 6px; font-variant-numeric:tabular-nums;}
+  .bignum small{font-size:.35em; color:var(--ink2); letter-spacing:.08em;}
+  .continue{
+    margin-top:36px; border:1px solid var(--brass); background:transparent; color:var(--ink);
+    font-family:inherit; font-size:16px; letter-spacing:.14em; text-transform:uppercase;
+    padding:14px 34px; cursor:pointer; border-radius:2px; transition:background .25s, color .25s;
+  }
+  .continue:hover{background:var(--brass); color:var(--paper);}
+  .ghostbtn{
+    margin-top:18px; border:none; background:transparent; color:var(--brass); font-family:inherit;
+    font-size:15px; cursor:pointer; text-decoration:underline; text-underline-offset:4px;
+  }
+  .reveal{display:none; margin-top:20px; max-width:56ch; font-size:16.5px; line-height:1.65; color:var(--ink2);
+    border-left:3px solid var(--brassdim); padding:6px 0 6px 18px; text-align:left;}
+  .reveal.on{display:block; animation:fadein .6s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+  .nextline{margin-top:26px; font-size:13.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink2); opacity:.75;}
+  .dots{position:fixed; bottom:26px; left:0; right:0; display:flex; gap:9px; justify-content:center; z-index:50;}
+  .dots i{width:7px; height:7px; border-radius:50%; background:var(--line); cursor:pointer; transition:background .3s, transform .3s;}
+  .dots i.on{background:var(--brass); transform:scale(1.35);}
+  .backarrow{position:fixed; top:26px; left:28px; z-index:50; color:var(--ink2); font-size:14px; letter-spacing:.14em;
+    text-transform:uppercase; cursor:pointer; opacity:0; transition:opacity .4s; background:none; border:none; font-family:inherit;}
+  .backarrow.show{opacity:.7;}
+  .backarrow:hover{opacity:1;}
+
+  /* gate */
+  .gatebox{margin-top:34px; display:flex; gap:0; border:1px solid var(--brass); border-radius:2px; overflow:hidden; background:var(--card);}
+  .gatebox input{
+    border:none; outline:none; background:transparent; font-family:inherit; font-size:19px; padding:15px 20px; width:min(320px,60vw);
+    color:var(--ink); letter-spacing:.06em;
+  }
+  .gatebox button{border:none; background:var(--brass); color:var(--paper); font-family:inherit; font-size:15px;
+    letter-spacing:.14em; text-transform:uppercase; padding:0 26px; cursor:pointer;}
+  .gatehint{margin-top:16px; font-size:15px; color:var(--ink2); font-style:italic;}
+  .gateerr{margin-top:12px; font-size:15px; color:var(--bad); height:20px;}
+
+  /* asset grid */
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; max-width:980px; width:100%; margin-top:30px;}
+  .asset{
+    background:var(--card); border:1px solid var(--line); border-radius:6px; padding:16px 14px; cursor:pointer;
+    text-align:left; transition:transform .2s, box-shadow .2s; position:relative; min-height:96px;
+  }
+  .asset:hover{transform:translateY(-3px); box-shadow:var(--shadow);}
+  .asset .an{font-size:14.5px; color:var(--ink); line-height:1.3;}
+  .asset .av{font-size:18px; color:var(--brass); margin-top:8px; font-variant-numeric:tabular-nums;}
+  .asset .ao{font-size:12px; color:var(--ink2); margin-top:4px; letter-spacing:.04em;}
+  .asset.open{background:var(--ink); border-color:var(--ink);}
+  .asset.open .an{color:var(--paper);}
+  .asset.open .av{color:var(--brassdim);}
+  .asset.open .ao{display:none;}
+  .asset .astory{display:none; font-size:13px; color:#e8e2d2; line-height:1.5; margin-top:8px;}
+  .asset.open .astory{display:block;}
+
+  /* meter */
+  .meterwrap{width:min(560px,84vw); margin-top:30px;}
+  .meter{height:16px; background:var(--card); border:1px solid var(--line); border-radius:9px; overflow:hidden;}
+  .meter div{height:100%; width:0%; background:var(--bad); transition:width 2.4s cubic-bezier(.2,.7,.2,1);}
+  .meterlbl{display:flex; justify-content:space-between; font-size:13px; color:var(--ink2); margin-top:8px;}
+
+  /* wishes */
+  .wishcols{display:grid; grid-template-columns:1fr 1fr; gap:26px; max-width:920px; width:100%; margin-top:28px; text-align:left;}
+  .wishcols h3{font-size:15px; letter-spacing:.2em; text-transform:uppercase; color:var(--brass); margin-bottom:12px; font-weight:normal;}
+  .wish{display:flex; gap:10px; align-items:flex-start; font-size:15.5px; color:var(--ink2); line-height:1.5; margin-bottom:10px;}
+  .ring{flex:0 0 18px; width:18px; height:18px; border-radius:50%; border:2px solid var(--brassdim); margin-top:2px; position:relative; transition:all .5s;}
+  .ring.done{border-color:var(--good); background:var(--good);}
+  .ring.done::after{content:""; position:absolute; left:4px; top:1px; width:5px; height:9px; border:solid var(--paper); border-width:0 2px 2px 0; transform:rotate(40deg);}
+
+  /* structure build */
+  .struct{margin-top:28px; width:min(900px,92vw);}
+  .srow{display:flex; gap:14px; justify-content:center; margin-top:14px;}
+  .snode{
+    background:var(--card); border:1px solid var(--line); border-radius:8px; padding:13px 18px; font-size:14.5px;
+    color:var(--ink); opacity:0; transform:translateY(10px) scale(.97); transition:all .5s; min-width:150px;
+  }
+  .snode small{display:block; color:var(--ink2); font-size:12px; margin-top:4px; line-height:1.4;}
+  .snode.lit{opacity:1; transform:none;}
+  .snode.hers, .snode.his{border-color:var(--brass);}
+  .snode.guard{border-color:var(--good);}
+
+  .twocol{display:grid; grid-template-columns:1fr 1fr; gap:30px; max-width:880px; margin-top:26px; text-align:left;}
+  .twocol .col{background:var(--card); border:1px solid var(--line); border-radius:8px; padding:22px;}
+  .twocol h3{font-size:14px; letter-spacing:.18em; text-transform:uppercase; color:var(--brass); font-weight:normal; margin-bottom:10px;}
+  .twocol p{font-size:15.5px; color:var(--ink2); line-height:1.6;}
+  .goodnum{color:var(--good); font-weight:bold;}
+  .badnum{color:var(--bad); font-weight:bold;}
+
+  .sig{margin-top:30px; font-style:italic; color:var(--ink2); font-size:16px;}
+  .fine{position:fixed; bottom:0; left:0; right:0; padding:8px 16px; font-size:10.5px; color:var(--ink2); opacity:.55; text-align:center; z-index:40; background:linear-gradient(transparent, var(--paper) 40%);}
+  @media (max-width:720px){ .wishcols,.twocol{grid-template-columns:1fr;} .nextline{display:none;} }
+</style>
+</head>
+<body>
+
+<button class="backarrow" id="backarrow" onclick="go(cur-1)">Back</button>
+
+<!-- CH 0 GATE -->
+<section class="chapter on" id="ch0">
+  <div class="kicker">A private room</div>
+  <h1>This page was built for two people.</h1>
+  <p class="lead">If it was built for you, you will know the word. It is the name of the app that introduced you to each other, fourteen years ago, after the hardest years of your lives.</p>
+  <div class="gatebox">
+    <input type="text" id="pass" placeholder="the word" autocomplete="off" onkeydown="if(event.key==='Enter')tryGate()">
+    <button onclick="tryGate()">Enter</button>
+  </div>
+  <div class="gateerr" id="gateerr"></div>
+  <div class="gatehint">Everything typed on this page stays on this page. Nothing is saved, sent, or stored.</div>
+</section>
+
+<!-- CH 1 WELCOME -->
+<section class="chapter" id="ch1">
+  <div class="kicker">Ricky and Lucy</div>
+  <h1>What would happen if it all happened <b>today</b>?</h1>
+  <p class="lead">That is the only question an estate plan exists to answer, and most families never ask it out loud. Tonight we are going to ask it together, calmly, with the numbers on the table, and we are going to leave this room with an answer you both chose.</p>
+  <p class="lead">Nothing tonight is a sales pitch. There is nothing to buy. There is only what you own, what you want, and what the law lets us do about it.</p>
+  <button class="continue" onclick="go(2)">Begin with what you own</button>
+  <div class="nextline">First question: what exactly is on the table?</div>
+</section>
+
+<!-- CH 2 ASSETS -->
+<section class="chapter" id="ch2">
+  <div class="kicker">The table</div>
+  <h1>Everything you own, in one place.</h1>
+  <p class="lead">Touch anything. Each of these has a story, and the stories decide the plan.</p>
+  <div class="bignum" id="totalnum">$0</div>
+  <div class="grid" id="assetgrid"></div>
+  <button class="continue" onclick="go(3)">So what is the problem?</button>
+  <div class="nextline">Next: the clock that starts the day one of you dies</div>
+</section>
+
+<!-- CH 3 THE CLOCK -->
+<section class="chapter" id="ch3">
+  <div class="kicker">The clock</div>
+  <h1>Nine months. That is the deadline.</h1>
+  <p class="lead">The federal estate tax lets each of you pass $15,000,000 free. Together, $30,000,000. Everything above that line is taxed at 40 percent, and the bill is due nine months after death, in cash.</p>
+  <div class="meterwrap">
+    <div class="meter"><div id="taxfill"></div></div>
+    <div class="meterlbl"><span>What the IRS would send with no plan</span><span id="taxnum">$0</span></div>
+  </div>
+  <button class="ghostbtn" onclick="fillTax()">Show me the bill</button>
+  <div class="reveal" id="taxreveal">Roughly $10,400,000. And here is the part that matters more than the number: your wealth is a farm, two houses, and a train collection. It is not cash. A nine month deadline against property like that has one name in my business, and the name is fire sale. The plan we build tonight exists so that no one ever holds an auction on Joe's farm to pay a tax bill everyone saw coming.</div>
+  <button class="continue" onclick="go(4)">What do we want instead?</button>
+  <div class="nextline">Next: your wishes, in your own words</div>
+</section>
+
+<!-- CH 4 WISHES -->
+<section class="chapter" id="ch4">
+  <div class="kicker">The promise</div>
+  <h1>Here is what you each told me.</h1>
+  <p class="lead">Every ring on this page will turn green before we are done. That is the test of the whole plan.</p>
+  <div class="wishcols">
+    <div>
+      <h3>Ricky</h3>
+      <div class="wish"><span class="ring" data-w="r1"></span>Lucy is taken care of for the rest of her life, no matter what.</div>
+      <div class="wish"><span class="ring" data-w="r2"></span>After Lucy, everything reaches Adam and Eve, and no one can redirect it.</div>
+      <div class="wish"><span class="ring" data-w="r3"></span>The farm stays whole and stays in the family.</div>
+      <div class="wish"><span class="ring" data-w="r4"></span>Lucy can reach his checking account the day after, not months after.</div>
+    </div>
+    <div>
+      <h3>Lucy</h3>
+      <div class="wish"><span class="ring" data-w="l1"></span>Ricky is provided for if she goes first.</div>
+      <div class="wish"><span class="ring" data-w="l2"></span>The trains and her stock become a legacy at Campbell University.</div>
+      <div class="wish"><span class="ring" data-w="l3"></span>Eve never loses a single benefit check.</div>
+      <div class="wish"><span class="ring" data-w="l4"></span>Someone the family trusts is standing at the wheel.</div>
+    </div>
+  </div>
+  <button class="continue" onclick="go(5)">Show me the shape of the plan</button>
+  <div class="nextline">Next: the whole plan on one screen</div>
+</section>
+
+<!-- CH 5 STRUCTURE -->
+<section class="chapter" id="ch5">
+  <div class="kicker">The shape</div>
+  <h1>Two buckets while you live.<br>The rooms appear when they are needed.</h1>
+  <p class="lead">Each of you gets a revocable trust. While you are alive, nothing changes: your money, your control, changeable any Tuesday you like. The magic is what each trust does at the moment it is needed.</p>
+  <div class="struct">
+    <div class="srow">
+      <div class="snode his" id="n1">His trust<small>the farm, his cash, his stock</small></div>
+      <div class="snode hers" id="n2">Her trust<small>her cash, her stock, the trains for now</small></div>
+    </div>
+    <div class="srow">
+      <div class="snode" id="n3">Shelter room<small>$15,000,000 walks in here and is never taxed again, no matter how large it grows</small></div>
+      <div class="snode" id="n4">Marital room<small>everything else, held for the survivor for life, then delivered exactly where the first spouse said</small></div>
+    </div>
+    <div class="srow">
+      <div class="snode guard" id="n5">Guard rooms<small>one trust for Eve that protects her benefits, one for Adam that waits for him to grow up</small></div>
+    </div>
+  </div>
+  <button class="ghostbtn" id="buildbtn" onclick="buildStruct()">Build it</button>
+  <button class="continue" onclick="go(6)">Now walk me through my things</button>
+  <div class="nextline">Next: the house you live in</div>
+</section>
+
+<!-- CH 6 RALEIGH -->
+<section class="chapter" id="ch6">
+  <div class="kicker">The Raleigh house</div>
+  <h1>You give the house away slowly, and keep the keys.</h1>
+  <p class="lead">You bought it for $2,100,000. It is worth $9,254,000 today. A house that grows like that is the most dangerous thing you own, because every year of waiting adds to the tax side of the ledger.</p>
+  <p class="lead">The law has a trust built exactly for this. Each of you places your half of the house into one, keeps the right to live there, Ricky for 15 years, Lucy for 13, and because the children must wait for their gift, the IRS values it at a deep discount. Together the two gifts are counted at about <b>$4,600,000</b>, not $9,254,000, and every dollar the house grows from now on belongs to the children tax free.</p>
+  <button class="ghostbtn" onclick="rev('qprtrisk')">What could go wrong?</button>
+  <div class="reveal" id="qprtrisk">Honesty first: if one of you passes before your term ends, that half of the house comes back into the estate, and we are simply back where we started, no worse. That is why Lucy's term is shorter than Ricky's. And when the terms end, you stay right where you are and pay the children's trusts a fair rent, which quietly moves even more to them with no gift tax at all.</div>
+  <button class="continue" onclick="go(7)">And the beach house?</button>
+  <div class="nextline">Next: Malibu, and a California problem you did not know you had</div>
+</section>
+
+<!-- CH 7 MALIBU -->
+<section class="chapter" id="ch7">
+  <div class="kicker">Malibu</div>
+  <h1>Adam and Eve love that house. So we make sure it reaches them.</h1>
+  <p class="lead">Here is the problem no one mentions at the beach: California real estate owned at death by a North Carolina family means a second court case, in the most expensive probate state in America, before anyone inherits anything.</p>
+  <p class="lead">Same tool as Raleigh: the house goes into a 15 year trust of its own, counted as a gift of about $3,200,000 instead of $6,820,000. When the term ends it does not go straight to the kids. It sits in a trust that lets <b>Lucy use it for the rest of her life</b>, and only then divides between Adam and Eve. Ricky's wish, kept twice over. And no California courtroom, ever.</p>
+  <button class="continue" onclick="go(8)">Now the farm</button>
+  <div class="nextline">Next: Joe's farm, and why it follows different rules</div>
+</section>
+
+<!-- CH 8 FARM -->
+<section class="chapter" id="ch8">
+  <div class="kicker">Farmville</div>
+  <h1>The farm never gets clever. The farm gets protected.</h1>
+  <p class="lead">A thousand and twenty acres from your father. It pays about $102,900 a year in rent and costs almost nothing to hold, because the county taxes it as farmland, not as seven million dollars.</p>
+  <p class="lead">Every trick we used on the houses is wrong for the farm, and part of my job is knowing when a tool does not fit. So the farm rides inside Ricky's trust. If Ricky goes first, Lucy receives its income for the rest of her life, every year, guaranteed by the trust itself. And the land underneath is locked: it belongs to Adam and Eve the day the trust was signed, and no one, ever, can redirect it out of the family.</p>
+  <button class="ghostbtn" onclick="rev('farmrisk')">Why not the clever tools?</button>
+  <div class="reveal" id="farmrisk">The house trust requires a residence, and 980 leased acres is a business, not a home. The famous farm tax breaks require the farm to dominate the estate and the family to work the land themselves; your farm is 27 percent of Ricky's estate and a tenant farms it. Those doors are closed, and pretending otherwise is how families get audited. We protect the farm a different way, and we solve the tax bill in a few more screens.</div>
+  <button class="continue" onclick="go(9)">What about the trains?</button>
+  <div class="nextline">Next: Lucy's chapter</div>
+</section>
+
+<!-- CH 9 TRAINS -->
+<section class="chapter" id="ch9">
+  <div class="kicker">The collection</div>
+  <h1>Your father's trains become your income, and then your legacy.</h1>
+  <p class="lead">Lucy, you own $10,220,000 of model trains you never look at. They pay you nothing. If you simply sold them, the tax on collectibles would take about $2,000,000 before you could reinvest a dime.</p>
+  <p class="lead">So we do not simply sell them. We place the collection in a charitable trust first. The trust sells everything, pays no tax on the sale, and invests the whole $10,220,000. It then pays <b>you</b> five percent for the rest of your life, about <span class="goodnum">$511,000 in the first year</span>, income that does not exist today. And when your story ends, everything left goes to the place you chose: <b>Campbell University</b>, with your name on it.</p>
+  <button class="ghostbtn" onclick="rev('trainrisk')">The honest fine print</button>
+  <div class="reveal" id="trainrisk">Because trains are objects and not stock, the income tax deduction for this gift is modest and arrives only after the trust sells. I want you to hear that from me and not from an auditor. The deduction was never the point. The point is a dead asset becoming a living income, a two million dollar tax bill that never gets printed, and a university that will remember your family by name.</div>
+  <button class="continue" onclick="go(10)">And the stock?</button>
+  <div class="nextline">Next: one stock, two owners, two roads</div>
+</section>
+
+<!-- CH 10 STOCK -->
+<section class="chapter" id="ch10">
+  <div class="kicker">Campbell, Inc.</div>
+  <h1>One stock. Two halves. Two different jobs.</h1>
+  <div class="twocol">
+    <div class="col">
+      <h3>Ricky's half, $5,615,000</h3>
+      <p>His half goes into a freeze trust. Ricky keeps payments back for a term of years, and everything the stock grows beyond a set rate slides to the children with almost no gift tax at all. The growth leaves the estate. The security stays.</p>
+    </div>
+    <div class="col">
+      <h3>Lucy's half, $5,615,000</h3>
+      <p>Her half is promised to Campbell University. Left by her estate plan, it arrives untaxed, unsold, and whole, and the <span class="goodnum">$4,790,000 of gain</span> built up inside it simply never gets taxed. Not to you, not to the kids, not to anyone.</p>
+    </div>
+  </div>
+  <button class="continue" onclick="go(11)">Now the part I care about most</button>
+  <div class="nextline">Next: Eve</div>
+</section>
+
+<!-- CH 11 EVE -->
+<section class="chapter" id="ch11">
+  <div class="kicker">Eve</div>
+  <h1>Eve never loses a check. Not once. Not ever.</h1>
+  <p class="lead">Eve receives SSI, and SSI has a cliff: own more than $2,000 and the checks stop. One well meaning inheritance, from any direction, and the system she relies on turns off.</p>
+  <p class="lead">So this plan has an iron rule. Nothing in it, not one dollar from any trust, any house, any account, ever lands in Eve's name. Every share meant for her flows into one special trust, built for her alone. It pays for the things the checks never will: her education, her therapies, her travel, her comforts, her life. It adds to her world without ever touching the benefits that anchor it. Supplement, never supplant. That is the rule, and it never has an exception.</p>
+  <button class="continue" onclick="go(12)">And Adam?</button>
+  <div class="nextline">Next: a sixteen year old and a fortune do not mix</div>
+</section>
+
+<!-- CH 12 ADAM -->
+<section class="chapter" id="ch12">
+  <div class="kicker">Adam</div>
+  <h1>Adam inherits when he is ready, not when he turns eighteen.</h1>
+  <p class="lead">Without a plan, the law would hand Adam everything in one envelope on his eighteenth birthday. Nobody who remembers being eighteen thinks that is a good idea.</p>
+  <p class="lead">His trust holds his share, pays for his education and his needs along the way, and then opens in stages through his late twenties and early thirties, when the judgment has caught up with the money. If he turns out to be great with it, the stages simply come easy. If he needs time, the trust gives him time.</p>
+  <button class="continue" onclick="go(13)">So who pays the tax bill?</button>
+  <div class="nextline">Next: the check that arrives exactly on time</div>
+</section>
+
+<!-- CH 13 ILIT -->
+<section class="chapter" id="ch13">
+  <div class="kicker">The check</div>
+  <h1>The day the bill comes, a trust hands the estate a check.</h1>
+  <p class="lead">After everything tonight, the projected bill falls from about <span class="badnum">$10,400,000</span> to roughly <span class="goodnum">$4,000,000</span>, and it keeps shrinking every year the freezes work. But some bill will come, nine months after the second of you passes, and we already agreed: no auctions.</p>
+  <p class="lead">So the last trust owns a life insurance policy on both of your lives. Small gifts each year cover the premium. The trust was never yours, so the payout is never taxed in your estate. And on the exact day the IRS wants its money, the trustee is holding cash for that purpose and no other. The farm stays a farm. The houses stay houses. The check clears.</p>
+  <button class="continue" onclick="go(14)">Who runs all of this?</button>
+  <div class="nextline">Next: Father O'Keefe, and the honest conversation</div>
+</section>
+
+<!-- CH 14 TRUSTEE -->
+<section class="chapter" id="ch14">
+  <div class="kicker">The wheel</div>
+  <h1>Father O'Keefe holds the family. A professional holds the paperwork.</h1>
+  <p class="lead">You both asked for Ricky's brother, and you were right to. He knows the kids, he will honor the wishes, and he will still be at the table in thirty years. He stays.</p>
+  <p class="lead">But this plan is fourteen instruments, tax elections with deadlines, a charitable trust with its own accounting, and a special trust where one wrong check costs Eve her benefits. That is not a burden love should carry alone, and it is more personal liability than kindness should accept. So he serves alongside a corporate trustee: the institution carries the books, the filings, and the liability, and Father O'Keefe carries the family. Everyone does the job they are best at.</p>
+  <button class="continue" onclick="go(15)">Show me what we walk away with</button>
+  <div class="nextline">Last: the day after</div>
+</section>
+
+<!-- CH 15 THE DAY AFTER -->
+<section class="chapter" id="ch15">
+  <div class="kicker">The day after</div>
+  <h1>Every ring, green.</h1>
+  <div class="wishcols" id="finalwishes"></div>
+  <p class="lead" style="margin-top:26px">When the first of you passes: nothing is sold, no court in two states, the survivor's income never pauses. When the second of you passes: the tax is a fraction of what it was, and the check that pays it is already written. Adam inherits when he is ready. Eve never misses a benefit. Campbell University receives a legacy measured in eight figures. Two people who found each other after the worst years of their lives will have kept every promise they made.</p>
+  <p class="lead">That is the plan. Now let us talk about it.</p>
+  <div class="sig">Kristian R. Pfeffer</div>
+  <button class="ghostbtn" onclick="go(1)">Start the story again</button>
+</section>
+
+<div class="dots" id="dots"></div>
+<div class="fine">The Ricardo family is a fictional case study prepared for the TRST 760 capstone, Master of Trust and Wealth Management, Campbell University. Educational only. Nothing here is legal, tax, or investment advice, and nothing typed on this page is stored or transmitted. Kristian Pfeffer is not an attorney; drafting of legal instruments is the practice of law under N.C.G.S. Chapter 84 and belongs with licensed counsel.</div>
+
+<script>
+  var PASSWORDS = ["bumble"];
+  var N = 16;
+  var cur = 0;
+
+  var assets = [
+    {n:"The Raleigh home", v:"$9,254,000", o:"owned together, as a couple", s:"Bought in 2016 for $2,100,000. It has grown $7,154,000 in ten years, which is exactly why it gets its own chapter."},
+    {n:"The Malibu house", v:"$6,820,000", o:"in Ricky's name", s:"Bought in 2018 for $3,300,000. Earns about $82,000 a year. The kids love it. California has plans for it that we are going to cancel."},
+    {n:"Joe's farm, Farmville", v:"$7,870,000", o:"Ricky, from his father", s:"1,020 acres, in the family since 2014 and long before. Rents for $102,900 a year. This one is about legacy, not arithmetic."},
+    {n:"The train collection", v:"$10,220,000", o:"Lucy, from her father", s:"Donald's collection, worth $3,000,000 when Lucy inherited it in 2010. It earns nothing and Lucy would rather it meant something."},
+    {n:"Campbell, Inc. stock", v:"$11,230,000", o:"owned in two halves", s:"100,000 shares bought in 2015 for $1,650,000. Pays $91,000 a year in dividends. Each of you owns half, and the halves will take different roads."},
+    {n:"Checking, Bank of America", v:"$752,000", o:"Ricky", s:"Ricky wants Lucy to reach this the day after, not months after. There is a one page fix for that."},
+    {n:"Checking, Bank of America", v:"$3,199,000", o:"Lucy", s:"Same fix, mirrored back."},
+    {n:"Checking, First Citizens", v:"$6,440,000", o:"joint, survivor takes all", s:"Already passes automatically to whichever of you survives. Some things are simple."},
+    {n:"Truck and SUV", v:"$151,000", o:"Ricky", s:"Straight to Lucy under the will. No trust is worth its fee for a truck."},
+    {n:"Furnishings and effects", v:"$50,000", o:"owned together", s:"Outright to each other, then to the children. The sentimental things follow the shortest path."}
+  ];
+
+  var grid = document.getElementById("assetgrid");
+  assets.forEach(function(a){
+    var d = document.createElement("div");
+    d.className = "asset";
+    d.innerHTML = "<div class=\"an\">"+a.n+"</div><div class=\"av\">"+a.v+"</div><div class=\"ao\">"+a.o+"</div><div class=\"astory\">"+a.s+"</div>";
+    d.onclick = function(){ d.classList.toggle("open"); };
+    grid.appendChild(d);
+  });
+
+  var dots = document.getElementById("dots");
+  for (var i=0;i<N;i++){
+    var s = document.createElement("i");
+    (function(k){ s.onclick = function(){ if(unlocked||k===0) go(k); }; })(i);
+    dots.appendChild(s);
+  }
+
+  var unlocked = false;
+  function tryGate(){
+    var v = document.getElementById("pass").value.trim().toLowerCase();
+    if (PASSWORDS.indexOf(v) >= 0){
+      unlocked = true;
+      document.getElementById("gateerr").textContent = "";
+      go(1);
+    } else {
+      document.getElementById("gateerr").textContent = "Not quite. Think of how the two of you met.";
+    }
+  }
+
+  function go(n){
+    if (n<0 || n>=N) return;
+    if (!unlocked && n>0) return;
+    document.querySelectorAll(".chapter").forEach(function(c){ c.classList.remove("on"); });
+    var el = document.getElementById("ch"+n);
+    if (el) el.classList.add("on");
+    cur = n;
+    var ds = dots.children;
+    for (var i=0;i<ds.length;i++) ds[i].className = (i===n) ? "on" : "";
+    document.getElementById("backarrow").className = "backarrow" + (n>1 ? " show" : "");
+    if (n===2) countTotal();
+    if (n===15) finale();
+  }
+
+  var counted = false;
+  function countTotal(){
+    if (counted) return; counted = true;
+    var el = document.getElementById("totalnum");
+    var target = 55986000, t0 = null;
+    function step(ts){
+      if (!t0) t0 = ts;
+      var p = Math.min((ts-t0)/1800, 1);
+      var eased = 1 - Math.pow(1-p, 3);
+      el.textContent = "$" + Math.round(target*eased).toLocaleString("en-US");
+      if (p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function fillTax(){
+    document.getElementById("taxreveal").classList.add("on");
+    document.getElementById("taxfill").style.width = "100%";
+    var el = document.getElementById("taxnum");
+    var target = 10394400, t0 = null;
+    function step(ts){
+      if (!t0) t0 = ts;
+      var p = Math.min((ts-t0)/2400, 1);
+      el.textContent = "$" + Math.round(target*p).toLocaleString("en-US");
+      if (p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function rev(id){ document.getElementById(id).classList.add("on"); }
+
+  var built = false;
+  function buildStruct(){
+    if (built) return; built = true;
+    document.getElementById("buildbtn").style.visibility = "hidden";
+    ["n1","n2","n3","n4","n5"].forEach(function(id, i){
+      setTimeout(function(){ document.getElementById(id).classList.add("lit"); }, 350*i + 100);
+    });
+  }
+
+  function finale(){
+    var src = document.querySelector("#ch4 .wishcols");
+    var dst = document.getElementById("finalwishes");
+    if (!dst.innerHTML) dst.innerHTML = src.innerHTML;
+    var rings = dst.querySelectorAll(".ring");
+    rings.forEach(function(r, i){
+      r.classList.remove("done");
+      setTimeout(function(){ r.classList.add("done"); }, 400*i + 600);
+    });
+  }
+
+  document.addEventListener("keydown", function(e){
+    if (!unlocked) return;
+    if (e.key === "ArrowRight" || e.key === " ") { if (cur<N-1) go(cur+1); }
+    if (e.key === "ArrowLeft") { if (cur>1) go(cur-1); }
+  });
+</script>
+</body>
+</html>
