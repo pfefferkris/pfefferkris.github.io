@@ -965,14 +965,19 @@
           out.innerHTML = "No record matched. The engine covers the six North Carolina metros; check the street spelling and include the city.";
           return;
         }
+        var a = j.assessed || {};
         var rows = [];
         rows.push(["The record I matched", (j.siteAddress || street) + (j.county ? ", " + j.county + " County" : "")]);
         var bk = j.deedBook || j.book, pg = j.deedPage || j.page;
         if (bk) rows.push(["Deed book and page", bk + " / " + (pg || "")]);
-        if (j.deedDate) rows.push(["Deed date", j.deedDate]);
-        if (j.totalAssessed || j.TOTAL_VALUE_ASSD) rows.push(["Assessed value", money(j.totalAssessed || j.TOTAL_VALUE_ASSD)]);
-        if (j.salePrice) rows.push(["Last sale", money(j.salePrice) + (j.saleDate ? ", " + j.saleDate : "")]);
-        if (j.yearBuilt) rows.push(["Year built", j.yearBuilt]);
+        var recd = j.deedDate || j.recorded;
+        if (recd) rows.push(["Recorded", recd]);
+        var assd = j.totalAssessed || j.TOTAL_VALUE_ASSD || a.total;
+        if (assd) rows.push(["Assessed value", money(assd)]);
+        var sale = j.salePrice || a.salePrice, saled = j.saleDate || a.saleDate;
+        if (sale) rows.push(["Last sale", money(sale) + (saled ? ", " + saled : "")]);
+        var yb = j.yearBuilt || a.yearBuilt;
+        if (yb) rows.push(["Year built", yb]);
         out.innerHTML = rows.map(function(r){ return "<div class=\"trow\"><span>"+r[0]+"</span><span>"+r[1]+"</span></div>"; }).join("")
           + "<div style=\"margin-top:9px; font-size:12.5px\">A wrong city can silently match a real but different house, so always read the matched address line first. For the full deed image, the title read, and the chain, take this address into the <a href=\"https://kpfeffer.com/wealth-guide.html\">Wealth Guide</a>; for the return on equity engine and the market comparisons, the <a href=\"https://kpfeffer.com/equity-guide.html\">Equity Guide</a>.</div>";
       }).catch(function(){ out.innerHTML = "The county did not answer just now. Try again in a moment."; });
