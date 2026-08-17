@@ -54,8 +54,17 @@
     box-shadow:0 8px 24px rgba(18,41,63,.10);
   }
   .continue:hover{background:var(--navy); color:#fff; border-color:var(--navy); transform:translateY(-1px);}
-  .ghostbtn{margin-top:16px; border:none; background:transparent; color:var(--goldtext); font-family:inherit;
-    font-size:15px; font-weight:600; cursor:pointer; text-decoration:underline; text-underline-offset:4px;}
+  .glasslink{display:inline-block; margin-top:8px; padding:7px 14px; border:1px solid rgba(169,136,79,.55); border-radius:12px;
+    background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,.22)); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    color:var(--navy); font-size:12.5px; font-weight:700; letter-spacing:.04em; text-decoration:none;}
+  .glasslink:hover{background:var(--navy); color:#fff; border-color:var(--navy);}
+  .ghostbtn{display:inline-block; margin-top:16px; padding:9px 18px; border:1px solid rgba(169,136,79,.5); border-radius:13px;
+    background:linear-gradient(135deg,rgba(255,255,255,.45),rgba(255,255,255,.18));
+    backdrop-filter:blur(14px) saturate(1.3); -webkit-backdrop-filter:blur(14px) saturate(1.3);
+    box-shadow:0 4px 18px rgba(18,41,63,.06);
+    color:var(--goldink); font-family:inherit; font-size:13.5px; font-weight:700; letter-spacing:.03em;
+    cursor:pointer; text-decoration:none; transition:all .25s ease;}
+  .ghostbtn:hover{background:var(--navy); color:#fff; border-color:var(--navy); transform:translateY(-1px);}
   .reveal{display:none; margin-top:18px; max-width:58ch; font-size:16px; line-height:1.66; color:var(--ink);
     padding:18px 22px; text-align:left;}
   .reveal.on{display:block; animation:fadein .6s ease;}
@@ -323,7 +332,7 @@
   <div class="gateerr" id="gateerr"></div>
   <div class="gatehint">Everything typed on this page stays on this page. Nothing is saved, sent, or stored.</div>
   <div class="guestrow"><button class="guestbtn" onclick="guestEnter()">Step inside with a visitor's key</button></div>
-  <div class="gatehint">You are standing at the door of a private client room, the TRST 760 capstone. Every family's room opens with its own private key, and this one belongs to the Ricardos. Visitors are welcome to borrow the key above, walk every screen, flip every switch, and try their own numbers. The open teaching walkthrough of the same plan lives <a href="capstone.html" style="color:var(--gold-text, #8a6d3b)">here</a>.</div>
+  <div class="gatehint">You are standing at the door of a private client room, the TRST 760 capstone. Every family's room opens with its own private key, and this one belongs to the Ricardos. Visitors are welcome to borrow the key above, walk every screen, flip every switch, and try their own numbers. The open teaching walkthrough of the same plan lives behind its own door: <a class="glasslink" href="capstone.html">the open walkthrough</a></div>
 </section>
 
 <!-- CH 1 WELCOME -->
@@ -439,6 +448,7 @@
   <div class="reveal glass" id="deedtool6">The capstone runs on the Ricardo numbers, but the machinery underneath is live. Type a real street address in Raleigh, Charlotte, Greensboro, Winston Salem, Fayetteville, or Wilmington and watch the county's own records answer: the deed book and page, the assessed value, the last sale. This is the same engine the Wealth Guide uses to read your deed and how your home is titled.
     <div class="toolform"><div class="aprow"><input id="deedaddr6" placeholder="702 Glenwood Avenue, Raleigh" autocomplete="off"><button class="asend" onclick="PORTAL.deed.run(6)">PULL</button></div></div>
     <div class="toolout" id="deedout6"></div>
+    <div id="prhost6"></div>
   </div>
   <div class="fork glass" id="fork6">
     <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">What if you hated the idea of ever paying rent on your own house?</div><div class="sw"></div></div>
@@ -473,6 +483,7 @@
   <div class="reveal glass" id="deedtool7">California counties do not answer our engine yet, but every North Carolina metro does. Put in any real address you own or love and see what the public record says about it, deed, value, and last sale, live.
     <div class="toolform"><div class="aprow"><input id="deedaddr7" placeholder="Street address, City" autocomplete="off"><button class="asend" onclick="PORTAL.deed.run(7)">PULL</button></div></div>
     <div class="toolout" id="deedout7"></div>
+    <div id="prhost7"></div>
   </div>
   <div class="fork glass" id="fork7">
     <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">What if you thought you might sell Malibu someday?</div><div class="sw"></div></div>
@@ -551,6 +562,7 @@
   <div class="reveal glass" id="foliotool">The Ricardos hold one stock at twenty percent of their wealth, which is exactly the concentration this chapter exists to fix. List your own holdings, one per line, ticker then dollars, and get the same checkup: count, concentration, and the doctrine that judges them.
     <div class="toolform"><textarea id="folioin" placeholder="AAPL 40000&#10;VTI 120000&#10;NVDA 15000"></textarea><div class="aprow" style="margin-top:8px"><button class="asend" onclick="PORTAL.folio.run()">GRADE</button></div></div>
     <div class="toolout" id="folioout"></div>
+    <div id="foliogrow"></div>
   </div>
   <div class="fork glass" id="fork10b">
     <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">What if we skipped the company to keep things simple?</div><div class="sw"></div></div>
@@ -714,8 +726,9 @@
       + "<div class=\"arow\"><input inputmode=\"numeric\" value=\""+money(ASSETV[idx])+"\"><button class=\"ago\">SET</button></div>"
       + (idx <= 2 ? "<div class=\"asample\"><button class=\"aq\">Or pull a real one from the public record</button>"
         + "<div class=\"srow arow\" style=\"display:none\"><input class=\"saddr\" placeholder=\"Any street address, City\" autocomplete=\"off\"><button class=\"ago sgo\">PULL</button></div>"
-        + "<div class=\"sout\"></div></div>" : "")
-      + (idx === 4 ? "<div class=\"asample\"><div class=\"snote\">This card grades real holdings too: the stock chapter runs any portfolio through the concentration checkup, and the <a href=\"https://kpfeffer.com/wealth-guide.html\" style=\"color:#c9b98a\">Wealth Guide's Grow season</a> takes any ticker live.</div></div>" : "")
+        + "<div class=\"sout\"></div><div class=\"proomhost\"></div></div>" : "")
+      + (idx === 4 ? "<div class=\"asample\"><div class=\"snote\">This card grades real holdings too: the stock chapter runs any portfolio through the concentration checkup.</div>"
+        + "<button class=\"aq growopen\">Or take any ticker live, right here</button><div class=\"growhost\"></div></div>" : "")
       + "<button class=\"arevert\">back to the record, "+money(ORIG[idx])+"</button></div>";
     d.onclick = function(e){
       if (e.target.closest(".afix")) return;
@@ -733,6 +746,18 @@
     fix.querySelector(".ago").onclick = apply;
     inp.addEventListener("keydown", function(e){ if (e.key==="Enter"){ e.preventDefault(); apply(); } e.stopPropagation(); });
     d.querySelector(".arevert").onclick = function(){ ASSETV[idx] = ORIG[idx]; inp.value = money(ORIG[idx]); recalcAll(); };
+    var gro = d.querySelector(".growopen");
+    if (gro){
+      gro.onclick = function(e){
+        e.stopPropagation();
+        var gh = d.querySelector(".growhost");
+        if (!gh.dataset.up && window.GrowRoom){
+          gh.dataset.up = "1";
+          GrowRoom.mount(gh, { intro: "The same engine as the Grow season, running here: every U.S. listing searchable, a year of real closes, beta, alpha, Sharpe, and the charts, computed in your browser and never stored." });
+        }
+        gro.style.display = "none";
+      };
+    }
     var smp = d.querySelector(".asample");
     if (smp && smp.querySelector(".sgo")){
       smp.querySelector(".aq").onclick = function(){ smp.classList.add("editing"); smp.querySelector(".srow").style.display = "flex"; smp.querySelector(".saddr").focus(); };
@@ -1001,8 +1026,6 @@
        the six North Carolina metros, and the market's estimate through /api/home-value
        everywhere a full street address resolves. Either number can be dropped straight
        into the card, and the whole room recalculates around it. */
-    var CITY_COUNTY = { "raleigh":"WAKE", "charlotte":"MECKLENBURG", "greensboro":"GUILFORD",
-      "winston salem":"FORSYTH", "winston-salem":"FORSYTH", "fayetteville":"CUMBERLAND", "wilmington":"NEW HANOVER" };
     function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
     function useBtn(idx, val, label){
       return "<button class=\"suse\" data-idx=\"" + idx + "\" data-val=\"" + Math.round(val) + "\">" + label + "</button>";
@@ -1013,35 +1036,40 @@
       var out = card.querySelector(".sout");
       if (!raw) return;
       out.className = "sout on";
-      out.innerHTML = "Asking the record.";
-      var parts = raw.split(",");
-      var street = parts[0].trim();
-      var city = (parts[1] || "").trim().toLowerCase();
-      var county = CITY_COUNTY[city] || "";
+      out.innerHTML = "Asking the record. The deep county engines take a moment.";
+      var roomHost = card.querySelector(".proomhost");
+      if (roomHost) roomHost.innerHTML = "";
       var jobs = [];
-      if (county) jobs.push(fetch("/api/deed?address=" + encodeURIComponent(street) + "&county=" + encodeURIComponent(county))
+      jobs.push(fetch("/api/parcel?address=" + encodeURIComponent(raw))
         .then(function(r){ return r.json(); }).catch(function(){ return null; }));
-      else jobs.push(Promise.resolve(null));
       jobs.push(fetch("/api/home-value?address=" + encodeURIComponent(raw))
         .then(function(r){ return r.json(); }).catch(function(){ return null; }));
       Promise.all(jobs).then(function(rs){
-        var deed = rs[0], avm = rs[1], lines = [];
-        if (deed && !deed.error && deed.assessed && deed.assessed.total){
-          lines.push("<div class=\"sline\"><span>County record, assessed: <b>" + money(deed.assessed.total) + "</b>" +
-            (deed.siteAddress ? " (" + deed.siteAddress + ")" : "") + "</span>" + useBtn(idx, deed.assessed.total, "USE") + "</div>");
-          if (deed.assessed.salePrice) lines.push("<div class=\"sline\"><span>Last recorded sale: " + money(deed.assessed.salePrice) +
-            (deed.assessed.saleDate ? ", " + deed.assessed.saleDate : "") + "</span><span></span></div>");
+        var rec = rs[0], avm = rs[1], lines = [];
+        if (rec && rec.error) rec = null;
+        var a = (rec && rec.assessed) || {};
+        var sale = (rec && rec.sales && rec.sales[0]) || {};
+        var matched = rec && (rec.address || rec.siteAddress);
+        if (rec && a.total){
+          lines.push("<div class=\"sline\"><span>County record, assessed: <b>" + money(a.total) + "</b>" +
+            (matched ? " (" + matched + (rec.county ? ", " + rec.county + " County" : "") + ")" : "") + "</span>" + useBtn(idx, a.total, "USE") + "</div>");
+          var sp = sale.price || a.salePrice, sd = sale.date || a.saleDate;
+          if (sp) lines.push("<div class=\"sline\"><span>Last recorded sale: " + money(sp) +
+            (sd ? ", " + sd : "") + "</span><span></span></div>");
         }
         if (avm && !avm.error && avm.price){
           lines.push("<div class=\"sline\"><span>Market estimate: <b>" + money(avm.price) + "</b>" +
             (avm.low && avm.high ? " (" + money(avm.low) + " to " + money(avm.high) + ")" : "") + "</span>" + useBtn(idx, avm.price, "USE") + "</div>");
         }
         if (!lines.length){
-          out.innerHTML = "No record answered for that address. The county engine covers the six North Carolina metros; the market engine wants a full street address.";
+          out.innerHTML = "No record answered for that address. The statewide engine reaches all 100 North Carolina counties; include the city, and give the market engine a full street address.";
           return;
         }
         out.innerHTML = lines.join("") +
           "<div class=\"snote\">Read the matched address before trusting the number; a wrong city can quietly match a real but different house. Press USE and this card carries a real value from the public record instead of the file's.</div>";
+        if (rec && roomHost && window.PropertyRoom){
+          PropertyRoom.mount(roomHost, { address: raw, record: rec, skipRecord: true });
+        }
         out.querySelectorAll(".suse").forEach(function(b){
           b.onclick = function(ev){
             ev.stopPropagation();
@@ -1135,40 +1163,46 @@
   })();
 
   PORTAL.deed = (function(){
-    var CITY_COUNTY = { "raleigh":"WAKE", "charlotte":"MECKLENBURG", "greensboro":"GUILFORD",
-      "winston salem":"FORSYTH", "winston-salem":"FORSYTH", "fayetteville":"CUMBERLAND", "wilmington":"NEW HANOVER" };
+    /* Statewide now, not six metros: /api/parcel resolves any of North Carolina's 774
+       municipalities to its county on the server, tries the county's own system first,
+       and falls to the statewide layer that reaches all 100 counties. The full deed
+       image, the title read, the chain, the equity engine, and the comparable sales
+       then grow in place through the shared property room (/assets/property-room.js),
+       the same tool the Wealth Guide and the Equity Guide run. No pointing elsewhere. */
     function money(n){ return (n || n === 0) ? "$" + Math.round(n).toLocaleString("en-US") : "on file"; }
     function run(n){
       var raw = document.getElementById("deedaddr"+n).value.trim();
       var out = document.getElementById("deedout"+n);
       if (!raw){ return; }
-      var parts = raw.split(",");
-      var street = parts[0].trim();
-      var city = (parts[1] || "").trim().toLowerCase();
-      var county = CITY_COUNTY[city] || "";
       out.className = "toolout on";
-      out.innerHTML = "Asking the county.";
-      var url = "/api/deed?address=" + encodeURIComponent(street) + (county ? "&county=" + encodeURIComponent(county) : "");
-      fetch(url).then(function(r){ return r.json(); }).then(function(j){
-        if (j.error || !(j.siteAddress || j.book || j.deedBook)){
-          out.innerHTML = "No record matched. The engine covers the six North Carolina metros; check the street spelling and include the city.";
+      out.innerHTML = "Asking the county. The deep county engines take a moment.";
+      var host = document.getElementById("prhost"+n);
+      if (host) host.innerHTML = "";
+      fetch("/api/parcel?address=" + encodeURIComponent(raw)).then(function(r){ return r.json(); }).then(function(j){
+        if (!j || j.error || !(j.address || j.siteAddress || (j.deed && j.deed.book))){
+          out.innerHTML = "No parcel matched that address. The statewide layer reaches all 100 North Carolina counties; include the city, because a street name without one lands wherever that name occurs first in the state.";
           return;
         }
         var a = j.assessed || {};
+        var d = j.deed || {};
+        var sale = (j.sales && j.sales[0]) || {};
+        var b = j.building || {};
         var rows = [];
-        rows.push(["The record I matched", (j.siteAddress || street) + (j.county ? ", " + j.county + " County" : "")]);
-        var bk = j.deedBook || j.book, pg = j.deedPage || j.page;
+        rows.push(["The record I matched", (j.address || j.siteAddress) + (j.county ? ", " + j.county + " County" : "")]);
+        var bk = d.book || j.book, pg = d.page || j.page;
         if (bk) rows.push(["Deed book and page", bk + " / " + (pg || "")]);
-        var recd = j.deedDate || j.recorded;
+        var recd = d.recorded || j.recorded;
         if (recd) rows.push(["Recorded", recd]);
-        var assd = j.totalAssessed || j.TOTAL_VALUE_ASSD || a.total;
-        if (assd) rows.push(["Assessed value", money(assd)]);
-        var sale = j.salePrice || a.salePrice, saled = j.saleDate || a.saleDate;
-        if (sale) rows.push(["Last sale", money(sale) + (saled ? ", " + saled : "")]);
-        var yb = j.yearBuilt || a.yearBuilt;
+        if (a.total) rows.push(["Assessed value", money(a.total)]);
+        var sp = sale.price || a.salePrice, sd = sale.date || a.saleDate;
+        if (sp) rows.push(["Last sale", money(sp) + (sd ? ", " + sd : "")]);
+        var yb = b.yearBuilt || a.yearBuilt || j.yearBuilt;
         if (yb) rows.push(["Year built", yb]);
         out.innerHTML = rows.map(function(r){ return "<div class=\"trow\"><span>"+r[0]+"</span><span>"+r[1]+"</span></div>"; }).join("")
-          + "<div style=\"margin-top:9px; font-size:12.5px\">A wrong city can silently match a real but different house, so always read the matched address line first. For the full deed image, the title read, and the chain, take this address into the <a href=\"https://kpfeffer.com/wealth-guide.html\">Wealth Guide</a>; for the return on equity engine and the market comparisons, the <a href=\"https://kpfeffer.com/equity-guide.html\">Equity Guide</a>.</div>";
+          + "<div style=\"margin-top:9px; font-size:12.5px\">A wrong city can silently match a real but different house, so always read the matched address line first. Then keep going right here: the tiles below open the scanned deed with the automatic title read and the chain walker, the equity engine, the comparable sales, and the honest county ledger, in place.</div>";
+        if (host && window.PropertyRoom){
+          PropertyRoom.mount(host, { address: raw, record: j, skipRecord: true });
+        }
       }).catch(function(){ out.innerHTML = "The county did not answer just now. Try again in a moment."; });
     }
     return { run: run };
@@ -1202,7 +1236,13 @@
         ? "<span class=\"tbad\">Thin count: under ten positions leaves unsystematic risk on the table, and diversification only ever kills unsystematic risk.</span>"
         : "<span class=\"tgood\">Position count carries real diversification, judged properly by beta and Sharpe rather than by count alone.</span>");
       out.innerHTML = rows.join("") + "<div style=\"margin-top:9px\">" + verdicts.join("<br>") + "</div>"
-        + "<div style=\"margin-top:9px; font-size:12.5px\">For the live charts, beta and Sharpe, and the full technical read, run these tickers through the Grow season of the <a href=\"https://kpfeffer.com/wealth-guide.html\">Wealth Guide</a>.</div>";
+        + "<div style=\"margin-top:9px; font-size:12.5px\">That was the doctrine. The engine is here too: open the tile below and these same tickers run live, a year of real closes, beta, alpha, Sharpe, the correlation table, and the charts.</div>";
+      var gh = document.getElementById("foliogrow");
+      if (gh && window.GrowRoom){
+        gh.innerHTML = "";
+        GrowRoom.mount(gh, { positions: pos.map(function(p){ return { sym: p.t, val: p.v }; }),
+          intro: "Your list carried over, every row still yours to edit. The same engine as the Grow season: every U.S. listing searchable, computed in your browser, never stored." });
+      }
     }
     return { run: run };
   })();
@@ -1266,5 +1306,7 @@ window.AK_CONFIG = {
 };
 </script>
 <script src="/assets/ask-kristian.js" defer></script>
+<script src="/assets/property-room.js" defer></script>
+<script src="/assets/grow-room.js" defer></script>
 </body>
 </html>
