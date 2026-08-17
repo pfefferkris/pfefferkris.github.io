@@ -407,7 +407,8 @@ async function shapeHandler(req, res) {
   else if (city && PLACES[city]) where += " AND UPPER(CNTYNAME) LIKE '" + PLACES[city][0].toUpperCase() + "%'";
   else if (city) where += " AND UPPER(SCITY) LIKE '" + city.replace(/'/g, "''") + "%'";
   try {
-    const u = "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/0/query" +
+    // Layer 1 is the polygon layer; layer 0 is points only and answers with no rings.
+    const u = "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/1/query" +
       "?where=" + encodeURIComponent(where) +
       "&outFields=SITEADD,CNTYNAME,GISACRES,PARVAL,STRUCTYEAR" +
       "&returnGeometry=true&outSR=4326&resultRecordCount=1&f=json";
