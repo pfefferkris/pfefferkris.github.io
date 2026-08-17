@@ -102,6 +102,13 @@
   .gatebox button{border:none; background:var(--navy); color:#fff; font-family:inherit; font-size:13.5px; font-weight:600;
     letter-spacing:.14em; text-transform:uppercase; padding:0 26px; cursor:pointer; border-radius:0 28px 28px 0;}
   .gatehint{margin-top:15px; font-size:14.5px; color:var(--muted); font-style:italic;}
+  .guestrow{margin-top:26px;}
+  .guestbtn{display:inline-flex; align-items:center; gap:9px; padding:13px 26px; border-radius:999px; cursor:pointer;
+    border:1px solid rgba(169,136,79,.55); background:rgba(169,136,79,.10); color:var(--gold-text, #8a6d3b);
+    font-family:inherit; font-size:13.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    transition:background .2s, transform .2s, box-shadow .2s;}
+  .guestbtn:hover{background:rgba(169,136,79,.2); transform:translateY(-1px); box-shadow:0 10px 28px rgba(18,41,63,.14);}
+  .guestbtn::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--gold); box-shadow:0 0 10px rgba(169,136,79,.8);}
   .gateerr{margin-top:10px; font-size:14.5px; color:var(--brick); height:20px;}
 
   /* asset grid */
@@ -315,7 +322,8 @@
   </div>
   <div class="gateerr" id="gateerr"></div>
   <div class="gatehint">Everything typed on this page stays on this page. Nothing is saved, sent, or stored.</div>
-  <div class="gatehint">You are standing at the door of a private client room, the TRST 760 capstone. The passphrase belongs to the family. The open teaching walkthrough of the same plan lives <a href="capstone.html" style="color:var(--gold-text, #8a6d3b)">here</a>.</div>
+  <div class="guestrow"><button class="guestbtn" onclick="guestEnter()">Step inside with a visitor's key</button></div>
+  <div class="gatehint">You are standing at the door of a private client room, the TRST 760 capstone. Every family's room opens with its own private key, and this one belongs to the Ricardos. Visitors are welcome to borrow the key above, walk every screen, flip every switch, and try their own numbers. The open teaching walkthrough of the same plan lives <a href="capstone.html" style="color:var(--gold-text, #8a6d3b)">here</a>.</div>
 </section>
 
 <!-- CH 1 WELCOME -->
@@ -801,6 +809,13 @@
     var t = e.target.closest("button, .asset, .forkhead, .wish, .chip, .dots i");
     if (t && !e.target.closest("input")) setTimeout(function(){ if (document.activeElement && document.activeElement.tagName !== "INPUT") document.activeElement.blur(); }, 0);
   });
+
+  function guestEnter(){
+    unlocked = true;
+    document.body.classList.add("aklive");
+    document.getElementById("gateerr").textContent = "";
+    go(1);
+  }
 
   function tryGate(){
     var v = document.getElementById("pass").value.trim().toLowerCase();
