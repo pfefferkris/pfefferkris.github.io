@@ -126,7 +126,10 @@
       "<div id=\"" + id + "rows\"></div>" +
       "<button class=\"grbtn\" id=\"" + id + "add\" type=\"button\">Another holding</button>" +
       "<button class=\"grbtn\" id=\"" + id + "run\" type=\"button\">Run the live analysis</button>" +
-      "<div id=\"" + id + "out\"></div>";
+      (opts.presets ? "<div id=\"" + id + "pre\" class=\"grkey\" style=\"margin-top:10px\"></div><div class=\"grnote\" id=\"" + id + "prenote\"></div>" : "") +
+      "<div id=\"" + id + "out\"></div>" +
+      (opts.retire ? "<div id=\"" + id + "ret\"></div>" : "") +
+      (opts.lessons ? "<div id=\"" + id + "les\"></div>" : "");
 
     var rowsEl = document.getElementById(id + "rows");
     var dl = document.getElementById(id + "dl");
@@ -165,6 +168,157 @@
     var runBtn = document.getElementById(id + "run");
     runBtn.addEventListener("click", run);
     if (opts.autorun) run();
+
+    function rowFor(sym) {
+      var rows = rowsEl.querySelectorAll(".grrow"), hit = null;
+      rows.forEach(function (r) { if ((r.querySelector(".grtk").value || "").trim().toUpperCase() === sym) hit = r; });
+      return hit;
+    }
+    function seed(positions) {
+      (positions || []).forEach(function (p) {
+        var sym = String(p.sym || "").toUpperCase();
+        if (!sym) return;
+        var hit = rowFor(sym);
+        if (hit) { if (!(parseFloat(hit.querySelector(".grval").value) > 0) && p.val) hit.querySelector(".grval").value = p.val; }
+        else addRow(sym, p.val);
+      });
+      /* empty untouched starter rows fall away once real positions arrive */
+      rowsEl.querySelectorAll(".grrow").forEach(function (r) {
+        if (!(r.querySelector(".grtk").value || "").trim() && rowsEl.querySelectorAll(".grrow").length > 1) r.remove();
+      });
+    }
+
+    /* ---- the copy trade sample mixes, from public STOCK Act disclosure reporting ---- */
+    if (opts.presets) {
+      getJson("/data/copytrade.json").then(function (ct) {
+        var holder = document.getElementById(id + "pre");
+        if (!holder || !ct || !ct.presets) return;
+        var note = document.getElementById(id + "prenote");
+        if (note) note.textContent = "Not sure yet? Tap a sample and watch it work first. " + (ct.note || "") + " " + (ct.stat || "") + " Tap one to bring it in, tap it again to pull it back out; two at a time combine into one graded portfolio, your own tickers ride alongside, and any row you type over becomes yours and stays put when the mix leaves.";
+        ct.presets.forEach(function (ps) {
+          var b = document.createElement("span");
+          b.className = "grchip";
+          b.textContent = ps.label;
+          b.title = ps.desc || "";
+          b.addEventListener("click", function () {
+            var on = b.classList.toggle("on");
+            if (on) {
+              ps.positions.forEach(function (pp) {
+                var sym = String(pp[0]).toUpperCase();
+                var hit = rowFor(sym);
+                if (hit) {
+                  var k = (hit.dataset.pk || "").split(" ").filter(Boolean);
+                  if (k.indexOf(ps.key) < 0) k.push(ps.key);
+                  hit.dataset.pk = k.join(" ");
+                  if (!(parseFloat(hit.querySelector(".grval").value) > 0)) hit.querySelector(".grval").value = pp[1];
+                } else {
+                  var r = addRow(sym, pp[1]);
+                  r.dataset.pk = ps.key;
+                  r.querySelectorAll("input").forEach(function (i) { i.addEventListener("input", function () { r.dataset.mine = "1"; }); });
+                }
+              });
+              rowsEl.querySelectorAll(".grrow").forEach(function (r) {
+                if (!(r.querySelector(".grtk").value || "").trim() && !r.dataset.pk) r.remove();
+              });
+            } else {
+              rowsEl.querySelectorAll(".grrow").forEach(function (r) {
+                var k = (r.dataset.pk || "").split(" ").filter(Boolean);
+                if (k.indexOf(ps.key) < 0) return;
+                var left = k.filter(function (x) { return x !== ps.key; });
+                r.dataset.pk = left.join(" ");
+                if (!left.length && r.dataset.mine !== "1") r.remove();
+              });
+              if (!rowsEl.querySelector(".grrow")) addRow();
+            }
+            if (document.getElementById(id + "out").innerHTML) run();
+          });
+          holder.appendChild(b);
+        });
+      });
+    }
+
+    /* ---- Step 3: will it be enough to retire on ---- */
+    if (opts.retire) {
+      var LONGRUN = 10; /* long run U.S. large cap average, a teaching constant, an average and never a promise */
+      var fvv = function (p, y, r) { return p * Math.pow(1 + r, y); };
+      var fvStream = function (a, y, r) { return r > 0 ? a * ((Math.pow(1 + r, y) - 1) / r) : a * y; };
+      var ret = document.getElementById(id + "ret");
+      ret.innerHTML =
+        "<div class=\"grptitle\" style=\"margin-top:18px\"><b>Will it be enough to retire on?</b> The method: project the nest egg, turn it into income by the four percent rule, and compare it to your final working year of pay. That percentage is your replacement rate, and it is the number retirement planning actually optimizes.</div>" +
+        "<div class=\"grrow\" style=\"grid-template-columns:repeat(auto-fit,minmax(120px,1fr))\">" +
+        "<label><span class=\"grlab\">Your age today</span><input type=\"number\" class=\"r_age\" placeholder=\"40\"></label>" +
+        "<label><span class=\"grlab\">Retire at age</span><input type=\"number\" class=\"r_rage\" placeholder=\"65\"></label>" +
+        "<label><span class=\"grlab\">Salary today</span><input type=\"number\" class=\"r_sal\" placeholder=\"120000\"></label>" +
+        "<label><span class=\"grlab\">Raises per year, percent</span><input type=\"number\" class=\"r_raise\" value=\"3\"></label>" +
+        "<label><span class=\"grlab\">Retirement balance today</span><input type=\"number\" class=\"r_bal\" placeholder=\"150000\"></label>" +
+        "<label><span class=\"grlab\">What you save monthly</span><input type=\"number\" class=\"r_mon\" placeholder=\"1000\"></label>" +
+        "</div><div class=\"grnote\" id=\"" + id + "rout\">Fill the boxes and the whole chain computes as you type: nothing is stored, and the number is never a grade on the past, always just the road from here.</div>";
+      var rcalc = function () {
+        var g = function (c) { return parseFloat(ret.querySelector(c).value) || 0; };
+        var age = g(".r_age"), rage = g(".r_rage"), sal = g(".r_sal"), raise = g(".r_raise") / 100, bal = g(".r_bal"), mon = g(".r_mon");
+        var out = document.getElementById(id + "rout");
+        if (!(age > 0 && rage > age && sal > 0)) return;
+        var y2 = rage - age;
+        var finalSal = sal * Math.pow(1 + raise, y2);
+        var nest = fvv(bal, y2, LONGRUN / 100) + fvStream(mon * 12, y2, LONGRUN / 100);
+        var income = nest * 0.04;
+        var ssRep = 0.40, targetRep = 0.75;
+        var rep = finalSal > 0 ? income / finalSal : 0;
+        var eff = rep + ssRep;
+        var needRep = Math.max(0, targetRep - ssRep);
+        var nestNeed = needRep * finalSal / 0.04;
+        var haveFV = fvv(bal, y2, LONGRUN / 100);
+        var annuityF = fvStream(1, y2, LONGRUN / 100);
+        var needMonthly = annuityF > 0 ? Math.max(0, nestNeed - haveFV) / annuityF / 12 : 0;
+        var m = function (n) { return "$" + Math.round(n).toLocaleString("en-US"); };
+        var ok = eff >= targetRep;
+        out.innerHTML = "Retiring at " + rage + ", your final working year of pay projects to about <b>" + m(finalSal) + "</b>. The nest egg projects to <b>" + m(nest) + "</b> at the long run average of about " + LONGRUN + " percent, an average and not a promise. By the four percent rule that is " + m(income) + " a year, a replacement rate of <b style=\"color:" + (ok ? "var(--good,#2e7d4f)" : "var(--brick,#8a3d3a)") + "\">" + Math.round(eff * 100) + " percent</b> with Social Security credited at roughly 40 points for a medium earner, against the 75 percent planners target. " +
+          (ok ? "<b>The road you are on arrives.</b> The plan now is protecting it: fees, concentration, and the documents." :
+          "<b>Your number: " + (needMonthly < 1 ? "covered" : m(needMonthly) + " a month") + ".</b> Savings need to carry about " + Math.round(needRep * 100) + " points; that takes a nest egg of about " + m(nestNeed) + ", what you already hold grows to " + m(haveFV) + " on its own, and closing the rest from today takes about " + m(needMonthly) + " a month. Only two levers exist: a more aggressive savings strategy, or a later retirement age.") +
+          " And keep the two buckets separate, always: the graded portfolio above is the playground; the retirement bucket rides the whole market in an index or target date fund on purpose, because this money is not for playing.";
+        if (opts.onResize) opts.onResize();
+      };
+      ret.querySelectorAll("input").forEach(function (i) { i.addEventListener("input", rcalc); });
+    }
+
+    /* ---- the two lessons everyone gets ---- */
+    if (opts.lessons) {
+      var les = document.getElementById(id + "les");
+      les.innerHTML =
+        "<div class=\"grptitle\" style=\"margin-top:18px\"><b>Two lessons I give everyone.</b></div>" +
+        "<div class=\"grrow\" style=\"grid-template-columns:minmax(140px,220px) 1fr; align-items:end\">" +
+        "<label><span class=\"grlab\">1. The fee lesson: fund expense ratio, percent</span><input type=\"number\" class=\"l_fee\" step=\"0.05\" min=\"0\" max=\"3\" placeholder=\"0.75\"></label>" +
+        "<div class=\"grnote\" id=\"" + id + "feeout\" style=\"margin-top:0\">What does the expense ratio quietly cost over a working lifetime? Type one and see.</div></div>" +
+        "<div class=\"grnote\"><b>2. The allocation lesson.</b> Pop quiz: what explains over 90 percent of the difference in returns between portfolios?</div>" +
+        "<div class=\"grkey\" id=\"" + id + "quiz\"></div><div class=\"grnote\" id=\"" + id + "quizout\"></div>";
+      var feeIn = les.querySelector(".l_fee");
+      feeIn.addEventListener("input", function () {
+        var fee = parseFloat(feeIn.value) || 0;
+        var out = document.getElementById(id + "feeout");
+        if (!fee) { out.textContent = "What does the expense ratio quietly cost over a working lifetime? Type one and see."; return; }
+        var yrs = 40, annual = 12000;
+        var fvS = function (a, y, r) { return r > 0 ? a * ((Math.pow(1 + r, y) - 1) / r) : a * y; };
+        var gross = fvS(annual, yrs, 0.10), net = fvS(annual, yrs, 0.10 - fee / 100);
+        var m = function (n) { return "$" + Math.round(n).toLocaleString("en-US"); };
+        out.innerHTML = "On $1,000 a month for 40 years at the long run average, a " + fee + " percent ratio quietly takes <b style=\"color:var(--brick,#8a3d3a)\">" + m(gross - net) + "</b> of the " + m(gross) + " you would have had, because fee drag compounds at the same exponent returns do. An index fund at 0.03 costs almost nothing for the same market.";
+        if (opts.onResize) opts.onResize();
+      });
+      var QA = [["Stock picking", false], ["Market timing", false], ["Asset allocation", true], ["Fees", false]];
+      var quiz = document.getElementById(id + "quiz");
+      QA.forEach(function (q) {
+        var c = document.createElement("span");
+        c.className = "grchip";
+        c.textContent = q[0];
+        c.addEventListener("click", function () {
+          quiz.querySelectorAll(".grchip").forEach(function (x) { x.classList.remove("on"); });
+          c.classList.add("on");
+          document.getElementById(id + "quizout").innerHTML = (q[1] ? "<b>Correct.</b> " : "The popular answer, but no. ") +
+            "Landmark research found that <b>asset allocation</b>, the mix between stocks, bonds, and cash, explains over 90 percent of the variation in portfolio returns. Stock picking and market timing, the two things the industry sells hardest, explain almost none of it. Get the mix right for your horizon and the hard part is done.";
+          if (opts.onResize) opts.onResize();
+        });
+        quiz.appendChild(c);
+      });
+    }
 
     async function run() {
       var held = [];
@@ -309,7 +463,7 @@
       }).catch(function () {});
     }
 
-    return { run: run, addRow: addRow };
+    return { run: run, addRow: addRow, seed: seed };
   }
 
   window.GrowRoom = { mount: mount };

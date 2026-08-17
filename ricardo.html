@@ -27,12 +27,17 @@
 
   h1,h2,h3{font-family:Georgia,"Times New Roman",serif; font-weight:normal;}
   .chapter{
-    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
     padding:calc(4vh + 54px) 7vw 11vh; text-align:center; opacity:0; visibility:hidden; transform:translateY(20px);
     transition:opacity .7s ease, transform .7s ease, visibility .7s; overflow-y:auto; z-index:2;
   }
   .chapter.on{opacity:1; visibility:visible; transform:none;}
   .chapter > *{flex:none;}
+  /* safe centering: auto margins center short chapters yet never clip tall ones.
+     justify-content:center centers the OVERFLOW too, which cut the top of any
+     chapter taller than the screen off above scrollTop zero. */
+  .chapter > :first-child{margin-top:auto;}
+  .chapter > :last-child{margin-bottom:auto;}
   .kicker{font-size:12.5px; letter-spacing:.3em; text-transform:uppercase; color:var(--goldtext); margin-bottom:16px; font-weight:600;}
   h1{font-size:clamp(29px,4.4vw,52px); line-height:1.14; max-width:22ch; color:var(--navy);}
   .lead{font-size:clamp(16.5px,1.55vw,20px); color:var(--muted); max-width:60ch; line-height:1.66; margin-top:20px;}
@@ -219,10 +224,14 @@
   .chip.on{background:var(--navy); color:#fff; border-color:var(--navy);}
   .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-top:20px;}
   .ledger{margin-top:24px; padding:20px 22px; text-align:left; max-width:840px; margin-left:auto; margin-right:auto;}
-  .ledgertop{border-bottom:1px solid rgba(169,136,79,.4); padding-bottom:12px; margin-bottom:6px;}
-  .ledgertop .ll{font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:600;}
-  .ledgertop .lv{font-family:Georgia,serif; font-size:clamp(30px,4vw,44px); color:var(--good); font-variant-numeric:tabular-nums; margin-top:4px;}
-  .ledgertop .ln, .ledger .ln{font-size:12.5px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  .ledgerfigs{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; border-bottom:1px solid rgba(169,136,79,.4); padding-bottom:14px;}
+  .lfig .ll{font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+  .lfig .lv{font-family:Georgia,serif; font-size:clamp(24px,2.6vw,34px); font-variant-numeric:tabular-nums; margin-top:4px;}
+  .lfig .lv.lred{color:var(--brick);}
+  .lfig .lv.lgreen{color:var(--good);}
+  .ledger .ln{font-size:12.5px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  .lcheck{flex:0 0 22px; width:22px; height:22px; border-radius:50%; border:2px solid var(--good); color:var(--good);
+    display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; margin-top:2px;}
   .lrow{display:flex; align-items:flex-start; gap:12px; padding:11px 0; border-bottom:1px dashed rgba(169,136,79,.28);}
   .lrow:last-child{border-bottom:none;}
   .lrow .lname{flex:1; font-size:13.5px; font-weight:700; color:var(--navy);}
@@ -231,6 +240,7 @@
   .lrow .lval.lalt{color:var(--goldink); font-weight:600;}
   .lrow .sw{cursor:pointer; margin-top:2px;}
   .lrow.on .sw{background:var(--goldsoft);}
+  .lrow.on .lval{color:var(--good); font-weight:600;}
   .lrow.on .sw::after{left:23px;}
   .stat{padding:16px 18px; text-align:left;}
   .stat .sl{font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:600;}
@@ -572,11 +582,13 @@
       <div><span class="delta badd">$5,615,000 of exemption spent today</span><span class="delta bgood">the kids hold it now</span></div>
     </div>
   </div>
-  <button class="ghostbtn" onclick="rev('foliotool')">Grade your own portfolio against this one</button>
-  <div class="reveal glass" id="foliotool">The Ricardos hold one stock at twenty percent of their wealth, which is exactly the concentration this chapter exists to fix. List your own holdings, one per line, ticker then dollars, and get the same checkup: count, concentration, and the doctrine that judges them.
+  <button class="ghostbtn" onclick="rev('foliotool'); PORTAL.folio.ensure()">Grade your own portfolio against this one</button>
+  <div class="reveal glass" id="foliotool" style="max-width:72ch">The Ricardos hold one stock at twenty percent of their wealth, which is exactly the concentration this chapter exists to fix. List your own holdings, one per line, ticker then dollars, and get the quick checkup: count, concentration, and the doctrine that judges them.
     <div class="toolform"><textarea id="folioin" placeholder="AAPL 40000&#10;VTI 120000&#10;NVDA 15000"></textarea><div class="aprow" style="margin-top:8px"><button class="asend" onclick="PORTAL.folio.run()">GRADE</button></div></div>
     <div class="toolout" id="folioout"></div>
+    <div style="margin-top:16px"><b>Grade what you actually own.</b> Do you hold individual stocks, your own picks, company shares, or something a parent handed down? Each holding goes in by its ticker symbol, the short code your brokerage app prints next to every position: Apple is AAPL, Microsoft is MSFT, a total market fund like Vanguard Total Stock Market is VTI. Start typing a company name or a symbol and the search runs live against every listing on the U.S. exchanges, the New York Stock Exchange, the Nasdaq, thousands of stocks and funds. This is not a canned list: your real holdings, real market data, pulled fresh. Then the rough dollar value you hold.</div>
     <div id="foliogrow"></div>
+    <div style="margin-top:14px; font-size:13.5px">One more thing before the big question, because the wrappers confuse everyone: a retirement balance usually lives inside a retirement account, a 401(k) at work where a fund company manages it for you, often through a target date fund that adjusts itself as you age, or an IRA you opened yourself. The graded positions above usually live in a regular brokerage account you control directly. Different wrappers, different tax treatment, same engine underneath, and the step below asks what it all adds up to.</div>
   </div>
   <div class="fork glass" id="fork10b">
     <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">What if we skipped the company to keep things simple?</div><div class="sw"></div></div>
@@ -646,13 +658,16 @@
   <h1>Every ring, green.</h1>
   <div class="wishcols" id="finalwishes"></div>
   <div class="ledger glass" id="ledger">
-    <div class="ledgertop">
-      <div class="ll">Tonight's bottom line, every decision counted</div>
-      <div class="lv" id="ledgertotal">$0</div>
-      <div class="ln">with every switch on the plan's road. Flip any of them and the number moves to the alternative's own price, because every fork in this room was ground to a number before you ever saw it.</div>
+    <div class="ledgerfigs">
+      <div class="lfig"><div class="ll">Today, with no plan</div><div class="lv lred" id="lfig1">$0</div><div class="ln">what the 40 percent band takes above the exclusions, nine months after the second of you passes</div></div>
+      <div class="lfig"><div class="ll">Tomorrow, with the plan you heard tonight</div><div class="lv lgreen" id="lfig2">$0</div><div class="ln">the bill after your stated assumptions are built, and it keeps shrinking every year the freezes work</div></div>
+      <div class="lfig"><div class="ll">And if the extra switches flip</div><div class="lv lgreen" id="lfig3" style="font-weight:700">$0</div><div class="ln">the same bill after the moves beyond your stated assumptions, the ones below waiting on Sunday dinner</div></div>
     </div>
+    <div class="ln" style="margin-top:12px"><b>What the assumptions already did.</b> These carry check marks, not switches, because they were decided at our table and priced in their own chapters. They are the plan.</div>
+    <div id="ledgerfixed"></div>
+    <div class="ln" style="margin-top:14px"><b>The breadcrumbs.</b> None of these were in your stated assumptions, which is exactly why they are switches. Each one is a question from the homework chapter wearing a price tag; flip it and watch the third number move.</div>
     <div id="ledgerrows"></div>
-    <div class="ln">Estate rows are priced at the 40 percent rate and gains rows at the 23.8 percent rate, the same two rates every chapter used, on today's values with growth at zero, so these figures match the paper's exhibits to the dollar. Slide growth in any chapter and the gap only widens toward the vessels.</div>
+    <div class="ln">Estate figures ride the 40 percent rate and gains figures the 23.8 percent rate, the same two rates every chapter used, on today's card values, so everything reconciles to the paper's exhibits, and the bill figures recompute live if you changed any card in the walkthrough.</div>
   </div>
   <p class="lead" style="margin-top:22px">When the first of you passes: nothing is sold, no court in two states, the survivor's income never pauses. When the second of you passes: the tax is a fraction of what it was, and the check that pays it is already written. Adam inherits when he is ready. Eve never misses a benefit. Campbell University receives a legacy measured in eight figures. Two people who found each other after the worst years of their lives will have kept every promise they made.</p>
   <p class="lead">And every switch you flipped tonight is a real alternative we can build. Life changes circumstances. Time changes values. Washington changes the rules. The plan is built to bend to all three, re read against every new Congress, which is why this page will still be here the next time any of them moves.</p>
@@ -1082,79 +1097,89 @@
   var PORTAL = {};
 
   PORTAL.ledger = (function(){
-    /* Every decision in the plan on one page, each fork already ground to a number.
-       ON is the plan's road; OFF is the alternative, carrying its own price. Estate
-       rows ride the 40 percent rate, gains rows the 23.8 percent rate, growth at zero,
-       so every figure reconciles to the paper's exhibits to the dollar. */
-    var ROWS = [
-      { k:"ral",  name:"Raleigh rides the paired residence vessels",
-        on:{ v:1879000, lbl:"+$1,879,000 of estate tax the discount removes", cls:"lgood" },
-        off:{ v:0, lbl:"handed back, and a step up worth up to $1,703,000 arrives once instead", cls:"lalt" } },
-      { k:"mal",  name:"Malibu freezes in community labeled vessels, never commingled",
-        on:{ v:1385000, lbl:"+$1,385,000 of estate tax the freeze removes", cls:"lgood" },
-        off:{ v:838000, lbl:"+$838,000 the first death erasure removes instead, and slow growth can defend it", cls:"lalt" } },
-      { k:"farm", name:"Joe's farm rides Ricky's trust to the step up",
-        on:{ v:878220, lbl:"+$878,220 of gains tax the step up cancels, 23.8 percent of $3,690,000 of gain", cls:"lgood" },
-        off:{ v:1144000, lbl:"+$1,144,000 of conservation relief instead, and the land locks forever", cls:"lalt" } },
-      { k:"trn",  name:"Donald's trains pour into the charitable vessel",
-        on:{ v:4088000, lbl:"+$4,088,000 of estate tax never printed, and $511,000 of first year income starts", cls:"lgood" },
-        off:{ v:1718360, lbl:"+$1,718,360 of gains tax wiped at death instead, while the estate bill grows", cls:"lalt" } },
-      { k:"llc",  name:"Ricky's stock feeds the family company freeze",
-        on:{ v:2310805, lbl:"+$561,500 of discount plus $1,749,305 of grantor tax gifts over fifteen years", cls:"lgood" },
-        off:{ v:0, lbl:"$5,615,000 of exemption spent today, and the kids hold it now", cls:"lalt" } },
-      { k:"cam",  name:"Lucy's stock reaches Campbell whole",
-        on:{ v:1140020, lbl:"+$1,140,020 of gains tax that simply never happens, 23.8 percent of $4,790,000 of gain", cls:"lgood" },
-        off:{ v:0, lbl:"sold and taxed on the way out, and the legacy shrinks by exactly the tax", cls:"lalt" } }
+    /* Three bottom lines. Figure one: no plan, the 40 percent band above the married
+       exclusions, live from the asset cards. Figure two: the bill after the stated
+       assumptions, the same arithmetic as chapter thirteen. Figure three: figure two
+       after the breadcrumb switches, the moves that were never in the assignment's
+       assumptions and so are the only things that get a switch. The assumptions
+       themselves carry check marks: they were decided at the table and priced in
+       their own chapters, and a decision already made is not a toggle. */
+    var ESTATE = 0.40, GAINS = 0.238, RATE7520 = 0.052, HALF = 4627000;
+    function sav(term){ return ESTATE * (HALF - HALF / Math.pow(1 + RATE7520, term)); }
+    var FIXED = [
+      { name:"Raleigh rides the paired residence vessels", lbl:"$1,879,000 of estate tax the discount removes" },
+      { name:"Malibu freezes in community labeled vessels, never commingled", lbl:"$1,385,000 of estate tax the freeze removes" },
+      { name:"Joe's farm rides Ricky's trust to the step up", lbl:"$878,220 of gains tax cancelled, 23.8 percent of $3,690,000 of gain" },
+      { name:"Donald's trains pour into the charitable vessel", lbl:"$4,088,000 of estate tax never printed, and $511,000 of first year income starts" },
+      { name:"Ricky's stock feeds the family company freeze", lbl:"$561,500 of discount plus $1,749,305 of grantor tax gifts over fifteen years" },
+      { name:"Lucy's stock reaches Campbell whole", lbl:"$1,140,020 of gains tax that simply never happens, 23.8 percent of $4,790,000 of gain" },
+      { name:"The last vessel holds the insurance, the check already written", lbl:"the face amount outside the estate, cash on the exact day the bill comes" }
+    ];
+    var rickyStretch = Math.round(sav(26) - sav(15));
+    var lucyStep = Math.round(sav(14) - sav(13));
+    var EXTRAS = [
+      { k:"ease", name:"A conservation easement on Joe's farm",
+        v:1144000, lbl:"+$1,144,000 of relief, and the land locks forever. This is Ricky's homework question wearing a number: who inherits the promise?" },
+      { k:"rterm", name:"Stretch Ricky's Raleigh term from 15 years to the table's three year margin, 26",
+        v:rickyStretch, lbl:"+$" + rickyStretch.toLocaleString("en-US") + " more of discount value, priced by the same solver as chapter six. The math is modular; the odds are personal." },
+      { k:"lterm", name:"Walk Lucy's term one year deeper, 13 to 14",
+        v:lucyStep, lbl:"+$" + lucyStep.toLocaleString("en-US") + " more, and Lucy stands roughly two years from the table instead of nearly four. Her call, never the arithmetic's." }
     ];
     var state = {};
     function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
-    function total(){
-      var t = 0;
-      ROWS.forEach(function(r){ t += state[r.k] ? r.on.v : r.off.v; });
-      return t;
+    function bills(){
+      var total = ASSETV.reduce(function(a,b){ return a+b; }, 0);
+      var noplan = Math.max(0, total - 30000000) * ESTATE;
+      var plan = Math.max(0, total - ASSETV[3] - ASSETV[4]/2 - 30000000) * ESTATE;
+      var extra = 0;
+      EXTRAS.forEach(function(r){ if (state[r.k]) extra += r.v; });
+      return { noplan: noplan, plan: plan, after: Math.max(0, plan - extra) };
     }
-    var lastTotal = null;
+    var last3 = null;
     function paint(){
-      ROWS.forEach(function(r){
+      var b = bills();
+      var f1 = document.getElementById("lfig1"), f2 = document.getElementById("lfig2"), f3 = document.getElementById("lfig3");
+      if (!f1) return;
+      f1.textContent = money(b.noplan);
+      f2.textContent = money(b.plan);
+      EXTRAS.forEach(function(r){
         var row = document.getElementById("lrow_" + r.k);
-        if (!row) return;
-        var on = state[r.k];
-        row.classList.toggle("on", on);
-        var side = on ? r.on : r.off;
-        var val = row.querySelector(".lval");
-        val.textContent = side.lbl;
-        val.className = "lval " + side.cls;
+        if (row) row.classList.toggle("on", !!state[r.k]);
       });
-      var el = document.getElementById("ledgertotal");
-      if (!el) return;
-      var target = total();
-      var from = (lastTotal === null) ? target : lastTotal;
-      lastTotal = target;
+      var target = b.after;
+      var from = (last3 === null) ? target : last3;
+      last3 = target;
       var t0 = null;
       function step(ts){
         if (t0 === null) t0 = ts;
         var p = Math.min(1, (ts - t0) / 500);
         var eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = money(from + (target - from) * eased);
+        f3.textContent = money(from + (target - from) * eased);
         if (p < 1) requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
     }
     function init(){
+      var fx = document.getElementById("ledgerfixed");
       var host = document.getElementById("ledgerrows");
-      if (!host) return;
-      host.innerHTML = ROWS.map(function(r){
-        state[r.k] = true;
-        return '<div class="lrow" id="lrow_' + r.k + '"><div class="lname">' + r.name +
-          '<span class="lval"></span></div><div class="sw"></div></div>';
-      }).join("");
-      ROWS.forEach(function(r){
-        var row = document.getElementById("lrow_" + r.k);
-        row.querySelector(".sw").addEventListener("click", function(){
-          state[r.k] = !state[r.k];
-          paint();
+      if (!host || !fx) return;
+      if (!fx.innerHTML){
+        fx.innerHTML = FIXED.map(function(r){
+          return '<div class="lrow"><div class="lname">' + r.name +
+            '<span class="lval lgood">' + r.lbl + '</span></div><div class="lcheck">&#10003;</div></div>';
+        }).join("");
+        host.innerHTML = EXTRAS.map(function(r){
+          state[r.k] = false;
+          return '<div class="lrow" id="lrow_' + r.k + '"><div class="lname">' + r.name +
+            '<span class="lval lalt">' + r.lbl + '</span></div><div class="sw"></div></div>';
+        }).join("");
+        EXTRAS.forEach(function(r){
+          document.getElementById("lrow_" + r.k).querySelector(".sw").addEventListener("click", function(){
+            state[r.k] = !state[r.k];
+            paint();
+          });
         });
-      });
+      }
       paint();
     }
     return { init: init };
@@ -1389,6 +1414,17 @@
   })();
 
   PORTAL.folio = (function(){
+    var ROOM = null;
+    function ensure(){
+      if (ROOM) return;
+      var gh = document.getElementById("foliogrow");
+      if (gh && window.GrowRoom){
+        ROOM = GrowRoom.mount(gh, {
+          presets: true, retire: true, lessons: true,
+          intro: "Not sure where to start? Type a holding, or tap a sample mix below and watch it work first. While the grade is showing, every edit re-runs it."
+        });
+      }
+    }
     function run(){
       var raw = document.getElementById("folioin").value.trim();
       var out = document.getElementById("folioout");
@@ -1417,14 +1453,10 @@
         : "<span class=\"tgood\">Position count carries real diversification, judged properly by beta and Sharpe rather than by count alone.</span>");
       out.innerHTML = rows.join("") + "<div style=\"margin-top:9px\">" + verdicts.join("<br>") + "</div>"
         + "<div style=\"margin-top:9px; font-size:12.5px\">That was the doctrine. The engine is here too: open the tile below and these same tickers run live, a year of real closes, beta, alpha, Sharpe, the correlation table, and the charts.</div>";
-      var gh = document.getElementById("foliogrow");
-      if (gh && window.GrowRoom){
-        gh.innerHTML = "";
-        GrowRoom.mount(gh, { positions: pos.map(function(p){ return { sym: p.t, val: p.v }; }),
-          intro: "Your list carried over, every row still yours to edit. The same engine as the Grow season: every U.S. listing searchable, computed in your browser, never stored." });
-      }
+      ensure();
+      if (ROOM) ROOM.seed(pos.map(function(p){ return { sym: p.t, val: p.v }; }));
     }
-    return { run: run };
+    return { run: run, ensure: ensure };
   })();
 
   document.addEventListener("keydown", function(e){
