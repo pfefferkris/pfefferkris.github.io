@@ -222,7 +222,7 @@
       var el = document.getElementById(id + "rec");
       if (!el) return;
       if (!rec) {
-        el.innerHTML = "<b>No parcel matched that address.</b> The statewide layer reaches all 100 counties; include the city, since a street name without one lands wherever that name occurs first in the state.";
+        el.innerHTML = st.honest ? "<b>An honest no.</b> " + esc(st.honest) : "<b>No parcel matched that address.</b> The statewide layer reaches all 100 counties; include the city, since a street name without one lands wherever that name occurs first in the state.";
         return;
       }
       var rows = [];
@@ -239,12 +239,16 @@
         "<div class=\"prnote\">Read the matched address before trusting a single number: a wrong city can silently match a real but different house." +
         (rec.source ? " Source: " + esc(rec.source) + "." : "") + "</div>";
     }
+    function anyJson(u) {
+      return fetch(u).then(function (r) { return r.json(); }).catch(function () { return null; });
+    }
     function fetchRecord() {
       var u = "/api/parcel?address=" + encodeURIComponent(st.address) + (st.county ? "&county=" + encodeURIComponent(st.county) : "");
-      return getJson(u).then(function (j) {
+      return anyJson(u).then(function (j) {
         var rec = normalize(j);
         if (!rec) {
-          return getJson("/api/deed?address=" + encodeURIComponent(st.address) + (st.county ? "&county=" + encodeURIComponent(st.county) : ""))
+          if (j && j.honest) { st.honest = j.honest; drawRecord(null); return; }
+          return anyJson("/api/deed?address=" + encodeURIComponent(st.address) + (st.county ? "&county=" + encodeURIComponent(st.county) : ""))
             .then(function (j2) { drawRecord(normalize(j2)); });
         }
         drawRecord(rec);

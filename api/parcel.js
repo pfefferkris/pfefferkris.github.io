@@ -483,6 +483,21 @@ export default async function handler(req, res) {
     // say so, because a street name matched statewide is a guess about the county.
     let inferred = false;
     if (!base && !deep) {
+      // The city named its county and that county answered nothing. Stopping here is the
+      // honest move: falling through to an unfiltered statewide match hands back a REAL
+      // parcel from a DIFFERENT county (Taylorsville used to answer with Iredell, Sylva
+      // with Martin), and a silent wrong answer is worse than none.
+      if (counties.length) {
+        return res.status(404).json({
+          error: "no parcel matched in " + counties.join(" or ") + " County",
+          county: counties[0],
+          honest: "The city you typed sits in " + counties.join(" or ") + " County, and that county's " +
+                  "public layer returned nothing for that street. Rather than hand you a real parcel " +
+                  "from a different county, the search stops here. Check the street spelling first; " +
+                  "if it is right, " + counties.join(" and ") + " County is one where the public layer " +
+                  "is thin and we are still updating to get there."
+        });
+      }
       base = await onemap(street, hint, city).catch(() => null);
       if (!base && city) { base = await onemap(street, "", "").catch(() => null); inferred = !!base; }
       const c2 = (base && base.county) || "";

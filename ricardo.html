@@ -1200,7 +1200,7 @@
       if (host) host.innerHTML = "";
       fetch("/api/parcel?address=" + encodeURIComponent(raw)).then(function(r){ return r.json(); }).then(function(j){
         if (!j || j.error || !(j.address || j.siteAddress || (j.deed && j.deed.book))){
-          out.innerHTML = "No parcel matched that address. The statewide layer reaches all 100 North Carolina counties; include the city, because a street name without one lands wherever that name occurs first in the state.";
+          out.innerHTML = (j && j.honest) ? j.honest : "No parcel matched that address. The statewide layer reaches all 100 North Carolina counties; include the city, because a street name without one lands wherever that name occurs first in the state.";
           return;
         }
         out.innerHTML = "<div class=\"trow\"><span>The record I matched</span><span>" + (j.address || j.siteAddress) + (j.county ? ", " + j.county + " County" : "") + "</span></div>"
@@ -1267,7 +1267,7 @@
             (avm.low && avm.high ? " (" + money(avm.low) + " to " + money(avm.high) + ")" : "") + "</span>" + useBtn(idx, avm.price, "USE") + "</div>");
         }
         if (!lines.length){
-          out.innerHTML = "No record answered for that address. The statewide engine reaches all 100 North Carolina counties; include the city, and give the market engine a full street address.";
+          out.innerHTML = (rs[0] && rs[0].honest) ? rs[0].honest : "No record answered for that address. The statewide engine reaches all 100 North Carolina counties; include the city, and give the market engine a full street address.";
           return;
         }
         out.innerHTML = lines.join("") +
@@ -1385,7 +1385,7 @@
       if (host) host.innerHTML = "";
       fetch("/api/parcel?address=" + encodeURIComponent(raw)).then(function(r){ return r.json(); }).then(function(j){
         if (!j || j.error || !(j.address || j.siteAddress || (j.deed && j.deed.book))){
-          out.innerHTML = "No parcel matched that address. The statewide layer reaches all 100 North Carolina counties; include the city, because a street name without one lands wherever that name occurs first in the state.";
+          out.innerHTML = (j && j.honest) ? j.honest : "No parcel matched that address. The statewide layer reaches all 100 North Carolina counties; include the city, because a street name without one lands wherever that name occurs first in the state.";
           return;
         }
         var a = j.assessed || {};
