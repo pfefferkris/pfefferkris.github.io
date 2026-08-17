@@ -248,6 +248,11 @@
   .lfig .lv.lred{color:var(--brick);}
   .lfig .lv.lgreen{color:var(--good);}
   .ledger .ln{font-size:12.5px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  .prow{display:flex; justify-content:space-between; gap:16px; padding:6px 0; border-bottom:1px dashed rgba(169,136,79,.22); font-size:13px;}
+  .prow span:first-child{color:var(--muted);}
+  .prow span:last-child{font-variant-numeric:tabular-nums; text-align:right; flex:none;}
+  .prow .lg{color:var(--good); font-weight:600;}
+  .ledger .lgood{color:var(--good); font-weight:700;}
   .lcheck{flex:0 0 22px; width:22px; height:22px; border-radius:50%; border:2px solid var(--good); color:var(--good);
     display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; margin-top:2px;}
   .lrow{display:flex; align-items:flex-start; gap:12px; padding:11px 0; border-bottom:1px dashed rgba(169,136,79,.28);}
@@ -606,10 +611,8 @@
     </div>
   </div>
   <button class="ghostbtn" onclick="rev('foliotool'); PORTAL.folio.ensure()">Grade your own portfolio against this one</button>
-  <div class="reveal glass" id="foliotool" style="max-width:72ch">The Ricardos hold one stock at twenty percent of their wealth, which is exactly the concentration this chapter exists to fix. List your own holdings, one per line, ticker then dollars, and get the quick checkup: count, concentration, and the doctrine that judges them.
-    <div class="toolform"><textarea id="folioin" placeholder="AAPL 40000&#10;VTI 120000&#10;NVDA 15000"></textarea><div class="aprow" style="margin-top:8px"><button class="asend" onclick="PORTAL.folio.run()">GRADE</button></div></div>
-    <div class="toolout" id="folioout"></div>
-    <div style="margin-top:16px"><b>Grade what you actually own.</b> Do you hold individual stocks, your own picks, company shares, or something a parent handed down? Each holding goes in by its ticker symbol, the short code your brokerage app prints next to every position: Apple is AAPL, Microsoft is MSFT, a total market fund like Vanguard Total Stock Market is VTI. Start typing a company name or a symbol and the search runs live against every listing on the U.S. exchanges, the New York Stock Exchange, the Nasdaq, thousands of stocks and funds. This is not a canned list: your real holdings, real market data, pulled fresh. Then the rough dollar value you hold.</div>
+  <div class="reveal glass" id="foliotool" style="max-width:72ch">The Ricardos hold one stock at twenty percent of their wealth, which is exactly the concentration this chapter exists to fix.
+    <div style="margin-top:12px"><b>Grade what you actually own.</b> Do you hold individual stocks, your own picks, company shares, or something a parent handed down? Each holding goes in by its ticker symbol, the short code your brokerage app prints next to every position: Apple is AAPL, Microsoft is MSFT, a total market fund like Vanguard Total Stock Market is VTI. Start typing a company name or a symbol and the search runs live against every listing on the U.S. exchanges, the New York Stock Exchange, the Nasdaq, thousands of stocks and funds. This is not a canned list: your real holdings, real market data, pulled fresh. Then the rough dollar value you hold.</div>
     <div id="foliogrow"></div>
     <div style="margin-top:14px; font-size:13.5px">One more thing before the big question, because the wrappers confuse everyone: a retirement balance usually lives inside a retirement account, a 401(k) at work where a fund company manages it for you, often through a target date fund that adjusts itself as you age, or an IRA you opened yourself. The graded positions above usually live in a regular brokerage account you control directly. Different wrappers, different tax treatment, same engine underneath, and the step below asks what it all adds up to.</div>
   </div>
@@ -683,14 +686,16 @@
   <div class="ledger glass" id="ledger">
     <div class="ledgerfigs">
       <div class="lfig"><div class="ll">Today, with no plan</div><div class="lv lred" id="lfig1">$0</div><div class="ln">what the 40 percent band takes above the exclusions, nine months after the second of you passes</div></div>
-      <div class="lfig"><div class="ll">Tomorrow, with the plan you heard tonight</div><div class="lv lgreen" id="lfig2">$0</div><div class="ln">the bill after your stated assumptions are built, and it keeps shrinking every year the freezes work</div></div>
-      <div class="lfig"><div class="ll">And if the extra switches flip</div><div class="lv lgreen" id="lfig3" style="font-weight:700">$0</div><div class="ln">the same bill after the moves beyond your stated assumptions, the ones below waiting on Sunday dinner</div></div>
+      <div class="lfig"><div class="ll">Tomorrow, the day the plan is signed</div><div class="lv lgreen" id="lfig2">$0</div><div class="ln">the charitable dispositions in place, Exhibit B scenario two, before a single term has run</div></div>
+      <div class="lfig"><div class="ll">And when the plan finishes maturing</div><div class="lv lgreen" id="lfig3" style="font-weight:700">$0</div><div class="ln">Exhibit B scenario three, the day the last residence term ends, with every value held exactly where it stands today</div></div>
     </div>
+    <div class="ln" style="margin-top:14px"><b>And here is the part that never gets explained.</b> The drop from the second number to the third is not a rounding, and it is not optimism. It is the four residence vessels finishing their terms, priced line by line, exactly as Exhibit B computes it.</div>
+    <div id="ledgerfall"></div>
     <div class="ln" style="margin-top:12px"><b>What the assumptions already did.</b> These carry check marks, not switches, because they were decided at our table and priced in their own chapters. They are the plan.</div>
     <div id="ledgerfixed"></div>
-    <div class="ln" style="margin-top:14px"><b>The breadcrumbs.</b> None of these were in your stated assumptions, which is exactly why they are switches. Each one is a question from the homework chapter wearing a price tag; flip it and watch the third number move.</div>
+    <div class="ln" style="margin-top:16px"><b>The breadcrumbs.</b> None of these were in your stated assumptions, which is exactly why they are switches. Each one is a question from the homework chapter wearing a price tag; flip it and watch the third number, and the lines above it, move.</div>
     <div id="ledgerrows"></div>
-    <div class="ln">Estate figures ride the 40 percent rate and gains figures the 23.8 percent rate, the same two rates every chapter used, on today's card values, so everything reconciles to the paper's exhibits, and the bill figures recompute live if you changed any card in the walkthrough.</div>
+    <div class="ln">Every figure rides the 40 percent estate rate on today's card values, held constant, so all three reconcile to Exhibit B to the dollar and recompute live if you corrected any card at the table. Growth after funding, the annual gifting program, and the insurance proceeds are all left out of this arithmetic, and every one of them pushes the final figure lower still.</div>
   </div>
   <p class="lead" style="margin-top:22px">When the first of you passes: nothing is sold, no court in two states, the survivor's income never pauses. When the second of you passes: the tax is a fraction of what it was, and the check that pays it is already written. Adam inherits when he is ready. Eve never misses a benefit. Campbell University receives a legacy measured in eight figures. Two people who found each other after the worst years of their lives will have kept every promise they made.</p>
   <p class="lead">And every switch you flipped tonight is a real alternative we can build. Life changes circumstances. Time changes values. Washington changes the rules. The plan is built to bend to all three, re read against every new Congress, which is why this page will still be here the next time any of them moves.</p>
@@ -1126,56 +1131,107 @@
   var PORTAL = {};
 
   PORTAL.ledger = (function(){
-    /* Three bottom lines. Figure one: no plan, the 40 percent band above the married
-       exclusions, live from the asset cards. Figure two: the bill after the stated
-       assumptions, the same arithmetic as chapter thirteen. Figure three: figure two
-       after the breadcrumb switches, the moves that were never in the assignment's
-       assumptions and so are the only things that get a switch. The assumptions
-       themselves carry check marks: they were decided at the table and priced in
-       their own chapters, and a decision already made is not a toggle. */
-    var ESTATE = 0.40, GAINS = 0.238, RATE7520 = 0.052, HALF = 4627000;
-    function sav(term){ return ESTATE * (HALF - HALF / Math.pow(1 + RATE7520, term)); }
+    /* Exhibit B, made live and made honest. Three scenarios, the paper's own three:
+         one, no plan at all;
+         two, the charitable dispositions in place, the day the plan is signed;
+         three, the plan fully matured, the day the last residence term ends.
+       The drop from two to three is the one nobody explains, so it gets its own
+       waterfall: the residences leave the estate, their remainders come BACK as
+       adjusted taxable gifts under section 2001(b), which is how the statute actually
+       computes the tax, and what survives that round trip is the saving.
+       The stated assumptions carry check marks, never switches. Only the moves that
+       were NOT in the assignment's assumptions get a switch. */
+    var ESTATE = 0.40, RATE7520 = 0.052, EXCL = 30000000;
+    var TERMS = { ricky: 15, lucy: 13 };
+    /* Exhibit B's own figure at the plan's own terms and the file's own values. The
+       standing rule is that the paper and this room agree to the dollar, so where the
+       exhibit already did this arithmetic its number wins; the formula takes over the
+       moment a term or a value moves off the page. */
+    var EXHIBIT_RESTORED = 7914835, EXHIBIT_R = 15, EXHIBIT_L = 13,
+        EXHIBIT_RALEIGH = 9254000, EXHIBIT_MALIBU = 6820000;
+    function gift(value, term){ return value / Math.pow(1 + RATE7520, term); }
+    /* the four vessels: each spouse's half of each residence, on its own solved term */
+    function giftsRestored(){
+      if (TERMS.ricky === EXHIBIT_R && TERMS.lucy === EXHIBIT_L &&
+          ASSETV[0] === EXHIBIT_RALEIGH && ASSETV[1] === EXHIBIT_MALIBU) return EXHIBIT_RESTORED;
+      var raleighHalf = ASSETV[0] / 2, malibuHalf = ASSETV[1] / 2;
+      return gift(raleighHalf, TERMS.ricky) + gift(raleighHalf, TERMS.lucy)
+           + gift(malibuHalf, TERMS.ricky) + gift(malibuHalf, TERMS.lucy);
+    }
     var FIXED = [
-      { name:"Raleigh rides the paired residence vessels", lbl:"$1,879,000 of estate tax the discount removes" },
-      { name:"Malibu freezes in community labeled vessels, never commingled", lbl:"$1,385,000 of estate tax the freeze removes" },
+      { name:"Raleigh rides the paired residence vessels", lbl:"the whole house leaves the estate; only the discounted remainder comes back" },
+      { name:"Malibu freezes in community labeled vessels, never commingled", lbl:"the same trade, and the California courtroom is canceled either way" },
       { name:"Joe's farm rides Ricky's trust to the step up", lbl:"$878,220 of gains tax cancelled, 23.8 percent of $3,690,000 of gain" },
-      { name:"Donald's trains pour into the charitable vessel", lbl:"$4,088,000 of estate tax never printed, and $511,000 of first year income starts" },
+      { name:"Donald's trains pour into the charitable vessel", lbl:"$10,220,000 out of the taxable base, and $511,000 of first year income starts" },
       { name:"Ricky's stock feeds the family company freeze", lbl:"$561,500 of discount plus $1,749,305 of grantor tax gifts over fifteen years" },
-      { name:"Lucy's stock reaches Campbell whole", lbl:"$1,140,020 of gains tax that simply never happens, 23.8 percent of $4,790,000 of gain" },
+      { name:"Lucy's stock reaches Campbell whole", lbl:"$5,615,000 out of the base, and $1,140,020 of gains tax that simply never happens" },
       { name:"The last vessel holds the insurance, the check already written", lbl:"the face amount outside the estate, cash on the exact day the bill comes" }
     ];
-    var rickyStretch = Math.round(sav(26) - sav(15));
-    var lucyStep = Math.round(sav(14) - sav(13));
     var EXTRAS = [
       { k:"ease", name:"A conservation easement on Joe's farm",
-        v:1144000, lbl:"+$1,144,000 of relief, and the land locks forever. This is Ricky's homework question wearing a number: who inherits the promise?" },
-      { k:"rterm", name:"Stretch Ricky's Raleigh term from 15 years to the table's three year margin, 26",
-        v:rickyStretch, lbl:"+$" + rickyStretch.toLocaleString("en-US") + " more of discount value, priced by the same solver as chapter six. The math is modular; the odds are personal." },
-      { k:"lterm", name:"Walk Lucy's term one year deeper, 13 to 14",
-        v:lucyStep, lbl:"+$" + lucyStep.toLocaleString("en-US") + " more, and Lucy stands roughly two years from the table instead of nearly four. Her call, never the arithmetic's." }
+        note:"Ricky's homework question wearing a number: who inherits the promise?",
+        apply:function(st){ st.baseCut += 2860000; } },
+      { k:"rterm", name:"Stretch Ricky's residence terms from 15 years toward the table, to 26",
+        note:"the same solver as chapter six: added years are priced in discount, years toward the table in odds",
+        apply:function(st){ st.ricky = 26; } },
+      { k:"lterm", name:"Walk Lucy's terms one year deeper, 13 to 14",
+        note:"Lucy stands roughly three years from the table instead of nearly four. Her call, never the arithmetic's",
+        apply:function(st){ st.lucy = 14; } }
     ];
     var state = {};
     function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
-    function bills(){
-      var total = ASSETV.reduce(function(a,b){ return a+b; }, 0);
-      var noplan = Math.max(0, total - 30000000) * ESTATE;
-      var plan = Math.max(0, total - ASSETV[3] - ASSETV[4]/2 - 30000000) * ESTATE;
-      var extra = 0;
-      EXTRAS.forEach(function(r){ if (state[r.k]) extra += r.v; });
-      return { noplan: noplan, plan: plan, after: Math.max(0, plan - extra) };
+    function compute(){
+      var st = { ricky: 15, lucy: 13, baseCut: 0 };
+      EXTRAS.forEach(function(r){ if (state[r.k]) r.apply(st); });
+      TERMS.ricky = st.ricky; TERMS.lucy = st.lucy;
+      var gross = ASSETV.reduce(function(a,b){ return a+b; }, 0);
+      var noplan = Math.max(0, gross - EXCL) * ESTATE;
+      var charitable = ASSETV[3] + ASSETV[4] / 2;
+      var baseTwo = gross - charitable;
+      var planTax = Math.max(0, baseTwo - EXCL) * ESTATE;
+      var residences = ASSETV[0] + ASSETV[1];
+      var restored = giftsRestored();
+      var baseThree = baseTwo - residences + restored - st.baseCut;
+      var maturedTax = Math.max(0, baseThree - EXCL) * ESTATE;
+      return { gross: gross, noplan: noplan, charitable: charitable, baseTwo: baseTwo, planTax: planTax,
+               residences: residences, restored: restored, baseThree: baseThree, maturedTax: maturedTax,
+               baseCut: st.baseCut, terms: { ricky: st.ricky, lucy: st.lucy } };
+    }
+    function fall(c){
+      var rows = [
+        ["Base after the charitable dispositions", money(c.baseTwo)],
+        ["Residence values removed by the four vessels", "<span class=\"lg\">(" + money(c.residences) + ")</span>"],
+        ["Their remainders restored as adjusted taxable gifts, section 2001(b)", money(c.restored)]
+      ];
+      if (c.baseCut) rows.push(["The easement, taken off the farm's value", "<span class=\"lg\">(" + money(c.baseCut) + ")</span>"]);
+      rows.push(["Basic exclusion amounts, two spouses", "(" + money(EXCL) + ")"]);
+      rows.push(["Taxable base", money(Math.max(0, c.baseThree - EXCL))]);
+      rows.push(["<b>Federal estate tax at 40 percent</b>", "<b>" + money(c.maturedTax) +
+        (c.maturedTax === 0 ? ", nothing left above the exclusions" : "") + "</b>"]);
+      return rows.map(function(r){
+        return "<div class=\"prow\"><span>" + r[0] + "</span><span>" + r[1] + "</span></div>";
+      }).join("") +
+      "<div class=\"ln\">The whole difference is that middle pair of lines. " + money(c.residences) +
+      " of house walks out of the estate and only " + money(c.restored) +
+      " walks back in, because the children must wait " + c.terms.ricky + " and " + c.terms.lucy +
+      " years for it and the Code prices waiting. That gap, " + money(c.residences - c.restored) +
+      " of base, is worth <span class=\"lgood\">" + money((c.residences - c.restored) * ESTATE) +
+      "</span> of tax, and it is the entire reason the third number is not the second one.</div>";
     }
     var last3 = null;
     function paint(){
-      var b = bills();
+      var c = compute();
       var f1 = document.getElementById("lfig1"), f2 = document.getElementById("lfig2"), f3 = document.getElementById("lfig3");
       if (!f1) return;
-      f1.textContent = money(b.noplan);
-      f2.textContent = money(b.plan);
+      f1.textContent = money(c.noplan);
+      f2.textContent = money(c.planTax);
+      var fw = document.getElementById("ledgerfall");
+      if (fw) fw.innerHTML = fall(c);
       EXTRAS.forEach(function(r){
         var row = document.getElementById("lrow_" + r.k);
         if (row) row.classList.toggle("on", !!state[r.k]);
       });
-      var target = b.after;
+      var target = c.maturedTax;
       var from = (last3 === null) ? target : last3;
       last3 = target;
       var t0 = null;
@@ -1200,7 +1256,7 @@
         host.innerHTML = EXTRAS.map(function(r){
           state[r.k] = false;
           return '<div class="lrow" id="lrow_' + r.k + '"><div class="lname">' + r.name +
-            '<span class="lval lalt">' + r.lbl + '</span></div><div class="sw"></div></div>';
+            '<span class="lval lalt">' + r.note + '</span></div><div class="sw"></div></div>';
         }).join("");
         EXTRAS.forEach(function(r){
           document.getElementById("lrow_" + r.k).querySelector(".sw").addEventListener("click", function(){
@@ -1453,6 +1509,9 @@
   })();
 
   PORTAL.folio = (function(){
+    /* The stock chapter runs the Grow season itself: the same ticker search, the same
+       year of real closes, the same workbook. There is no second, lesser grader in front
+       of it; a textarea that asks for the same tickers twice is a wall, not a door. */
     var ROOM = null;
     function ensure(){
       if (ROOM) return;
@@ -1460,42 +1519,11 @@
       if (gh && window.GrowRoom){
         ROOM = GrowRoom.mount(gh, {
           presets: true, retire: true, lessons: true,
-          intro: "Not sure where to start? Type a holding, or tap a sample mix below and watch it work first. While the grade is showing, every edit re-runs it."
+          intro: "Type a holding, or tap a sample mix below and watch it work first. While the grade is showing, every edit re runs it."
         });
       }
     }
-    function run(){
-      var raw = document.getElementById("folioin").value.trim();
-      var out = document.getElementById("folioout");
-      if (!raw) return;
-      var lines = raw.split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
-      var pos = [];
-      lines.forEach(function(l){
-        var m = l.match(/^([A-Za-z.\-]{1,10})[\s,]+\$?([0-9,]+)/);
-        if (m) pos.push({ t: m[1].toUpperCase(), v: parseInt(m[2].replace(/,/g,""),10) || 0 });
-      });
-      out.className = "toolout on";
-      if (!pos.length){ out.innerHTML = "Could not read the list. One holding per line: ticker, then dollars."; return; }
-      var total = pos.reduce(function(a,b){ return a+b.v; }, 0);
-      var biggest = pos.slice().sort(function(a,b){ return b.v-a.v; })[0];
-      var share = total ? (biggest.v/total*100) : 0;
-      var rows = [];
-      rows.push("<div class=\"trow\"><span>Holdings</span><span>"+pos.length+"</span></div>");
-      rows.push("<div class=\"trow\"><span>Total</span><span>$"+total.toLocaleString("en-US")+"</span></div>");
-      rows.push("<div class=\"trow\"><span>Largest position</span><span>"+biggest.t+", "+share.toFixed(1)+" percent</span></div>");
-      var verdicts = [];
-      verdicts.push(share > 10
-        ? "<span class=\"tbad\">Concentration: "+biggest.t+" is above the ten percent line, the same shape as the Ricardos and their Campbell stock. The freeze and diversification chapters were written for exactly this.</span>"
-        : "<span class=\"tgood\">No single position crosses the ten percent concentration line.</span>");
-      verdicts.push(pos.length < 10
-        ? "<span class=\"tbad\">Thin count: under ten positions leaves unsystematic risk on the table, and diversification only ever kills unsystematic risk.</span>"
-        : "<span class=\"tgood\">Position count carries real diversification, judged properly by beta and Sharpe rather than by count alone.</span>");
-      out.innerHTML = rows.join("") + "<div style=\"margin-top:9px\">" + verdicts.join("<br>") + "</div>"
-        + "<div style=\"margin-top:9px; font-size:12.5px\">That was the doctrine. The engine is here too: open the tile below and these same tickers run live, a year of real closes, beta, alpha, Sharpe, the correlation table, and the charts.</div>";
-      ensure();
-      if (ROOM) ROOM.seed(pos.map(function(p){ return { sym: p.t, val: p.v }; }));
-    }
-    return { run: run, ensure: ensure };
+    return { ensure: ensure };
   })();
 
   document.addEventListener("keydown", function(e){
