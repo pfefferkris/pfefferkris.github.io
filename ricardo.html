@@ -28,7 +28,7 @@
   h1,h2,h3{font-family:Georgia,"Times New Roman",serif; font-weight:normal;}
   .chapter{
     position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    padding:5vh 7vw 11vh; text-align:center; opacity:0; visibility:hidden; transform:translateY(20px);
+    padding:calc(4vh + 54px) 7vw 11vh; text-align:center; opacity:0; visibility:hidden; transform:translateY(20px);
     transition:opacity .7s ease, transform .7s ease, visibility .7s; overflow-y:auto; z-index:2;
   }
   .chapter.on{opacity:1; visibility:visible; transform:none;}
@@ -65,10 +65,31 @@
     padding:9px 14px; border-radius:20px;}
   .dots i{width:6.5px; height:6.5px; border-radius:50%; background:rgba(18,41,63,.22); cursor:pointer; transition:all .3s;}
   .dots i.on{background:var(--gold); transform:scale(1.45);}
-  .backarrow{position:fixed; top:22px; left:24px; z-index:50; color:var(--muted); font-size:12.5px; letter-spacing:.16em;
+  .backarrow{position:fixed; top:68px; left:24px; z-index:50; color:var(--muted); font-size:12.5px; letter-spacing:.16em;
     text-transform:uppercase; cursor:pointer; opacity:0; transition:opacity .4s; border:none; font-family:inherit; font-weight:600;
     padding:9px 16px; border-radius:20px;}
   .backarrow.show{opacity:.85;}
+
+  /* The site menu never leaves. Fixed glass bar, above the chapters, below the widget. */
+  nav.site{position:fixed; top:0; left:0; right:0; z-index:70;
+    background:linear-gradient(150deg,rgba(250,248,243,.92),rgba(238,242,246,.86));
+    backdrop-filter:blur(18px) saturate(1.4); -webkit-backdrop-filter:blur(18px) saturate(1.4);
+    border-bottom:1px solid rgba(28,61,92,.14);}
+  nav.site .navwrap{max-width:1320px; margin:0 auto; padding:0 24px; display:flex; align-items:center; justify-content:space-between; height:54px;}
+  nav.site .brand{font-family:Georgia,serif; font-weight:700; color:var(--navy); letter-spacing:.3px; font-size:1rem; text-decoration:none;}
+  .navlinks a{margin-left:15px; font-size:.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; text-decoration:none;}
+  .navlinks a:hover{color:var(--navy);}
+  .navlinks a.cur{color:var(--gold-text, #8a6d3b); font-weight:700;}
+  .navmenu{display:none;}
+  @media(max-width:1024px){
+    .navlinks{display:none;}
+    .navmenu{display:block; position:relative;}
+    .navmenu summary{list-style:none; cursor:pointer; color:var(--navy); font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; padding:8px 4px;}
+    .navmenu summary::-webkit-details-marker{display:none;}
+    .navmenu .panel{position:absolute; right:0; top:100%; background:var(--bg); border:1px solid rgba(28,61,92,.18); border-radius:12px; box-shadow:0 14px 40px rgba(18,41,63,.18); min-width:190px; overflow:hidden;}
+    .navmenu .panel a{display:block; padding:11px 18px; font-size:.8rem; color:var(--muted); text-decoration:none;}
+    .navmenu .panel a:hover{color:var(--navy); background:#fff;}
+  }
 
   /* Ask Kristian (shared widget) stays behind the gate and clear of the dots */
   body:not(.aklive) #akbtn, body:not(.aklive) #akpanel, body:not(.aklive) #akglow{display:none !important;}
@@ -250,6 +271,35 @@
 </style>
 </head>
 <body>
+
+<nav class="site" aria-label="Primary">
+  <div class="navwrap">
+    <a class="brand" href="index.html">Kristian&nbsp;R.&nbsp;Pfeffer</a>
+    <span class="navlinks">
+      <a href="index.html#about">About</a>
+      <a href="services.html">Services</a>
+      <a href="wealth-guide.html">Wealth Guide</a>
+      <a href="estate-guide.html">Estate Guide</a>
+      <a href="equity-guide.html">Equity Guide</a>
+      <a class="cur" href="ricardo.html">Capstone</a>
+      <a href="newsletter/">Held in Trust</a>
+      <a href="index.html#contact">Contact</a>
+    </span>
+    <details class="navmenu">
+      <summary aria-label="Menu">Menu</summary>
+      <div class="panel">
+        <a href="index.html#about">About</a>
+        <a href="services.html">Services</a>
+        <a href="wealth-guide.html">Wealth Guide</a>
+        <a href="estate-guide.html">Estate Guide</a>
+        <a href="equity-guide.html">Equity Guide</a>
+        <a href="ricardo.html">Capstone</a>
+        <a href="newsletter/">Held in Trust</a>
+        <a href="index.html#contact">Contact</a>
+      </div>
+    </details>
+  </div>
+</nav>
 <div class="orb" id="orb1"></div><div class="orb" id="orb2"></div>
 <button class="backarrow glass" id="backarrow" onclick="go(cur-1)">Back</button>
 <nav class="rail" id="rail" aria-label="Chapters"></nav>
