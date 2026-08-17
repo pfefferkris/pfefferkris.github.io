@@ -232,6 +232,16 @@
   .toolform textarea{min-height:74px; resize:vertical;}
   .toolform .asend{border:none; border-radius:10px; background:var(--gold); color:#fff; font-family:inherit; font-size:12px;
     font-weight:700; letter-spacing:.1em; padding:10px 16px; cursor:pointer;}
+  .asample{margin-top:8px; border-top:1px dashed rgba(255,255,255,.25); padding-top:7px;}
+  .asample .srow{display:none; margin-top:7px; gap:6px;}
+  .asample.editing .srow{display:flex;}
+  .asample.editing > .aq{display:none;}
+  .asample .sout{margin-top:8px; font-size:12.5px; line-height:1.55; display:none;}
+  .asample .sout.on{display:block; animation:fadein .4s ease;}
+  .asample .sline{display:flex; justify-content:space-between; align-items:center; gap:8px; border-bottom:1px dotted rgba(255,255,255,.3); padding:4px 0;}
+  .asample .suse{border:none; border-radius:8px; background:var(--gold); color:#fff; font-family:inherit; font-size:10px; font-weight:700; letter-spacing:.05em; padding:4px 9px; cursor:pointer; flex:none;}
+  .asample .snote{margin-top:6px; font-size:10.5px; color:#c9b98a; font-style:italic;}
+
   .toolout{margin-top:12px; font-size:14px; line-height:1.6; color:var(--ink); display:none;}
   .toolout.on{display:block; animation:fadein .4s ease;}
   .toolout .trow{display:flex; justify-content:space-between; border-bottom:1px dotted rgba(90,106,120,.35); padding:4px 0; font-size:13.5px;}
@@ -271,7 +281,7 @@
 <section class="chapter" id="ch2">
   <div class="kicker">The table</div>
   <h1>Everything you own, in one place.</h1>
-  <p class="lead">Touch anything. Each of these has a story, and the stories decide the plan. Every figure here was built from the records you shared, and if you know better, tell me: correct any number and the whole room recalculates around you.</p>
+  <p class="lead">Touch anything. Each of these has a story, and the stories decide the plan. Every figure here was built from the records you shared, and if you know better, tell me: correct any number and the whole room recalculates around you. And no box has to take my word for anything: the property cards can pull a real record for any address, county and market both, on the same engines the Wealth Guide runs. These are not assumed numbers in a sequence; they are inputs the public record can stand behind.</p>
   <div class="bignum" id="totalnum">$0</div>
   <div class="grid" id="assetgrid"></div>
   <button class="continue" onclick="go(3)">So what is the problem?</button>
@@ -643,6 +653,10 @@
     d.innerHTML = "<div class=\"an\">"+a.n+"<span class=\"yourbadge\" style=\"display:none\">YOUR NUMBER</span></div><div class=\"av\">"+money(ASSETV[idx])+"</div><div class=\"ao\">"+a.o+"</div><div class=\"astory\">"+a.s+"</div>"
       + "<div class=\"afix\" id=\"afix"+idx+"\"><button class=\"aq\">Is this number exactly right?</button>"
       + "<div class=\"arow\"><input inputmode=\"numeric\" value=\""+money(ASSETV[idx])+"\"><button class=\"ago\">SET</button></div>"
+      + (idx <= 2 ? "<div class=\"asample\"><button class=\"aq\">Or pull a real one from the public record</button>"
+        + "<div class=\"srow arow\" style=\"display:none\"><input class=\"saddr\" placeholder=\"Any street address, City\" autocomplete=\"off\"><button class=\"ago sgo\">PULL</button></div>"
+        + "<div class=\"sout\"></div></div>" : "")
+      + (idx === 4 ? "<div class=\"asample\"><div class=\"snote\">This card grades real holdings too: the stock chapter runs any portfolio through the concentration checkup, and the <a href=\"https://kpfeffer.com/wealth-guide.html\" style=\"color:#c9b98a\">Wealth Guide's Grow season</a> takes any ticker live.</div></div>" : "")
       + "<button class=\"arevert\">back to the record, "+money(ORIG[idx])+"</button></div>";
     d.onclick = function(e){
       if (e.target.closest(".afix")) return;
@@ -660,6 +674,12 @@
     fix.querySelector(".ago").onclick = apply;
     inp.addEventListener("keydown", function(e){ if (e.key==="Enter"){ e.preventDefault(); apply(); } e.stopPropagation(); });
     d.querySelector(".arevert").onclick = function(){ ASSETV[idx] = ORIG[idx]; inp.value = money(ORIG[idx]); recalcAll(); };
+    var smp = d.querySelector(".asample");
+    if (smp && smp.querySelector(".sgo")){
+      smp.querySelector(".aq").onclick = function(){ smp.classList.add("editing"); smp.querySelector(".srow").style.display = "flex"; smp.querySelector(".saddr").focus(); };
+      smp.querySelector(".sgo").onclick = function(){ PORTAL.sample.pull(idx); };
+      smp.querySelector(".saddr").addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); PORTAL.sample.pull(idx); } e.stopPropagation(); });
+    }
     grid.appendChild(d);
   });
 
@@ -908,6 +928,68 @@
      PORTAL.folio - local portfolio checkup (no market data v1 doctrine)
      =================================================================== */
   var PORTAL = {};
+
+  PORTAL.sample = (function(){
+    /* The proof that the asset boxes are not stage props. Any real address goes to the
+       same engines the Wealth Guide runs: the county's own record through /api/deed for
+       the six North Carolina metros, and the market's estimate through /api/home-value
+       everywhere a full street address resolves. Either number can be dropped straight
+       into the card, and the whole room recalculates around it. */
+    var CITY_COUNTY = { "raleigh":"WAKE", "charlotte":"MECKLENBURG", "greensboro":"GUILFORD",
+      "winston salem":"FORSYTH", "winston-salem":"FORSYTH", "fayetteville":"CUMBERLAND", "wilmington":"NEW HANOVER" };
+    function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+    function useBtn(idx, val, label){
+      return "<button class=\"suse\" data-idx=\"" + idx + "\" data-val=\"" + Math.round(val) + "\">" + label + "</button>";
+    }
+    function pull(idx){
+      var card = document.getElementById("acard" + idx);
+      var raw = card.querySelector(".saddr").value.trim();
+      var out = card.querySelector(".sout");
+      if (!raw) return;
+      out.className = "sout on";
+      out.innerHTML = "Asking the record.";
+      var parts = raw.split(",");
+      var street = parts[0].trim();
+      var city = (parts[1] || "").trim().toLowerCase();
+      var county = CITY_COUNTY[city] || "";
+      var jobs = [];
+      if (county) jobs.push(fetch("/api/deed?address=" + encodeURIComponent(street) + "&county=" + encodeURIComponent(county))
+        .then(function(r){ return r.json(); }).catch(function(){ return null; }));
+      else jobs.push(Promise.resolve(null));
+      jobs.push(fetch("/api/home-value?address=" + encodeURIComponent(raw))
+        .then(function(r){ return r.json(); }).catch(function(){ return null; }));
+      Promise.all(jobs).then(function(rs){
+        var deed = rs[0], avm = rs[1], lines = [];
+        if (deed && !deed.error && deed.assessed && deed.assessed.total){
+          lines.push("<div class=\"sline\"><span>County record, assessed: <b>" + money(deed.assessed.total) + "</b>" +
+            (deed.siteAddress ? " (" + deed.siteAddress + ")" : "") + "</span>" + useBtn(idx, deed.assessed.total, "USE") + "</div>");
+          if (deed.assessed.salePrice) lines.push("<div class=\"sline\"><span>Last recorded sale: " + money(deed.assessed.salePrice) +
+            (deed.assessed.saleDate ? ", " + deed.assessed.saleDate : "") + "</span><span></span></div>");
+        }
+        if (avm && !avm.error && avm.price){
+          lines.push("<div class=\"sline\"><span>Market estimate: <b>" + money(avm.price) + "</b>" +
+            (avm.low && avm.high ? " (" + money(avm.low) + " to " + money(avm.high) + ")" : "") + "</span>" + useBtn(idx, avm.price, "USE") + "</div>");
+        }
+        if (!lines.length){
+          out.innerHTML = "No record answered for that address. The county engine covers the six North Carolina metros; the market engine wants a full street address.";
+          return;
+        }
+        out.innerHTML = lines.join("") +
+          "<div class=\"snote\">Read the matched address before trusting the number; a wrong city can quietly match a real but different house. Press USE and this card carries a real value from the public record instead of the file's.</div>";
+        out.querySelectorAll(".suse").forEach(function(b){
+          b.onclick = function(ev){
+            ev.stopPropagation();
+            var i = parseInt(b.dataset.idx, 10), v = parseInt(b.dataset.val, 10);
+            ASSETV[i] = v;
+            var c = document.getElementById("acard" + i);
+            c.querySelector(".afix input").value = money(v);
+            recalcAll();
+          };
+        });
+      });
+    }
+    return { pull: pull };
+  })();
 
   PORTAL.term = (function(){
     /* The term solver. Same arithmetic as the paper: the QPRT gift is the remainder,
