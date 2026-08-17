@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
 <title>A Private Room | The Ricardo Family</title>
+<link rel="stylesheet" href="/assets/ask-kristian.css">
 <style>
   :root{
     --navy:#12293f; --navy2:#1c3d5c; --gold:#a9884f; --goldsoft:#c6a86e; --goldtext:#8a6d3b;
@@ -68,6 +69,10 @@
     text-transform:uppercase; cursor:pointer; opacity:0; transition:opacity .4s; border:none; font-family:inherit; font-weight:600;
     padding:9px 16px; border-radius:20px;}
   .backarrow.show{opacity:.85;}
+
+  /* Ask Kristian (shared widget) stays behind the gate and clear of the dots */
+  body:not(.aklive) #akbtn, body:not(.aklive) #akpanel, body:not(.aklive) #akglow{display:none !important;}
+  #akbtn.akfab{right:22px; bottom:64px; z-index:85;}
 
   /* gate */
   .gatebox{margin-top:32px; display:flex; overflow:hidden; border-radius:28px; padding:0;}
@@ -220,22 +225,6 @@
   .asset .arevert{display:none; font-size:10.5px; color:#c9b98a; background:none; border:none; font-family:inherit; cursor:pointer; text-decoration:underline; padding:0; margin-top:5px;}
   .asset.changed .arevert{display:inline;}
   /* live layer: ask bubble + tools */
-  .askbub{position:fixed; right:22px; bottom:70px; z-index:70; border:1px solid rgba(169,136,79,.6);
-    background:linear-gradient(135deg,rgba(255,255,255,.75),rgba(255,255,255,.45));
-    backdrop-filter:blur(16px) saturate(1.3); -webkit-backdrop-filter:blur(16px) saturate(1.3);
-    color:var(--navy); font-family:inherit; font-size:13px; font-weight:700; letter-spacing:.08em;
-    padding:11px 18px; border-radius:24px; cursor:pointer; box-shadow:0 10px 28px rgba(18,41,63,.16); transition:transform .25s;}
-  .askbub:hover{transform:translateY(-2px);}
-  .askpanel{position:fixed; right:22px; bottom:120px; z-index:70; width:min(380px,90vw); padding:16px; display:none; text-align:left;}
-  .askpanel.on{display:block; animation:fadein .4s ease;}
-  .askpanel .aprow{display:flex; gap:8px;}
-  .askpanel input{flex:1; min-width:0; font-family:inherit; font-size:14.5px; padding:10px 12px; border-radius:10px;
-    border:1px solid rgba(169,136,79,.5); background:rgba(255,255,255,.9); color:var(--ink); outline:none;}
-  .askpanel .asend{border:none; border-radius:10px; background:var(--navy); color:#fff; font-family:inherit; font-size:12px;
-    font-weight:700; letter-spacing:.1em; padding:0 16px; cursor:pointer;}
-  .askpanel .aans{margin-top:12px; font-size:14px; line-height:1.6; color:var(--ink); max-height:38vh; overflow-y:auto;}
-  .askpanel .asrc{margin-top:8px; font-size:11px; color:var(--muted);}
-  .askpanel .ahint{margin-top:8px; font-size:11px; color:var(--muted); font-style:italic;}
   .toolform{margin-top:12px;}
   .toolform .aprow{display:flex; gap:8px;}
   .toolform input, .toolform textarea{flex:1; min-width:0; font-family:inherit; font-size:14.5px; padding:10px 12px; border-radius:10px;
@@ -247,7 +236,7 @@
   .toolout.on{display:block; animation:fadein .4s ease;}
   .toolout .trow{display:flex; justify-content:space-between; border-bottom:1px dotted rgba(90,106,120,.35); padding:4px 0; font-size:13.5px;}
   .toolout .tgood{color:var(--good); font-weight:700;} .toolout .tbad{color:var(--brick); font-weight:700;}
-  @media (max-width:720px){ .wishcols,.twocol{grid-template-columns:1fr;} .nextline{display:none;} .stage{height:74vw;} .askbub{bottom:60px;} }
+  @media (max-width:720px){ .wishcols,.twocol{grid-template-columns:1fr;} .nextline{display:none;} .stage{height:74vw;} }
 </style>
 </head>
 <body>
@@ -364,6 +353,19 @@
   <div class="reveal glass" id="whyterms">Those numbers come straight off the mortality table, the same tables that price every life insurance policy written today. The current table gives a woman of 70 about 17 more years and a man of 50 nearly 30. So Lucy's term ends at 83 with roughly eight expected years still ahead of her, and Ricky's ends with decades to spare. And here is my rule, and it does not bend: the term always stays inside the table's number. Right at that number, making it through the term is basically a coin flip. Past it, the odds are quietly against you, and I do not build plans on odds that are against you. Could the two of you outlive the table? Maybe. People do it every day. But these tables have been humbling optimists since the 1740s, when two Scottish ministers used one to price the first pension fund for widows and predicted its balance twenty years out to within one pound. Their method spread across Europe and America for one reason: it kept being right. The law hands us the tool. The table tells us how hard we can lean on it.</div>
   <button class="ghostbtn" onclick="rev('qprtrisk')">What could go wrong?</button>
   <div class="reveal glass" id="qprtrisk">Honesty first: if one of you passes before your term ends, that half of the house comes back into the estate, and we are simply back where we started, no worse. That is why Lucy's term is shorter than Ricky's. And when the terms end, you stay right where you are and pay the children's trusts a fair rent, which quietly moves even more to them with no gift tax at all.</div>
+  <button class="ghostbtn" onclick="rev('termtool6'); PORTAL.term.run()">Solve the term backwards from the savings</button>
+  <div class="reveal glass" id="termtool6">The 15 and the 13 are not preferences; they are solved. Every year added to a term buys a deeper discount, and every year toward the table costs odds, so the honest way to set a term is backwards: start from the savings, stretch the term as far as the table safely allows, and stop where the margin stops feeling like yours. Pick a person, slide the safety margin, and watch the solved term, the gift, and the savings move together. The plan's own numbers appear at the margins we chose.
+    <div class="toolform">
+      <div class="aprow" style="flex-wrap:wrap; align-items:center; gap:10px">
+        <select id="termwho" onclick="event.stopPropagation()">
+          <option value="r">Ricky, 50, table gives nearly 30 years</option>
+          <option value="l" selected>Lucy, 70, table gives 16.8 years</option>
+        </select>
+        <label style="font-size:12.5px">Years kept inside the table <input type="range" id="termmargin" min="1" max="10" value="4" step="1" style="vertical-align:middle" oninput="PORTAL.term.run()"></label>
+      </div>
+    </div>
+    <div class="toolout" id="termout"></div>
+  </div>
   <button class="ghostbtn" onclick="rev('deedtool6')">Try it on a real house, right now</button>
   <div class="reveal glass" id="deedtool6">The capstone runs on the Ricardo numbers, but the machinery underneath is live. Type a real street address in Raleigh, Charlotte, Greensboro, Winston Salem, Fayetteville, or Wilmington and watch the county's own records answer: the deed book and page, the assessed value, the last sale. This is the same engine the Wealth Guide uses to read your deed and how your home is titled.
     <div class="toolform"><div class="aprow"><input id="deedaddr6" placeholder="702 Glenwood Avenue, Raleigh" autocomplete="off"><button class="asend" onclick="PORTAL.deed.run(6)">PULL</button></div></div>
@@ -388,6 +390,16 @@
   <p class="lead">Second: California real estate owned at death by a North Carolina family means a second court case, in the most expensive probate state in America, before anyone inherits anything. So we cancel the courtroom and honor the ownership at the same time: you each place your half into its own vessel, Ricky for 15 years, Lucy for 13, the same table tested terms as Raleigh, counted together as a gift of about $3,360,000 instead of $6,820,000. When the terms end, the house sits in a trust that lets <b>the survivor use it for life</b>, and only then divides between Adam and Eve.</p>
   <button class="ghostbtn" onclick="rev('cpstep')">The one thing this trade gives up</button>
   <div class="reveal glass" id="cpstep">Community property carries a famous gift: when the first spouse passes and the property goes to the survivor, the tax law erases the old gain on the whole house, both halves, not just one. Give the house away during life and that erasure never happens. I want you to see the price tag before you nod. Here is why we still do it: the erasure saves a capital gains rate on yesterday's growth once, while the vessel removes tomorrow's growth from a 40 percent tax forever. On a house that doubled in six years, tomorrow wins. But that is a judgment, not a law of nature, and it is yours to make.</div>
+  <button class="ghostbtn" onclick="rev('cptool7'); PORTAL.cp.run()">Keep it community, or convert it? Grind it to a number</button>
+  <div class="reveal glass" id="cptool7">This is the closest call on the board, so it does not get decided by feel. Keeping Malibu community property to the second death buys the famous erasure: at the first death the old gain on the whole house disappears, both halves. The vessels buy the opposite: tomorrow's growth leaves the taxable estate forever. Which wins depends on one assumption, how fast the house grows, so slide it and watch the answer flip. And one discipline holds either way: Ricky's community half rides its own vessel and Lucy's rides hers, each labeled community property and funded from community sources only, never commingled, because the moment the halves blur with separate money the community character dilutes, and the erasure and the shield dilute with it.
+    <div class="toolform">
+      <div class="aprow" style="flex-wrap:wrap; align-items:center; gap:10px">
+        <label style="font-size:12.5px">Appreciation per year <input type="range" id="cpappr" min="0" max="10" value="5" step="0.5" style="vertical-align:middle" oninput="PORTAL.cp.run()"></label>
+        <label style="font-size:12.5px">Years of growth <input type="range" id="cpyears" min="1" max="25" value="15" step="1" style="vertical-align:middle" oninput="PORTAL.cp.run()"></label>
+      </div>
+    </div>
+    <div class="toolout" id="cpout"></div>
+  </div>
   <button class="ghostbtn" onclick="rev('deedtool7')">Test the record on your own place</button>
   <div class="reveal glass" id="deedtool7">California counties do not answer our engine yet, but every North Carolina metro does. Put in any real address you own or love and see what the public record says about it, deed, value, and last sale, live.
     <div class="toolform"><div class="aprow"><input id="deedaddr7" placeholder="Street address, City" autocomplete="off"><button class="asend" onclick="PORTAL.deed.run(7)">PULL</button></div></div>
@@ -600,14 +612,6 @@
   <div class="sig">Kristian R. Pfeffer</div>
 </section>
 
-<button class="askbub" id="askbub" style="display:none">Ask Kristian</button>
-<div class="askpanel glass" id="askpanel">
-  <div class="aprow"><input id="askq" placeholder="Ask about this page" autocomplete="off"><button class="asend" id="asksend">ASK</button></div>
-  <div class="aans" id="askans"></div>
-  <div class="asrc" id="asksrc"></div>
-  <div class="ahint">Answers come from Kristian's own published explainers. Nothing you type is stored.</div>
-</div>
-
 <div class="dots glass" id="dots"></div>
 <div class="fine">The Ricardo family is a fictional case study prepared for the TRST 760 capstone, Master of Trust and Wealth Management, Campbell University. Educational only. Nothing here is legal, tax, or investment advice, and nothing typed on this page is stored or transmitted. Kristian Pfeffer is not an attorney; drafting of legal instruments is the practice of law under N.C.G.S. Chapter 84 and belongs with licensed counsel.</div>
 
@@ -722,13 +726,14 @@
   updateRail();
 
   document.addEventListener("click", function(e){
+    if (e.target.closest && e.target.closest("#akpanel, #akbtn, .askmore")) return;
     var t = e.target.closest("button, .asset, .forkhead, .wish, .chip, .dots i");
     if (t && !e.target.closest("input")) setTimeout(function(){ if (document.activeElement && document.activeElement.tagName !== "INPUT") document.activeElement.blur(); }, 0);
   });
 
   function tryGate(){
     var v = document.getElementById("pass").value.trim().toLowerCase();
-    if (PASSWORDS.indexOf(v) >= 0){ unlocked = true; document.getElementById("gateerr").textContent = ""; go(1); }
+    if (PASSWORDS.indexOf(v) >= 0){ unlocked = true; document.body.classList.add("aklive"); document.getElementById("gateerr").textContent = ""; go(1); }
     else document.getElementById("gateerr").textContent = "Not quite. Think of how the two of you met.";
   }
 
@@ -744,7 +749,6 @@
     document.getElementById("backarrow").className = "backarrow glass" + (n>1 ? " show" : "");
     visited[n] = true;
     updateRail();
-    PORTAL.ask.show(n > 0);
     if (n===2) countTotal();
     if (n===5) stageInit();
     if (n===15) finale();
@@ -899,50 +903,87 @@
 
   /* ===================================================================
      PORTAL live layer - modular components (standing rule: modular code)
-     PORTAL.ask   - Ask Kristian bubble, chapter aware context -> /api/ask
+     Ask Kristian rides the shared widget (/assets/ask-kristian.js), configured below
      PORTAL.deed  - real property record pull -> /api/deed
      PORTAL.folio - local portfolio checkup (no market data v1 doctrine)
      =================================================================== */
   var PORTAL = {};
 
-  PORTAL.ask = (function(){
-    var CITYLESS = { open:false };
-    var bub = document.getElementById("askbub");
-    var panel = document.getElementById("askpanel");
-    var input = document.getElementById("askq");
-    var ans = document.getElementById("askans");
-    var src = document.getElementById("asksrc");
-    function context(){
-      var ch = document.getElementById("ch"+cur);
-      if (!ch) return null;
-      var title = (ch.querySelector("h1")||{}).textContent || "";
-      var leads = Array.prototype.map.call(ch.querySelectorAll(".lead"), function(p){ return p.textContent; }).join(" ");
-      var openBits = Array.prototype.map.call(ch.querySelectorAll(".reveal.on, .fork.on .forkbody"), function(p){ return p.textContent; }).join(" ");
-      return { title: title, text: (leads + " " + openBits).slice(0, 4200), pair: "" };
+  PORTAL.term = (function(){
+    /* The term solver. Same arithmetic as the paper: the QPRT gift is the remainder,
+       value discounted at the August 2026 section 7520 rate of 5.2 percent, and the
+       savings is 40 percent of what the discount removes. The mortality side is the
+       constraint, never the toy: the solved term is the table's number minus the
+       margin, and the doctrine that the term never reaches the table stands. */
+    var RATE = 0.052, ESTATE = 0.40;
+    var P = {
+      r: { name: "Ricky", age: 50, expect: 29.9, half: 4627000, plan: 15 },
+      l: { name: "Lucy",  age: 70, expect: 16.8, half: 4627000, plan: 13 }
+    };
+    function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+    function rowFor(p, term){
+      var factor = 1 / Math.pow(1 + RATE, term);
+      var gift = p.half * factor;
+      var discount = p.half - gift;
+      return { gift: gift, discount: discount, savings: discount * ESTATE };
     }
-    function toggle(){
-      CITYLESS.open = !CITYLESS.open;
-      panel.className = "askpanel glass" + (CITYLESS.open ? " on" : "");
-      if (CITYLESS.open) input.focus();
+    function run(){
+      var p = P[document.getElementById("termwho").value];
+      var margin = parseInt(document.getElementById("termmargin").value, 10);
+      var solved = Math.max(2, Math.floor(p.expect - margin));
+      var s = rowFor(p, solved), c = rowFor(p, p.plan);
+      var out = document.getElementById("termout");
+      out.className = "toolout on";
+      var rows = [];
+      rows.push(["The table gives " + p.name, p.expect + " more years"]);
+      rows.push(["Margin kept inside the table", margin + " years"]);
+      rows.push(["Solved term", solved + " years"]);
+      rows.push(["Gift reported at funding", money(s.gift)]);
+      rows.push(["Value the vessel removes", "<span class=\"tgood\">" + money(s.discount) + "</span>"]);
+      rows.push(["Estate tax saved at 40 percent", "<span class=\"tgood\">" + money(s.savings) + "</span>"]);
+      var delta = s.savings - c.savings;
+      var verdict = (solved === p.plan)
+        ? "That is the plan's own term. The " + p.plan + " was never a round number; it is this solve at a " + margin + " year margin."
+        : (delta > 0
+          ? "Stretching from the plan's " + p.plan + " years to " + solved + " buys <span class=\"tgood\">" + money(delta) + "</span> more, and the price is " + (p.plan === 13 ? "Lucy" : "Ricky") + " standing " + margin + " year" + (margin>1?"s":"") + " from the table instead of " + Math.round(p.expect - p.plan) + ". The math is modular; the odds are personal."
+          : "Pulling back to " + solved + " years gives up <span class=\"tbad\">" + money(-delta) + "</span> against the plan's " + p.plan + ", and buys " + margin + " years of margin. Comfort has a price tag too, and now you can read it.");
+      out.innerHTML = rows.map(function(r){ return "<div class=\"trow\"><span>"+r[0]+"</span><span>"+r[1]+"</span></div>"; }).join("")
+        + "<div style=\"margin-top:9px\">" + verdict + "</div>"
+        + "<div style=\"margin-top:9px; font-size:12.5px\">The rule does not bend: the term never reaches the table's own number, where making it through decays toward a coin flip. Inside that rule, every term is a solve, not a guess.</div>";
     }
-    function send(){
-      var q = input.value.trim();
-      if (q.length < 2) return;
-      ans.textContent = "Thinking it over.";
-      src.textContent = "";
-      fetch("/api/ask", { method:"POST", headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ q: q, context: context() }) })
-      .then(function(r){ return r.json(); })
-      .then(function(j){
-        ans.textContent = j.answer || "Something on my end did not answer just now.";
-        if (j.sources && j.sources.length) src.textContent = "Drawing on: " + j.sources.map(function(x){ return x.title; }).join("; ");
-      })
-      .catch(function(){ ans.textContent = "Could not reach the library just now. Try again in a moment."; });
+    document.addEventListener("change", function(e){ if (e.target && e.target.id === "termwho") run(); });
+    return { run: run };
+  })();
+
+  PORTAL.cp = (function(){
+    /* The Malibu crossover. Freeze: the vessels remove the discount today plus every
+       dollar of growth, priced at the 40 percent estate rate. Keep community: the
+       first death erases the built in gain on both halves, priced at the 23.8 percent
+       federal gains rate the family would otherwise someday pay. Same numbers as
+       Exhibit C when growth is set to zero. */
+    var VALUE = 6820000, BASIS = 3300000, DISCOUNT = 3462000, ESTATE = 0.40, GAINS = 0.238;
+    function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+    function run(){
+      var a = parseFloat(document.getElementById("cpappr").value) / 100;
+      var y = parseInt(document.getElementById("cpyears").value, 10);
+      var growth = VALUE * (Math.pow(1 + a, y) - 1);
+      var freeze = (DISCOUNT + growth) * ESTATE;
+      var keep = (VALUE - BASIS + growth) * GAINS;
+      var out = document.getElementById("cpout");
+      out.className = "toolout on";
+      var rows = [];
+      rows.push(["Growth on the house", money(growth)]);
+      rows.push(["The vessels: estate tax the freeze removes", "<span class=\"tgood\">" + money(freeze) + "</span>"]);
+      rows.push(["Keep community: gains tax the erasure removes", "<span class=\"tgood\">" + money(keep) + "</span>"]);
+      var d = freeze - keep;
+      var verdict = d >= 0
+        ? "At this growth the freeze wins by <span class=\"tgood\">" + money(d) + "</span>. A certain 40 percent beats a gains rate the children might never even trigger."
+        : "At this growth keeping it community wins by <span class=\"tgood\">" + money(-d) + "</span>. Slow growth makes the erasure the better bargain, and the California courtroom stays canceled either way because the trusts hold the title.";
+      out.innerHTML = rows.map(function(r){ return "<div class=\"trow\"><span>"+r[0]+"</span><span>"+r[1]+"</span></div>"; }).join("")
+        + "<div style=\"margin-top:9px\">" + verdict + "</div>"
+        + "<div style=\"margin-top:9px; font-size:12.5px\">Set growth to zero and these are Exhibit C's own figures, $1,385,000 against $838,000. The assumption is yours; the arithmetic is the same either way. Either road, the halves stay separately labeled and never commingled.</div>";
     }
-    bub.onclick = toggle;
-    document.getElementById("asksend").onclick = send;
-    input.addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); send(); } e.stopPropagation(); });
-    return { show: function(on){ bub.style.display = on ? "block" : "none"; if(!on){ CITYLESS.open=false; panel.className="askpanel glass"; } } };
+    return { run: run };
   })();
 
   PORTAL.deed = (function(){
@@ -1029,5 +1070,53 @@
     if (e.key === "ArrowLeft") { e.preventDefault(); if (cur>1) go(cur-1); }
   });
 </script>
+
+<script>
+/* Ask Kristian, the same engine the Wealth Guide runs: voice out, microphone in, the
+   live toggle and the mute, pulled over whole from /assets/ask-kristian.js. The page
+   supplies only what is particular to the Ricardos: the greeting, the seed questions,
+   and which tiles grow an Ask Kristian button that carries their own text as context. */
+window.AK_CONFIG = {
+  surface: "ricardo",
+  fabLabel: "Ask Kristian",
+  placeholder: "Ask about the plan you are looking at",
+  greeting: "Ask me anything about the plan on these pages. Every number comes from your file, and every vessel has a reason. I will explain how it works, what it saves, and where a question stops being education and belongs with your attorney.",
+  seeds: [
+    "Why does Ricky's trust for Lucy have to be a QTIP?",
+    "What do the two words per stirpes actually decide for Adam and Eve?",
+    "Why do the house vessels run 15 years and 13, and not longer?",
+    "What happens to Eve's check if she inherits outright?"
+  ],
+  explain: "Explain this part of the plan to me. Go a level deeper than the page does: what it means, why the plan is built this way, and what a family usually asks next.",
+  targets: [
+    { sel: ".reveal", label: "Ask Kristian about this",
+      name: function(el){
+        var b = el.previousElementSibling;
+        if (b && b.classList && b.classList.contains("ghostbtn")) return b.textContent.trim();
+        var ch = el.closest(".chapter"), h = ch && ch.querySelector("h1");
+        return h ? h.textContent.trim() : "This part of the plan";
+      },
+      pair: function(el){
+        var ch = el.closest(".chapter");
+        if (!ch) return "";
+        var h = ch.querySelector("h1"), l = ch.querySelector(".lead");
+        return ((h ? h.textContent : "") + " " + (l ? l.textContent : "")).replace(/\s+/g, " ").trim();
+      } },
+    { sel: ".forkbody", label: "Ask Kristian about this fork",
+      name: function(el){
+        var f = el.closest(".fork"), q = f && f.querySelector(".fq");
+        return q ? q.textContent.trim() : "This fork";
+      },
+      ask: "Walk me through this fork: what changes if the family chooses it, what it costs or saves, and why the plan recommends what it recommends.",
+      pair: function(el){
+        var ch = el.closest(".chapter");
+        if (!ch) return "";
+        var h = ch.querySelector("h1"), l = ch.querySelector(".lead");
+        return ((h ? h.textContent : "") + " " + (l ? l.textContent : "")).replace(/\s+/g, " ").trim();
+      } }
+  ]
+};
+</script>
+<script src="/assets/ask-kristian.js" defer></script>
 </body>
 </html>
