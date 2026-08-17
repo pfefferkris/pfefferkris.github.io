@@ -859,30 +859,30 @@
 
   /* ===== vessels ===== */
   var VES = [
-    {id:"vh",  lbl:"RICKY'S TRUST",  sub:"revocable, his any Tuesday",  x:14, y:2,  w:30, h:34},
-    {id:"vw",  lbl:"LUCY'S TRUST",  sub:"revocable, hers any Tuesday", x:56, y:2,  w:30, h:34},
-    {id:"vsh", lbl:"SHELTER ROOM",     sub:"$15,000,000 sealed from tax forever", x:2,  y:46, w:22, h:32},
-    {id:"vmh", lbl:"MARITAL ROOM",     sub:"income to the survivor for life",     x:27, y:46, w:22, h:32},
-    {id:"vsw", lbl:"SHELTER ROOM",     sub:"$15,000,000 sealed from tax forever", x:52, y:46, w:22, h:32},
-    {id:"vmw", lbl:"MARITAL ROOM",     sub:"income to the survivor for life",     x:77, y:46, w:21, h:32},
+    {id:"vh",  lbl:"RICKY'S TRUST",  sub:"revocable, Ricky's any Tuesday",  x:14, y:2,  w:30, h:34},
+    {id:"vw",  lbl:"LUCY'S TRUST",  sub:"revocable, Lucy's any Tuesday", x:56, y:2,  w:30, h:34},
+    {id:"vsh", lbl:"RICKY'S SHELTER",     sub:"$15,000,000 sealed from tax forever", x:2,  y:46, w:22, h:32},
+    {id:"vmh", lbl:"RICKY'S MARITAL",     sub:"income to the survivor for life",     x:27, y:46, w:22, h:32},
+    {id:"vsw", lbl:"LUCY'S SHELTER",     sub:"$15,000,000 sealed from tax forever", x:52, y:46, w:22, h:32},
+    {id:"vmw", lbl:"LUCY'S MARITAL",     sub:"income to the survivor for life",     x:77, y:46, w:21, h:32},
     {id:"vev", lbl:"EVE'S TRUST",      sub:"benefits guarded, always",    x:22, y:84, w:26, h:15},
     {id:"vad", lbl:"ADAM'S TRUST",     sub:"opens in stages",             x:53, y:84, w:26, h:15}
   ];
   var TOK = [
-    {id:"t1", lbl:"farm"},{id:"t2", lbl:"his stock"},{id:"t3", lbl:"his cash"},
-    {id:"t4", lbl:"trains"},{id:"t5", lbl:"her stock"},{id:"t6", lbl:"her cash"}
+    {id:"t1", lbl:"Joe's farm"},{id:"t2", lbl:"Ricky's stock"},{id:"t3", lbl:"Ricky's cash"},
+    {id:"t4", lbl:"Donald's trains"},{id:"t5", lbl:"Lucy's stock"},{id:"t6", lbl:"Lucy's cash"}
   ];
   var POS = {
     0:{t1:[17,14],t2:[27,20],t3:[21,26],t4:[59,14],t5:[69,20],t6:[63,26]},
     1:{t1:[30,58],t2:[6,58],t3:[8,66],t4:[59,14],t5:[69,20],t6:[63,26]},
     2:{t1:[30,58],t2:[6,58],t3:[8,66],t4:[80,58],t5:[55,58],t6:[57,66]},
-    3:{t1:[30,58],t2:[24,92],t3:[56,92],t4:[80,58],t5:[32,92],t6:[64,92]}
+    3:{t1:[30,58],t2:[22.8,92],t3:[53.8,92],t4:[80,58],t5:[35.5,92],t6:[66.5,92]}
   };
   var CAPS = [
     "This is the whole idea in one picture. A trust is a container. It holds things, the way a folder holds files or a basket holds bread. While you live, these two are just <b>your</b> containers: you put things in, take things out, change your mind any Tuesday you like.",
-    "Then, at the moment it is needed, Ricky's vessel pours. The first $15,000,000 fills the <b>shelter room</b> and the lid seals: nothing in there is ever taxed again, no matter how big it grows. Everything else flows to the <b>marital room</b>, which pays Lucy for life and then delivers exactly where Ricky said.",
-    "Lucy's vessel does the same pour in mirror image. Two shelters sealed, two marital rooms flowing. This is why the order of deaths never breaks the plan: the vessels are already built, whichever one pours first.",
-    "And at the very bottom, the guard vessels. Every drop meant for Eve lands in her trust and never in her name, so her benefits never stop. Adam's holds his share until he is ready. Nothing outright, nothing accidental, nothing lost. That is the entire plan, and every chapter from here is one vessel up close."
+    "Then, at the moment it is needed, Ricky's vessel pours. The first $15,000,000 fills <b>Ricky's shelter</b> and the lid seals: nothing in there is ever taxed again, no matter how big it grows. Everything else flows to <b>Ricky's marital room</b>, which pays Lucy for life and then delivers exactly where Ricky said.",
+    "Lucy's vessel does the same pour in mirror image, into Lucy's shelter and Lucy's marital room. Two shelters sealed, two marital rooms flowing, and never a drop between them. This is why the order of deaths never breaks the plan: the vessels are already built, whichever one pours first.",
+    "And at the very bottom, the guard vessels. Every drop meant for Eve lands in Eve's trust and never in Eve's own name, so the benefits never stop. Adam's vessel holds Adam's share until the stages open. Nothing outright, nothing accidental, nothing lost. That is the entire plan, and every chapter from here is one vessel up close."
   ];
   var stageStep = -1, stageBuilt = false;
   function stageInit(){
@@ -924,7 +924,7 @@
       document.getElementById("vmh").classList.add("lit");
       place(1); fill("vh",6); fill("vsh",62); fill("vmh",48);
       setTimeout(function(){ document.getElementById("vsh").classList.add("sealed"); }, 1200);
-      btn.textContent = "Now her side";
+      btn.textContent = "Now Lucy's side";
     } else if (stageStep===2){
       document.getElementById("vsw").classList.add("lit");
       document.getElementById("vmw").classList.add("lit");
