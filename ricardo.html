@@ -126,13 +126,31 @@
   .gateerr{margin-top:10px; font-size:14.5px; color:var(--brick); height:20px;}
 
   /* asset grid */
-  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:11px; max-width:1000px; width:100%; margin-top:26px;}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:11px; max-width:1000px; width:100%; margin-top:26px; align-items:start;}
+  /* The record room does NOT live inside a card: a 175px column turns every tile into a
+     tall thin ribbon, and the open card is navy, which no dark bodied tile can sit on.
+     It opens full width beneath the grid, on the room's own cream, where it can breathe. */
+  .assetroom{width:100%; max-width:1000px; margin:18px auto 0; text-align:left;}
+  .assetroom:empty{display:none;}
+  .roomhead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; padding:13px 18px; border-radius:14px 14px 0 0;
+    background:linear-gradient(135deg,rgba(18,41,63,.94),rgba(28,61,92,.9)); color:#fff;}
+  .roomhead .rt{font-size:13px; font-weight:700; letter-spacing:.04em;}
+  .roomhead .rs{font-size:12px; color:#c9b98a;}
+  .roomhead .rx{margin-left:auto; border:1px solid rgba(255,255,255,.45); background:transparent; color:#fff;
+    font-family:inherit; font-size:11px; font-weight:700; letter-spacing:.06em; border-radius:9px; padding:5px 11px; cursor:pointer;}
+  .roomhead .rx:hover{background:#fff; color:var(--navy);}
+  .roomwrap{border:1px solid rgba(169,136,79,.4); border-top:none; border-radius:0 0 14px 14px; padding:4px 18px 18px;
+    background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.34));
+    backdrop-filter:blur(18px) saturate(1.4); -webkit-backdrop-filter:blur(18px) saturate(1.4);}
   .asset{padding:15px 14px; cursor:pointer; text-align:left; transition:transform .25s, box-shadow .25s; min-height:92px;}
   .asset:hover{transform:translateY(-4px); box-shadow:0 18px 44px rgba(18,41,63,.16), inset 0 1px 0 rgba(255,255,255,.75);}
   .asset .an{font-size:14px; color:var(--ink); line-height:1.3; font-weight:600;}
   .asset .av{font-family:Georgia,serif; font-size:18px; color:var(--goldink); margin-top:7px; font-variant-numeric:tabular-nums;}
   .asset .ao{font-size:11.5px; color:var(--muted); margin-top:3px;}
   .asset.open{background:linear-gradient(135deg,rgba(18,41,63,.92),rgba(28,61,92,.88)); border-color:rgba(255,255,255,.25);}
+  /* an open card carries a story, a record, and two buttons: give it two columns to say it in,
+     and let the closed cards keep their own height instead of stretching to match it */
+  @media(min-width:760px){ .asset.open{grid-column:span 2;} }
   .asset.open .an{color:#fff;} .asset.open .av{color:var(--goldsoft);} .asset.open .ao{display:none;}
   .asset .astory{display:none; font-size:12.5px; color:#dce4ea; line-height:1.5; margin-top:7px;}
   .asset.open .astory{display:block;}
@@ -297,10 +315,14 @@
   .asample .srow{display:none; margin-top:7px; gap:6px;}
   .asample.editing .srow{display:flex;}
   .asample.editing > .aq{display:none;}
-  .asample .sout{margin-top:8px; font-size:12.5px; line-height:1.55; display:none;}
+  .asample .sout{margin-top:8px; font-size:12.5px; line-height:1.55; display:none; color:#e8eef3;}
+  .asset.open .asample .sout b{color:#fff;}
+  .asset.open .asample .sout .sline span{color:#e8eef3;}
   .asample .sout.on{display:block; animation:fadein .4s ease;}
-  .asample .sline{display:flex; justify-content:space-between; align-items:center; gap:8px; border-bottom:1px dotted rgba(255,255,255,.3); padding:4px 0;}
-  .asample .suse{border:none; border-radius:8px; background:var(--gold); color:#fff; font-family:inherit; font-size:10px; font-weight:700; letter-spacing:.05em; padding:4px 9px; cursor:pointer; flex:none;}
+  .asample .sline{display:flex; flex-direction:column; align-items:flex-start; gap:5px; border-bottom:1px dotted rgba(255,255,255,.3); padding:6px 0;}
+  .asample .sline span{line-height:1.45;}
+  .asample .suse{border:none; border-radius:8px; background:var(--gold); color:#fff; font-family:inherit; font-size:10.5px; font-weight:700; letter-spacing:.06em; padding:5px 13px; cursor:pointer; flex:none; align-self:flex-start;}
+  .asample .suse:hover{background:var(--goldsoft); color:var(--navy);}
   .asample .snote{margin-top:6px; font-size:10.5px; color:#c9b98a; font-style:italic;}
 
   .toolout{margin-top:12px; font-size:14px; line-height:1.6; color:var(--ink); display:none;}
@@ -376,6 +398,7 @@
   <p class="lead">Touch anything. Each of these has a story, and the stories decide the plan. Every figure here was built from the records you shared, and if you know better, tell me: correct any number and the whole room recalculates around you. And no box has to take my word for anything: the property cards can pull a real record for any address, county and market both, on the same engines the Wealth Guide runs. These are not assumed numbers in a sequence; they are inputs the public record can stand behind.</p>
   <div class="bignum" id="totalnum">$0</div>
   <div class="grid" id="assetgrid"></div>
+  <div class="assetroom" id="assetroom"></div>
   <button class="continue" onclick="go(3)">So what is the problem?</button>
   <div class="nextline">Next: the clock that starts the day one of you dies</div>
 </section>
@@ -777,7 +800,7 @@
       + "<div class=\"arow\"><input inputmode=\"numeric\" value=\""+money(ASSETV[idx])+"\"><button class=\"ago\">SET</button></div>"
       + (idx <= 2 ? "<div class=\"asample\"><button class=\"aq\">Or pull a real one from the public record</button>"
         + "<div class=\"srow arow\" style=\"display:none\"><input class=\"saddr\" placeholder=\"Any street address, City\" autocomplete=\"off\"><button class=\"ago sgo\">PULL</button></div>"
-        + "<div class=\"sout\"></div><div class=\"proomhost\"></div></div>" : "")
+        + "<div class=\"sout\"></div></div>" : "")
       + (idx === 4 ? "<div class=\"asample\"><div class=\"snote\">This card grades real holdings too: the stock chapter runs any portfolio through the concentration checkup.</div>"
         + "<button class=\"aq growopen\">Or take any ticker live, right here</button><div class=\"growhost\"></div></div>" : "")
       + "<button class=\"arevert\">back to the record, "+money(ORIG[idx])+"</button></div>";
@@ -1248,8 +1271,8 @@
       if (!raw) return;
       out.className = "sout on";
       out.innerHTML = "Asking the record. The deep county engines take a moment.";
-      var roomHost = card.querySelector(".proomhost");
-      if (roomHost) roomHost.innerHTML = "";
+      var sheet = document.getElementById("assetroom");
+      if (sheet) sheet.innerHTML = "";
       var jobs = [];
       jobs.push(fetch("/api/parcel?address=" + encodeURIComponent(raw))
         .then(function(r){ return r.json(); }).catch(function(){ return null; }));
@@ -1277,9 +1300,15 @@
           return;
         }
         out.innerHTML = lines.join("") +
-          "<div class=\"snote\">Read the matched address before trusting the number; a wrong city can quietly match a real but different house. Press USE and this card carries a real value from the public record instead of the file's.</div>";
-        if (rec && roomHost && window.PropertyRoom){
-          PropertyRoom.mount(roomHost, { address: raw, record: rec, skipRecord: true });
+          "<div class=\"snote\">Press USE and this card carries the record's number. The full room opens below.</div>";
+        if (rec && sheet && window.PropertyRoom){
+          /* full width, under the grid, with its own header naming which card asked */
+          sheet.innerHTML = "<div class=\"roomhead\"><span class=\"rt\">" + (assets[idx] ? assets[idx].n : "The record") +
+            "</span><span class=\"rs\">" + ((rec.address || rec.siteAddress || raw) + (rec.county ? ", " + rec.county + " County" : "")) +
+            "</span><button class=\"rx\" type=\"button\" onclick=\"PORTAL.sample.close()\">CLOSE</button></div>" +
+            "<div class=\"roomwrap\" id=\"assetroomwrap\"></div>";
+          PropertyRoom.mount(document.getElementById("assetroomwrap"), { address: raw, record: rec, skipRecord: true });
+          sheet.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
         out.querySelectorAll(".suse").forEach(function(b){
           b.onclick = function(ev){
@@ -1293,7 +1322,11 @@
         });
       });
     }
-    return { pull: pull };
+    function close(){
+      var sheet = document.getElementById("assetroom");
+      if (sheet) sheet.innerHTML = "";
+    }
+    return { pull: pull, close: close };
   })();
 
   PORTAL.term = (function(){
