@@ -218,6 +218,20 @@
     backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); transition:all .25s; color:var(--ink);}
   .chip.on{background:var(--navy); color:#fff; border-color:var(--navy);}
   .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px; margin-top:20px;}
+  .ledger{margin-top:24px; padding:20px 22px; text-align:left; max-width:840px; margin-left:auto; margin-right:auto;}
+  .ledgertop{border-bottom:1px solid rgba(169,136,79,.4); padding-bottom:12px; margin-bottom:6px;}
+  .ledgertop .ll{font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+  .ledgertop .lv{font-family:Georgia,serif; font-size:clamp(30px,4vw,44px); color:var(--good); font-variant-numeric:tabular-nums; margin-top:4px;}
+  .ledgertop .ln, .ledger .ln{font-size:12.5px; color:var(--muted); margin-top:4px; line-height:1.55;}
+  .lrow{display:flex; align-items:flex-start; gap:12px; padding:11px 0; border-bottom:1px dashed rgba(169,136,79,.28);}
+  .lrow:last-child{border-bottom:none;}
+  .lrow .lname{flex:1; font-size:13.5px; font-weight:700; color:var(--navy);}
+  .lrow .lval{display:block; font-weight:400; font-size:12.5px; margin-top:3px; color:var(--ink);}
+  .lrow .lval.lgood{color:var(--good); font-weight:600;}
+  .lrow .lval.lalt{color:var(--goldink); font-weight:600;}
+  .lrow .sw{cursor:pointer; margin-top:2px;}
+  .lrow.on .sw{background:var(--goldsoft);}
+  .lrow.on .sw::after{left:23px;}
   .stat{padding:16px 18px; text-align:left;}
   .stat .sl{font-size:11.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); font-weight:600;}
   .stat .sv{font-family:Georgia,serif; font-size:26px; margin-top:6px; font-variant-numeric:tabular-nums; color:var(--navy);}
@@ -332,7 +346,7 @@
   <div class="gateerr" id="gateerr"></div>
   <div class="gatehint">Everything typed on this page stays on this page. Nothing is saved, sent, or stored.</div>
   <div class="guestrow"><button class="guestbtn" onclick="guestEnter()">Step inside with a visitor's key</button></div>
-  <div class="gatehint">You are standing at the door of a private client room, the TRST 760 capstone. Every family's room opens with its own private key, and this one belongs to the Ricardos. Visitors are welcome to borrow the key above, walk every screen, flip every switch, and try their own numbers. The open teaching walkthrough of the same plan lives behind its own door: <a class="glasslink" href="capstone.html">the open walkthrough</a></div>
+  <div class="gatehint">You are standing at the door of a private client room, the TRST 760 capstone. Every family's room opens with its own private key, and this one belongs to the Ricardos. Visitors are welcome to borrow the key above, walk every screen, flip every switch, and try their own numbers.</div>
 </section>
 
 <!-- CH 1 WELCOME -->
@@ -631,6 +645,15 @@
   <div class="kicker">The day after</div>
   <h1>Every ring, green.</h1>
   <div class="wishcols" id="finalwishes"></div>
+  <div class="ledger glass" id="ledger">
+    <div class="ledgertop">
+      <div class="ll">Tonight's bottom line, every decision counted</div>
+      <div class="lv" id="ledgertotal">$0</div>
+      <div class="ln">with every switch on the plan's road. Flip any of them and the number moves to the alternative's own price, because every fork in this room was ground to a number before you ever saw it.</div>
+    </div>
+    <div id="ledgerrows"></div>
+    <div class="ln">Estate rows are priced at the 40 percent rate and gains rows at the 23.8 percent rate, the same two rates every chapter used, on today's values with growth at zero, so these figures match the paper's exhibits to the dollar. Slide growth in any chapter and the gap only widens toward the vessels.</div>
+  </div>
   <p class="lead" style="margin-top:22px">When the first of you passes: nothing is sold, no court in two states, the survivor's income never pauses. When the second of you passes: the tax is a fraction of what it was, and the check that pays it is already written. Adam inherits when he is ready. Eve never misses a benefit. Campbell University receives a legacy measured in eight figures. Two people who found each other after the worst years of their lives will have kept every promise they made.</p>
   <p class="lead">And every switch you flipped tonight is a real alternative we can build. Life changes circumstances. Time changes values. Washington changes the rules. The plan is built to bend to all three, re read against every new Congress, which is why this page will still be here the next time any of them moves.</p>
   <p class="lead">That is the plan. Now let us talk about it.</p>
@@ -647,12 +670,15 @@
   <div class="sandbox glass">
     <div class="sbrow">
       <div class="sbfield"><label>Approximate family net worth</label><input id="sbnw" inputmode="numeric" value="$10,000,000" onfocus="this.select()" oninput="sbCalc()"></div>
+      <div class="sbfield"><label>Your age</label><input id="sbage" inputmode="numeric" value="50" onfocus="this.select()" oninput="sbCalc()"></div>
       <div class="sbfield">
         <label>A few switches</label>
         <div class="chiprow">
           <div class="chip on" id="sbmar" onclick="this.classList.toggle('on'); sbCalc()">Married</div>
           <div class="chip on" id="sbhome" onclick="this.classList.toggle('on'); sbCalc()">Own a growing home</div>
           <div class="chip" id="sbchar" onclick="this.classList.toggle('on'); sbCalc()">Charitably inclined</div>
+          <div class="chip" id="sbkids" onclick="this.classList.toggle('on'); sbCalc()">Children</div>
+          <div class="chip" id="sbbiz" onclick="this.classList.toggle('on'); sbCalc()">Own a business</div>
         </div>
       </div>
     </div>
@@ -660,21 +686,25 @@
       <div class="stat glass"><div class="sl">With no plan</div><div class="sv red" id="sbnoplan">$0</div><div class="sn">what the 40 percent band takes above the exclusions</div></div>
       <div class="stat glass"><div class="sl">With a plan like tonight's</div><div class="sv green" id="sbplan">$0</div><div class="sn">shelters filled, freezes running, charity counted</div></div>
       <div class="stat glass"><div class="sl">Your first move</div><div class="sv" id="sbmove" style="font-size:17px; line-height:1.4">two revocable trusts</div><div class="sn" id="sbmoven">the spine comes first, every time</div></div>
+      <div class="stat glass"><div class="sl">Your residence vessel, solved</div><div class="sv" id="sbterm" style="font-size:17px; line-height:1.4">&#8212;</div><div class="sn" id="sbtermn">the same mortality table Ricky and Lucy's terms were read from, pointed at your age</div></div>
+      <div class="stat glass"><div class="sl">Vessels that fit your profile</div><div class="sv" id="sbfits" style="font-size:14.5px; line-height:1.6">&#8212;</div><div class="sn">the same toolbox the whole plan was drawn from, filtered by your switches</div></div>
     </div>
   </div>
-  <a class="handoff glass" href="https://kpfeffer.com/wealth-guide.html">
-    <div class="ht">Take it further in the Wealth Guide</div>
-    <div class="hs">Put in your real address and watch it pull your actual deed and read how your own home is titled. Walk all four seasons with your own goals. Same room, your family.</div>
-  </a>
+  <div class="fork glass" id="youhome">
+    <div class="forkhead" onclick="this.parentElement.classList.toggle('on')"><div class="fq">Your own home, pulled from the public record</div><div class="sw"></div></div>
+    <div class="forkbody">Any street address in any of North Carolina's 100 counties. The record answers first, then the tiles open the scanned deed with the automatic title read and the chain walker, the equity engine, the comparable sales, and the honest county ledger, the same rooms the Ricardos' chapters run, pointed at your house.
+      <div class="toolform"><div class="aprow"><input id="youaddr" placeholder="Any street address, City" autocomplete="off"><button class="asend" onclick="PORTAL.you.pull()">PULL</button></div></div>
+      <div class="toolout" id="youout"></div>
+      <div id="youroom"></div>
+    </div>
+  </div>
+  <div class="fork glass" id="youfolio">
+    <div class="forkhead" onclick="this.parentElement.classList.toggle('on'); PORTAL.you.grow()"><div class="fq">Your own portfolio, graded live</div><div class="sw"></div></div>
+    <div class="forkbody">Every U.S. listing searchable, a year of real closing prices, beta, alpha, Sharpe, the correlation table, and the charts, the same engine the stock chapter runs, computed in your browser and never stored.
+      <div id="yougrow"></div>
+    </div>
+  </div>
   <button class="continue" onclick="go(17)">One more thing: your homework</button>
-  <a class="handoff glass" href="https://kpfeffer.com/equity-guide.html">
-    <div class="ht">Run the return on equity engine</div>
-    <div class="hs">Every property you own has a working dollar and a lazy dollar. The Equity Guide computes return on equity for real addresses, compared against the live Cumberland County market map, so you can see which walls your money should be standing in.</div>
-  </a>
-  <a class="handoff glass" href="https://kpfeffer.com/capstone.html">
-    <div class="ht">Or open the workshop version of this exact plan</div>
-    <div class="hs">Every decision from tonight as a toggle, with the savings recomputing live as you flip them.</div>
-  </a>
   <div class="sig">Kristian R. Pfeffer</div>
 </section>
 
@@ -862,7 +892,7 @@
     updateRail();
     if (n===2) countTotal();
     if (n===5) stageInit();
-    if (n===15) finale();
+    if (n===15){ finale(); PORTAL.ledger.init(); }
     if (n===16) sbCalc();
   }
 
@@ -979,12 +1009,19 @@
 
   /* ===== sandbox ===== */
   function fmt(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+  /* the same mortality table every term in this plan was read from (2010CM style, per 100,000 alive at 20) */
+  var LX = {20:98500,25:98100,30:97600,35:97000,40:96200,45:95000,50:93200,55:90700,60:87100,65:81900,70:74500,75:64100,80:50700,85:34800,90:19100,95:7600,100:1900};
+  function lxAt(a){ a = Math.max(20, Math.min(100, a)); var lo = Math.min(95, Math.floor(a/5)*5), hi = Math.min(100, lo+5); var f = (a-lo)/5; return LX[lo] + (LX[hi]-LX[lo])*f; }
+  function lifeExp(age){ var s = 0; for (var t = 1; t <= 100-age; t++){ s += lxAt(age+t)/lxAt(age); } return s + 0.5; }
   function sbCalc(){
     var raw = document.getElementById("sbnw").value.replace(/[^0-9]/g,"");
     var nw = parseInt(raw||"0",10);
+    var age = parseInt(document.getElementById("sbage").value.replace(/[^0-9]/g,"")||"0",10);
     var married = document.getElementById("sbmar").classList.contains("on");
     var home = document.getElementById("sbhome").classList.contains("on");
     var char_ = document.getElementById("sbchar").classList.contains("on");
+    var kids = document.getElementById("sbkids").classList.contains("on");
+    var biz = document.getElementById("sbbiz").classList.contains("on");
     var excl = married ? 30000000 : 15000000;
     var noplan = Math.max(0, nw - excl) * 0.4;
     var base = nw;
@@ -1008,6 +1045,30 @@
       mv.textContent = "two revocable trusts";
       mn.textContent = "the spine comes first, every time";
     }
+    var tv = document.getElementById("sbterm"), tn = document.getElementById("sbtermn");
+    if (tv){
+      if (age >= 20 && age <= 95){
+        var expect = Math.round(lifeExp(age) * 10) / 10;
+        var solved = Math.max(2, Math.floor(expect - 3));
+        var factor = 1 / Math.pow(1.052, solved);
+        tv.textContent = solved + " years, from " + expect + " on the table";
+        tn.textContent = "at age " + age + " the table gives " + expect + " more years; a three year margin solves the term to " + solved + ", and a home moved through it reports a gift of about " + Math.round(factor*100) + " percent of value at the August 2026 rate of 5.2 percent. Same solve as Ricky's 15 and Lucy's 13, your age in the seat.";
+      } else {
+        tv.textContent = "\u2014";
+        tn.textContent = "type an age between 20 and 95 and the same mortality table Ricky and Lucy's terms were read from answers for yours";
+      }
+    }
+    var fits = [];
+    fits.push("two revocable trusts");
+    if (married) fits.push("paired shelter and marital rooms");
+    if (home && nw > (married ? 30000000 : 15000000)) fits.push("a residence vessel on the solved term");
+    else if (home) fits.push("titling read on the deed first");
+    if (char_) fits.push("a charitable remainder vessel");
+    if (kids) fits.push("guarded vessels for each child");
+    if (biz) fits.push("a family company with a grantor freeze");
+    if (nw > (married ? 30000000 : 15000000)) fits.push("insurance held outside the estate for the check");
+    var fv = document.getElementById("sbfits");
+    if (fv) fv.textContent = fits.join(", ");
     var el = document.getElementById("sbnw");
     if (raw) el.value = fmt(nw);
   }
@@ -1019,6 +1080,125 @@
      PORTAL.folio - local portfolio checkup (no market data v1 doctrine)
      =================================================================== */
   var PORTAL = {};
+
+  PORTAL.ledger = (function(){
+    /* Every decision in the plan on one page, each fork already ground to a number.
+       ON is the plan's road; OFF is the alternative, carrying its own price. Estate
+       rows ride the 40 percent rate, gains rows the 23.8 percent rate, growth at zero,
+       so every figure reconciles to the paper's exhibits to the dollar. */
+    var ROWS = [
+      { k:"ral",  name:"Raleigh rides the paired residence vessels",
+        on:{ v:1879000, lbl:"+$1,879,000 of estate tax the discount removes", cls:"lgood" },
+        off:{ v:0, lbl:"handed back, and a step up worth up to $1,703,000 arrives once instead", cls:"lalt" } },
+      { k:"mal",  name:"Malibu freezes in community labeled vessels, never commingled",
+        on:{ v:1385000, lbl:"+$1,385,000 of estate tax the freeze removes", cls:"lgood" },
+        off:{ v:838000, lbl:"+$838,000 the first death erasure removes instead, and slow growth can defend it", cls:"lalt" } },
+      { k:"farm", name:"Joe's farm rides Ricky's trust to the step up",
+        on:{ v:878220, lbl:"+$878,220 of gains tax the step up cancels, 23.8 percent of $3,690,000 of gain", cls:"lgood" },
+        off:{ v:1144000, lbl:"+$1,144,000 of conservation relief instead, and the land locks forever", cls:"lalt" } },
+      { k:"trn",  name:"Donald's trains pour into the charitable vessel",
+        on:{ v:4088000, lbl:"+$4,088,000 of estate tax never printed, and $511,000 of first year income starts", cls:"lgood" },
+        off:{ v:1718360, lbl:"+$1,718,360 of gains tax wiped at death instead, while the estate bill grows", cls:"lalt" } },
+      { k:"llc",  name:"Ricky's stock feeds the family company freeze",
+        on:{ v:2310805, lbl:"+$561,500 of discount plus $1,749,305 of grantor tax gifts over fifteen years", cls:"lgood" },
+        off:{ v:0, lbl:"$5,615,000 of exemption spent today, and the kids hold it now", cls:"lalt" } },
+      { k:"cam",  name:"Lucy's stock reaches Campbell whole",
+        on:{ v:1140020, lbl:"+$1,140,020 of gains tax that simply never happens, 23.8 percent of $4,790,000 of gain", cls:"lgood" },
+        off:{ v:0, lbl:"sold and taxed on the way out, and the legacy shrinks by exactly the tax", cls:"lalt" } }
+    ];
+    var state = {};
+    function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+    function total(){
+      var t = 0;
+      ROWS.forEach(function(r){ t += state[r.k] ? r.on.v : r.off.v; });
+      return t;
+    }
+    var lastTotal = null;
+    function paint(){
+      ROWS.forEach(function(r){
+        var row = document.getElementById("lrow_" + r.k);
+        if (!row) return;
+        var on = state[r.k];
+        row.classList.toggle("on", on);
+        var side = on ? r.on : r.off;
+        var val = row.querySelector(".lval");
+        val.textContent = side.lbl;
+        val.className = "lval " + side.cls;
+      });
+      var el = document.getElementById("ledgertotal");
+      if (!el) return;
+      var target = total();
+      var from = (lastTotal === null) ? target : lastTotal;
+      lastTotal = target;
+      var t0 = null;
+      function step(ts){
+        if (t0 === null) t0 = ts;
+        var p = Math.min(1, (ts - t0) / 500);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = money(from + (target - from) * eased);
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    function init(){
+      var host = document.getElementById("ledgerrows");
+      if (!host) return;
+      host.innerHTML = ROWS.map(function(r){
+        state[r.k] = true;
+        return '<div class="lrow" id="lrow_' + r.k + '"><div class="lname">' + r.name +
+          '<span class="lval"></span></div><div class="sw"></div></div>';
+      }).join("");
+      ROWS.forEach(function(r){
+        var row = document.getElementById("lrow_" + r.k);
+        row.querySelector(".sw").addEventListener("click", function(){
+          state[r.k] = !state[r.k];
+          paint();
+        });
+      });
+      paint();
+    }
+    return { init: init };
+  })();
+
+  PORTAL.you = (function(){
+    /* The make it yours rooms: your address through the shared property room, your
+       tickers through the shared grow room. The same engines as every chapter, no
+       pointing at any other page. */
+    var grew = false;
+    function pull(){
+      var raw = document.getElementById("youaddr").value.trim();
+      var out = document.getElementById("youout");
+      var host = document.getElementById("youroom");
+      if (!raw) return;
+      out.className = "toolout on";
+      out.innerHTML = "Asking the county. The deep county engines take a moment.";
+      if (host) host.innerHTML = "";
+      fetch("/api/parcel?address=" + encodeURIComponent(raw)).then(function(r){ return r.json(); }).then(function(j){
+        if (!j || j.error || !(j.address || j.siteAddress || (j.deed && j.deed.book))){
+          out.innerHTML = "No parcel matched that address. The statewide layer reaches all 100 North Carolina counties; include the city, because a street name without one lands wherever that name occurs first in the state.";
+          return;
+        }
+        out.innerHTML = "<div class=\"trow\"><span>The record I matched</span><span>" + (j.address || j.siteAddress) + (j.county ? ", " + j.county + " County" : "") + "</span></div>"
+          + "<div style=\"margin-top:9px; font-size:12.5px\">Read that line before trusting anything below it. Then open the tiles: the deed itself, the equity engine, the comparable sales, and the honest county ledger, all pointed at your house.</div>";
+        if (host && window.PropertyRoom){
+          PropertyRoom.mount(host, { address: raw, record: j, skipRecord: true });
+        }
+      }).catch(function(){ out.innerHTML = "The county did not answer just now. Try again in a moment."; });
+    }
+    function grow(){
+      if (grew) return;
+      var host = document.getElementById("yougrow");
+      if (host && window.GrowRoom){
+        grew = true;
+        GrowRoom.mount(host, { intro: "Type what you actually hold. Rough dollars are fine, nothing is stored, and the grading is the same workbook the stock chapter ran." });
+      }
+    }
+    return { pull: pull, grow: grow };
+  })();
+
+  document.addEventListener("keydown", function(e){
+    if (e.target && e.target.id === "youaddr" && e.key === "Enter"){ e.preventDefault(); e.stopPropagation(); PORTAL.you.pull(); }
+  }, true);
 
   PORTAL.sample = (function(){
     /* The proof that the asset boxes are not stage props. Any real address goes to the
