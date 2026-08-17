@@ -1,6 +1,13 @@
 {
   "federalRegister": [
     {
+      "date": "2026-08-17",
+      "type": "Proposed Rule",
+      "title": "Proposed Removal of a Reporting Requirement for Trusts Whose Charitable Contribution Deductions Are Solely for Contributions Made by Passthrough Entities",
+      "url": "https://www.federalregister.gov/documents/2026/08/17/2026-16769/proposed-removal-of-a-reporting-requirement-for-trusts-whose-charitable-contribution-deductions-are",
+      "matched": "estate tax"
+    },
+    {
       "date": "2026-07-24",
       "type": "Rule",
       "title": "Revising Qualified Domestic Trust Regulations Under Section 2056A To Update Outdated References and Procedures; Correction",
@@ -47,7 +54,7 @@
       "type": "Rule",
       "title": "Consistent Basis Reporting Between Estate and Person Acquiring Property From Decedent; Correction",
       "url": "https://www.federalregister.gov/documents/2026/03/19/2026-05447/consistent-basis-reporting-between-estate-and-person-acquiring-property-from-decedent-correction",
-      "matched": "estate tax"
+      "matched": "gift tax"
     },
     {
       "date": "2026-03-09",
@@ -57,7 +64,7 @@
       "matched": "fiduciary income tax"
     }
   ],
-  "federalRegisterChecked": "2026-08-12",
+  "federalRegisterChecked": "2026-08-17",
   "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
   "cfrParts": [
     {
@@ -85,17 +92,10 @@
       "issueDate": "2026-04-03"
     }
   ],
-  "cfrChecked": "2026-08-12",
+  "cfrChecked": "2026-08-17",
   "cfrSource": "eCFR versioner API",
   "changes": [
-    "NEW Rule 2026-07-24: Revising Qualified Domestic Trust Regulations Under Section 2056A To Update Outdated References and Procedures; Correction",
-    "NEW Rule 2026-07-10: Revising Qualified Domestic Trust Regulations Under Section 2056A To Update Outdated References and Procedures",
-    "NEW Rule 2026-07-09: Charitable Remainder Annuity Trust Listed Transaction",
-    "NEW Rule 2026-07-09: Information Reporting and Transfer for Valuable Consideration Rules for Section 1035 Exchanges of Life Insurance and Certain Other Life Insurance Contract Transactions",
-    "NEW Proposed Rule 2026-06-02: Estate Tax Closing Letter User Fee Update",
-    "NEW Proposed Rule 2026-05-13: Excepted Fertility Benefits",
-    "NEW Rule 2026-03-19: Consistent Basis Reporting Between Estate and Person Acquiring Property From Decedent; Correction",
-    "NEW Proposed Rule 2026-03-09: Trump Accounts"
+    "NEW Proposed Rule 2026-08-17: Proposed Removal of a Reporting Requirement for Trusts Whose Charitable Contribution Deductions Are Solely for Contributions Made by Passthrough Entities"
   ],
-  "updated": "2026-08-12"
+  "updated": "2026-08-17"
 }
