@@ -19,7 +19,8 @@
   }
   function siteData(name) {
     if (DATA[name]) return Promise.resolve(DATA[name]);
-    var path = { rodmap: "/data/rodmap.json", coverage: "/data/nc-coverage.json", pmms: "/data/pmms.json", rates: "/data/rates.json" }[name];
+    var path = { rodmap: "/data/rodmap.json", coverage: "/data/nc-coverage.json", pmms: "/data/pmms.json",
+                 rates: "/data/rates.json", appr: "/data/nc-appreciation.json" }[name];
     return getJson(path).then(function (j) { DATA[name] = j; return j; });
   }
   function money(n) { if (!(n || n === 0)) return ""; var r = Math.round(n); return (r < 0 ? "-$" : "$") + Math.abs(r).toLocaleString("en-US"); }
@@ -96,6 +97,8 @@
       recorded: d.recorded || j.recorded || j.deedDate || null,
       legal: j.legal || null,
       use: j.use || (j.land && j.land.use) || null,
+      neighborhood: (j.land && (j.land.neighborhood || j.land.marketArea)) || null,
+      city: j.city || null,
       assessedTotal: a.total || j.totalAssessed || null,
       land: a.land || null, buildingVal: a.building || null, landShare: a.landShare || null,
       salePrice: sale.price || a.salePrice || j.salePrice || null,
@@ -208,6 +211,7 @@
     html += tile(id + "deed", "The deed itself", "the scanned page from the county, the chain, and the automatic title read");
     html += tile(id + "eq", "The equity engine", "net income, the cap rate built from the money, cash on cash, return on equity");
     html += tile(id + "cmp", "The comparable sales", "what actually sold nearby, from the county record");
+    html += tile(id + "mkt", "The market around it", "what this neighbourhood has actually done, year by year, per square foot");
     html += tile(id + "cov", "Every county, honestly", "which of the 100 North Carolina counties answer, and how deep");
     root.innerHTML = html;
 
@@ -502,10 +506,19 @@
     function loadComps() {
       var body = document.querySelector("#" + id + "cmp .prbody");
       body.innerHTML = "<div class=\"prwait\">Asking the county for what actually sold nearby. The deep engines take a moment.</div>";
-      Promise.all([needRec(), getJson("/api/parcel?mode=comps&address=" + encodeURIComponent(st.address) + (st.county ? "&county=" + encodeURIComponent(st.county) : ""))]).then(function (rs) {
+      needRec().then(function (rec0) {
+        /* the county is the whole ballgame for this engine: Wake, Mecklenburg, and
+           Cumberland each run their own deep sales service. Never make it guess. */
+        var cty = st.county || (rec0 && rec0.county) || "";
+        return getJson("/api/parcel?mode=comps&address=" + encodeURIComponent(st.address) +
+          (cty ? "&county=" + encodeURIComponent(cty) : "")).then(function (d) { return [rec0, d]; });
+      }).then(function (rs) {
         var d = rs[1];
         if (!d || d.error || !(d.comps || []).length) {
-          body.innerHTML = "<div class=\"prnote\"><b>Nothing nearby came back.</b> " + esc((d && (d.limits || []).join(" ")) || "The deep comparable engines run where the county publishes sales with geometry; the coverage tile below names them.") + "</div>";
+          var cty0 = (rs[0] && rs[0].county) || st.county || "";
+          body.innerHTML = "<div class=\"prnote\"><b>Nothing nearby came back" + (cty0 ? " in " + esc(cty0) + " County" : "") + ".</b> " +
+            esc((d && (d.limits || []).join(" ")) || "") +
+            " Three counties publish their recorded sales with geometry and get the deep engine, Wake, Mecklenburg, and Cumberland; everywhere else this falls to the statewide parcel layer, which carries a sale price on only some parcels. The coverage tile below keeps the honest list.</div>";
           return;
         }
         var s = d.subject || {};
@@ -562,7 +575,65 @@
       });
     }
 
-    var loaders = { deed: loadDeed, eq: loadEquity, cmp: loadComps, cov: loadCoverage };
+    /* ---------- the market tile: appreciation by the assessor's own neighbourhood ---------- */
+    function loadMarket() {
+      var body = document.querySelector("#" + id + "mkt .prbody");
+      body.innerHTML = "<div class=\"prwait\">Reading the neighbourhood's own sales history.</div>";
+      Promise.all([needRec(), siteData("appr")]).then(function (rs) {
+        var rec = rs[0] || {}, appr = rs[1];
+        var cty = rec.county || st.county || "";
+        var block = appr && appr.counties && appr.counties[cty];
+        if (!block) {
+          body.innerHTML = "<div class=\"prnote\"><b>" + (cty ? esc(cty) + " County is not mapped yet." : "No county resolved for this address yet.") +
+            "</b> The appreciation map is built by walking a county's own recorded sales, one year at a time, and only Cumberland has been walked so far: " +
+            "390 neighbourhoods, 24,088 sales, every price checked against the excise stamp under N.C. Gen. Stat. Section 105-228.30. " +
+            "The rest of the state is on the list, and this tile will say the day a county lands rather than showing you a state average pretending to be your street.</div>";
+          if (opts.onResize) opts.onResize();
+          return;
+        }
+        var hood = null;
+        if (rec.neighborhood) {
+          var want = String(rec.neighborhood).toUpperCase().trim();
+          hood = block.neighborhoods.find(function (n) { return String(n.name).toUpperCase().trim() === want; });
+          if (!hood) hood = block.neighborhoods.find(function (n) {
+            var a = String(n.name).toUpperCase().replace(/[^A-Z]/g, ""), b = want.replace(/[^A-Z]/g, "");
+            return a && b && (a.indexOf(b) === 0 || b.indexOf(a) === 0);
+          });
+        }
+        var h = "";
+        if (!hood) {
+          h += "<div class=\"prnote\">The county record did not name an assessor neighbourhood for this parcel, so there is no block to measure. Here is the county itself instead.</div>";
+        } else {
+          var yrs = block.years.filter(function (y) { return hood.series[y] && hood.series[y].psf; });
+          var first = hood.series[yrs[0]], last = hood.series[yrs[yrs.length - 1]];
+          h += "<div class=\"prrow\"><span>The block the assessor put this house in</span><span>" + esc(hood.name) + (hood.city ? ", " + esc(hood.city) : "") + "</span></div>";
+          h += "<div class=\"prrow\"><span>Recorded sales behind these figures</span><span>" + hood.sales.toLocaleString("en-US") + "</span></div>";
+          h += "<div class=\"prtabwrap\"><table class=\"prtab\"><tr><th>Year</th><th>Median price per heated square foot</th><th>Sales that year</th></tr>";
+          block.years.forEach(function (y) {
+            var c = hood.series[y];
+            h += "<tr><td>" + y + (y === block.partialYear ? " so far" : "") + "</td><td>" + (c && c.psf ? "$" + c.psf.toFixed(2) : "&#8212;") + "</td><td>" + ((c && c.n) || "&#8212;") + "</td></tr>";
+          });
+          h += "</table></div>";
+          var cg = hood.cagr, med = block.countyMedianCagr;
+          var beat = cg >= med;
+          h += "<div class=\"prrow\"><span>Compound growth, " + block.indexYears[0] + " to " + block.indexYears[1] + "</span><span class=\"" + (cg >= 0 ? "prgood" : "prbad") + "\">" + cg.toFixed(1) + " percent a year</span></div>";
+          h += "<div class=\"prrow\"><span>The county's median neighbourhood</span><span>" + med.toFixed(1) + " percent a year</span></div>";
+          if (hood.recent || hood.recent === 0) h += "<div class=\"prrow\"><span>The most recent move</span><span class=\"" + (hood.recent >= 0 ? "prgood" : "prbad") + "\">" + (hood.recent >= 0 ? "+" : "") + hood.recent.toFixed(1) + " percent</span></div>";
+          h += "<div class=\"prnote\"><b>" + esc(hood.name) + " compounded " + cg.toFixed(1) + " percent a year while the county's median block did " + med.toFixed(1) +
+            ", and the spread between the tenth and ninetieth neighbourhood ran " + block.spread.p10 + " to " + block.spread.p90 + " percent. " +
+            (beat ? "This block beat the county's middle." : "This block trailed the county's middle.") + "</b> That spread is the whole argument: a national index is not your street, and a county average is not your block." +
+            (hood.thin ? " <b style=\"color:var(--brick,#8a3d3a)\">Read this one carefully:</b> this neighbourhood is marked thin, under eight sales in an end year, so its figures move on very little." : "") + "</div>";
+        }
+        h += "<div class=\"prnote\"><b>How this is built:</b> " + esc(block.method) + "</div>";
+        h += "<div class=\"prnote\"><b>What it is not:</b> " + esc(block.notWhat) + " Of " + block.counts.neighborhoods.toLocaleString("en-US") +
+          " neighbourhoods in the county, " + block.counts.withEnoughSales + " had enough sales to carry a figure, across " + block.counts.sales.toLocaleString("en-US") + " recorded sales. " +
+          "Each price was checked against the excise stamp, one dollar per five hundred of consideration under N.C. Gen. Stat. Section 105-228.30, and " + block.stampCheck.rate + " percent of them agreed.</div>";
+        body.innerHTML = h;
+        if (opts.onResize) opts.onResize();
+      });
+    }
+
+    var loaders = { deed: loadDeed, eq: loadEquity, cmp: loadComps, cov: loadCoverage, mkt: loadMarket };
 
     return {
       setAddress: function (a, c) { st.address = a; st.county = c || ""; st.rec = null; },

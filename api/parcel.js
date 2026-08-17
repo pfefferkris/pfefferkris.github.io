@@ -437,7 +437,20 @@ async function shapeHandler(req, res) {
 }
 
 export default async function handler(req, res) {
-  if ((req.query.mode || "") === "comps") return compsHandler(req, res);
+  if ((req.query.mode || "") === "comps") {
+    /* The comparable-sales engine branches on the COUNTY: Wake, Mecklenburg, and
+       Cumberland each have their own deep service, and everything else falls to the
+       statewide layer. A caller who sends only an address therefore lost the deep
+       engine entirely, which is how 702 Glenwood Dr in Fayetteville, a Cumberland
+       address with 304 recorded sales in its own neighbourhood, came back as
+       "no parcel matched". The city already knows its county; resolve it here. */
+    if (!req.query.county) {
+      const c0 = cityOf(req.query.address);
+      const g0 = c0 && PLACES[c0];
+      if (g0 && g0.length) req.query.county = g0[0].toUpperCase();
+    }
+    return compsHandler(req, res);
+  }
   if ((req.query.mode || "") === "shape") return shapeHandler(req, res);
   res.setHeader("Access-Control-Allow-Origin", "https://kpfeffer.com");
   res.setHeader("Cache-Control", "s-maxage=43200, stale-while-revalidate");
