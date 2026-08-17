@@ -1,0 +1,367 @@
+---
+# Front matter keeps this page out of the generated sitemap while it is a private draft,
+# and pins the permalink so the address never grows a trailing slash. Same pattern the
+# equity guide used before it shipped.
+sitemap: false
+layout: null
+permalink: /fortress.html
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Fortress: Era One, The Land — Kristian R. Pfeffer</title>
+<!-- PRIVATE DRAFT. Not indexed, not linked from the site navigation, not in the sitemap. -->
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="description" content="Private draft.">
+<style>
+:root{
+  --navy:#12293f; --navy-2:#1c3d5c; --gold:#a9884f; --gold-soft:#c6a86e; --gold-text:#8a6d3b;
+  --ink:#1e2b36; --muted:#5a6a78; --line:#e4ddd0; --bg:#faf8f3; --card:#ffffff;
+  --good:#2e7d4f; --brick:#8a3d3a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Georgia,'Times New Roman',serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+.glass{background:linear-gradient(150deg,rgba(255,255,255,.9),rgba(232,238,244,.82));
+  backdrop-filter:blur(22px) saturate(1.4);-webkit-backdrop-filter:blur(22px) saturate(1.4);
+  border:1px solid rgba(28,61,92,.22);border-radius:18px;box-shadow:0 14px 44px rgba(18,41,63,.14)}
+.wrap{max-width:1280px;margin:0 auto;padding:26px 22px 60px}
+header{text-align:center;padding:34px 20px 10px}
+.eyebrow{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-text);margin-bottom:12px}
+h1{font-size:clamp(1.7rem,4vw,2.6rem);color:var(--navy);font-weight:700;line-height:1.2}
+header .sub{margin:14px auto 0;max-width:640px;font-size:1rem;color:var(--muted);line-height:1.65}
+.draftbar{max-width:760px;margin:20px auto 0;padding:12px 18px;font-size:.8rem;line-height:1.55;color:var(--muted)}
+.searchbar{max-width:640px;margin:26px auto 6px;display:flex;gap:8px;padding:8px}
+.searchbar input{flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:inherit;font-size:1.02rem;padding:10px 14px;color:var(--ink)}
+.searchbar button{border:none;border-radius:12px;background:var(--navy);color:#fff;font-family:inherit;font-size:.8rem;font-weight:700;letter-spacing:.06em;padding:0 26px;cursor:pointer}
+.searchbar button:hover{background:var(--navy-2)}
+.searchhint{text-align:center;font-size:.74rem;color:var(--muted);font-style:italic;margin-bottom:18px}
+.stage{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:18px;align-items:start}
+@media(max-width:900px){.stage{grid-template-columns:1fr}}
+#land{position:relative;height:min(62vh,600px);overflow:hidden;border-radius:18px}
+#land canvas{display:block}
+.landtag{position:absolute;left:14px;bottom:12px;font-size:.72rem;color:var(--muted);background:rgba(250,248,243,.82);padding:5px 10px;border-radius:9px}
+.landlink{position:absolute;right:14px;bottom:12px;font-size:.72rem;background:rgba(250,248,243,.9);padding:5px 10px;border-radius:9px}
+.landlink a{color:var(--gold-text)}
+.tiles{display:flex;flex-direction:column;gap:12px}
+.tile{padding:16px 18px}
+.tile h3{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-text);margin-bottom:8px}
+.tile .big{font-size:1.55rem;color:var(--navy);font-weight:700}
+.tile .big.good{color:var(--good)} .tile .big.bad{color:var(--brick)}
+.trow{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted rgba(90,106,120,.3);padding:4px 0;font-size:.82rem}
+.trow b{color:var(--navy)}
+.tin{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:3px 0;font-size:.8rem}
+.tin label{color:var(--muted)}
+.tin input{width:110px;text-align:right;font-family:inherit;font-size:.84rem;padding:4px 8px;border-radius:8px;border:1px solid rgba(28,61,92,.25);background:rgba(255,255,255,.85);color:var(--ink)}
+.tnote{margin-top:8px;font-size:.72rem;color:var(--muted);line-height:1.5}
+.tgood{color:var(--good);font-weight:700} .tbad{color:var(--brick);font-weight:700}
+.empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:.9rem;line-height:1.7}
+footer{text-align:center;padding:30px 20px;font-size:.72rem;color:var(--muted);line-height:1.7}
+footer a{color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">The Fortress &middot; Era One &middot; The Land</div>
+  <h1>Stand on the land before you build on it.</h1>
+  <p class="sub">Run any property search and the ground answers: the county draws the parcel in three dimensions, the market prices it, and the tiles below fill themselves with what the land earns. Nothing here is typed in ahead of time. Every number arrives because you asked.</p>
+</header>
+
+<div class="draftbar glass"><b>Private draft, not published.</b> This page is noindex, off the site map, and reachable only by its address. The county shape engine covers North Carolina; the market engines reach anywhere with a full street address. Nothing typed here is stored.</div>
+
+<div class="wrap">
+  <div class="searchbar glass">
+    <input id="addr" placeholder="702 Glenwood Avenue, Raleigh" autocomplete="off">
+    <button id="run">RAISE IT</button>
+  </div>
+  <div class="searchhint">Street address, then the city. The parcel rises out of the county's own record.</div>
+
+  <div class="stage">
+    <div id="land" class="glass">
+      <div class="empty" id="landempty">The ground is waiting. Search an address and the county's own parcel lines rise into three dimensions, with the structure standing on them.</div>
+      <div class="landtag" id="landtag" style="display:none"></div>
+      <div class="landlink" id="landlink" style="display:none"></div>
+    </div>
+    <div class="tiles" id="tiles">
+      <div class="tile glass" id="t-record"><h3>The Record</h3><div class="tnote">Waiting on the search. The county answers first: the parcel, the acres, the assessment, the year it was built.</div></div>
+      <div class="tile glass" id="t-value"><h3>The Value</h3><div class="tnote">The market's estimate arrives here, with its honest range, and the number stays editable because an estimate is an opening position, not a verdict.</div></div>
+      <div class="tile glass" id="t-rent"><h3>The Rent</h3><div class="tnote">What the market says this address rents for, so the income side starts from a real number.</div></div>
+      <div class="tile glass" id="t-debt"><h3>The Debt</h3><div class="tnote">The loan the next buyer would actually carry, seeded from this week's Freddie Mac survey rate.</div></div>
+      <div class="tile glass" id="t-coc"><h3>Cash on Cash</h3><div class="tnote">The first verdict: what the cash invested earns in year one, after the vacancy, the upkeep, the taxes, and the note.</div></div>
+      <div class="tile glass" id="t-roe"><h3>Return on Equity</h3><div class="tnote">The second verdict: cash flow, principal paydown, and appreciation, measured against the equity at stake. The <a href="/equity-guide.html" style="color:var(--gold-text)">Equity Guide</a> carries the full doctrine of why this number falls every year you hold.</div></div>
+    </div>
+  </div>
+</div>
+
+<footer>Kristian R. Pfeffer &middot; <a href="/index.html">kpfeffer.com</a> &middot; county records from NC OneMap and the counties' own GIS &middot; market figures from the same engines the <a href="/wealth-guide.html">Wealth Guide</a> runs on. Educational only, never legal, tax, or investment advice.</footer>
+
+<script src="/assets/fortress/three.min.js"></script>
+<script src="/assets/fortress/OrbitControls.js"></script>
+<script>
+"use strict";
+/* The Fortress, Era One: the land. Modular by constitution.
+   F.rates - live figures already published by the site's own pipeline
+   F.data  - the property search: parcel shape, record, value, rent
+   F.scene - three.js: the parcel extruded from the county's own polygon
+   F.tiles - the self populating tiles and the two verdicts
+*/
+var F = {};
+
+F.state = { addr:"", shape:null, record:null, value:null, rent:null,
+  inputs: { value:0, rentMo:0, ltv:75, rate:6.67, taxYr:0, insYr:1800, vac:5, upkeep:15, appr:4 } };
+
+F.rates = (function(){
+  function load(){
+    fetch("/data/pmms.json").then(function(r){ return r.json(); }).then(function(j){
+      var arr = j && j.rate30;
+      if (arr && arr.length) F.state.inputs.rate = arr[arr.length - 1];
+      F.tiles.recalc();
+    }).catch(function(){});
+  }
+  return { load: load };
+})();
+
+F.data = (function(){
+  function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+  function countyFor(city){
+    var M = { "raleigh":"WAKE", "charlotte":"MECKLENBURG", "greensboro":"GUILFORD",
+      "winston salem":"FORSYTH", "winston-salem":"FORSYTH", "fayetteville":"CUMBERLAND", "wilmington":"NEW HANOVER" };
+    return M[city] || "";
+  }
+  function run(){
+    var raw = document.getElementById("addr").value.trim();
+    if (!raw) return;
+    F.state.addr = raw;
+    var parts = raw.split(",");
+    var city = (parts[1] || "").trim().toLowerCase();
+    var county = countyFor(city);
+    var qs = "address=" + encodeURIComponent(raw) + (county ? "&county=" + encodeURIComponent(county) : "");
+    document.getElementById("landempty").textContent = "Raising the parcel from the county record.";
+    Promise.all([
+      fetch("/api/parcel?mode=shape&" + qs).then(function(r){ return r.json(); }).catch(function(){ return null; }),
+      fetch("/api/parcel?" + qs).then(function(r){ return r.json(); }).catch(function(){ return null; }),
+      fetch("/api/home-value?address=" + encodeURIComponent(raw)).then(function(r){ return r.json(); }).catch(function(){ return null; }),
+      fetch("/api/rent-estimate?address=" + encodeURIComponent(raw)).then(function(r){ return r.json(); }).catch(function(){ return null; })
+    ]).then(function(rs){
+      F.state.shape = (rs[0] && !rs[0].error) ? rs[0] : null;
+      F.state.record = (rs[1] && !rs[1].error) ? rs[1] : null;
+      F.state.value = (rs[2] && !rs[2].error) ? rs[2] : null;
+      F.state.rent = (rs[3] && !rs[3].error) ? rs[3] : null;
+      if (F.state.value && F.state.value.price) F.state.inputs.value = F.state.value.price;
+      else if (F.state.record && F.state.record.assessed && F.state.record.assessed.total) F.state.inputs.value = F.state.record.assessed.total;
+      else if (F.state.shape && F.state.shape.assessed) F.state.inputs.value = F.state.shape.assessed;
+      if (F.state.rent && F.state.rent.rent) F.state.inputs.rentMo = F.state.rent.rent;
+      else if (F.state.rent && F.state.rent.price) F.state.inputs.rentMo = F.state.rent.price;
+      if (F.state.inputs.value) F.state.inputs.taxYr = Math.round(F.state.inputs.value * 0.008);
+      F.scene.raise();
+      F.tiles.fill();
+    });
+  }
+  return { run: run, money: money };
+})();
+
+F.scene = (function(){
+  var renderer = null, scene = null, camera = null, controls = null, holder = null, animId = 0;
+  var flyT = -1, camFrom = null, camTo = null;
+  function ensure(){
+    holder = document.getElementById("land");
+    if (renderer) return;
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(holder.clientWidth, holder.clientHeight);
+    holder.appendChild(renderer.domElement);
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(50, holder.clientWidth / holder.clientHeight, 0.1, 20000);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true; controls.dampingFactor = 0.06;
+    controls.maxPolarAngle = Math.PI * 0.47;
+    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    var sun = new THREE.DirectionalLight(0xfff3dc, 0.9);
+    sun.position.set(180, 320, 140);
+    scene.add(sun);
+    window.addEventListener("resize", function(){
+      if (!renderer) return;
+      renderer.setSize(holder.clientWidth, holder.clientHeight);
+      camera.aspect = holder.clientWidth / holder.clientHeight;
+      camera.updateProjectionMatrix();
+    });
+    (function loop(){
+      animId = requestAnimationFrame(loop);
+      if (flyT >= 0 && flyT <= 1){
+        var e = 1 - Math.pow(1 - flyT, 3);
+        camera.position.lerpVectors(camFrom, camTo, e);
+        flyT += 0.012;
+        if (flyT > 1) flyT = -1;
+      }
+      controls.update();
+      renderer.render(scene, camera);
+    })();
+  }
+  function clearParcel(){
+    var dead = [];
+    scene.traverse(function(o){ if (o.userData && o.userData.parcel) dead.push(o); });
+    dead.forEach(function(o){ scene.remove(o); });
+  }
+  function raise(){
+    var s = F.state.shape;
+    ensure();
+    document.getElementById("landempty").style.display = s ? "none" : "block";
+    if (!s){ document.getElementById("landempty").textContent =
+      "The county shape engine reaches North Carolina parcels; this address did not answer. The tiles still fill from the market engines below."; return; }
+    clearParcel();
+    /* project lon/lat to local meters around the centroid */
+    var lat0 = s.centroid.lat * Math.PI / 180;
+    var mLon = 111320 * Math.cos(lat0), mLat = 110540;
+    function xy(p){ return [ (p[0] - s.centroid.lon) * mLon, (p[1] - s.centroid.lat) * mLat ]; }
+    var ring = s.rings[0].map(xy);
+    var shape2 = new THREE.Shape();
+    ring.forEach(function(p, i){ if (i === 0) shape2.moveTo(p[0], p[1]); else shape2.lineTo(p[0], p[1]); });
+    var span = 0;
+    ring.forEach(function(p){ span = Math.max(span, Math.abs(p[0]), Math.abs(p[1])); });
+    /* the ground the parcel sits in */
+    var ground = new THREE.Mesh(
+      new THREE.CircleGeometry(span * 4, 64),
+      new THREE.MeshPhongMaterial({ color: 0xe9e3d4, shininess: 4 }));
+    ground.rotation.x = -Math.PI / 2; ground.position.y = -0.4; ground.userData.parcel = 1;
+    scene.add(ground);
+    /* the parcel itself: a glass platform cut to the county's own lines */
+    var plat = new THREE.Mesh(
+      new THREE.ExtrudeGeometry(shape2, { depth: 2.6, bevelEnabled: false }),
+      new THREE.MeshPhongMaterial({ color: 0x1c3d5c, transparent: true, opacity: 0.34, shininess: 80 }));
+    plat.rotation.x = -Math.PI / 2; plat.position.y = 2.6; plat.userData.parcel = 1;
+    scene.add(plat);
+    var edge = new THREE.LineSegments(
+      new THREE.EdgesGeometry(plat.geometry),
+      new THREE.LineBasicMaterial({ color: 0xa9884f }));
+    edge.rotation.copy(plat.rotation); edge.position.copy(plat.position); edge.userData.parcel = 1;
+    scene.add(edge);
+    /* the structure: sized from the record's heated area when the county gave one */
+    var heated = (F.state.record && F.state.record.building && F.state.record.building.heatedArea) || 2400;
+    var stories = heated > 3400 ? 2 : (heated > 1400 ? 2 : 1);
+    var foot = (heated / stories) * 0.0929;              /* square feet to square meters */
+    var side = Math.sqrt(foot);
+    var h = stories * 3.4;
+    var bld = new THREE.Mesh(
+      new THREE.BoxGeometry(side, h, side * 0.8),
+      new THREE.MeshPhongMaterial({ color: 0x12293f, transparent: true, opacity: 0.82, shininess: 60 }));
+    bld.position.set(0, h / 2 + 2.6, 0); bld.userData.parcel = 1;
+    scene.add(bld);
+    var bedge = new THREE.LineSegments(
+      new THREE.EdgesGeometry(bld.geometry),
+      new THREE.LineBasicMaterial({ color: 0xc6a86e }));
+    bedge.position.copy(bld.position); bedge.userData.parcel = 1;
+    scene.add(bedge);
+    /* the fly in: from high orbit down to a three quarter view */
+    controls.target.set(0, 4, 0);
+    camFrom = new THREE.Vector3(span * 6, span * 7, span * 6);
+    camTo = new THREE.Vector3(span * 1.7, span * 1.15, span * 1.7);
+    camera.position.copy(camFrom);
+    flyT = 0;
+    var tag = document.getElementById("landtag");
+    tag.style.display = "block";
+    tag.textContent = (s.address || F.state.addr) + ", " + (s.county || "") + " County · " +
+      (s.acres ? s.acres.toFixed(2) + " acres · " : "") + "drawn from the county's own parcel lines";
+    var lk = document.getElementById("landlink");
+    lk.style.display = "block";
+    lk.innerHTML = '<a href="https://www.google.com/maps/@' + s.centroid.lat.toFixed(6) + ',' +
+      s.centroid.lon.toFixed(6) + ',180a,35y,45t/data=!3m1!1e3" target="_blank" rel="noopener">Open this parcel in Google Maps 3D</a>';
+  }
+  return { raise: raise };
+})();
+
+F.tiles = (function(){
+  var money = function(n){ return "$" + Math.round(n).toLocaleString("en-US"); };
+  function input(id, label, val, suffix){
+    return '<div class="tin"><label>' + label + '</label><span><input id="' + id + '" value="' + val + '" inputmode="decimal">' + (suffix || '') + '</span></div>';
+  }
+  function num(id){ return parseFloat(String(document.getElementById(id).value).replace(/[^0-9.]/g, "")) || 0; }
+  function wire(){
+    ["f-value","f-rent","f-ltv","f-rate","f-tax","f-ins","f-vac","f-upk","f-appr"].forEach(function(id){
+      var el = document.getElementById(id);
+      if (el) el.addEventListener("input", recalc);
+    });
+  }
+  function fill(){
+    var st = F.state, r = st.record, s = st.shape, v = st.value;
+    var rec = document.getElementById("t-record");
+    var rows = "";
+    var county = (r && r.county) || (s && s.county) || null;
+    if (county) rows += '<div class="trow"><span>County</span><b>' + county + '</b></div>';
+    var acres = (r && r.land && r.land.acres) || (s && s.acres) || null;
+    if (acres) rows += '<div class="trow"><span>Land</span><b>' + acres.toFixed(2) + ' acres</b></div>';
+    var assessed = (r && r.assessed && r.assessed.total) || (s && s.assessed) || null;
+    if (assessed) rows += '<div class="trow"><span>Assessed</span><b>' + money(assessed) + '</b></div>';
+    var yb = (r && r.building && r.building.yearBuilt) || (s && s.yearBuilt) || null;
+    if (yb) rows += '<div class="trow"><span>Built</span><b>' + yb + '</b></div>';
+    var ha = r && r.building && r.building.heatedArea;
+    if (ha) rows += '<div class="trow"><span>Heated area</span><b>' + Math.round(ha).toLocaleString("en-US") + ' sq ft</b></div>';
+    var sale = r && r.sales && r.sales[0];
+    if (sale && (sale.price || sale.stampPrice)) rows += '<div class="trow"><span>Last sale</span><b>' + money(sale.price || sale.stampPrice) + (sale.date ? ', ' + sale.date : '') + '</b></div>';
+    rec.innerHTML = '<h3>The Record</h3>' + (rows || '<div class="tnote">The county record did not answer for this address.</div>') +
+      '<div class="tnote">' + ((r && r.source) || (s && s.source) || '') + '</div>';
+    document.getElementById("t-value").innerHTML = '<h3>The Value</h3>' +
+      '<div class="big" id="f-valbig">' + (st.inputs.value ? money(st.inputs.value) : 'no estimate') + '</div>' +
+      (v && v.low && v.high ? '<div class="tnote">The market’s honest range: ' + money(v.low) + ' to ' + money(v.high) + ' (' + (v.source || 'market AVM') + ').</div>' : '') +
+      input("f-value", "Use this value", st.inputs.value || "");
+    document.getElementById("t-rent").innerHTML = '<h3>The Rent</h3>' +
+      '<div class="big">' + (st.inputs.rentMo ? money(st.inputs.rentMo) + '<span style="font-size:.8rem;color:var(--muted)"> / month</span>' : 'no estimate') + '</div>' +
+      input("f-rent", "Use this rent", st.inputs.rentMo || "");
+    document.getElementById("t-debt").innerHTML = '<h3>The Debt</h3>' +
+      input("f-ltv", "Loan to value", st.inputs.ltv, " %") +
+      input("f-rate", "Rate, 30 year", st.inputs.rate, " %") +
+      input("f-tax", "Property tax, yearly", st.inputs.taxYr) +
+      input("f-ins", "Insurance, yearly", st.inputs.insYr) +
+      input("f-vac", "Vacancy", st.inputs.vac, " %") +
+      input("f-upk", "Upkeep and management", st.inputs.upkeep, " %") +
+      '<div class="tnote">The rate is this week’s Freddie Mac survey, from the site’s own pipeline. Every line is yours to correct.</div>';
+    document.getElementById("t-coc").innerHTML = '<h3>Cash on Cash</h3><div class="big" id="f-cocbig">&nbsp;</div><div class="tnote" id="f-cocnote"></div>';
+    document.getElementById("t-roe").innerHTML = '<h3>Return on Equity</h3><div class="big" id="f-roebig">&nbsp;</div>' +
+      input("f-appr", "Appreciation per year", st.inputs.appr, " %") +
+      '<div class="tnote" id="f-roenote"></div>';
+    wire();
+    recalc();
+  }
+  function recalc(){
+    var val = num("f-value"), rent = num("f-rent");
+    if (!document.getElementById("f-value")) return;
+    if (!val) return;
+    var ltv = num("f-ltv") / 100, rate = num("f-rate") / 100, tax = num("f-tax"), ins = num("f-ins");
+    var vac = num("f-vac") / 100, upk = num("f-upk") / 100, appr = num("f-appr") / 100;
+    var loan = val * ltv, down = val - loan, closing = val * 0.03;
+    var i = rate / 12, nmo = 360;
+    var pay = i > 0 ? loan * i / (1 - Math.pow(1 + i, -nmo)) : loan / nmo;
+    var gross = rent * 12, egi = gross * (1 - vac);
+    var noi = egi - gross * upk - tax - ins;
+    var ds = pay * 12;
+    var cf = noi - ds;
+    var cashIn = down + closing;
+    var coc = cashIn > 0 ? cf / cashIn : 0;
+    var cocEl = document.getElementById("f-cocbig");
+    cocEl.textContent = (coc * 100).toFixed(2) + " %";
+    cocEl.className = "big " + (coc >= 0 ? "good" : "bad");
+    document.getElementById("f-cocnote").innerHTML = "Net operating income " + money(noi) +
+      ", the note takes " + money(ds) + ", leaving <b class=\"" + (cf >= 0 ? "tgood" : "tbad") + "\">" + money(cf) +
+      "</b> a year on " + money(cashIn) + " invested.";
+    /* year one principal reduction */
+    var bal = loan, princ = 0;
+    for (var m = 0; m < 12; m++){ var intp = bal * i; princ += pay - intp; bal -= (pay - intp); }
+    var appd = val * appr;
+    var roe = cashIn > 0 ? (cf + princ + appd) / cashIn : 0;
+    var roeEl = document.getElementById("f-roebig");
+    roeEl.textContent = (roe * 100).toFixed(2) + " %";
+    roeEl.className = "big " + (roe >= 0 ? "good" : "bad");
+    document.getElementById("f-roenote").innerHTML = "Cash flow " + money(cf) + ", principal paid down " + money(princ) +
+      ", appreciation " + money(appd) + ", against " + money(cashIn) + " of equity at stake. This is year one, the highest this number will ever be; the Equity Guide shows the decay.";
+  }
+  return { fill: fill, recalc: recalc };
+})();
+
+document.getElementById("run").onclick = F.data.run;
+document.getElementById("addr").addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); F.data.run(); } });
+F.rates.load();
+</script>
+</body>
+</html>

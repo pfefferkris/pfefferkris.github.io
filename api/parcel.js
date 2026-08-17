@@ -386,8 +386,58 @@ function merge(base, deep) {
   return out;
 }
 
+/* ---------------- mode=shape: the parcel's actual polygon, for the fortress ----------------
+   Same statewide layer the record tier reads, with geometry switched on and projected to
+   plain latitude and longitude. Bundled here because the host allows twelve functions and
+   the thirteenth kills the build silently; this is a mode, not a new endpoint. */
+async function shapeHandler(req, res) {
+  res.setHeader("Access-Control-Allow-Origin", "https://kpfeffer.com");
+  res.setHeader("Cache-Control", "s-maxage=43200, stale-while-revalidate");
+  const street = streetOf(req.query.address);
+  const city = cityOf(req.query.address);
+  const hint = (req.query.county || "").toString().toUpperCase().replace(/[^A-Z ]/g, "").slice(0, 30);
+  if (street.length < 5 || !/^\d/.test(street)) {
+    return res.status(400).json({ error: "send a street address with a number" });
+  }
+  const key = "shape|" + street + "|" + hint + "|" + city;
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.t < TTL) return res.status(200).json(hit.data);
+  let where = "UPPER(SITEADD) LIKE '" + street.replace(/'/g, "''") + "%'";
+  if (hint) where += " AND UPPER(CNTYNAME) LIKE '" + hint + "%'";
+  else if (city && PLACES[city]) where += " AND UPPER(CNTYNAME) LIKE '" + PLACES[city][0].toUpperCase() + "%'";
+  else if (city) where += " AND UPPER(SCITY) LIKE '" + city.replace(/'/g, "''") + "%'";
+  try {
+    const u = "https://services.nconemap.gov/secure/rest/services/NC1Map_Parcels/FeatureServer/0/query" +
+      "?where=" + encodeURIComponent(where) +
+      "&outFields=SITEADD,CNTYNAME,GISACRES,PARVAL,STRUCTYEAR" +
+      "&returnGeometry=true&outSR=4326&resultRecordCount=1&f=json";
+    const j = await getJson(u);
+    const f = (j.features || [])[0];
+    if (!f || !f.geometry || !f.geometry.rings || !f.geometry.rings.length) {
+      return res.status(404).json({ error: "no parcel shape answered for that address" });
+    }
+    const rings = f.geometry.rings;
+    let sx = 0, sy = 0, cnt = 0;
+    rings[0].forEach(p => { sx += p[0]; sy += p[1]; cnt++; });
+    const a = {};
+    Object.keys(f.attributes || {}).forEach(k => { a[k.toLowerCase()] = f.attributes[k]; });
+    const data = {
+      address: a.siteadd || null, county: a.cntyname || null,
+      acres: n(a.gisacres), assessed: n(a.parval), yearBuilt: n(a.structyear),
+      centroid: cnt ? { lon: sx / cnt, lat: sy / cnt } : null,
+      rings: rings,
+      source: "NC OneMap statewide parcels (county GIS records)"
+    };
+    cache.set(key, { t: Date.now(), data });
+    return res.status(200).json(data);
+  } catch (e) {
+    return res.status(502).json({ error: "parcel shape service unavailable" });
+  }
+}
+
 export default async function handler(req, res) {
   if ((req.query.mode || "") === "comps") return compsHandler(req, res);
+  if ((req.query.mode || "") === "shape") return shapeHandler(req, res);
   res.setHeader("Access-Control-Allow-Origin", "https://kpfeffer.com");
   res.setHeader("Cache-Control", "s-maxage=43200, stale-while-revalidate");
 
