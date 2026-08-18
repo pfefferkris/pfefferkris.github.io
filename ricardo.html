@@ -959,9 +959,10 @@
        is the product, and it must never wait on an eased curve. */
     recalcAll();
     var el = document.getElementById("totalnum"), target = ASSETV.reduce(function(a,b){ return a+b; }, 0), t0 = null;
+    el.textContent = money(target);      /* same rule: the number first, the count second */
     function step(ts){ if(!t0) t0=ts; var p=Math.min((ts-t0)/1800,1); var e=1-Math.pow(1-p,3);
       el.textContent = "$" + Math.round(target*e).toLocaleString("en-US");
-      if(p<1) requestAnimationFrame(step); else recalcAll(); }
+      if(p<1) requestAnimationFrame(step); else { el.textContent = money(target); recalcAll(); } }
     requestAnimationFrame(step);
   }
 
@@ -1268,13 +1269,15 @@
       var target = c.maturedTax;
       var from = (last3 === null) ? target : last3;
       last3 = target;
+      f3.textContent = money(target);      /* the truth, before any frame is asked for */
+      if (from === target) return;
       var t0 = null;
       function step(ts){
         if (t0 === null) t0 = ts;
         var p = Math.min(1, (ts - t0) / 500);
         var eased = 1 - Math.pow(1 - p, 3);
         f3.textContent = money(from + (target - from) * eased);
-        if (p < 1) requestAnimationFrame(step);
+        if (p < 1) requestAnimationFrame(step); else f3.textContent = money(target);
       }
       requestAnimationFrame(step);
     }
