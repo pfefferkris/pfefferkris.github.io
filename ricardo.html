@@ -687,7 +687,7 @@
     <div class="ledgerfigs">
       <div class="lfig"><div class="ll">Today, with no plan</div><div class="lv lred" id="lfig1">$0</div><div class="ln">what the 40 percent band takes above the exclusions, nine months after the second of you passes</div></div>
       <div class="lfig"><div class="ll">Tomorrow, the day the plan is signed</div><div class="lv lgreen" id="lfig2">$0</div><div class="ln">the charitable dispositions in place, Exhibit B scenario two, before a single term has run</div></div>
-      <div class="lfig"><div class="ll">And when the plan finishes maturing</div><div class="lv lgreen" id="lfig3" style="font-weight:700">$0</div><div class="ln">Exhibit B scenario three, the day the last residence term ends, with every value held exactly where it stands today</div></div>
+      <div class="lfig"><div class="ll">And when the plan finishes maturing</div><div class="lv lgreen" id="lfig3" style="font-weight:700">$0</div><div class="ln" id="lfig3d"></div><div class="ln">Exhibit B scenario three, the day the last residence term ends, with every value held exactly where it stands today</div></div>
     </div>
     <div class="ln" style="margin-top:14px"><b>And here is the part that never gets explained.</b> The drop from the second number to the third is not a rounding, and it is not optimism. It is the four residence vessels finishing their terms, priced line by line, exactly as Exhibit B computes it.</div>
     <div id="ledgerfall"></div>
@@ -866,6 +866,8 @@
     document.getElementById("n13bad").textContent = money(tax);
     var charityBase = Math.max(0, total - ASSETV[3] - ASSETV[4]/2 - 30000000);
     document.getElementById("n13good").textContent = money(charityBase * 0.4);
+    /* one edit, every room. The day after reads the same cards this table does. */
+    if (window.PORTAL && PORTAL.ledger && PORTAL.ledger.repaint) PORTAL.ledger.repaint();
   }
 
   var dots = document.getElementById("dots");
@@ -950,9 +952,14 @@
   function countTotal(){
     if (counted) { recalcAll(); return; }
     counted = true;
+    /* Every downstream figure is computed from these cards, so compute them now, before
+       the count animation has even finished. The animation is decoration; the arithmetic
+       is the product, and it must never wait on an eased curve. */
+    recalcAll();
     var el = document.getElementById("totalnum"), target = ASSETV.reduce(function(a,b){ return a+b; }, 0), t0 = null;
     function step(ts){ if(!t0) t0=ts; var p=Math.min((ts-t0)/1800,1); var e=1-Math.pow(1-p,3);
-      el.textContent = "$" + Math.round(target*e).toLocaleString("en-US"); if(p<1) requestAnimationFrame(step); }
+      el.textContent = "$" + Math.round(target*e).toLocaleString("en-US");
+      if(p<1) requestAnimationFrame(step); else recalcAll(); }
     requestAnimationFrame(step);
   }
 
@@ -1220,6 +1227,16 @@
       "</span> of tax, and it is the entire reason the third number is not the second one.</div>";
     }
     var last3 = null;
+    /* What one switch is worth, on its own, against everything else as it stands. On a
+       large estate a switch can move the third figure by an amount the leading digits
+       swallow, so the number is never left for the eye to find. */
+    function worthOf(k){
+      var was = state[k];
+      state[k] = false; var off = compute().maturedTax;
+      state[k] = true;  var on  = compute().maturedTax;
+      state[k] = was;
+      return off - on;
+    }
     function paint(){
       var c = compute();
       var f1 = document.getElementById("lfig1"), f2 = document.getElementById("lfig2"), f3 = document.getElementById("lfig3");
@@ -1228,10 +1245,24 @@
       f2.textContent = money(c.planTax);
       var fw = document.getElementById("ledgerfall");
       if (fw) fw.innerHTML = fall(c);
+      var all = compute.baseline || null;
+      var onCount = 0, saved = 0;
       EXTRAS.forEach(function(r){
         var row = document.getElementById("lrow_" + r.k);
-        if (row) row.classList.toggle("on", !!state[r.k]);
+        var w = worthOf(r.k);
+        if (row){
+          row.classList.toggle("on", !!state[r.k]);
+          var v = row.querySelector(".lval");
+          if (v) v.innerHTML = (state[r.k] ? "taking <b>" + money(w) + "</b> off the third number. " : "worth <b>" + money(w) + "</b> off the third number. ") + r.note;
+        }
+        if (state[r.k]) { onCount++; saved += w; }
       });
+      var dl = document.getElementById("lfig3d");
+      if (dl){
+        if (onCount) dl.innerHTML = "<span style=\"color:var(--good)\"><b>" + money(saved) + " of that came off just now</b></span>, from " +
+          onCount + (onCount === 1 ? " switch" : " switches") + " below.";
+        else dl.innerHTML = "Flip a switch below and this number moves, with the change named in green.";
+      }
       var target = c.maturedTax;
       var from = (last3 === null) ? target : last3;
       last3 = target;
@@ -1268,7 +1299,9 @@
       }
       paint();
     }
-    return { init: init };
+    /* repaint on demand: an edit at the table must reach a ledger already on screen */
+    function repaint(){ if (document.getElementById("ledgerfixed")) paint(); }
+    return { init: init, repaint: repaint };
   })();
 
   PORTAL.you = (function(){
@@ -1395,14 +1428,18 @@
        margin, and the doctrine that the term never reaches the table stands. */
     var RATE = 0.052, ESTATE = 0.40;
     var P = {
-      r: { name: "Ricky", age: 50, expect: 29.9, half: 4627000, plan: 15 },
-      l: { name: "Lucy",  age: 70, expect: 16.8, half: 4627000, plan: 13 }
+      r: { name: "Ricky", age: 50, expect: 29.9, plan: 15 },
+      l: { name: "Lucy",  age: 70, expect: 16.8, plan: 13 }
     };
     function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+    /* each spouse's half of the Raleigh home, read from the card at the table rather
+       than frozen here: correct the house and every term this solver prices follows */
+    function halfOf(){ return ASSETV[0] / 2; }
     function rowFor(p, term){
       var factor = 1 / Math.pow(1 + RATE, term);
-      var gift = p.half * factor;
-      var discount = p.half - gift;
+      var half = halfOf();
+      var gift = half * factor;
+      var discount = half - gift;
       return { gift: gift, discount: discount, savings: discount * ESTATE };
     }
     function run(){
@@ -1439,14 +1476,20 @@
        first death erases the built in gain on both halves, priced at the 23.8 percent
        federal gains rate the family would otherwise someday pay. Same numbers as
        Exhibit C when growth is set to zero. */
-    var VALUE = 6820000, BASIS = 3300000, DISCOUNT = 3462000, ESTATE = 0.40, GAINS = 0.238;
+    /* Malibu's value comes from its card; the basis is history and does not move, and
+       the discount is the same proportion of value the paper's Exhibit C priced. */
+    var BASIS = 3300000, ESTATE = 0.40, GAINS = 0.238;
+    var EX_VALUE = 6820000, EX_DISCOUNT = 3462000;
+    function valueOf(){ return ASSETV[1]; }
+    function discountOf(){ return valueOf() * (EX_DISCOUNT / EX_VALUE); }
     function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
     function run(){
       var a = parseFloat(document.getElementById("cpappr").value) / 100;
       var y = parseInt(document.getElementById("cpyears").value, 10);
+      var VALUE = valueOf(), DISCOUNT = discountOf();
       var growth = VALUE * (Math.pow(1 + a, y) - 1);
       var freeze = (DISCOUNT + growth) * ESTATE;
-      var keep = (VALUE - BASIS + growth) * GAINS;
+      var keep = Math.max(0, VALUE - BASIS + growth) * GAINS;
       var out = document.getElementById("cpout");
       out.className = "toolout on";
       var rows = [];
