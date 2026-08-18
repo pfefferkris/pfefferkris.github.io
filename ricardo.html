@@ -132,6 +132,31 @@
   /* The record room does NOT live inside a card: a 175px column turns every tile into a
      tall thin ribbon, and the open card is navy, which no dark bodied tile can sit on.
      It opens full width beneath the grid, on the room's own cream, where it can breathe. */
+  .arolewrap{margin-top:9px; border-top:1px dashed rgba(255,255,255,.25); padding-top:8px;}
+  .arolelab{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:#c9b98a; margin-bottom:5px;}
+  .arole{display:flex; flex-wrap:wrap; gap:4px;}
+  .rchip{border:1px solid rgba(255,255,255,.35); background:transparent; color:#e8eef3; font-family:inherit;
+    font-size:10.5px; border-radius:999px; padding:3px 9px; cursor:pointer;}
+  .rchip.on{background:var(--gold); border-color:var(--gold); color:#fff; font-weight:700;}
+  .arolenote{font-size:10.5px; color:#c9b98a; margin-top:5px; font-style:italic; line-height:1.45;}
+  .avessel{display:flex; align-items:center; gap:6px; margin-top:7px; font-size:11px; color:#e8eef3; cursor:pointer;}
+  .adrop{display:block; margin-top:8px; font-size:10.5px; color:#e0b4b0; background:none; border:none;
+    font-family:inherit; cursor:pointer; text-decoration:underline; padding:0;}
+  .adrop:hover{color:#fff;}
+  .addcard{border-style:dashed !important; cursor:default;}
+  .addcard .an{color:var(--goldink);}
+  .astoryalt{font-size:11.5px; color:var(--muted); margin-top:5px; line-height:1.5;}
+  .addform{display:flex; flex-direction:column; gap:6px; margin-top:9px;}
+  .addform input, .addform select{font-family:inherit; font-size:12.5px; padding:7px 9px; border-radius:8px;
+    border:1px solid rgba(169,136,79,.45); background:rgba(255,255,255,.75); color:var(--ink); width:100%; box-sizing:border-box;}
+  .addgo{border:none; border-radius:8px; background:var(--gold); color:#fff; font-family:inherit; font-size:11px;
+    font-weight:700; letter-spacing:.06em; padding:8px 12px; cursor:pointer;}
+  .seats{width:100%; max-width:1000px; margin:16px auto 0; padding:16px 20px; text-align:left; font-size:13.5px; line-height:1.6;}
+  .seats:empty{display:none;}
+  .seatrow{display:flex; align-items:center; gap:7px; margin:10px 0;}
+  .seat{width:26px; height:26px; border-radius:7px; border:1.5px solid rgba(169,136,79,.55); background:rgba(255,255,255,.4);}
+  .seat.taken{background:var(--gold); border-color:var(--gold);}
+  .seatlab{font-size:11.5px; color:var(--muted); margin-left:6px; letter-spacing:.04em;}
   .assetroom{width:100%; max-width:1000px; margin:18px auto 0; text-align:left;}
   .assetroom:empty{display:none;}
   .roomhead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; padding:13px 18px; border-radius:14px 14px 0 0;
@@ -405,6 +430,7 @@
   <p class="lead">Touch anything. Each of these has a story, and the stories decide the plan. Every figure here was built from the records you shared, and if you know better, tell me: correct any number and the whole room recalculates around you. And no box has to take my word for anything: the property cards can pull a real record for any address, county and market both, on the same engines the Wealth Guide runs. These are not assumed numbers in a sequence; they are inputs the public record can stand behind.</p>
   <div class="bignum" id="totalnum">$0</div>
   <div class="grid" id="assetgrid"></div>
+  <div class="seats glass" id="seats"></div>
   <div class="assetroom" id="assetroom"></div>
   <button class="continue" onclick="go(3)">So what is the problem?</button>
   <div class="nextline">Next: the clock that starts the day one of you dies</div>
@@ -783,53 +809,143 @@
   var cur = 0;
   var unlocked = false;
 
-  var ASSETV = [9254000, 6820000, 7870000, 10220000, 11230000, 752000, 3199000, 6440000, 151000, 50000];
-  var ORIG = ASSETV.slice();
-  function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
-  var assets = [
-    {n:"The Raleigh home", v:"$9,254,000", o:"owned together, as a couple", s:"Bought in 2016 for $2,100,000. It has grown $7,154,000 in ten years, which is exactly why it gets its own chapter."},
-    {n:"The Malibu house", v:"$6,820,000", o:"in Ricky's name", s:"Bought in 2018 for $3,300,000. Earns about $82,000 a year. The kids love it. California has plans for it that we are going to cancel."},
-    {n:"Joe's farm, Farmville", v:"$7,870,000", o:"Ricky, from his father", s:"1,020 acres, in the family since 2014 and long before. Rents for $102,900 a year. This one is about legacy, not arithmetic."},
-    {n:"The train collection", v:"$10,220,000", o:"Lucy, from her father", s:"Donald's collection, worth $3,000,000 when Lucy inherited it in 2010. It earns nothing and Lucy would rather it meant something."},
-    {n:"Campbell, Inc. stock", v:"$11,230,000", o:"owned in two halves", s:"100,000 shares bought in 2015 for $1,650,000. Pays $91,000 a year in dividends. Each of you owns half, and the halves will take different roads."},
-    {n:"Checking, Bank of America", v:"$752,000", o:"Ricky", s:"Ricky wants Lucy to reach this the day after, not months after. There is a one page fix for that."},
-    {n:"Checking, Bank of America", v:"$3,199,000", o:"Lucy", s:"Same fix, mirrored back."},
-    {n:"Checking, First Citizens", v:"$6,440,000", o:"joint, survivor takes all", s:"Already passes automatically to whichever of you survives. Some things are simple."},
-    {n:"Truck and SUV", v:"$151,000", o:"Ricky", s:"Straight to Lucy under the will. No trust is worth its fee for a truck."},
-    {n:"Furnishings and effects", v:"$50,000", o:"owned together", s:"Outright to each other, then to the children. The sentimental things follow the shortest path."}
+  /* ===================================================================
+     THE ASSETS, AS A MODEL RATHER THAN A LIST OF TEN NUMBERS.
+     Every asset carries a ROLE, and every downstream figure is derived from
+     roles, never from a position in an array. That is what makes the table
+     something a family can actually build: add an asset, delete one, change
+     what an asset IS, and the whole room follows. An index based model could
+     not survive a deletion, because removing the trains shifted the stock into
+     the charitable slot and quietly computed a bill out of the wrong assets.
+     =================================================================== */
+  var ROLES = {
+    residence:  { label:"A home",            note:"can ride a residence vessel, and the Code allows a married couple only four seats" },
+    charitable: { label:"All to charity",    note:"leaves the taxable base entirely" },
+    halfchar:   { label:"Half to charity",   note:"half leaves the base, half stays and rides the plan" },
+    legacy:     { label:"Land or legacy",    note:"stays in the base, rides a trust for the step up" },
+    business:   { label:"Business interest", note:"stays in the base; the freeze happens through a company" },
+    liquid:     { label:"Cash or effects",   note:"stays in the base, and passes by title or beneficiary" }
+  };
+  var ROLEKEYS = ["residence","charitable","halfchar","legacy","business","liquid"];
+
+  var ASSETS = [
+    { n:"The Raleigh home", v:9254000, role:"residence", vessel:true, o:"owned together, as a couple", s:"Bought in 2016 for $2,100,000. It has grown $7,154,000 in ten years, which is exactly why it gets its own chapter." },
+    { n:"The Malibu house", v:6820000, role:"residence", vessel:true, o:"in Ricky's name", s:"Bought in 2018 for $3,300,000. Earns about $82,000 a year. The kids love it. California has plans for it that we are going to cancel." },
+    { n:"Joe's farm, Farmville", v:7870000, role:"legacy", o:"Ricky, from his father", s:"1,020 acres, in the family since 2014 and long before. Rents for $102,900 a year. This one is about legacy, not arithmetic." },
+    { n:"The train collection", v:10220000, role:"charitable", o:"Lucy, from her father", s:"Donald's collection, worth $3,000,000 when Lucy inherited it in 2010. It earns nothing and Lucy would rather it meant something." },
+    { n:"Campbell, Inc. stock", v:11230000, role:"halfchar", o:"owned in two halves", s:"100,000 shares bought in 2015 for $1,650,000. Pays $91,000 a year in dividends. Each of you owns half, and the halves will take different roads." },
+    { n:"Checking, Bank of America", v:752000, role:"liquid", o:"Ricky", s:"Ricky wants Lucy to reach this the day after, not months after. There is a one page fix for that." },
+    { n:"Checking, Bank of America", v:3199000, role:"liquid", o:"Lucy", s:"Same fix, mirrored back." },
+    { n:"Checking, First Citizens", v:6440000, role:"liquid", o:"joint, survivor takes all", s:"Already passes automatically to whichever of you survives. Some things are simple." },
+    { n:"Truck and SUV", v:151000, role:"liquid", o:"Ricky", s:"Straight to Lucy under the will. No trust is worth its fee for a truck." },
+    { n:"Furnishings and effects", v:50000, role:"liquid", o:"owned together", s:"Outright to each other, then to the children. The sentimental things follow the shortest path." }
   ];
+  var ORIGA = ASSETS.map(function(a){ return { n:a.n, v:a.v, role:a.role, vessel:a.vessel }; });
+  function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
+
+  /* ---- the derived model. Nothing downstream may read a card by its position. ---- */
+  function grossOf(){ return ASSETS.reduce(function(t,a){ return t + (a.v || 0); }, 0); }
+  function charitableOf(){
+    return ASSETS.reduce(function(t,a){
+      if (a.role === "charitable") return t + a.v;
+      if (a.role === "halfchar") return t + a.v / 2;
+      return t;
+    }, 0);
+  }
+  /* THE FOUR SEATS. Treasury Regulation 25.2702-5 lets one person hold interests in no
+     more than two qualified personal residence trusts, so a married couple has four
+     seats in total. A residence split between two spouses takes one seat each, which
+     means two homes fill the table and a third has nowhere to sit. The plan does not
+     pretend otherwise: the extra home stays in the taxable base and the room says so. */
+  var SEATS_PER_PERSON = 2, SPOUSES = 2;
+  function vesselPlan(){
+    var homes = ASSETS.filter(function(a){ return a.role === "residence"; });
+    var wanted = homes.filter(function(a){ return a.vessel !== false; });
+    var maxHomes = (SEATS_PER_PERSON * SPOUSES) / SPOUSES;   /* four seats, two per home */
+    var seated = wanted.slice(0, maxHomes), benched = wanted.slice(maxHomes);
+    return { homes: homes, wanted: wanted, seated: seated, benched: benched,
+             maxHomes: maxHomes, seatsUsed: seated.length * SPOUSES, seatsMax: SEATS_PER_PERSON * SPOUSES,
+             declined: homes.filter(function(a){ return a.vessel === false; }) };
+  }
+  function residencesInVessels(){ return vesselPlan().seated.reduce(function(t,a){ return t + a.v; }, 0); }
+
   var grid = document.getElementById("assetgrid");
-  assets.forEach(function(a, idx){
-    var d = document.createElement("div");
-    d.className = "asset glass"; d.id = "acard"+idx;
-    d.innerHTML = "<div class=\"an\">"+a.n+"<span class=\"yourbadge\" style=\"display:none\">YOUR NUMBER</span></div><div class=\"av\">"+money(ASSETV[idx])+"</div><div class=\"ao\">"+a.o+"</div><div class=\"astory\">"+a.s+"</div>"
-      + "<div class=\"afix\" id=\"afix"+idx+"\"><button class=\"aq\">Is this number exactly right?</button>"
-      + "<div class=\"arow\"><input inputmode=\"numeric\" value=\""+money(ASSETV[idx])+"\"><button class=\"ago\">SET</button></div>"
-      + (idx <= 2 ? "<div class=\"asample\"><button class=\"aq\">Or pull a real one from the public record</button>"
-        + "<div class=\"srow arow\" style=\"display:none\"><input class=\"saddr\" placeholder=\"Any street address, City\" autocomplete=\"off\"><button class=\"ago sgo\">PULL</button></div>"
-        + "<div class=\"sout\"></div></div>" : "")
-      + (idx === 4 ? "<div class=\"asample\"><div class=\"snote\">This card grades real holdings too: the stock chapter runs any portfolio through the concentration checkup.</div>"
-        + "<button class=\"aq growopen\">Or take any ticker live, right here</button><div class=\"growhost\"></div></div>" : "")
-      + "<button class=\"arevert\">back to the record, "+money(ORIG[idx])+"</button></div>";
-    d.onclick = function(e){
-      if (e.target.closest(".afix")) return;
-      d.classList.toggle("open");
-    };
-    var fix = d.querySelector(".afix");
-    var inp = fix.querySelector("input");
-    fix.querySelector(".aq").onclick = function(){ fix.classList.add("editing"); inp.focus(); inp.select(); };
-    function apply(){
-      var raw = inp.value.replace(/[^0-9]/g,"");
-      if (raw){ ASSETV[idx] = parseInt(raw,10); recalcAll(); }
-      inp.value = money(ASSETV[idx]);
-      fix.classList.remove("editing"); inp.blur();
+
+  function roleChips(a, idx){
+    var out = "<div class=\"arole\">";
+    ROLEKEYS.forEach(function(k){
+      out += "<button class=\"rchip" + (a.role === k ? " on" : "") + "\" data-role=\"" + k + "\" data-idx=\"" + idx + "\">" + ROLES[k].label + "</button>";
+    });
+    out += "</div><div class=\"arolenote\">" + ROLES[a.role].note + "</div>";
+    if (a.role === "residence"){
+      out += "<label class=\"avessel\"><input type=\"checkbox\" data-vidx=\"" + idx + "\"" + (a.vessel !== false ? " checked" : "") +
+             "> Put this home in a residence vessel</label>";
     }
-    fix.querySelector(".ago").onclick = apply;
-    inp.addEventListener("keydown", function(e){ if (e.key==="Enter"){ e.preventDefault(); apply(); } e.stopPropagation(); });
-    d.querySelector(".arevert").onclick = function(){ ASSETV[idx] = ORIG[idx]; inp.value = money(ORIG[idx]); recalcAll(); };
-    var gro = d.querySelector(".growopen");
-    if (gro){
-      gro.onclick = function(e){
+    return out;
+  }
+
+  function drawCards(){
+    grid.innerHTML = "";
+    ASSETS.forEach(function(a, idx){
+      var orig = ORIGA[idx];
+      var d = document.createElement("div");
+      d.className = "asset glass"; d.id = "acard" + idx;
+      d.innerHTML = "<div class=\"an\">" + a.n + "<span class=\"yourbadge\" style=\"display:none\">YOUR NUMBER</span></div>"
+        + "<div class=\"av\">" + money(a.v) + "</div><div class=\"ao\">" + (a.o || "") + "</div>"
+        + "<div class=\"astory\">" + (a.s || "") + "</div>"
+        + "<div class=\"afix\" id=\"afix" + idx + "\"><button class=\"aq\">Is this number exactly right?</button>"
+        + "<div class=\"arow\"><input inputmode=\"numeric\" value=\"" + money(a.v) + "\"><button class=\"ago\">SET</button></div>"
+        + "<div class=\"arolewrap\"><div class=\"arolelab\">What kind of asset is this?</div>" + roleChips(a, idx) + "</div>"
+        + (a.role === "residence" || a.role === "legacy"
+            ? "<div class=\"asample\"><button class=\"aq\">Or pull a real one from the public record</button>"
+              + "<div class=\"srow arow\" style=\"display:none\"><input class=\"saddr\" placeholder=\"Any street address, City\" autocomplete=\"off\"><button class=\"ago sgo\">PULL</button></div>"
+              + "<div class=\"sout\"></div></div>" : "")
+        + (a.role === "halfchar" || a.role === "business"
+            ? "<div class=\"asample\"><div class=\"snote\">This card grades real holdings too.</div>"
+              + "<button class=\"aq growopen\">Or take any ticker live, right here</button><div class=\"growhost\"></div></div>" : "")
+        + (orig ? "<button class=\"arevert\">back to the record, " + money(orig.v) + "</button>" : "")
+        + "<button class=\"adrop\">Take this asset off the table</button></div>";
+      d.onclick = function(e){ if (e.target.closest(".afix")) return; d.classList.toggle("open"); };
+
+      var fix = d.querySelector(".afix");
+      var inp = fix.querySelector("input");
+      fix.querySelector(".aq").onclick = function(){ fix.classList.add("editing"); inp.focus(); inp.select(); };
+      function apply(){
+        var raw = inp.value.replace(/[^0-9]/g, "");
+        if (raw){ ASSETS[idx].v = parseInt(raw, 10); recalcAll(); }
+        inp.value = money(ASSETS[idx].v);
+        fix.classList.remove("editing"); inp.blur();
+      }
+      fix.querySelector(".ago").onclick = apply;
+      inp.addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); apply(); } e.stopPropagation(); });
+
+      d.querySelectorAll(".rchip").forEach(function(c){
+        c.onclick = function(ev){
+          ev.stopPropagation();
+          ASSETS[idx].role = c.dataset.role;
+          if (ASSETS[idx].role === "residence" && ASSETS[idx].vessel === undefined) ASSETS[idx].vessel = true;
+          drawCards(); recalcAll();
+          var again = document.getElementById("acard" + idx);
+          if (again) again.classList.add("open");
+        };
+      });
+      var vb = d.querySelector("[data-vidx]");
+      if (vb) vb.onclick = function(ev){ ev.stopPropagation(); ASSETS[idx].vessel = vb.checked; recalcAll(); paintSeats(); };
+
+      var rev = d.querySelector(".arevert");
+      if (rev) rev.onclick = function(ev){
+        ev.stopPropagation();
+        ASSETS[idx].v = orig.v; ASSETS[idx].role = orig.role; ASSETS[idx].vessel = orig.vessel;
+        drawCards(); recalcAll();
+      };
+      d.querySelector(".adrop").onclick = function(ev){
+        ev.stopPropagation();
+        ASSETS.splice(idx, 1); ORIGA.splice(idx, 1);
+        drawCards(); recalcAll();
+      };
+
+      var gro = d.querySelector(".growopen");
+      if (gro) gro.onclick = function(e){
         e.stopPropagation();
         var gh = d.querySelector(".growhost");
         if (!gh.dataset.up && window.GrowRoom){
@@ -839,22 +955,64 @@
         }
         gro.style.display = "none";
       };
-    }
-    var smp = d.querySelector(".asample");
-    if (smp && smp.querySelector(".sgo")){
-      smp.querySelector(".aq").onclick = function(){ smp.classList.add("editing"); smp.querySelector(".srow").style.display = "flex"; smp.querySelector(".saddr").focus(); };
-      smp.querySelector(".sgo").onclick = function(){ PORTAL.sample.pull(idx); };
-      smp.querySelector(".saddr").addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); PORTAL.sample.pull(idx); } e.stopPropagation(); });
-    }
-    grid.appendChild(d);
-  });
+      var smp = d.querySelector(".asample");
+      if (smp && smp.querySelector(".sgo")){
+        smp.querySelector(".aq").onclick = function(ev){ ev.stopPropagation(); smp.classList.add("editing"); smp.querySelector(".srow").style.display = "flex"; smp.querySelector(".saddr").focus(); };
+        smp.querySelector(".sgo").onclick = function(ev){ ev.stopPropagation(); PORTAL.sample.pull(idx); };
+        smp.querySelector(".saddr").addEventListener("keydown", function(e){ if (e.key === "Enter"){ e.preventDefault(); PORTAL.sample.pull(idx); } e.stopPropagation(); });
+      }
+      grid.appendChild(d);
+    });
+
+    /* the empty seat at the table: anything the file missed */
+    var add = document.createElement("div");
+    add.className = "asset glass addcard";
+    add.innerHTML = "<div class=\"an\">Add an asset</div><div class=\"astoryalt\">Anything the file missed: another home, a boat, a partnership, an account.</div>"
+      + "<div class=\"addform\"><input class=\"addn\" placeholder=\"What is it?\"><input class=\"addv\" inputmode=\"numeric\" placeholder=\"What is it worth?\">"
+      + "<select class=\"addr\">" + ROLEKEYS.map(function(k){ return "<option value=\"" + k + "\">" + ROLES[k].label + "</option>"; }).join("") + "</select>"
+      + "<button class=\"ago addgo\">ADD IT</button></div>";
+    add.querySelector(".addgo").onclick = function(ev){
+      ev.stopPropagation();
+      var n = add.querySelector(".addn").value.trim();
+      var v = parseInt((add.querySelector(".addv").value || "").replace(/[^0-9]/g, ""), 10);
+      var r = add.querySelector(".addr").value;
+      if (!n || !(v > 0)) return;
+      ASSETS.push({ n: n, v: v, role: r, vessel: r === "residence" ? true : undefined, o: "added at the table", s: "You put this on the table yourself, so the whole room now counts it." });
+      ORIGA.push(null);
+      drawCards(); recalcAll();
+    };
+    add.querySelectorAll("input,select,button").forEach(function(el){ el.addEventListener("click", function(e){ e.stopPropagation(); }); });
+    add.querySelectorAll("input").forEach(function(el){ el.addEventListener("keydown", function(e){ e.stopPropagation(); }); });
+    grid.appendChild(add);
+    paintSeats();
+  }
+
+  /* the four seats, said out loud, because a third home has nowhere to sit */
+  function paintSeats(){
+    var el = document.getElementById("seats");
+    if (!el) return;
+    var p = vesselPlan();
+    if (!p.homes.length){ el.innerHTML = "<b>No home on the table yet.</b> Mark an asset as a home and the residence vessels wake up."; return; }
+    var h = "<b>The four seats.</b> A person may hold interests in no more than two qualified personal residence trusts, so Ricky has two seats and Lucy has two, four in all. A home the two of you split takes one seat each, which is why <b>two homes fill the table</b>. ";
+    h += "<div class=\"seatrow\">";
+    for (var i = 0; i < p.seatsMax; i++) h += "<span class=\"seat" + (i < p.seatsUsed ? " taken" : "") + "\"></span>";
+    h += "<span class=\"seatlab\">" + p.seatsUsed + " of " + p.seatsMax + " seats used</span></div>";
+    if (p.seated.length) h += "<div class=\"prow\"><span>Riding a vessel</span><span>" + p.seated.map(function(a){ return a.n; }).join(", ") + "</span></div>";
+    if (p.benched.length) h += "<div class=\"prow\"><span style=\"color:var(--brick)\">No seat left</span><span style=\"color:var(--brick)\">" + p.benched.map(function(a){ return a.n + " (" + money(a.v) + ")"; }).join(", ") + "</span></div>";
+    if (p.declined.length) h += "<div class=\"prow\"><span>Kept out on purpose</span><span>" + p.declined.map(function(a){ return a.n; }).join(", ") + "</span></div>";
+    if (p.benched.length) h += "<div class=\"ln\" style=\"color:var(--brick)\"><b>" + p.benched.length + " home" + (p.benched.length > 1 ? "s stay" : " stays") + " in the taxable base</b>, at full value and with every dollar of future growth, because the Code has run out of seats. If one of them should ride instead, untick a home above and this recomputes. That is a real decision with a real price, and the third number on the day after page moves the moment you make it.</div>";
+    el.innerHTML = h;
+  }
+
+  drawCards();
 
   function recalcAll(){
-    var total = ASSETV.reduce(function(a,b){ return a+b; }, 0);
-    for (var i=0;i<assets.length;i++){
+    var total = grossOf();
+    for (var i=0;i<ASSETS.length;i++){
       var card = document.getElementById("acard"+i);
-      card.querySelector(".av").textContent = money(ASSETV[i]);
-      var changed = ASSETV[i] !== ORIG[i];
+      if (!card) continue;
+      card.querySelector(".av").textContent = money(ASSETS[i].v);
+      var changed = ORIGA[i] ? (ASSETS[i].v !== ORIGA[i].v) : true;
       card.classList.toggle("changed", changed);
       card.querySelector(".yourbadge").style.display = changed ? "inline-block" : "none";
     }
@@ -866,7 +1024,7 @@
     document.getElementById("b_tax").textContent = money(tax);
     document.getElementById("b_due").textContent = tax > 0 ? "AMOUNT DUE " + money(tax) : "NO AMOUNT DUE, TODAY";
     document.getElementById("n13bad").textContent = money(tax);
-    var charityBase = Math.max(0, total - ASSETV[3] - ASSETV[4]/2 - 30000000);
+    var charityBase = Math.max(0, total - charitableOf() - 30000000);
     document.getElementById("n13good").textContent = money(charityBase * 0.4);
     /* one edit, every room. The day after reads the same cards this table does. */
     if (window.PORTAL && PORTAL.ledger && PORTAL.ledger.repaint) PORTAL.ledger.repaint();
@@ -958,7 +1116,7 @@
        the count animation has even finished. The animation is decoration; the arithmetic
        is the product, and it must never wait on an eased curve. */
     recalcAll();
-    var el = document.getElementById("totalnum"), target = ASSETV.reduce(function(a,b){ return a+b; }, 0), t0 = null;
+    var el = document.getElementById("totalnum"), target = grossOf(), t0 = null;
     el.textContent = money(target);      /* same rule: the number first, the count second */
     function step(ts){ if(!t0) t0=ts; var p=Math.min((ts-t0)/1800,1); var e=1-Math.pow(1-p,3);
       el.textContent = "$" + Math.round(target*e).toLocaleString("en-US");
@@ -1163,11 +1321,14 @@
     function gift(value, term){ return value / Math.pow(1 + RATE7520, term); }
     /* the four vessels: each spouse's half of each residence, on its own solved term */
     function giftsRestored(){
-      if (TERMS.ricky === EXHIBIT_R && TERMS.lucy === EXHIBIT_L &&
-          ASSETV[0] === EXHIBIT_RALEIGH && ASSETV[1] === EXHIBIT_MALIBU) return EXHIBIT_RESTORED;
-      var raleighHalf = ASSETV[0] / 2, malibuHalf = ASSETV[1] / 2;
-      return gift(raleighHalf, TERMS.ricky) + gift(raleighHalf, TERMS.lucy)
-           + gift(malibuHalf, TERMS.ricky) + gift(malibuHalf, TERMS.lucy);
+      var seated = vesselPlan().seated;
+      if (TERMS.ricky === EXHIBIT_R && TERMS.lucy === EXHIBIT_L && seated.length === 2 &&
+          seated[0].v === EXHIBIT_RALEIGH && seated[1].v === EXHIBIT_MALIBU) return EXHIBIT_RESTORED;
+      /* every seated home, split in half, each half on its own spouse's term */
+      return seated.reduce(function(t, a){
+        var half = a.v / 2;
+        return t + gift(half, TERMS.ricky) + gift(half, TERMS.lucy);
+      }, 0);
     }
     var FIXED = [
       { name:"Raleigh rides the paired residence vessels", lbl:"the whole house leaves the estate; only the discounted remainder comes back" },
@@ -1195,12 +1356,12 @@
       var st = { ricky: 15, lucy: 13, baseCut: 0 };
       EXTRAS.forEach(function(r){ if (state[r.k]) r.apply(st); });
       TERMS.ricky = st.ricky; TERMS.lucy = st.lucy;
-      var gross = ASSETV.reduce(function(a,b){ return a+b; }, 0);
+      var gross = grossOf();
       var noplan = Math.max(0, gross - EXCL) * ESTATE;
-      var charitable = ASSETV[3] + ASSETV[4] / 2;
+      var charitable = charitableOf();
       var baseTwo = gross - charitable;
       var planTax = Math.max(0, baseTwo - EXCL) * ESTATE;
-      var residences = ASSETV[0] + ASSETV[1];
+      var residences = residencesInVessels();
       var restored = giftsRestored();
       var baseThree = baseTwo - residences + restored - st.baseCut;
       var maturedTax = Math.max(0, baseThree - EXCL) * ESTATE;
@@ -1410,7 +1571,7 @@
           b.onclick = function(ev){
             ev.stopPropagation();
             var i = parseInt(b.dataset.idx, 10), v = parseInt(b.dataset.val, 10);
-            ASSETV[i] = v;
+            ASSETS[i].v = v;
             var c = document.getElementById("acard" + i);
             c.querySelector(".afix input").value = money(v);
             recalcAll();
@@ -1439,7 +1600,11 @@
     function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
     /* each spouse's half of the Raleigh home, read from the card at the table rather
        than frozen here: correct the house and every term this solver prices follows */
-    function halfOf(){ return ASSETV[0] / 2; }
+    /* the first home riding a vessel, whichever asset that is now */
+    function halfOf(){
+      var seated = vesselPlan().seated;
+      return (seated.length ? seated[0].v : 0) / 2;
+    }
     function rowFor(p, term){
       var factor = 1 / Math.pow(1 + RATE, term);
       var half = halfOf();
@@ -1485,7 +1650,11 @@
        the discount is the same proportion of value the paper's Exhibit C priced. */
     var BASIS = 3300000, ESTATE = 0.40, GAINS = 0.238;
     var EX_VALUE = 6820000, EX_DISCOUNT = 3462000;
-    function valueOf(){ return ASSETV[1]; }
+    /* the second home riding a vessel: the one this chapter is about */
+    function valueOf(){
+      var seated = vesselPlan().seated;
+      return seated.length > 1 ? seated[1].v : (seated.length ? seated[0].v : 0);
+    }
     function discountOf(){ return valueOf() * (EX_DISCOUNT / EX_VALUE); }
     function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
     function run(){
