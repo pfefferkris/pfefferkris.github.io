@@ -141,6 +141,11 @@
   function mount(host, opts) {
     injectCss();
     opts = opts || {};
+    /* Wherever this page asks anyone about a company or a holding, it asks the same way:
+       tap a sample and watch it work, or type your own tickers, and the charts come first
+       either way with the workbook behind a door. A mount that quietly dropped the samples
+       would be a different, poorer tool wearing the same name. */
+    if (opts.presets === undefined) opts.presets = true;
     var id = "gr" + (++SEQ);
     var root = document.createElement("div");
     root.className = "gr";
@@ -153,7 +158,7 @@
       "<div id=\"" + id + "rows\"></div>" +
       "<button class=\"grbtn\" id=\"" + id + "add\" type=\"button\">Another holding</button>" +
       "<button class=\"grbtn\" id=\"" + id + "run\" type=\"button\">Run the live analysis</button>" +
-      (opts.presets ? "<div id=\"" + id + "pre\" class=\"grkey\" style=\"margin-top:10px\"></div><div class=\"grnote\" id=\"" + id + "prenote\"></div>" : "") +
+      (opts.presets ? "<div id=\"" + id + "pre\" class=\"grkey\" style=\"margin-top:10px\"><span class=\"kl\">Or start from a sample</span></div><div class=\"grnote\" id=\"" + id + "prenote\"></div>" : "") +
       "<div id=\"" + id + "out\"></div>" +
       (opts.retire ? "<div id=\"" + id + "ret\"></div>" : "") +
       (opts.lessons ? "<div id=\"" + id + "les\"></div>" : "");

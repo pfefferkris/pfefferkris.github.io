@@ -71,6 +71,11 @@
       ".prchip{border:1px solid rgba(169,136,79,.4);border-radius:999px;padding:4px 12px;font-size:12px;color:var(--ink,#1e2b36);background:rgba(255,255,255,.6)}" +
       ".prembed{width:100%;height:min(760px,78vh);border-radius:10px;background:#fff;border:1px solid rgba(169,136,79,.3);margin-top:10px}" +
       ".prwait{font-size:13px;font-style:italic;color:var(--muted,#5a6a78);margin-top:10px}" +
+      ".prverdict{margin-top:8px;padding:15px 18px;border-radius:12px;border:1px solid rgba(169,136,79,.5);" +
+      "border-left:4px solid var(--gold,#a9884f);background:rgba(255,251,240,.78);font-size:14px;line-height:1.66}" +
+      ".prwarn{margin-top:12px;padding:13px 16px;border-radius:12px;border:1px solid rgba(138,61,58,.45);" +
+      "border-left:4px solid var(--brick,#8a3d3a);background:rgba(255,246,244,.8);font-size:13.5px;line-height:1.62}" +
+      ".prwarn b{color:var(--brick,#8a3d3a)}" +
       "@media(max-width:640px){.prhead{padding:13px 14px}.prbody{padding:4px 14px 16px}" +
       ".prrow{flex-direction:column;gap:2px;padding:9px 0}.prrow span:last-child{text-align:left;max-width:100%}}";
     document.head.appendChild(s);
@@ -208,7 +213,8 @@
 
     var html = "";
     if (!opts.record && !opts.skipRecord) html += "<div class=\"prmatch\" id=\"" + id + "rec\">Asking the record.</div>";
-    html += tile(id + "deed", "The deed itself", "the scanned page from the county, the chain, and the automatic title read");
+    html += tile(id + "deed", "How this property is titled",
+      "the words on the recorded page: the form of ownership, the granting words, the chain of custody, and what each one does at death");
     html += tile(id + "eq", "The equity engine", "net income, the cap rate built from the money, cash on cash, return on equity");
     html += tile(id + "cmp", "The comparable sales", "what actually sold nearby, from the county record");
     html += tile(id + "mkt", "The market around it", "what this neighbourhood has actually done, year by year, per square foot");
@@ -224,6 +230,14 @@
         if (opts.onResize) opts.onResize();
       });
     });
+
+    /* Titling is the question every other question about a house depends on: it decides
+       whether the home probates, whether a creditor can reach it, and whether the deed
+       quietly beats the will. So it does not wait behind a click. */
+    if (opts.autoTitle !== false) {
+      var firstTile = document.getElementById(id + "deed");
+      if (firstTile) { firstTile.classList.add("on"); firstTile.dataset.loaded = "1"; loadDeed(); }
+    }
 
     /* ---------- the record ---------- */
     function drawRecord(rec) {
@@ -302,14 +316,14 @@
               return;
             }
             dh.innerHTML =
-              "<div style=\"font-size:12.5px;margin:8px 0 4px\"><b>Chain of custody:</b> <span id=\"" + id + "chain\"></span> <span id=\"" + id + "dpn\" style=\"color:var(--muted,#5a6a78)\"></span></div>" +
+              "<div id=\"" + id + "read\" class=\"prverdict\" style=\"display:none\"></div>" +
+              "<div style=\"font-size:12.5px;margin:14px 0 4px\"><b>Chain of custody:</b> <span id=\"" + id + "chain\"></span> <span id=\"" + id + "dpn\" style=\"color:var(--muted,#5a6a78)\"></span></div>" +
               "<embed src=\"" + pun(rec.book, rec.page) + "\" type=\"application/pdf\" class=\"prembed\"></embed>" +
               "<div class=\"prnote\">Served live from the " + esc(rec.county) + " County Register of Deeds imaging system. Scroll inside the viewer; every recorded page is there.</div>" +
               "<div style=\"margin-top:10px;padding-top:8px;border-top:1px dashed rgba(169,136,79,.35);font-size:12.5px\"><b>Walk the chain backward.</b> Every deed cites its ancestor in the derivation clause, usually BEING THE SAME PROPERTY CONVEYED BY DEED RECORDED IN BOOK ___, PAGE ___. Type it here and the prior deed loads in this same viewer. When the automatic reading below finds the citation, it fills these boxes for you." +
               "<div style=\"display:flex;gap:6px;align-items:end;margin-top:6px\"><label style=\"font-size:11px\">Book<input type=\"text\" id=\"" + id + "cb\" style=\"width:80px;padding:6px;border:1px solid rgba(169,136,79,.4);border-radius:8px;background:rgba(255,255,255,.65)\"></label>" +
               "<label style=\"font-size:11px\">Page<input type=\"text\" id=\"" + id + "cp\" style=\"width:80px;padding:6px;border:1px solid rgba(169,136,79,.4);border-radius:8px;background:rgba(255,255,255,.65)\"></label>" +
-              "<button class=\"prbtn\" type=\"button\" id=\"" + id + "cgo\" style=\"margin-top:0\">Follow the chain</button></div></div>" +
-              "<div id=\"" + id + "read\" class=\"prnote\" style=\"display:none\"></div>";
+              "<button class=\"prbtn\" type=\"button\" id=\"" + id + "cgo\" style=\"margin-top:0\">Follow the chain</button></div></div>";
             var cur = { b: String(rec.book), g: String(rec.page) };
             var chain = [{ b: cur.b, g: cur.g }];
             var upd = function () { var em = dh.querySelector("embed"); if (em) em.src = pun(cur.b, cur.g); };
@@ -351,7 +365,29 @@
             var q0 = encodeURIComponent(rec.county + " County NC register of deeds search");
             h += "<a class=\"prbtn\" href=\"https://www.google.com/search?q=" + q0 + "\" target=\"_blank\" rel=\"noopener\">Find the " + esc(rec.county) + " County register</a>";
           }
-          h += "<div class=\"prnote\">Five counties serve the scanned page straight into this tile: Mecklenburg, Cumberland, Guilford, Forsyth, and New Hanover. " + (ck && IMG_COUNTIES.indexOf(ck) < 0 ? esc(rec.county || "This") + " County is not one of them yet; the register tile above opens the same document the manual way, and the coverage tile below keeps the honest list." : "") + "</div>";
+          /* The reading itself is the part that matters, and it does not depend on our
+             being able to serve the image. Where the county will not hand over the scan,
+             the tile still teaches the examiner's pass, in the order an examiner runs it. */
+          h += "<div class=\"prverdict\" style=\"margin-top:14px\"><b>Read the titling yourself, in this order.</b> " +
+            "It is six lines on page one, and it decides more than the will does. " +
+            (rec.book ? "The register button above opens Book " + esc(rec.book) + ", Page " + esc(rec.page) + " directly. " : "") +
+            "<div class=\"prchips\">" +
+            "<span class=\"prchip\">1. the recording stamp and instrument number, top of page one</span>" +
+            "<span class=\"prchip\">2. the granting words: WARRANT, or QUITCLAIM</span>" +
+            "<span class=\"prchip\">3. the parties, and how they hold</span>" +
+            "<span class=\"prchip\">4. the legal description, which outranks the street address</span>" +
+            "<span class=\"prchip\">5. the derivation clause, BEING THE SAME PROPERTY CONVEYED</span>" +
+            "<span class=\"prchip\">6. every SUBJECT TO line</span></div></div>";
+          h += "<div class=\"prnote\"><b>What the words on line three do at death.</b> " +
+            "<b>One name alone</b> probates, and the will or the intestacy formula controls. " +
+            "<b>Joint tenants with right of survivorship</b> passes outside probate at the first death, automatically: the deed beats the will, but it only works once, and in a blended family it can quietly disinherit one side's children. " +
+            "<b>Tenants by the entirety</b>, the married couple form, adds creditor armor on top of that survivorship, and exists only during the marriage. " +
+            "<b>Tenants in common</b> probates each share separately and lets any co owner force a partition sale under Chapter 46A. " +
+            "<b>Held in trust</b> is the chassis already on the road: no probate, incapacity covered, and the only checks are exact naming and deeding in anything bought later. " +
+            "In North Carolina the survivorship words must actually appear in the deed; without them, co owners are tenants in common.</div>";
+          h += "<div class=\"prnote\">The scanned page serves straight into this tile in five counties, Mecklenburg, Cumberland, Guilford, Forsyth, and New Hanover, where the automatic reading runs on the document itself and walks the chain backward. " +
+            (ck && IMG_COUNTIES.indexOf(ck) < 0 ? esc(rec.county || "This") + " County is not one of them yet, so the reading above is the honest half we can do from here. " : "") +
+            "And a clean deed is still not a clean title: liens and judgments live in the county index, recorded against each owner's name, not on the deed.</div>";
           body.innerHTML = h;
         }
       });
@@ -427,9 +463,11 @@
       Promise.all([
         needRec(),
         getJson("/api/home-value?address=" + encodeURIComponent(st.address)),
-        siteData("pmms")
+        siteData("pmms"),
+        siteData("rates")
       ]).then(function (rs) {
-        var rec = rs[0] || {}, avm = rs[1], pmms = rs[2];
+        var rec = rs[0] || {}, avm = rs[1], pmms = rs[2], rates = rs[3];
+        var rf = ((rates && rates.tenYear) || 4.3) / 100;
         var rate30 = 6.6;
         try {
           if (pmms && Array.isArray(pmms.rate30) && pmms.rate30.length) {
@@ -493,8 +531,30 @@
           rows.push(["Cash flow after the whole mortgage payment", "<span class=\"" + (cf >= 0 ? "prgood" : "prbad") + "\">" + money(cf) + "</span>"]);
           rows.push(["Cash on cash, year one", "<span class=\"" + (cocActual >= 0.08 ? "prgood" : cocActual >= 0 ? "" : "prbad") + "\">" + pc(cocActual) + "</span>"]);
           rows.push(["Break even occupancy", "<span class=\"" + (beo <= 0.85 ? "prgood" : "prbad") + "\">" + pc(beo) + "</span>"]);
-          rows.push(["Return on equity, year one, cash plus principal plus appreciation", "<span class=\"" + (roe >= 0.08 ? "prgood" : "") + "\">" + pc(roe) + "</span>"]);
-          out.innerHTML = rows.map(function (r) { return "<div class=\"prrow\"><span>" + r[0] + "</span><span>" + r[1] + "</span></div>"; }).join("") +
+          rows.push(["The risk free rate, the live 10 year Treasury", pc(rf)]);
+          rows.push(["Return on equity, year one, cash plus principal plus appreciation",
+            "<span class=\"" + (roe >= rf ? (roe >= 0.08 ? "prgood" : "") : "prbad") + "\">" + pc(roe) + "</span>"]);
+          /* THE ONE ALARM THIS ENGINE OWES ANYONE. Return on equity measures what the money
+             trapped in the walls is earning. When that falls under a Treasury, the building
+             is paying less than the safest instrument there is while carrying a tenant, a
+             roof, and a single street's worth of concentration. */
+          var alarm = "";
+          if (isFinite(roe) && roe < rf) {
+            alarm = "<div class=\"prwarn\"><b>The equity in this house is earning less than a Treasury.</b> " +
+              "Return on equity came out to " + pc(roe) + " against a risk free rate of " + pc(rf) + ", which is what the same money earns in a ten year Treasury with no tenant, no roof, no vacancy, and no single street carrying all of the risk. " +
+              "That is not an instruction to sell; it is the moment the question becomes honest, and there are only four doors, three of which have a tax bill attached. " +
+              "<b>Sell</b> and pay the gain, unless it is the home you live in and section 121 covers it. " +
+              "<b>Borrow against it</b> and put the equity to work without a sale, which is the only door with no tax at all and the one that adds a payment. " +
+              "<b>Exchange it</b> under section 1031 into a property that earns, deferring the gain rather than paying it. " +
+              "Or <b>trade the building for the sector</b>: a real estate investment trust holds the same kind of asset, pays out at least ninety percent of its taxable income as dividends by law, trades in a day rather than a quarter, and spreads across hundreds of buildings instead of one. " +
+              "The trade you give up is control, depreciation, and the leverage a mortgage gives you; REIT dividends are also mostly ordinary income, not qualified. " +
+              (cocActual < rf ? " And the cash on cash is under the risk free rate too, which means the arithmetic is not waiting on appreciation to rescue it." : "") +
+              " Educational only, and never a recommendation about any particular property or security.</div>";
+          } else if (isFinite(roe) && roe < rf + 0.02) {
+            alarm = "<div class=\"prwarn\" style=\"border-left-color:var(--gold,#a9884f)\"><b>Thin against the risk free rate.</b> " +
+              "Return on equity is " + pc(roe) + " against " + pc(rf) + " for a ten year Treasury. It clears, but by less than two points, and that margin is what is paying you for the tenant, the vacancy, the roof, and the concentration in one street.</div>";
+          }
+          out.innerHTML = rows.map(function (r) { return "<div class=\"prrow\"><span>" + r[0] + "</span><span>" + r[1] + "</span></div>"; }).join("") + alarm +
             "<div class=\"prnote\">The cap rate here is not an opinion; it is built from the two parties who have to be paid, the lender's mortgage constant on " + Math.round(M * 100) + " percent of the money and your " + pc(coc) + " requirement on the rest. Above about 85 percent break even occupancy a deal has no room in it. Vacancy is held at five percent, upkeep at eight, management at eight; overtype the rent and taxes and the engine follows you. Education, not investment advice.</div>";
           if (opts.onResize) opts.onResize();
         });

@@ -832,7 +832,8 @@
         var gh = d.querySelector(".growhost");
         if (!gh.dataset.up && window.GrowRoom){
           gh.dataset.up = "1";
-          GrowRoom.mount(gh, { intro: "The same engine as the Grow season, running here: every U.S. listing searchable, a year of real closes, beta, alpha, Sharpe, and the charts, computed in your browser and never stored." });
+          GrowRoom.mount(gh, { presets: true, lessons: true,
+            intro: "The same engine every stock question on this site runs: tap a sample or type your own tickers, and a year of real closing prices, beta, alpha, Sharpe, and the charts compute in your browser and are never stored." });
         }
         gro.style.display = "none";
       };
@@ -1300,7 +1301,8 @@
       var host = document.getElementById("yougrow");
       if (host && window.GrowRoom){
         grew = true;
-        GrowRoom.mount(host, { intro: "Type what you actually hold. Rough dollars are fine, nothing is stored, and the grading is the same workbook the stock chapter ran." });
+        GrowRoom.mount(host, { presets: true, retire: true, lessons: true,
+          intro: "Type what you actually hold, or tap a sample and watch it work first. Rough dollars are fine, nothing is stored, and the grading is the same workbook the stock chapter ran." });
       }
     }
     return { pull: pull, grow: grow };
