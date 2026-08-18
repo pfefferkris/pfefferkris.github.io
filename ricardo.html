@@ -1669,17 +1669,17 @@ window.AK_CONFIG = {
         var n = el.querySelector(".an");
         return n ? (n.firstChild.textContent || "").trim() : "This asset";
       },
-      ask: "Tell me about this asset in the plan: how it is owned, what happens to it at death as things stand, and which vessel the plan puts it in and why.",
+      ask: "Tell me about this asset using the family's names rather than pronouns: how it is owned today, what happens to it at the second death as things stand, which vessel the plan puts it in, and what that choice saves or costs.",
       pair: function(el){ return akChapter(el); } },
     /* the day after: the three bottom lines and every switch under them */
     { sel: ".ledger", label: "Ask Kristian about these numbers",
       name: function(){ return "The three bottom lines"; },
-      ask: "Walk me through these three numbers: where each one comes from, what happens between them, and what the switches underneath are actually deciding.",
+      ask: "Walk me through these three numbers using Ricky's and Lucy's names, not pronouns. All three are the bill at the SECOND death. Be precise about the drop from the second number to the third: the four residence vessels take the houses out of the estate, but section 2001(b) brings their discounted remainders BACK into the computation as adjusted taxable gifts, and the gap between what leaves and what returns is the entire saving. Do not say the plan simply had time to work. Then tell me what the switches underneath are deciding.",
       pair: function(el){ return akChapter(el); } },
     /* the vessel pour, whichever stage it is standing on */
     { sel: ".stagecap", label: "Ask Kristian about this step",
       name: function(){ return "The vessels, at this step of the pour"; },
-      ask: "Explain what just happened on this diagram: which vessel filled, why it fills in that order, and what it means for the family.",
+      ask: "Explain what just happened on this diagram using the family's names rather than pronouns: which vessel filled, why it fills in that order, what the seal on a shelter means, and what it means for Lucy, Adam, and Eve.",
       pair: function(el){ return akChapter(el); } },
     /* make it yours, and the homework */
     { sel: ".sandbox", label: "Ask Kristian about my numbers",
