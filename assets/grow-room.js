@@ -159,7 +159,7 @@
       "<button class=\"grbtn\" id=\"" + id + "add\" type=\"button\">Another holding</button>" +
       "<button class=\"grbtn\" id=\"" + id + "run\" type=\"button\">Run the live analysis</button>" +
       (opts.presets ? "<div id=\"" + id + "pre\" class=\"grkey\" style=\"margin-top:10px\"><span class=\"kl\">Or start from a sample</span></div><div class=\"grnote\" id=\"" + id + "prenote\"></div>" : "") +
-      "<div id=\"" + id + "out\"></div>" +
+      "<div id=\"" + id + "out\" class=\"grout\"></div>" +
       (opts.retire ? "<div id=\"" + id + "ret\"></div>" : "") +
       (opts.lessons ? "<div id=\"" + id + "les\"></div>" : "");
 

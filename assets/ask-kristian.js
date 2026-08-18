@@ -532,7 +532,10 @@
   var TARGETS = CFG.targets || [];
   function textOf(el) {
     var c = el.cloneNode(true);
-    c.querySelectorAll(".askmore,button,script,style").forEach(function (n) { n.remove(); });
+    // A mounted tool (.pr, .gr) carries its own ask pills, so it must not be swallowed
+    // into its parent's question: a reveal that wraps the record room was sending six
+    // thousand characters of somebody else's tiles as its own context.
+    c.querySelectorAll(".askmore,button,script,style,.pr,.gr").forEach(function (n) { n.remove(); });
     return (c.textContent || "").replace(/\s+/g, " ").trim();
   }
   // A tile carries data-anchor naming the simple block it was written to sit beside. That

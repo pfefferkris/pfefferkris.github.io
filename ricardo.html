@@ -59,6 +59,8 @@
     box-shadow:0 8px 24px rgba(18,41,63,.10);
   }
   .continue:hover{background:var(--navy); color:#fff; border-color:var(--navy); transform:translateY(-1px);}
+  .chapterask{margin-top:20px; display:flex; justify-content:center;}
+  .akhide{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}
   .glasslink{display:inline-block; margin-top:8px; padding:7px 14px; border:1px solid rgba(169,136,79,.55); border-radius:12px;
     background:linear-gradient(135deg,rgba(255,255,255,.5),rgba(255,255,255,.22)); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
     color:var(--navy); font-size:12.5px; font-weight:700; letter-spacing:.04em; text-decoration:none;}
@@ -1588,6 +1590,49 @@
    live toggle and the mute, pulled over whole from /assets/ask-kristian.js. The page
    supplies only what is particular to the Ricardos: the greeting, the seed questions,
    and which tiles grow an Ask Kristian button that carries their own text as context. */
+  /* Every tile answers from its OWN words plus the chapter it stands in. The chapter
+     line is the pair, never the substitute: a tile that sent only its heading would get
+     an answer about the wrong thing, and a tile that sent only the chapter would get a
+     generic one. Both halves, every time. */
+  /* One ask on every chapter, prose or not. The carrier holds the chapter in its own
+     words for the answer to stand on, and shows nothing but the button. */
+  function akSeedChapters(){
+    document.querySelectorAll(".chapter").forEach(function(ch){
+      if (ch.querySelector(".chapterask")) return;
+      var h = ch.querySelector("h1");
+      if (!h) return;
+      var k = ch.querySelector(".kicker");
+      var leads = [].map.call(ch.querySelectorAll(".lead"), function(l){ return l.textContent; }).join(" ");
+      var txt = ((k ? k.textContent + ". " : "") + h.textContent + " " + leads).replace(/\s+/g, " ").trim();
+      if (txt.length < 60) return;
+      var d = document.createElement("div");
+      d.className = "chapterask";
+      var sp = document.createElement("span");
+      sp.className = "akhide";
+      sp.textContent = txt;
+      d.appendChild(sp);
+      var anchor = ch.querySelector(".continue");
+      if (anchor) ch.insertBefore(d, anchor); else ch.appendChild(d);
+    });
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", akSeedChapters);
+  else akSeedChapters();
+
+  function akChapter(el){
+    var ch = el.closest(".chapter");
+    if (!ch) return "";
+    var k = ch.querySelector(".kicker"), h = ch.querySelector("h1"), l = ch.querySelector(".lead");
+    return ((k ? k.textContent + ". " : "") + (h ? h.textContent : "") + " " + (l ? l.textContent : ""))
+      .replace(/\s+/g, " ").trim();
+  }
+  function akAddress(el){
+    /* A property tile must never answer about the wrong house. The room stamps the
+       matched address onto itself, so every tile inside it can name the property it
+       is standing on without hunting the page for a line that may not be there. */
+    var room = el.closest(".pr");
+    var addr = room && room.dataset ? room.dataset.prAddress : "";
+    return addr ? "The property on screen is " + addr + ". " : "";
+  }
 window.AK_CONFIG = {
   surface: "ricardo",
   fabLabel: "Ask Kristian",
@@ -1601,6 +1646,63 @@ window.AK_CONFIG = {
   ],
   explain: "Explain this part of the plan to me. Go a level deeper than the page does: what it means, why the plan is built this way, and what a family usually asks next.",
   targets: [
+    /* the record rooms: five tiles per address, each answering about ITS question */
+    { sel: ".prtile", label: "Ask Kristian about this",
+      name: function(el){
+        var b = el.querySelector(".prhead b");
+        return b ? (b.firstChild.textContent || "").trim() : "This record tile";
+      },
+      ask: "Explain this part of the public record to me in plain words: what it is telling me about this property, why it matters to the plan, and what a family usually asks next.",
+      pair: function(el){ return akAddress(el) + akChapter(el); } },
+    /* the live portfolio engine, and the workbook behind it */
+    { sel: ".grout", label: "Ask Kristian about this grade",
+      name: function(){ return "The live grade of these holdings"; },
+      ask: "Read this grade back to me in plain words: what the numbers say about how these holdings behaved, what is strong, what is unpaid risk, and what I should do about it.",
+      pair: function(el){ return akChapter(el); } },
+    { sel: ".gradv", label: "Ask Kristian about this workbook",
+      name: function(){ return "The workbook behind the charts"; },
+      ask: "Walk me through this workbook: what beta, alpha, the pass test, and the correlation matrix are each telling me, and how a professional actually uses them.",
+      pair: function(el){ return akChapter(el); } },
+    /* the ten asset cards at the table */
+    { sel: ".asset", label: "Ask Kristian about this asset",
+      name: function(el){
+        var n = el.querySelector(".an");
+        return n ? (n.firstChild.textContent || "").trim() : "This asset";
+      },
+      ask: "Tell me about this asset in the plan: how it is owned, what happens to it at death as things stand, and which vessel the plan puts it in and why.",
+      pair: function(el){ return akChapter(el); } },
+    /* the day after: the three bottom lines and every switch under them */
+    { sel: ".ledger", label: "Ask Kristian about these numbers",
+      name: function(){ return "The three bottom lines"; },
+      ask: "Walk me through these three numbers: where each one comes from, what happens between them, and what the switches underneath are actually deciding.",
+      pair: function(el){ return akChapter(el); } },
+    /* the vessel pour, whichever stage it is standing on */
+    { sel: ".stagecap", label: "Ask Kristian about this step",
+      name: function(){ return "The vessels, at this step of the pour"; },
+      ask: "Explain what just happened on this diagram: which vessel filled, why it fills in that order, and what it means for the family.",
+      pair: function(el){ return akChapter(el); } },
+    /* make it yours, and the homework */
+    { sel: ".sandbox", label: "Ask Kristian about my numbers",
+      name: function(){ return "My own numbers in the sandbox"; },
+      ask: "Look at what this sandbox just told me and explain it: what my exposure actually is, which move comes first for someone in my position, and what I should be asking a professional.",
+      pair: function(el){ return akChapter(el); } },
+    { sel: ".twocol .col", label: "Ask Kristian about this",
+      name: function(el){
+        var h = el.querySelector("h3");
+        var ch = el.closest(".chapter");
+        var homework = ch && ch.id === "ch17";
+        if (!h) return homework ? "This homework question" : "This side of the decision";
+        return homework ? "The homework for " + h.textContent.trim() : h.textContent.trim();
+      },
+      ask: "Explain this side of it to me: what it does, who it is for, and what it costs or saves against the other side.",
+      pair: function(el){ return akChapter(el); } },
+    { sel: ".chapterask", label: "Ask Kristian about this chapter",
+      name: function(el){
+        var ch = el.closest(".chapter"), h = ch && ch.querySelector("h1");
+        return h ? h.textContent.trim() : "This chapter";
+      },
+      ask: "I am not sure I follow this chapter. Explain it to me from the top in plain words: what is happening, why the plan does it this way, and what it means for the family.",
+      pair: function(el){ return akChapter(el); } },
     { sel: ".reveal", label: "Ask Kristian about this",
       name: function(el){
         var b = el.previousElementSibling;
@@ -1608,24 +1710,14 @@ window.AK_CONFIG = {
         var ch = el.closest(".chapter"), h = ch && ch.querySelector("h1");
         return h ? h.textContent.trim() : "This part of the plan";
       },
-      pair: function(el){
-        var ch = el.closest(".chapter");
-        if (!ch) return "";
-        var h = ch.querySelector("h1"), l = ch.querySelector(".lead");
-        return ((h ? h.textContent : "") + " " + (l ? l.textContent : "")).replace(/\s+/g, " ").trim();
-      } },
+      pair: function(el){ return akChapter(el); } },
     { sel: ".forkbody", label: "Ask Kristian about this fork",
       name: function(el){
         var f = el.closest(".fork"), q = f && f.querySelector(".fq");
         return q ? q.textContent.trim() : "This fork";
       },
       ask: "Walk me through this fork: what changes if the family chooses it, what it costs or saves, and why the plan recommends what it recommends.",
-      pair: function(el){
-        var ch = el.closest(".chapter");
-        if (!ch) return "";
-        var h = ch.querySelector("h1"), l = ch.querySelector(".lead");
-        return ((h ? h.textContent : "") + " " + (l ? l.textContent : "")).replace(/\s+/g, " ").trim();
-      } }
+      pair: function(el){ return akChapter(el); } }
   ]
 };
 </script>

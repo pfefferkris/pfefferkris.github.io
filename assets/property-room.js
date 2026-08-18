@@ -207,6 +207,7 @@
     var root = document.createElement("div");
     root.className = "pr";
     root.id = id;
+    root.dataset.prAddress = opts.address || "";
     host.appendChild(root);
 
     var st = { rec: null, address: opts.address || "", county: opts.county || "" };
@@ -242,6 +243,8 @@
     /* ---------- the record ---------- */
     function drawRecord(rec) {
       st.rec = rec;
+      /* the matched address is the one that counts, not the one that was typed */
+      if (rec) root.dataset.prAddress = (rec.address || st.address) + (rec.county ? ", " + rec.county + " County" : "");
       var el = document.getElementById(id + "rec");
       if (!el) return;
       if (!rec) {
@@ -277,7 +280,10 @@
         drawRecord(rec);
       });
     }
-    if (opts.record) { st.rec = normalize(opts.record); }
+    if (opts.record) {
+      st.rec = normalize(opts.record);
+      if (st.rec) root.dataset.prAddress = (st.rec.address || st.address) + (st.rec.county ? ", " + st.rec.county + " County" : "");
+    }
     else if (!opts.skipRecord) { fetchRecord(); }
 
     function needRec() {
