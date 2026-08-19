@@ -134,7 +134,14 @@
       ".gradvb{display:none;padding:0 18px 16px}" +
       ".gradv.on .gradvb{display:block;animation:grfade .35s ease}" +
       "@keyframes grfade{from{opacity:0}to{opacity:1}}" +
-      ".grptitle{margin-top:12px;font-size:13.5px;line-height:1.65;color:var(--navy,#12293f)}";
+      ".grptitle{margin-top:12px;font-size:13.5px;line-height:1.65;color:var(--navy,#12293f)}" +
+      ".gruse{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px;padding:11px 14px;border-radius:12px;" +
+      "border:1px solid rgba(169,136,79,.5);background:rgba(255,251,240,.7);font-size:13px}" +
+      ".gruse b{color:var(--navy,#12293f);font-variant-numeric:tabular-nums}" +
+      ".gruse button{border:none;border-radius:9px;background:var(--gold,#a9884f);color:#fff;font:inherit;font-size:11px;" +
+      "font-weight:700;letter-spacing:.06em;padding:7px 14px;cursor:pointer}" +
+      ".gruse button:hover{background:var(--navy,#12293f)}" +
+      ".gruse .grused{color:var(--good,#2e7d4f);font-weight:700}";
     document.head.appendChild(s);
   }
 
@@ -158,6 +165,7 @@
       "<div id=\"" + id + "rows\"></div>" +
       "<button class=\"grbtn\" id=\"" + id + "add\" type=\"button\">Another holding</button>" +
       "<button class=\"grbtn\" id=\"" + id + "run\" type=\"button\">Run the live analysis</button>" +
+      (opts.onUse ? "<div class=\"gruse\" id=\"" + id + "use\"></div>" : "") +
       (opts.presets ? "<div id=\"" + id + "pre\" class=\"grkey\" style=\"margin-top:10px\"><span class=\"kl\">Or start from a sample</span></div><div class=\"grnote\" id=\"" + id + "prenote\"></div>" : "") +
       "<div id=\"" + id + "out\" class=\"grout\"></div>" +
       (opts.retire ? "<div id=\"" + id + "ret\"></div>" : "") +
@@ -190,17 +198,58 @@
       if (sym) r.querySelector(".grtk").value = sym;
       if (val) r.querySelector(".grval").value = val;
       wireSearch(r.querySelector(".grtk"));
-      r.querySelector(".grx").addEventListener("click", function () { r.remove(); });
+      r.querySelectorAll("input").forEach(function (i) { i.addEventListener("input", paintUse); });
+      r.querySelector(".grx").addEventListener("click", function () { r.remove(); paintUse(); });
       rowsEl.appendChild(r);
       return r;
     }
     (opts.positions && opts.positions.length ? opts.positions : [{}, {}]).forEach(function (p) { addRow(p.sym, p.val); });
-    document.getElementById(id + "add").addEventListener("click", function () { addRow(); });
+    document.getElementById(id + "add").addEventListener("click", function () { addRow(); paintUse(); });
+    paintUse();
 
     var runBtn = document.getElementById(id + "run");
     runBtn.addEventListener("click", run);
     if (opts.autorun) run();
 
+    /* what these holdings add up to, live, so the number the plan uses is the number
+       on the screen and never a stale one */
+    function totalHeld() {
+      var t = 0;
+      rowsEl.querySelectorAll(".grrow").forEach(function (r) {
+        var v = parseFloat(r.querySelector(".grval").value) || 0;
+        if ((r.querySelector(".grtk").value || "").trim() && v > 0) t += v;
+      });
+      return t;
+    }
+    function paintUse() {
+      var host = document.getElementById(id + "use");
+      if (!host || !opts.onUse) return;
+      var t = totalHeld();
+      if (!t) { host.innerHTML = "<span style=\"color:var(--muted,#5a6a78)\">Type what you hold and this becomes the value the whole plan uses.</span>"; return; }
+      host.innerHTML = "<span>These holdings total <b>$" + Math.round(t).toLocaleString("en-US") + "</b></span>" +
+        "<button type=\"button\" id=\"" + id + "usego\">" + (opts.useLabel || "USE THIS AS THE VALUE") + "</button>" +
+        "<span id=\"" + id + "usedone\"></span>";
+      document.getElementById(id + "usego").addEventListener("click", function (ev) {
+        ev.stopPropagation();
+        /* the consumer gets the last word: it returns a string when it could not carry
+           the number, and that reason is shown instead of a success that did not happen */
+        var why = opts.onUse(t, held());
+        var done = document.getElementById(id + "usedone");
+        if (done) done.innerHTML = (typeof why === "string" && why)
+          ? "<span style=\"color:#b4451f;font-weight:700\">" + why + "</span>"
+          : "<span class=\"grused\">carried into the plan</span>";
+      });
+      if (opts.onResize) opts.onResize();
+    }
+    function held() {
+      var out = [];
+      rowsEl.querySelectorAll(".grrow").forEach(function (r) {
+        var t = (r.querySelector(".grtk").value || "").trim().toUpperCase();
+        var v = parseFloat(r.querySelector(".grval").value) || 0;
+        if (t && v > 0) out.push({ tkr: t, val: v });
+      });
+      return out;
+    }
     function rowFor(sym) {
       var rows = rowsEl.querySelectorAll(".grrow"), hit = null;
       rows.forEach(function (r) { if ((r.querySelector(".grtk").value || "").trim().toUpperCase() === sym) hit = r; });
@@ -262,6 +311,7 @@
               });
               if (!rowsEl.querySelector(".grrow")) addRow();
             }
+            paintUse();
             if (document.getElementById(id + "out").innerHTML) run();
           });
           holder.appendChild(b);
@@ -575,7 +625,7 @@
       }).catch(function () {});
     }
 
-    return { run: run, addRow: addRow, seed: seed };
+    return { run: run, addRow: addRow, seed: seed, total: totalHeld, held: held, refresh: paintUse };
   }
 
   window.GrowRoom = { mount: mount };
