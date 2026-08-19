@@ -844,6 +844,13 @@
   function money(n){ return "$" + Math.round(n).toLocaleString("en-US"); }
 
   /* ---- the derived model. Nothing downstream may read a card by its position. ---- */
+  /* which card the stock chapter is actually about. Role first, because a visitor can
+     rename anything; the name is only the fallback, and a missing answer is honest. */
+  function stockIndex(){
+    for (var i=0;i<ASSETS.length;i++) if (ASSETS[i].role === "halfchar") return i;
+    for (var j=0;j<ASSETS.length;j++) if (/stock|share|equit/i.test(ASSETS[j].n||"")) return j;
+    return -1;
+  }
   function grossOf(){ return ASSETS.reduce(function(t,a){ return t + (a.v || 0); }, 0); }
   function charitableOf(){
     return ASSETS.reduce(function(t,a){
@@ -901,8 +908,8 @@
               + "<div class=\"srow arow\" style=\"display:none\"><input class=\"saddr\" placeholder=\"Any street address, City\" autocomplete=\"off\"><button class=\"ago sgo\">PULL</button></div>"
               + "<div class=\"sout\"></div></div>" : "")
         + (a.role === "halfchar" || a.role === "business"
-            ? "<div class=\"asample\"><div class=\"snote\">This card grades real holdings too.</div>"
-              + "<button class=\"aq growopen\">Or take any ticker live, right here</button><div class=\"growhost\"></div></div>" : "")
+            ? "<div class=\"asample\"><div class=\"snote\">Real market data, and the number carries back into this card.</div>"
+              + "<button class=\"aq growopen\">Grade the real holdings behind this asset</button><div class=\"growhost\"></div></div>" : "")
         + (orig ? "<button class=\"arevert\">back to the record, " + money(orig.v) + "</button>" : "")
         + "<button class=\"adrop\">Take this asset off the table</button></div>";
       d.onclick = function(e){ if (e.target.closest(".afix")) return; d.classList.toggle("open"); };
@@ -951,7 +958,18 @@
         if (!gh.dataset.up && window.GrowRoom){
           gh.dataset.up = "1";
           GrowRoom.mount(gh, { presets: true, lessons: true,
-            intro: "The same engine every stock question on this site runs: tap a sample or type your own tickers, and a year of real closing prices, beta, alpha, Sharpe, and the charts compute in your browser and are never stored." });
+            intro: "The same engine every stock question on this site runs: tap a sample or type your own tickers, and a year of real closing prices, beta, alpha, Sharpe, and the charts compute in your browser and are never stored.",
+            /* the number does not die on the screen: it becomes this asset, and the
+               whole room recomputes around it exactly as a record pull does */
+            onUse: function(total){
+              ASSETS[idx].v = Math.round(total);
+              recalcAll();
+              var card = document.getElementById("acard" + idx);
+              if (card){
+                card.querySelector(".av").textContent = money(ASSETS[idx].v);
+                var fi = card.querySelector(".afix input"); if (fi) fi.value = money(ASSETS[idx].v);
+              }
+            } });
         }
         gro.style.display = "none";
       };
@@ -1738,7 +1756,18 @@
       if (gh && window.GrowRoom){
         ROOM = GrowRoom.mount(gh, {
           presets: true, retire: true, lessons: true,
-          intro: "Type a holding, or tap a sample mix below and watch it work first. While the grade is showing, every edit re runs it."
+          intro: "Type a holding, or tap a sample mix below and watch it work first. While the grade is showing, every edit re runs it.",
+          useLabel: "USE THIS AS THE STOCK VALUE",
+          /* the stock chapter grades the SAME holding the asset table carries, so the
+             number it lands on is allowed to become that holding. The target is looked
+             up at the moment of the click, never at mount, because the table can be
+             edited between the two. */
+          onUse: function(total){
+            var idx = stockIndex();
+            if (idx < 0) return "there is no stock card left to carry it into";
+            ASSETS[idx].v = Math.round(total);
+            drawCards(); recalcAll();
+          }
         });
       }
     }
