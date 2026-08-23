@@ -11,6 +11,11 @@ author:
 
 permalink: /newsletter/:title/
 
+collections:
+  pulse:
+    output: true
+    permalink: /pulse/:title/
+
 plugins:
   - jekyll-seo-tag
   - jekyll-sitemap
