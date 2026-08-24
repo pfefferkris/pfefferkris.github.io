@@ -1,6 +1,13 @@
 {
   "federalRegister": [
     {
+      "date": "2026-08-21",
+      "type": "Proposed Rule",
+      "title": "Guidance on Eligible Investments for Trump Accounts",
+      "url": "https://www.federalregister.gov/documents/2026/08/21/2026-17123/guidance-on-eligible-investments-for-trump-accounts",
+      "matched": "grantor trust"
+    },
+    {
       "date": "2026-08-17",
       "type": "Proposed Rule",
       "title": "Proposed Removal of a Reporting Requirement for Trusts Whose Charitable Contribution Deductions Are Solely for Contributions Made by Passthrough Entities",
@@ -64,7 +71,7 @@
       "matched": "fiduciary income tax"
     }
   ],
-  "federalRegisterChecked": "2026-08-17",
+  "federalRegisterChecked": "2026-08-24",
   "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
   "cfrParts": [
     {
@@ -92,10 +99,10 @@
       "issueDate": "2026-04-03"
     }
   ],
-  "cfrChecked": "2026-08-17",
+  "cfrChecked": "2026-08-24",
   "cfrSource": "eCFR versioner API",
   "changes": [
-    "NEW Proposed Rule 2026-08-17: Proposed Removal of a Reporting Requirement for Trusts Whose Charitable Contribution Deductions Are Solely for Contributions Made by Passthrough Entities"
+    "NEW Proposed Rule 2026-08-21: Guidance on Eligible Investments for Trump Accounts"
   ],
-  "updated": "2026-08-17"
+  "updated": "2026-08-24"
 }
