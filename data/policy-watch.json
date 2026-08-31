@@ -71,7 +71,7 @@
       "matched": "fiduciary income tax"
     }
   ],
-  "federalRegisterChecked": "2026-08-24",
+  "federalRegisterChecked": "2026-08-31",
   "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
   "cfrParts": [
     {
@@ -99,10 +99,8 @@
       "issueDate": "2026-04-03"
     }
   ],
-  "cfrChecked": "2026-08-24",
+  "cfrChecked": "2026-08-31",
   "cfrSource": "eCFR versioner API",
-  "changes": [
-    "NEW Proposed Rule 2026-08-21: Guidance on Eligible Investments for Trump Accounts"
-  ],
-  "updated": "2026-08-24"
+  "changes": [],
+  "updated": "2026-08-31"
 }
