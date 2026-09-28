@@ -1,6 +1,13 @@
 {
   "federalRegister": [
     {
+      "date": "2026-09-25",
+      "type": "Rule",
+      "title": "Estate Tax Closing Letter User Fee Update",
+      "url": "https://www.federalregister.gov/documents/2026/09/25/2026-19666/estate-tax-closing-letter-user-fee-update",
+      "matched": "estate tax"
+    },
+    {
       "date": "2026-08-21",
       "type": "Proposed Rule",
       "title": "Guidance on Eligible Investments for Trump Accounts",
@@ -71,7 +78,7 @@
       "matched": "fiduciary income tax"
     }
   ],
-  "federalRegisterChecked": "2026-09-21",
+  "federalRegisterChecked": "2026-09-28",
   "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
   "cfrParts": [
     {
@@ -99,8 +106,10 @@
       "issueDate": "2026-04-03"
     }
   ],
-  "cfrChecked": "2026-09-21",
+  "cfrChecked": "2026-09-28",
   "cfrSource": "eCFR versioner API",
-  "changes": [],
-  "updated": "2026-09-21"
+  "changes": [
+    "NEW Rule 2026-09-25: Estate Tax Closing Letter User Fee Update"
+  ],
+  "updated": "2026-09-28"
 }
