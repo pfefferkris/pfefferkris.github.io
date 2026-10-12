@@ -1,6 +1,20 @@
 {
   "federalRegister": [
     {
+      "date": "2026-09-30",
+      "type": "Rule",
+      "title": "Trump Accounts",
+      "url": "https://www.federalregister.gov/documents/2026/09/30/2026-20026/trump-accounts",
+      "matched": "estate tax"
+    },
+    {
+      "date": "2026-09-30",
+      "type": "Proposed Rule",
+      "title": "Trump Accounts",
+      "url": "https://www.federalregister.gov/documents/2026/09/30/2026-20027/trump-accounts",
+      "matched": "required minimum distribution"
+    },
+    {
       "date": "2026-09-25",
       "type": "Rule",
       "title": "Estate Tax Closing Letter User Fee Update",
@@ -78,7 +92,7 @@
       "matched": "fiduciary income tax"
     }
   ],
-  "federalRegisterChecked": "2026-09-28",
+  "federalRegisterChecked": "2026-10-12",
   "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
   "cfrParts": [
     {
@@ -106,10 +120,11 @@
       "issueDate": "2026-04-03"
     }
   ],
-  "cfrChecked": "2026-09-28",
+  "cfrChecked": "2026-10-12",
   "cfrSource": "eCFR versioner API",
   "changes": [
-    "NEW Rule 2026-09-25: Estate Tax Closing Letter User Fee Update"
+    "NEW Rule 2026-09-30: Trump Accounts",
+    "NEW Proposed Rule 2026-09-30: Trump Accounts"
   ],
-  "updated": "2026-09-28"
+  "updated": "2026-10-12"
 }
