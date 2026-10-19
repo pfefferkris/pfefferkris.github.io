@@ -64,13 +64,6 @@
       "matched": "estate tax"
     },
     {
-      "date": "2026-06-02",
-      "type": "Proposed Rule",
-      "title": "Estate Tax Closing Letter User Fee Update",
-      "url": "https://www.federalregister.gov/documents/2026/06/02/2026-10963/estate-tax-closing-letter-user-fee-update",
-      "matched": "estate tax"
-    },
-    {
       "date": "2026-05-13",
       "type": "Proposed Rule",
       "title": "Excepted Fertility Benefits",
@@ -92,7 +85,7 @@
       "matched": "fiduciary income tax"
     }
   ],
-  "federalRegisterChecked": "2026-10-12",
+  "federalRegisterChecked": "2026-10-19",
   "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
   "cfrParts": [
     {
@@ -120,11 +113,8 @@
       "issueDate": "2026-04-03"
     }
   ],
-  "cfrChecked": "2026-10-12",
+  "cfrChecked": "2026-10-19",
   "cfrSource": "eCFR versioner API",
-  "changes": [
-    "NEW Rule 2026-09-30: Trump Accounts",
-    "NEW Proposed Rule 2026-09-30: Trump Accounts"
-  ],
-  "updated": "2026-10-12"
+  "changes": [],
+  "updated": "2026-10-19"
 }
