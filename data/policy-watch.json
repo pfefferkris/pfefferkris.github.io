@@ -57,13 +57,6 @@
       "matched": "estate tax"
     },
     {
-      "date": "2026-07-09",
-      "type": "Rule",
-      "title": "Information Reporting and Transfer for Valuable Consideration Rules for Section 1035 Exchanges of Life Insurance and Certain Other Life Insurance Contract Transactions",
-      "url": "https://www.federalregister.gov/documents/2026/07/09/2026-13830/information-reporting-and-transfer-for-valuable-consideration-rules-for-section-1035-exchanges-of",
-      "matched": "estate tax"
-    },
-    {
       "date": "2026-05-13",
       "type": "Proposed Rule",
       "title": "Excepted Fertility Benefits",
@@ -85,7 +78,7 @@
       "matched": "fiduciary income tax"
     }
   ],
-  "federalRegisterChecked": "2026-10-19",
+  "federalRegisterChecked": "2026-10-26",
   "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
   "cfrParts": [
     {
@@ -113,8 +106,8 @@
       "issueDate": "2026-04-03"
     }
   ],
-  "cfrChecked": "2026-10-19",
+  "cfrChecked": "2026-10-26",
   "cfrSource": "eCFR versioner API",
   "changes": [],
-  "updated": "2026-10-19"
+  "updated": "2026-10-26"
 }
