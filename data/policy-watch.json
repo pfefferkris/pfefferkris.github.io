@@ -78,7 +78,7 @@
       "matched": "fiduciary income tax"
     }
   ],
-  "federalRegisterChecked": "2026-11-02",
+  "federalRegisterChecked": "2026-11-09",
   "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
   "cfrParts": [
     {
@@ -103,11 +103,11 @@
       "cfr": "20 CFR part 416",
       "what": "Supplemental Security Income (drives the special needs trust rules)",
       "lastAmended": "2026-04-03",
-      "issueDate": "2026-04-03"
+      "issueDate": "2026-10-30"
     }
   ],
-  "cfrChecked": "2026-11-02",
+  "cfrChecked": "2026-11-09",
   "cfrSource": "eCFR versioner API",
   "changes": [],
-  "updated": "2026-11-02"
+  "updated": "2026-11-09"
 }
