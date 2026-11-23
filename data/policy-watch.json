@@ -78,7 +78,7 @@
       "matched": "fiduciary income tax"
     }
   ],
-  "federalRegisterChecked": "2026-11-16",
+  "federalRegisterChecked": "2026-11-23",
   "federalRegisterSource": "Federal Register API, IRS and Treasury rules and proposed rules",
   "cfrParts": [
     {
@@ -106,8 +106,8 @@
       "issueDate": "2026-10-30"
     }
   ],
-  "cfrChecked": "2026-11-16",
+  "cfrChecked": "2026-11-23",
   "cfrSource": "eCFR versioner API",
   "changes": [],
-  "updated": "2026-11-16"
+  "updated": "2026-11-23"
 }
